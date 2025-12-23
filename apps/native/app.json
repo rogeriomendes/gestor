@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "scheme": "gestor",
+    "userInterfaceStyle": "automatic",
+    "orientation": "default",
+    "web": {
+      "bundler": "metro"
+    },
+    "name": "gestor",
+    "slug": "gestor",
+    "plugins": ["expo-font"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
