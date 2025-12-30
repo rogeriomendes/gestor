@@ -1,47 +1,51 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
 
-import { trpc } from "@/utils/trpc";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Loader from "@/components/loader";
+import SignInForm from "@/components/sign-in-form";
+import SignUpForm from "@/components/sign-up-form";
+import { useTenant } from "@/contexts/tenant-context";
+import { authClient } from "@/lib/auth-client";
+import { getRedirectPath } from "@/lib/auth-redirect";
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
+export default function LoginPage() {
+  const router = useRouter();
+  const [showSignIn, setShowSignIn] = useState(true);
+  const { data: session, isPending: sessionLoading } = authClient.useSession();
+  const { role, isLoading: tenantLoading } = useTenant();
 
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
+  // Se já está autenticado, redirecionar
+  useEffect(() => {
+    if (session?.user && role && !sessionLoading && !tenantLoading) {
+      const redirectPath = getRedirectPath(role);
+      if (redirectPath === "/admin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
+    }
+  }, [session, role, sessionLoading, tenantLoading, router]);
 
-export default function Home() {
-  const healthCheck = useQuery(trpc.healthCheck.queryOptions());
+  // Mostrar loader enquanto verifica autenticação
+  if (sessionLoading || tenantLoading) {
+    return <Loader />;
+  }
+
+  // Se já está autenticado, não mostrar nada (será redirecionado)
+  if (session?.user) {
+    return null;
+  }
+
+  // return showSignIn ? (
+  //   <SignInForm onSwitchToSignUp={() => setShowSignIn(false)} />
+  // ) : (
+  //   <SignUpForm onSwitchToSignIn={() => setShowSignIn(true)} />
+  // );
 
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-2">
-      <pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-      <div className="grid gap-6">
-        <section className="rounded-lg border p-4">
-          <h2 className="mb-2 font-medium">API Status</h2>
-          <div className="flex items-center gap-2">
-            <div
-              className={`h-2 w-2 rounded-full ${healthCheck.data ? "bg-green-500" : "bg-red-500"}`}
-            />
-            <span className="text-muted-foreground text-sm">
-              {healthCheck.isLoading
-                ? "Checking..."
-                : healthCheck.data
-                  ? "Connected"
-                  : "Disconnected"}
-            </span>
-          </div>
-        </section>
-      </div>
-    </div>
+    <>
+      <SignInForm /> <SignUpForm />
+    </>
   );
 }

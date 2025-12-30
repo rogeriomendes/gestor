@@ -1,0 +1,122 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import type { ReactNode } from "react";
+import { TenantListSkeleton } from "@/components/tenant-loading";
+import { useTenant } from "@/contexts/tenant-context";
+import { trpc } from "@/utils/trpc";
+import { AccessDenied } from "./access-denied";
+import { TenantNotFound } from "./tenant-not-found";
+
+// Tipo do tenant retornado pela query getTenant
+// Usa string | Date porque os dados podem vir serializados do tRPC
+export type TenantWithRelations = {
+  id: string;
+  name: string;
+  slug: string;
+  active: boolean;
+  email: string | null;
+  phone: string | null;
+  website: string | null;
+  notes: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  deletedAt: string | Date | null;
+  deletedBy: string | null;
+  users: Array<{
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+    role: string | null;
+  }>;
+  branches: Array<{
+    id: string;
+    name: string;
+    isMain: boolean;
+    legalName: string | null;
+    cnpj: string | null;
+    email: string | null;
+    phone: string | null;
+    addressStreet: string | null;
+    addressNumber: string | null;
+    addressComplement: string | null;
+    addressDistrict: string | null;
+    addressCity: string | null;
+    addressState: string | null;
+    addressZipCode: string | null;
+    notes: string | null;
+    active: boolean;
+    createdAt: string | Date;
+    updatedAt: string | Date;
+    deletedAt: string | Date | null;
+    deletedBy: string | null;
+    tenantId: string;
+  }>;
+};
+
+type TenantGuardProps = {
+  tenantId: string;
+  children: (props: { tenant: TenantWithRelations }) => ReactNode;
+  fallback?: {
+    accessDenied?: ReactNode;
+    notFound?: ReactNode;
+    loading?: ReactNode;
+  };
+};
+
+/**
+ * Componente guard que verifica:
+ * 1. Se o usuário tem permissão de admin
+ * 2. Se o tenant existe
+ *
+ * Renderiza o conteúdo apenas se ambas as condições forem satisfeitas.
+ * O tenant é passado como prop para o children através de uma função render.
+ *
+ * IMPORTANTE: Todos os hooks dentro do children devem ser chamados sempre,
+ * independentemente do estado de loading/erro. Use enabled/conditional rendering
+ * dentro dos hooks para controlar quando eles executam.
+ */
+export function TenantGuard({
+  tenantId,
+  children,
+  fallback,
+}: TenantGuardProps) {
+  const { isTenantAdmin, isLoading: tenantLoading } = useTenant();
+
+  const { data: tenant, isLoading: tenantDataLoading } = useQuery({
+    ...trpc.admin.getTenant.queryOptions({ tenantId }),
+    enabled: isTenantAdmin && !!tenantId,
+  });
+
+  const isLoading = tenantLoading || tenantDataLoading;
+
+  // Mostrar loading enquanto verifica permissão e carrega tenant
+  if (isLoading) {
+    return (
+      <>
+        {fallback?.loading || (
+          <div className="container mx-auto max-w-7xl p-6">
+            <TenantListSkeleton />
+          </div>
+        )}
+      </>
+    );
+  }
+
+  // Se não é admin, mostrar erro
+  if (!isTenantAdmin) {
+    return <>{fallback?.accessDenied || <AccessDenied />}</>;
+  }
+
+  // Se tenant não existe, mostrar erro
+  if (!tenant) {
+    return <>{fallback?.notFound || <TenantNotFound />}</>;
+  }
+
+  // Renderizar conteúdo com tenant disponível
+  // IMPORTANTE: O children é uma função que pode conter hooks.
+  // Para evitar problemas com a ordem dos hooks, sempre chamamos children,
+  // mas garantimos que tenant não seja null neste ponto.
+  return <>{children({ tenant })}</>;
+}
