@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "gestor",
-    short_name: "gestor",
-    description: "my pwa app",
-    start_url: "/new",
+    name: "Gestor Web",
+    short_name: "Gestor Web",
+    description: "Gestor Web",
+    start_url: "/",
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#000000",

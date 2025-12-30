@@ -1,0 +1,84 @@
+enum Role {
+  SUPER_ADMIN
+  TENANT_ADMIN
+  TENANT_OWNER
+  TENANT_USER_MANAGER
+  TENANT_USER
+}
+
+// Relação com RolePermission (definida em permission.prisma)
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String   // Nome fantasia (matriz)
+  slug      String   @unique
+  active    Boolean  @default(true)
+  
+  // Dados gerais da empresa
+  email         String?  // Email corporativo principal
+  phone         String?  // Telefone principal
+  website       String?  // Site/URL
+  
+  // Observações gerais
+  notes         String?  // Observações/Notas
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  deletedBy String?
+
+  // Relações
+  users User[]
+  branches TenantBranch[] // Filiais do tenant
+  auditLogs AuditLog[] // Logs de auditoria
+
+  @@index([slug])
+  @@index([active])
+  @@index([deletedAt])
+  @@index([active, deletedAt])
+  @@index([email])
+  @@map("tenant")
+}
+
+model TenantBranch {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String   // Nome da filial (ex: "Filial São Paulo")
+  isMain    Boolean  @default(false) // Se é a matriz/filial principal
+  
+  // Dados da empresa (específicos desta filial)
+  legalName     String?  // Razão social
+  cnpj          String?  // CNPJ (apenas números)
+  email         String?  // Email da filial
+  phone         String?  // Telefone da filial
+  
+  // Endereço completo
+  addressStreet      String?
+  addressNumber      String?
+  addressComplement  String?
+  addressDistrict    String?
+  addressCity        String?
+  addressState       String?
+  addressZipCode     String?
+  
+  // Observações específicas da filial
+  notes         String?
+  
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+  deletedBy     String?
+
+  // Relações
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, cnpj]) // CNPJ único por tenant (pode ser null)
+  @@index([tenantId])
+  @@index([isMain])
+  @@index([active])
+  @@index([deletedAt])
+  @@index([cnpj])
+  @@map("tenant_branch")
+}
+

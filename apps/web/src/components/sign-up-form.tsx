@@ -1,22 +1,35 @@
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import z from "zod";
-
+import { useTenant } from "@/contexts/tenant-context";
 import { authClient } from "@/lib/auth-client";
+import { getRedirectPath } from "@/lib/auth-redirect";
 
 import Loader from "./loader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-export default function SignUpForm({
-  onSwitchToSignIn,
-}: {
-  onSwitchToSignIn: () => void;
-}) {
+// export default function SignUpForm({
+//   onSwitchToSignIn,
+// }: {
+//   onSwitchToSignIn: () => void;
+// }) {
+
+export default function SignUpForm() {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
+  const { data: session, isPending: sessionPending } = authClient.useSession();
+  const { role, isLoading: tenantLoading } = useTenant();
+
+  // Redirecionar após signup bem-sucedido
+  useEffect(() => {
+    if (session?.user && role && !tenantLoading) {
+      const redirectPath = getRedirectPath(role);
+      router.push(redirectPath);
+    }
+  }, [session, role, tenantLoading, router]);
 
   const form = useForm({
     defaultValues: {
@@ -33,8 +46,8 @@ export default function SignUpForm({
         },
         {
           onSuccess: () => {
-            router.push("/dashboard");
-            toast.success("Sign up successful");
+            toast.success("Cadastro realizado com sucesso");
+            // O redirecionamento será feito pelo useEffect quando o role for carregado
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -44,20 +57,20 @@ export default function SignUpForm({
     },
     validators: {
       onSubmit: z.object({
-        name: z.string().min(2, "Name must be at least 2 characters"),
-        email: z.email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
+        name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+        email: z.email("Endereço de email inválido"),
+        password: z.string().min(8, "Senha deve ter pelo menos 8 caracteres"),
       }),
     },
   });
 
-  if (isPending) {
+  if (sessionPending || tenantLoading) {
     return <Loader />;
   }
 
   return (
     <div className="mx-auto mt-10 w-full max-w-md p-6">
-      <h1 className="mb-6 text-center font-bold text-3xl">Create Account</h1>
+      <h1 className="mb-6 text-center font-bold text-3xl">Criar Conta</h1>
 
       <form
         className="space-y-4"
@@ -71,12 +84,13 @@ export default function SignUpForm({
           <form.Field name="name">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Name</Label>
+                <Label htmlFor={field.name}>Nome</Label>
                 <Input
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
+                  type="text"
                   value={field.state.value}
                 />
                 {field.state.meta.errors.map((error) => (
@@ -148,7 +162,7 @@ export default function SignUpForm({
         </form.Subscribe>
       </form>
 
-      <div className="mt-4 text-center">
+      {/* <div className="mt-4 text-center">
         <Button
           className="text-indigo-600 hover:text-indigo-800"
           onClick={onSwitchToSignIn}
@@ -156,7 +170,7 @@ export default function SignUpForm({
         >
           Already have an account? Sign In
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

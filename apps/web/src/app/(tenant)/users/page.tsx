@@ -1,0 +1,157 @@
+"use client";
+
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { UserPlus } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { TenantUsersSkeleton } from "@/components/tenant-loading";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useTenant } from "@/contexts/tenant-context";
+import { useCanManageUsers } from "@/lib/permissions";
+import { trpc, trpcClient } from "@/utils/trpc";
+import { AddUserDialog } from "./_components/add-user-dialog";
+import { UsersList } from "./_components/users-list";
+
+type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
+
+export default function UsersPage() {
+  const { tenant, isLoading: tenantLoading } = useTenant();
+  const canManageUsers = useCanManageUsers();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
+
+  const {
+    data: usersData,
+    isLoading: usersLoading,
+    refetch,
+  } = useQuery({
+    ...trpc.tenant.listUsers.queryOptions({
+      page,
+      limit: 20,
+      ...(search && { search }),
+    }),
+    enabled: canManageUsers && !!tenant,
+  });
+
+  const removeUserMutation = useMutation({
+    mutationFn: (input: { userId: string }) =>
+      trpcClient.tenant.removeUser.mutate(input),
+    onSuccess: () => {
+      toast.success("Usuário removido com sucesso");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao remover usuário"
+      );
+    },
+  });
+
+  const updateUserRoleMutation = useMutation({
+    mutationFn: (input: { userId: string; role: Role }) =>
+      trpcClient.tenant.updateUserRole.mutate(input),
+    onSuccess: () => {
+      toast.success("Role do usuário atualizada com sucesso");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao atualizar role"
+      );
+    },
+  });
+
+  if (tenantLoading) {
+    return <TenantUsersSkeleton />;
+  }
+
+  if (!canManageUsers) {
+    return (
+      <div className="container mx-auto max-w-7xl space-y-6 p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Acesso Negado</CardTitle>
+            <CardDescription>
+              Você não tem permissão para gerenciar usuários.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!tenant) {
+    return null;
+  }
+
+  const handleRemove = async (userId: string) => {
+    // eslint-disable-next-line no-alert
+    if (confirm("Tem certeza que deseja remover este usuário?")) {
+      await removeUserMutation.mutateAsync({ userId });
+    }
+  };
+
+  const handleUpdateRole = async (userId: string, role: Role) => {
+    await updateUserRoleMutation.mutateAsync({ userId, role });
+  };
+
+  const users = usersData?.data || [];
+
+  return (
+    <div className="container mx-auto max-w-7xl space-y-6 p-6">
+      <Breadcrumbs
+        items={[
+          { label: tenant.name, href: "/dashboard" },
+          { label: "Usuários" },
+        ]}
+      />
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-bold text-2xl">Usuários</h2>
+          <p className="text-muted-foreground text-sm">
+            Gerencie os usuários do seu tenant
+          </p>
+        </div>
+        <Button onClick={() => setAddUserDialogOpen(true)}>
+          <UserPlus className="mr-2 h-4 w-4" /> Adicionar Usuário
+        </Button>
+      </div>
+
+      <div className="space-y-4">
+        <Input
+          className="max-w-sm"
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Buscar usuários..."
+          value={search}
+        />
+      </div>
+
+      <UsersList
+        isLoading={usersLoading}
+        onRemove={handleRemove}
+        onUpdateRole={handleUpdateRole}
+        users={users}
+      />
+
+      <AddUserDialog
+        onOpenChange={setAddUserDialogOpen}
+        onSuccess={refetch}
+        open={addUserDialogOpen}
+        tenantId={tenant.id}
+      />
+    </div>
+  );
+}

@@ -1,0 +1,292 @@
+import prisma from "@gestor/db";
+import { AuditAction, AuditResourceType } from "@gestor/db/types";
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+
+import { adminProcedure, router, tenantProcedure } from "../index";
+import {
+  createPaginationResponse,
+  getPaginationParams,
+  paginationSchema,
+} from "../lib/pagination";
+
+export const auditRouter = router({
+  /**
+   * Listar audit logs (admin)
+   * Permite filtrar por tenant, usuário, ação, tipo de recurso e data
+   */
+  listLogs: adminProcedure
+    .input(
+      paginationSchema.extend({
+        tenantId: z.string().optional(),
+        userId: z.string().optional(),
+        action: z.nativeEnum(AuditAction).optional(),
+        resourceType: z.nativeEnum(AuditResourceType).optional(),
+        resourceId: z.string().optional(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+        search: z.string().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { skip, take } = getPaginationParams(input.page, input.limit);
+
+      const where: any = {
+        ...(input.tenantId && { tenantId: input.tenantId }),
+        ...(input.userId && { userId: input.userId }),
+        ...(input.action && { action: input.action }),
+        ...(input.resourceType && { resourceType: input.resourceType }),
+        ...(input.resourceId && { resourceId: input.resourceId }),
+        ...(input.startDate &&
+          input.endDate && {
+            createdAt: {
+              gte: input.startDate,
+              lte: input.endDate,
+            },
+          }),
+        ...(input.startDate &&
+          !input.endDate && {
+            createdAt: {
+              gte: input.startDate,
+            },
+          }),
+        ...(!input.startDate &&
+          input.endDate && {
+            createdAt: {
+              lte: input.endDate,
+            },
+          }),
+      };
+
+      const [logs, total] = await Promise.all([
+        prisma.auditLog.findMany({
+          where,
+          skip,
+          take,
+          orderBy: { createdAt: "desc" },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+            tenant: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
+          },
+        }),
+        prisma.auditLog.count({ where }),
+      ]);
+
+      return {
+        data: logs,
+        pagination: createPaginationResponse(input.page, input.limit, total),
+      };
+    }),
+
+  /**
+   * Obter detalhes de um log específico
+   */
+  getLog: adminProcedure
+    .input(z.object({ logId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const log = await prisma.auditLog.findUnique({
+        where: { id: input.logId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+            },
+          },
+          tenant: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      });
+
+      if (!log) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Log de auditoria não encontrado",
+        });
+      }
+
+      return log;
+    }),
+
+  /**
+   * Listar audit logs do tenant atual (tenant)
+   * Apenas logs relacionados ao tenant do usuário
+   */
+  listMyTenantLogs: tenantProcedure
+    .input(
+      paginationSchema.extend({
+        action: z.nativeEnum(AuditAction).optional(),
+        resourceType: z.nativeEnum(AuditResourceType).optional(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.tenant) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tenant não encontrado",
+        });
+      }
+
+      const { skip, take } = getPaginationParams(input.page, input.limit);
+
+      const where: any = {
+        tenantId: ctx.tenant.id,
+        ...(input.action && { action: input.action }),
+        ...(input.resourceType && { resourceType: input.resourceType }),
+        ...(input.startDate &&
+          input.endDate && {
+            createdAt: {
+              gte: input.startDate,
+              lte: input.endDate,
+            },
+          }),
+        ...(input.startDate &&
+          !input.endDate && {
+            createdAt: {
+              gte: input.startDate,
+            },
+          }),
+        ...(!input.startDate &&
+          input.endDate && {
+            createdAt: {
+              lte: input.endDate,
+            },
+          }),
+      };
+
+      const [logs, total] = await Promise.all([
+        prisma.auditLog.findMany({
+          where,
+          skip,
+          take,
+          orderBy: { createdAt: "desc" },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+          },
+        }),
+        prisma.auditLog.count({ where }),
+      ]);
+
+      return {
+        data: logs,
+        pagination: createPaginationResponse(input.page, input.limit, total),
+      };
+    }),
+
+  /**
+   * Obter estatísticas de audit logs (admin)
+   */
+  getStats: adminProcedure
+    .input(
+      z
+        .object({
+          tenantId: z.string().optional(),
+          startDate: z.date().optional(),
+          endDate: z.date().optional(),
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const dateFilter: any = {};
+      if (input?.startDate && input?.endDate) {
+        dateFilter.createdAt = {
+          gte: input.startDate,
+          lte: input.endDate,
+        };
+      } else if (input?.startDate) {
+        dateFilter.createdAt = {
+          gte: input.startDate,
+        };
+      } else if (input?.endDate) {
+        dateFilter.createdAt = {
+          lte: input.endDate,
+        };
+      }
+
+      const where: any = {
+        ...(input?.tenantId && { tenantId: input.tenantId }),
+        ...dateFilter,
+      };
+
+      const [totalLogs, logsByAction, logsByResourceType, recentLogs] =
+        await Promise.all([
+          prisma.auditLog.count({ where }),
+          prisma.auditLog.groupBy({
+            by: ["action"],
+            where,
+            _count: {
+              action: true,
+            },
+          }),
+          prisma.auditLog.groupBy({
+            by: ["resourceType"],
+            where,
+            _count: {
+              resourceType: true,
+            },
+          }),
+          prisma.auditLog.findMany({
+            where,
+            take: 10,
+            orderBy: { createdAt: "desc" },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+              tenant: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          }),
+        ]);
+
+      return {
+        total: totalLogs,
+        byAction: logsByAction.map((item) => ({
+          action: item.action,
+          count: item._count.action,
+        })),
+        byResourceType: logsByResourceType.map((item) => ({
+          resourceType: item.resourceType,
+          count: item._count.resourceType,
+        })),
+        recent: recentLogs,
+      };
+    }),
+});

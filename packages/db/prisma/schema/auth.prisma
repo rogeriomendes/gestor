@@ -2,14 +2,28 @@ model User {
   id            String    @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean    @default(false)
   image         String?
+  role          Role?
+  tenantId      String?
+  
+  // Campos do Admin plugin
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  tenant        Tenant?   @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  auditLogs     AuditLog[] // Logs de auditoria criados por este usuário
 
   @@unique([email])
+  @@index([tenantId])
+  @@index([role])
+  @@index([tenantId, role])
+  @@index([banned])
   @@map("user")
 }
 
@@ -22,6 +36,10 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
+  
+  // Campos do Admin plugin
+  impersonatedBy String? // ID do admin que está impersonando esta sessão
+  
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])

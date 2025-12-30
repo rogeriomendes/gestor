@@ -1,0 +1,58 @@
+// Enum de recursos/módulos do sistema
+enum PermissionResource {
+  TENANT
+  USER
+  BRANCH
+  SETTINGS
+  DASHBOARD
+  AUDIT_LOG
+}
+
+// Enum de ações que podem ser realizadas
+enum PermissionAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  MANAGE // Permissão completa (CRUD + outras ações)
+}
+
+// Model de permissão (define uma permissão específica)
+model Permission {
+  id       String   @id @default(cuid())
+  resource PermissionResource
+  action   PermissionAction
+  name     String   // Nome legível (ex: "Criar Usuários")
+  description String? // Descrição da permissão
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relações
+  rolePermissions RolePermission[]
+
+  @@unique([resource, action], name: "resource_action")
+  @@index([resource])
+  @@index([action])
+  @@map("permission")
+}
+
+// Relação entre Role e Permission (define quais permissões cada role tem)
+model RolePermission {
+  id           String   @id @default(cuid())
+  role         Role
+  permissionId String
+  granted      Boolean  @default(true) // Se false, nega explicitamente a permissão
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relações
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([role, permissionId])
+  @@index([role])
+  @@index([permissionId])
+  @@map("role_permission")
+}
+

@@ -1,0 +1,49 @@
+enum AuditAction {
+  CREATE_TENANT
+  UPDATE_TENANT
+  DELETE_TENANT
+  RESTORE_TENANT
+  CREATE_USER
+  UPDATE_USER
+  UPDATE_USER_ROLE
+  REMOVE_USER
+  INVITE_USER
+  CREATE_BRANCH
+  UPDATE_BRANCH
+  DELETE_BRANCH
+  RESTORE_BRANCH
+  UPDATE_PERMISSIONS
+  INITIALIZE_PERMISSIONS
+}
+
+enum AuditResourceType {
+  TENANT
+  USER
+  TENANT_USER
+  BRANCH
+  PERMISSION
+}
+
+model AuditLog {
+  id           String           @id @default(cuid())
+  action       AuditAction
+  resourceType AuditResourceType
+  resourceId   String
+  userId       String
+  tenantId     String?
+  metadata     Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime         @default(now())
+
+  // Relações
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@index([resourceType, createdAt])
+  @@map("audit_log")
+}
+

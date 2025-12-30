@@ -1,22 +1,35 @@
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import z from "zod";
-
+import { useTenant } from "@/contexts/tenant-context";
 import { authClient } from "@/lib/auth-client";
+import { getRedirectPath } from "@/lib/auth-redirect";
 
 import Loader from "./loader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-export default function SignInForm({
-  onSwitchToSignUp,
-}: {
-  onSwitchToSignUp: () => void;
-}) {
+// export default function SignInForm({
+//   onSwitchToSignUp,
+// }: {
+//   onSwitchToSignUp: () => void;
+// }) {
+
+export default function SignInForm() {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
+  const { data: session, isPending: sessionPending } = authClient.useSession();
+  const { role, isLoading: tenantLoading } = useTenant();
+
+  // Redirecionar após login bem-sucedido
+  useEffect(() => {
+    if (session?.user && role && !tenantLoading) {
+      const redirectPath = getRedirectPath(role);
+      router.push(redirectPath);
+    }
+  }, [session, role, tenantLoading, router]);
 
   const form = useForm({
     defaultValues: {
@@ -31,8 +44,8 @@ export default function SignInForm({
         },
         {
           onSuccess: () => {
-            router.push("/dashboard");
-            toast.success("Sign in successful");
+            toast.success("Login realizado com sucesso");
+            // O redirecionamento será feito pelo useEffect quando o role for carregado
           },
           onError: (error) => {
             toast.error(error.error.message || error.error.statusText);
@@ -42,13 +55,13 @@ export default function SignInForm({
     },
     validators: {
       onSubmit: z.object({
-        email: z.email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
+        email: z.email("Endereço de email inválido"),
+        password: z.string().min(8, "Senha deve ter pelo menos 8 caracteres"),
       }),
     },
   });
 
-  if (isPending) {
+  if (sessionPending || tenantLoading) {
     return <Loader />;
   }
 
@@ -123,7 +136,7 @@ export default function SignInForm({
         </form.Subscribe>
       </form>
 
-      <div className="mt-4 text-center">
+      {/* <div className="mt-4 text-center">
         <Button
           className="text-indigo-600 hover:text-indigo-800"
           onClick={onSwitchToSignUp}
@@ -131,7 +144,7 @@ export default function SignInForm({
         >
           Need an account? Sign Up
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

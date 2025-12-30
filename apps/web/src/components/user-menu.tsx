@@ -25,7 +25,7 @@ export default function UserMenu() {
 
   if (!session) {
     return (
-      <Link href="/login">
+      <Link href="/">
         <Button variant="outline">Sign In</Button>
       </Link>
     );
@@ -33,7 +33,15 @@ export default function UserMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="outline" />}>
+      <DropdownMenuTrigger
+        className="flex-1"
+        render={
+          <Button
+            className="peer/menu-button flex h-10 items-center gap-3 rounded-md p-2 text-xs hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground md:text-sm"
+            variant="outline"
+          />
+        }
+      >
         {session.user.name}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-card">
