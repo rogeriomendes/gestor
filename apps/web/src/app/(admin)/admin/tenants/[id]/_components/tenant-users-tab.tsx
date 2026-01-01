@@ -10,19 +10,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EditUserDialog } from "../../../users/_components/edit-user-dialog";
 import { AddUserDialog } from "./add-user-dialog";
 import { UserListItem } from "./user-list-item";
 
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
-type User = {
+interface User {
   id: string;
   name: string;
   email: string;
   role: Role;
-};
+}
 
-type AvailableUser = {
+interface AvailableUser {
   id: string;
   user: {
     name: string;
@@ -32,9 +41,9 @@ type AvailableUser = {
     id: string;
     name: string;
   } | null;
-};
+}
 
-type TenantUsersTabProps = {
+interface TenantUsersTabProps {
   tenantId: string;
   users: User[];
   isLoading: boolean;
@@ -43,7 +52,7 @@ type TenantUsersTabProps = {
   onUpdateRole: (userId: string, role: Role) => void;
   onRemove: (userId: string) => void;
   onRefresh: () => void;
-};
+}
 
 export function TenantUsersTab({
   tenantId,
@@ -56,6 +65,15 @@ export function TenantUsersTab({
   onRefresh,
 }: TenantUsersTabProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<{
+    id: string;
+    name: string;
+    email: string;
+  } | null>(null);
+
+  const handleEdit = (userId: string, name: string, email: string) => {
+    setEditingUser({ id: userId, name, email });
+  };
 
   return (
     <div className="space-y-6">
@@ -74,29 +92,66 @@ export function TenantUsersTab({
           </div>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
-            <p className="text-muted-foreground text-sm">
-              Carregando usuários...
-            </p>
-          ) : users.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              Nenhum usuário encontrado para este tenant
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {users.map((user) => (
-                <UserListItem
-                  email={user.email}
-                  key={user.id}
-                  name={user.name}
-                  onRemove={onRemove}
-                  onUpdateRole={onUpdateRole}
-                  role={user.role}
-                  userId={user.id}
-                />
-              ))}
-            </div>
-          )}
+          {(() => {
+            if (isLoading) {
+              return (
+                <div className="space-y-2">
+                  {Array.from(
+                    { length: 3 },
+                    (_, i) => `skeleton-user-${i}`
+                  ).map((key) => (
+                    <div
+                      className="flex items-center justify-between rounded-lg border p-4"
+                      key={key}
+                    >
+                      <div className="flex items-center gap-4">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-48" />
+                        </div>
+                      </div>
+                      <Skeleton className="h-8 w-8" />
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+            if (users.length === 0) {
+              return (
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <UserPlus className="h-6 w-6" />
+                    </EmptyMedia>
+                    <EmptyTitle>
+                      Nenhum usuário encontrado para este tenant
+                    </EmptyTitle>
+                    <EmptyDescription>
+                      Nenhum usuário foi associado a este tenant ainda. Adicione
+                      usuários para começar.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              );
+            }
+            return (
+              <div className="space-y-2">
+                {users.map((user) => (
+                  <UserListItem
+                    email={user.email}
+                    key={user.id}
+                    name={user.name}
+                    onEdit={handleEdit}
+                    onRemove={onRemove}
+                    onUpdateRole={onUpdateRole}
+                    role={user.role}
+                    userId={user.id}
+                  />
+                ))}
+              </div>
+            );
+          })()}
         </CardContent>
       </Card>
 
@@ -108,6 +163,21 @@ export function TenantUsersTab({
         open={isDialogOpen}
         tenantId={tenantId}
       />
+
+      {/* Edit User Dialog */}
+      {editingUser && (
+        <EditUserDialog
+          onOpenChange={(open: boolean) => !open && setEditingUser(null)}
+          onSuccess={() => {
+            onRefresh();
+            setEditingUser(null);
+          }}
+          open={!!editingUser}
+          userEmail={editingUser.email}
+          userId={editingUser.id}
+          userName={editingUser.name}
+        />
+      )}
     </div>
   );
 }

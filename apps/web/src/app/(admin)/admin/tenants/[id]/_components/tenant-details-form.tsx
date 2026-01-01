@@ -7,23 +7,10 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { trpcClient } from "@/utils/trpc";
+import { TenantBasicInfoSection } from "./tenant-basic-info-section";
+import { TenantContactInfoSection } from "./tenant-contact-info-section";
+import { TenantNotesSection } from "./tenant-notes-section";
 
 const updateTenantSchema = z.object({
   tenantId: z.string(),
@@ -50,7 +37,7 @@ const updateTenantSchema = z.object({
   notes: z.string(),
 });
 
-type Tenant = {
+interface Tenant {
   id: string;
   name: string;
   slug: string;
@@ -64,12 +51,12 @@ type Tenant = {
     name: string;
     isMain: boolean;
   }>;
-};
+}
 
-type TenantDetailsFormProps = {
+interface TenantDetailsFormProps {
   tenant: Tenant;
   onSuccess: () => void;
-};
+}
 
 export function TenantDetailsForm({
   tenant,
@@ -157,161 +144,11 @@ export function TenantDetailsForm({
         editForm.handleSubmit();
       }}
     >
-      {/* Basic Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Informações Básicas</CardTitle>
-          <CardDescription>Informações básicas do tenant</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <editForm.Field name="name">
-              {(field) => (
-                <Field>
-                  <FieldLabel htmlFor={field.name}>Nome Fantasia *</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      value={field.state.value}
-                    />
-                    <FieldError errors={field.state.meta.errors} />
-                  </FieldContent>
-                </Field>
-              )}
-            </editForm.Field>
+      <TenantBasicInfoSection form={editForm} />
 
-            <editForm.Field name="slug">
-              {(field) => (
-                <Field>
-                  <FieldLabel htmlFor={field.name}>Slug *</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      value={field.state.value}
-                    />
-                    <FieldError errors={field.state.meta.errors} />
-                  </FieldContent>
-                </Field>
-              )}
-            </editForm.Field>
-          </div>
+      <TenantContactInfoSection form={editForm} />
 
-          <editForm.Field name="active">
-            {(field) => (
-              <Field orientation="horizontal">
-                <FieldLabel htmlFor={field.name}>Ativo</FieldLabel>
-                <FieldContent>
-                  <Switch
-                    checked={field.state.value}
-                    id={field.name}
-                    onCheckedChange={field.handleChange}
-                  />
-                  <FieldError errors={field.state.meta.errors} />
-                </FieldContent>
-              </Field>
-            )}
-          </editForm.Field>
-        </CardContent>
-      </Card>
-
-      {/* Contact Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Informações de Contato</CardTitle>
-          <CardDescription>Informações gerais de contato</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <editForm.Field name="email">
-              {(field) => (
-                <Field>
-                  <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      type="email"
-                      value={field.state.value}
-                    />
-                    <FieldError errors={field.state.meta.errors} />
-                  </FieldContent>
-                </Field>
-              )}
-            </editForm.Field>
-
-            <editForm.Field name="phone">
-              {(field) => (
-                <Field>
-                  <FieldLabel htmlFor={field.name}>Telefone</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id={field.name}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      value={field.state.value}
-                    />
-                    <FieldError errors={field.state.meta.errors} />
-                  </FieldContent>
-                </Field>
-              )}
-            </editForm.Field>
-          </div>
-
-          <editForm.Field name="website">
-            {(field) => (
-              <Field>
-                <FieldLabel htmlFor={field.name}>Website</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id={field.name}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="https://example.com"
-                    type="url"
-                    value={field.state.value}
-                  />
-                  <FieldError errors={field.state.meta.errors} />
-                </FieldContent>
-              </Field>
-            )}
-          </editForm.Field>
-        </CardContent>
-      </Card>
-
-      {/* Notes */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Observações</CardTitle>
-          <CardDescription>
-            Observações adicionais sobre este tenant
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <editForm.Field name="notes">
-            {(field) => (
-              <Field>
-                <FieldLabel htmlFor={field.name}>Observações</FieldLabel>
-                <FieldContent>
-                  <Textarea
-                    className="h-32"
-                    id={field.name}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    rows={5}
-                    value={field.state.value}
-                  />
-                  <FieldError errors={field.state.meta.errors} />
-                </FieldContent>
-              </Field>
-            )}
-          </editForm.Field>
-        </CardContent>
-      </Card>
+      <TenantNotesSection form={editForm} />
 
       {/* Actions */}
       <div className="flex justify-end gap-4">

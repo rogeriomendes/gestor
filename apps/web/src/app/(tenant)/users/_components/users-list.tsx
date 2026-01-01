@@ -1,7 +1,6 @@
 "use client";
 
 import { UserPlus } from "lucide-react";
-import { TenantUsersSkeleton } from "@/components/tenant-loading";
 import {
   Card,
   CardContent,
@@ -16,11 +15,12 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { ListSkeleton } from "@/components/ui/list-skeleton";
 import { UserListItem } from "./user-list-item";
 
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
-type TenantUser = {
+interface TenantUser {
   id: string;
   userId: string;
   role: Role;
@@ -29,23 +29,35 @@ type TenantUser = {
     name: string;
     email: string;
   };
-};
+}
 
-type UsersListProps = {
+interface UsersListProps {
   users: TenantUser[];
   isLoading: boolean;
   onUpdateRole: (userId: string, role: Role) => void;
   onRemove: (userId: string) => void;
-};
+  onEdit?: (userId: string, name: string, email: string) => void;
+}
 
 export function UsersList({
   users,
   isLoading,
   onUpdateRole,
   onRemove,
+  onEdit,
 }: UsersListProps) {
   if (isLoading) {
-    return <TenantUsersSkeleton />;
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Lista de Usuários</CardTitle>
+          <CardDescription>Carregando usuários...</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ListSkeleton count={5} itemHeight="h-16" />
+        </CardContent>
+      </Card>
+    );
   }
 
   if (users.length === 0) {
@@ -78,6 +90,7 @@ export function UsersList({
             email={tenantUser.user.email}
             key={tenantUser.id}
             name={tenantUser.user.name}
+            onEdit={onEdit}
             onRemove={onRemove}
             onUpdateRole={onUpdateRole}
             role={tenantUser.role}

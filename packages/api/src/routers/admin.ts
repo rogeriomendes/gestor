@@ -865,6 +865,162 @@ export const adminRouter = router({
     }),
 
   /**
+   * Atualizar informações do usuário
+   */
+  updateUser: adminProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        name: z.string().optional(),
+        email: z.string().email().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Verificar se usuário existe
+      const user = await prisma.user.findUnique({
+        where: { id: input.userId },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Usuário não encontrado",
+        });
+      }
+
+      // Normalizar email se fornecido
+      const updateData: any = {};
+      if (input.name) {
+        updateData.name = input.name;
+      }
+      if (input.email) {
+        const normalizedEmail = input.email.toLowerCase().trim();
+        // Verificar se email já existe (exceto para o próprio usuário)
+        const existingUser = await prisma.user.findFirst({
+          where: {
+            email: normalizedEmail,
+            id: { not: input.userId },
+          },
+        });
+
+        if (existingUser) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Email já está em uso",
+          });
+        }
+        updateData.email = normalizedEmail;
+      }
+
+      // Atualizar usuário
+      const updatedUser = await prisma.user.update({
+        where: { id: input.userId },
+        data: updateData,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true,
+        },
+      });
+
+      // Registrar no audit log
+      await createAuditLogFromContext(
+        {
+          action: AuditAction.UPDATE_USER,
+          resourceType: AuditResourceType.USER,
+          resourceId: user.id,
+          metadata: {
+            userId: user.id,
+            userName: user.name,
+            userEmail: user.email,
+            changes: updateData,
+          },
+        },
+        ctx
+      );
+
+      return updatedUser;
+    }),
+
+  /**
+   * Resetar senha do usuário
+   */
+  resetUserPassword: adminProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        newPassword: z
+          .string()
+          .min(8, "Senha deve ter pelo menos 8 caracteres"),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Verificar se usuário existe
+      const user = await prisma.user.findUnique({
+        where: { id: input.userId },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Usuário não encontrado",
+        });
+      }
+
+      // Usar a função de hash do Better Auth para resetar a senha
+      // Isso garante que a senha seja hasheada corretamente usando scrypt
+      try {
+        const { hash } = await import("better-auth/utils");
+        const hashedPassword = await hash.password(input.newPassword);
+
+        // Atualizar ou criar a conta de credenciais
+        await prisma.account.upsert({
+          where: {
+            providerId_providerAccountId: {
+              providerId: "credential",
+              providerAccountId: user.email,
+            },
+          },
+          update: {
+            password: hashedPassword,
+          },
+          create: {
+            userId: user.id,
+            providerId: "credential",
+            providerAccountId: user.email,
+            password: hashedPassword,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            error instanceof Error ? error.message : "Erro ao resetar senha",
+        });
+      }
+
+      // Registrar no audit log
+      await createAuditLogFromContext(
+        {
+          action: AuditAction.UPDATE_USER,
+          resourceType: AuditResourceType.USER,
+          resourceId: user.id,
+          metadata: {
+            userId: user.id,
+            userName: user.name,
+            userEmail: user.email,
+            action: "password_reset",
+          },
+        },
+        ctx
+      );
+
+      return { success: true };
+    }),
+
+  /**
    * Listar usuários de um tenant específico
    */
   listTenantUsers: adminProcedure

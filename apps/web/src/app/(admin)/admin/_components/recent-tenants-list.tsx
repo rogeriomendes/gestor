@@ -1,6 +1,5 @@
 "use client";
 
-import { TenantListSkeleton } from "@/components/tenant-loading";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -15,18 +14,19 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { ListSkeleton } from "@/components/ui/list-skeleton";
 
-type Tenant = {
+interface Tenant {
   id: string;
   name: string;
   slug: string;
   active: boolean;
-};
+}
 
-type RecentTenantsListProps = {
+interface RecentTenantsListProps {
   tenants: Tenant[];
   isLoading: boolean;
-};
+}
 
 export function RecentTenantsList({
   tenants,
@@ -40,7 +40,7 @@ export function RecentTenantsList({
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <TenantListSkeleton />
+          <ListSkeleton count={5} itemHeight="h-16" />
         ) : tenants.length === 0 ? (
           <Empty>
             <EmptyHeader>

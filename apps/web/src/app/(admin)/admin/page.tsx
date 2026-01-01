@@ -1,16 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowUpRight,
-  Building2,
-  Loader2,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { ArrowUpRight, Building2, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { AdminGuard } from "@/components/admin";
-import { Breadcrumbs } from "@/components/breadcrumbs";
+import { PageLayout } from "@/components/layouts/page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +20,7 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { ListSkeleton } from "@/components/ui/list-skeleton";
 import { trpc } from "@/utils/trpc";
 
 function AdminPageContent() {
@@ -36,23 +31,18 @@ function AdminPageContent() {
   const isLoading = statsLoading;
 
   return (
-    <div className="container mx-auto max-w-7xl space-y-6 p-6">
-      <Breadcrumbs items={[{ label: "Admin" }]} />
-
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-bold text-2xl">Área Administrativa</h2>
-          <p className="text-muted-foreground text-sm">
-            Visão geral do sistema e métricas principais
-          </p>
-        </div>
+    <PageLayout
+      actions={
         <Link href="/admin/tenants">
           <Button>Gerenciar Tenants</Button>
         </Link>
-      </div>
-
+      }
+      breadcrumbs={[{ label: "Admin" }]}
+      subtitle="Visão geral do sistema e métricas principais"
+      title="Área Administrativa"
+    >
       {/* Cards de Métricas Principais */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">
@@ -121,53 +111,68 @@ function AdminPageContent() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : !stats?.recentTenants || stats.recentTenants.length === 0 ? (
-              <Empty>
-                <EmptyHeader>
-                  <EmptyTitle>Nenhum tenant encontrado</EmptyTitle>
-                  <EmptyDescription>
-                    Ainda não há tenants cadastrados no sistema.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
+              <ListSkeleton count={3} itemHeight="h-20" />
             ) : (
-              <div className="space-y-4">
-                {stats.recentTenants.map((tenant: any) => (
-                  <Link
-                    className="block rounded-md border p-3 transition-colors hover:bg-accent"
-                    href={`/admin/tenants/${tenant.id}`}
-                    key={tenant.id}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium">{tenant.name}</p>
-                          <Badge
-                            className={
-                              tenant.active
-                                ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                                : "bg-red-500/10 text-red-600 dark:text-red-400"
-                            }
-                            variant="outline"
-                          >
-                            {tenant.active ? "Ativo" : "Inativo"}
-                          </Badge>
-                        </div>
-                        <p className="text-muted-foreground text-sm">
-                          {tenant.slug}
-                        </p>
-                        <div className="mt-1 flex gap-4 text-muted-foreground text-xs">
-                          <span>{tenant._count.users} usuários</span>
-                          <span>{tenant._count.branches} filiais</span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              (() => {
+                const hasTenants =
+                  stats?.recentTenants && stats.recentTenants.length > 0;
+                if (!hasTenants) {
+                  return (
+                    <Empty>
+                      <EmptyHeader>
+                        <EmptyTitle>Nenhum tenant encontrado</EmptyTitle>
+                        <EmptyDescription>
+                          Ainda não há tenants cadastrados no sistema.
+                        </EmptyDescription>
+                      </EmptyHeader>
+                    </Empty>
+                  );
+                }
+                return (
+                  <div className="space-y-4">
+                    {stats.recentTenants.map(
+                      (tenant: {
+                        id: string;
+                        name: string;
+                        slug: string;
+                        active: boolean;
+                        _count: { users: number; branches: number };
+                      }) => (
+                        <Link
+                          className="block rounded-md border p-3 transition-colors hover:bg-accent"
+                          href={`/admin/tenants/${tenant.id}`}
+                          key={tenant.id}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium">{tenant.name}</p>
+                                <Badge
+                                  className={
+                                    tenant.active
+                                      ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                                      : "bg-red-500/10 text-red-600 dark:text-red-400"
+                                  }
+                                  variant="outline"
+                                >
+                                  {tenant.active ? "Ativo" : "Inativo"}
+                                </Badge>
+                              </div>
+                              <p className="text-muted-foreground text-sm">
+                                {tenant.slug}
+                              </p>
+                              <div className="mt-1 flex gap-4 text-muted-foreground text-xs">
+                                <span>{tenant._count.users} usuários</span>
+                                <span>{tenant._count.branches} filiais</span>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      )
+                    )}
+                  </div>
+                );
+              })()
             )}
           </CardContent>
         </Card>
@@ -184,49 +189,56 @@ function AdminPageContent() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : !stats?.recentUsers || stats.recentUsers.length === 0 ? (
-              <Empty>
-                <EmptyHeader>
-                  <EmptyTitle>Nenhum usuário encontrado</EmptyTitle>
-                  <EmptyDescription>
-                    Ainda não há usuários cadastrados no sistema.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
+              <ListSkeleton count={3} itemHeight="h-20" />
             ) : (
-              <div className="space-y-4">
-                {stats.recentUsers.map((user: any) => (
-                  <div
-                    className="flex items-center justify-between rounded-md border p-3"
-                    key={user.id}
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{user.name}</p>
-                        {user.role && (
-                          <Badge variant="outline">{user.role}</Badge>
-                        )}
+              (() => {
+                const hasUsers =
+                  stats?.recentUsers && stats.recentUsers.length > 0;
+                if (!hasUsers) {
+                  return (
+                    <Empty>
+                      <EmptyHeader>
+                        <EmptyTitle>Nenhum usuário encontrado</EmptyTitle>
+                        <EmptyDescription>
+                          Ainda não há usuários cadastrados no sistema.
+                        </EmptyDescription>
+                      </EmptyHeader>
+                    </Empty>
+                  );
+                }
+                return (
+                  <div className="space-y-4">
+                    {stats.recentUsers.map((user) => (
+                      <div
+                        className="flex items-center justify-between rounded-md border p-3"
+                        key={user.id}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{user.name}</p>
+                            {user.role && (
+                              <Badge variant="outline">{user.role}</Badge>
+                            )}
+                          </div>
+                          <p className="text-muted-foreground text-sm">
+                            {user.email}
+                          </p>
+                          {user.tenant && (
+                            <p className="text-muted-foreground text-xs">
+                              {user.tenant.name}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-muted-foreground text-sm">
-                        {user.email}
-                      </p>
-                      {user.tenant && (
-                        <p className="text-muted-foreground text-xs">
-                          {user.tenant.name}
-                        </p>
-                      )}
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()
             )}
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 

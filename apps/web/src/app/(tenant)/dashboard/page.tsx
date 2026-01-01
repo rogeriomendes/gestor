@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Building2, MapPin, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { PageLayout } from "@/components/layouts/page-layout";
 import { TenantDashboardSkeleton } from "@/components/tenant-loading";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -46,7 +47,7 @@ export default function DashboardPage() {
   // Se não tem tenant e não é admin, mostrar mensagem
   if (!(tenant || isAdmin)) {
     return (
-      <div className="container mx-auto max-w-7xl space-y-6 p-6">
+      <div className="space-y-6 p-6">
         <Card>
           <CardHeader>
             <CardTitle>Bem-vindo!</CardTitle>
@@ -68,7 +69,7 @@ export default function DashboardPage() {
   // Se é admin sem tenant, mostrar opção de ir para admin
   if (isAdmin && !tenant) {
     return (
-      <div className="container mx-auto max-w-7xl space-y-6 p-6">
+      <div className="space-y-6 p-6">
         <Card>
           <CardHeader>
             <CardTitle>Bem-vindo!</CardTitle>
@@ -111,14 +112,7 @@ export default function DashboardPage() {
   const isLoadingDashboard = isLoading || statsLoading;
 
   return (
-    <div className="container mx-auto max-w-7xl space-y-6 p-6">
-      <div>
-        <h2 className="font-bold text-2xl">Dashboard</h2>
-        <p className="text-muted-foreground text-sm">
-          Visão geral do seu tenant
-        </p>
-      </div>
-
+    <PageLayout subtitle="Visão geral do seu tenant" title="Dashboard">
       {isLoadingDashboard ? (
         <TenantDashboardSkeleton />
       ) : (
@@ -235,6 +229,6 @@ export default function DashboardPage() {
           </div>
         </>
       )}
-    </div>
+    </PageLayout>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { RoleBadge } from "@/components/role-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +22,7 @@ type UserListItemProps = {
   role: Role;
   onUpdateRole: (userId: string, role: Role) => void;
   onRemove: (userId: string) => void;
+  onEdit?: (userId: string, name: string, email: string) => void;
 };
 
 export function UserListItem({
@@ -31,6 +32,7 @@ export function UserListItem({
   role,
   onUpdateRole,
   onRemove,
+  onEdit,
 }: UserListItemProps) {
   return (
     <div className="flex items-center justify-between rounded border p-4">
@@ -50,6 +52,15 @@ export function UserListItem({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuGroup>
+            {onEdit && (
+              <>
+                <DropdownMenuItem onClick={() => onEdit(userId, name, email)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Editar Usuário
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuLabel>Alterar Função</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => onUpdateRole(userId, "TENANT_USER")}

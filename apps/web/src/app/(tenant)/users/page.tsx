@@ -4,7 +4,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Breadcrumbs } from "@/components/breadcrumbs";
+import { EditUserDialog } from "@/app/(admin)/admin/users/_components/edit-user-dialog";
+import { PageLayout } from "@/components/layouts/page-layout";
 import { TenantUsersSkeleton } from "@/components/tenant-loading";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +29,11 @@ export default function UsersPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<{
+    id: string;
+    name: string;
+    email: string;
+  } | null>(null);
 
   const {
     data: usersData,
@@ -76,7 +82,7 @@ export default function UsersPage() {
 
   if (!canManageUsers) {
     return (
-      <div className="container mx-auto max-w-7xl space-y-6 p-6">
+      <div className="space-y-6 p-6">
         <Card>
           <CardHeader>
             <CardTitle>Acesso Negado</CardTitle>
@@ -104,54 +110,68 @@ export default function UsersPage() {
     await updateUserRoleMutation.mutateAsync({ userId, role });
   };
 
+  const handleEdit = (userId: string, name: string, email: string) => {
+    setEditingUser({ id: userId, name, email });
+  };
+
   const users = usersData?.data || [];
 
   return (
-    <div className="container mx-auto max-w-7xl space-y-6 p-6">
-      <Breadcrumbs
-        items={[
-          { label: tenant.name, href: "/dashboard" },
-          { label: "Usuários" },
-        ]}
-      />
-
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-bold text-2xl">Usuários</h2>
-          <p className="text-muted-foreground text-sm">
-            Gerencie os usuários do seu tenant
-          </p>
-        </div>
+    <PageLayout
+      actions={
         <Button onClick={() => setAddUserDialogOpen(true)}>
           <UserPlus className="mr-2 h-4 w-4" /> Adicionar Usuário
         </Button>
-      </div>
+      }
+      breadcrumbs={[
+        { label: tenant.name, href: "/dashboard" },
+        { label: "Usuários" },
+      ]}
+      subtitle="Gerencie os usuários do seu tenant"
+      title="Usuários"
+    >
+      <div className="space-y-6 p-6">
+        <div className="space-y-4">
+          <Input
+            className="max-w-sm"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Buscar usuários..."
+            value={search}
+          />
+        </div>
 
-      <div className="space-y-4">
-        <Input
-          className="max-w-sm"
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-          placeholder="Buscar usuários..."
-          value={search}
+        <UsersList
+          isLoading={usersLoading}
+          onEdit={handleEdit}
+          onRemove={handleRemove}
+          onUpdateRole={handleUpdateRole}
+          users={users}
         />
-      </div>
 
-      <UsersList
-        isLoading={usersLoading}
-        onRemove={handleRemove}
-        onUpdateRole={handleUpdateRole}
-        users={users}
-      />
+        <AddUserDialog
+          onOpenChange={setAddUserDialogOpen}
+          onSuccess={refetch}
+          open={addUserDialogOpen}
+          tenantId={tenant.id}
+        />
 
-      <AddUserDialog
-        onOpenChange={setAddUserDialogOpen}
-        onSuccess={refetch}
-        open={addUserDialogOpen}
-        tenantId={tenant.id}
-      />
-    </div>
-  );
-}
+        {/* Edit User Dialog */}
+        {editingUser && (
+          <EditUserDialog
+            onOpenChange={(open: boolean) => !open && setEditingUser(null)}
+            onSuccess={() => {
+              refetch();
+              setEditingUser(null);
+            }}
+            open={!!editingUser}
+            userEmail={editingUser.email}
+            userId={editingUser.id}
+            userName={editingUser.name}
+          />
+        )}
+      </PageLayout>
+    );
+  }

@@ -3,7 +3,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Breadcrumbs } from "@/components/breadcrumbs";
 import { TenantDashboardSkeleton } from "@/components/tenant-loading";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +52,7 @@ export default function SettingsPage() {
 
   if (!canManageTenant) {
     return (
-      <div className="container mx-auto max-w-7xl space-y-6 p-6">
+      <div className="space-y-6 p-6">
         <Card>
           <CardHeader>
             <CardTitle>Acesso Negado</CardTitle>
@@ -79,62 +78,61 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-7xl space-y-6 p-6">
-      <Breadcrumbs
-        items={[{ label: tenant.name, href: "/" }, { label: "Configurações" }]}
-      />
+    <PageLayout
+      breadcrumbs={[
+        { label: tenant.name, href: "/" },
+        { label: "Configurações" },
+      ]}
+      subtitle="Gerencie as configurações do seu tenant"
+      title="Configurações"
+    >
+      <div className="space-y-6 p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Informações Básicas</CardTitle>
+            <CardDescription>
+              Atualize as informações básicas do tenant
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome do Tenant</Label>
+                <Input
+                  id="name"
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Nome do tenant"
+                  required
+                  value={name}
+                />
+              </div>
 
-      <div>
-        <h2 className="font-bold text-2xl">Configurações</h2>
-        <p className="text-muted-foreground text-sm">
-          Gerencie as configurações do seu tenant
-        </p>
-      </div>
+              <div className="space-y-2">
+                <Label htmlFor="slug">Slug</Label>
+                <Input
+                  className="bg-muted"
+                  disabled
+                  id="slug"
+                  value={tenant.slug}
+                />
+                <p className="text-muted-foreground text-xs">
+                  O slug não pode ser alterado
+                </p>
+              </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Informações Básicas</CardTitle>
-          <CardDescription>
-            Atualize as informações básicas do tenant
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome do Tenant</Label>
-              <Input
-                id="name"
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nome do tenant"
-                required
-                value={name}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="slug">Slug</Label>
-              <Input
-                className="bg-muted"
-                disabled
-                id="slug"
-                value={tenant.slug}
-              />
-              <p className="text-muted-foreground text-xs">
-                O slug não pode ser alterado
-              </p>
-            </div>
-
-            <Button
-              disabled={updateTenantMutation.isPending || name === tenant?.name}
-              type="submit"
-            >
-              {updateTenantMutation.isPending
-                ? "Salvando..."
-                : "Salvar Alterações"}
-            </Button>
-          </form>
+              <Button
+                disabled={
+                  updateTenantMutation.isPending || name === tenant?.name
+                }
+                type="submit"
+              >
+                {updateTenantMutation.isPending
+                  ? "Salvando..."
+                  : "Salvar Alterações"}
+              </Button>
+            </form>
         </CardContent>
       </Card>
-    </div>
+    </PageLayout>
   );
 }

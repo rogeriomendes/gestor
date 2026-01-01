@@ -2,9 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import { TenantListSkeleton } from "@/components/tenant-loading";
 import { useTenant } from "@/contexts/tenant-context";
 import { trpc } from "@/utils/trpc";
+import Loader from "../loader";
 import { AccessDenied } from "./access-denied";
 import { TenantNotFound } from "./tenant-not-found";
 
@@ -93,15 +93,7 @@ export function TenantGuard({
 
   // Mostrar loading enquanto verifica permissão e carrega tenant
   if (isLoading) {
-    return (
-      <>
-        {fallback?.loading || (
-          <div className="container mx-auto max-w-7xl p-6">
-            <TenantListSkeleton />
-          </div>
-        )}
-      </>
-    );
+    return <>{fallback?.loading || <Loader />}</>;
   }
 
   // Se não é admin, mostrar erro

@@ -2,7 +2,7 @@
 
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -52,12 +52,12 @@ const branchSchema = z.object({
   active: z.boolean().default(true),
 });
 
-type BranchFormDialogProps = {
+interface BranchFormDialogProps {
   open: boolean;
   onClose: () => void;
   tenantId: string;
   branchId?: string | null;
-};
+}
 
 export function BranchFormDialog({
   open,
@@ -68,12 +68,12 @@ export function BranchFormDialog({
   const isEditing = !!branchId;
 
   const { data: branch, isLoading: branchLoading } = useQuery({
-    ...trpc.admin.branch.getBranch.queryOptions({ branchId: branchId! }),
+    ...trpc.admin.branch.getBranch.queryOptions({ branchId: branchId ?? "" }),
     enabled: isEditing && !!branchId,
   });
 
   const createBranchMutation = useMutation({
-    mutationFn: (input: any) =>
+    mutationFn: (input: z.infer<typeof branchSchema>) =>
       trpcClient.admin.branch.createBranch.mutate({
         tenantId,
         ...input,
@@ -81,9 +81,9 @@ export function BranchFormDialog({
   });
 
   const updateBranchMutation = useMutation({
-    mutationFn: (input: any) =>
+    mutationFn: (input: z.infer<typeof branchSchema>) =>
       trpcClient.admin.branch.updateBranch.mutate({
-        branchId: branchId!,
+        branchId: branchId ?? "",
         ...input,
       }),
   });
@@ -107,19 +107,37 @@ export function BranchFormDialog({
       active: true,
     },
     validators: {
-      onSubmit: branchSchema,
+      onSubmit: ({ value }) => {
+        const result = branchSchema.safeParse(value);
+        if (!result.success) {
+          const fieldErrors: Record<string, string[]> = {};
+          for (const error of result.error.issues) {
+            const path = error.path.join(".");
+            if (!fieldErrors[path]) {
+              fieldErrors[path] = [];
+            }
+            fieldErrors[path].push(error.message);
+          }
+          return fieldErrors;
+        }
+        return undefined;
+      },
     },
     onSubmit: async ({ value }) => {
       try {
         if (isEditing) {
-          await updateBranchMutation.mutateAsync(value);
+          await updateBranchMutation.mutateAsync(
+            value as z.infer<typeof branchSchema>
+          );
           toast.success("Filial atualizada com sucesso!");
         } else {
-          await createBranchMutation.mutateAsync(value);
+          await createBranchMutation.mutateAsync(
+            value as z.infer<typeof branchSchema>
+          );
           toast.success("Filial criada com sucesso!");
         }
         onClose();
-      } catch (error) {
+      } catch (error: unknown) {
         toast.error(
           error instanceof Error ? error.message : "Erro ao salvar filial"
         );
@@ -127,29 +145,44 @@ export function BranchFormDialog({
     },
   });
 
+  // Função para preencher os campos do formulário com os dados da filial
+  const populateFormFields = useCallback(
+    (branchData: typeof branch) => {
+      if (!branchData) {
+        return;
+      }
+
+      form.setFieldValue("name", branchData.name);
+      form.setFieldValue("isMain", branchData.isMain);
+      form.setFieldValue("legalName", branchData.legalName || "");
+      form.setFieldValue("cnpj", branchData.cnpj || "");
+      form.setFieldValue("email", branchData.email || "");
+      form.setFieldValue("phone", branchData.phone || "");
+      form.setFieldValue("addressStreet", branchData.addressStreet || "");
+      form.setFieldValue("addressNumber", branchData.addressNumber || "");
+      form.setFieldValue(
+        "addressComplement",
+        branchData.addressComplement || ""
+      );
+      form.setFieldValue("addressDistrict", branchData.addressDistrict || "");
+      form.setFieldValue("addressCity", branchData.addressCity || "");
+      form.setFieldValue("addressState", branchData.addressState || "");
+      form.setFieldValue("addressZipCode", branchData.addressZipCode || "");
+      form.setFieldValue("notes", branchData.notes || "");
+      form.setFieldValue("active", branchData.active);
+    },
+    [form]
+  );
+
   // Carregar dados da filial quando estiver editando
   useEffect(() => {
-    if (branch && isEditing) {
-      form.setFieldValue("name", branch.name);
-      form.setFieldValue("isMain", branch.isMain);
-      form.setFieldValue("legalName", branch.legalName || "");
-      form.setFieldValue("cnpj", branch.cnpj || "");
-      form.setFieldValue("email", branch.email || "");
-      form.setFieldValue("phone", branch.phone || "");
-      form.setFieldValue("addressStreet", branch.addressStreet || "");
-      form.setFieldValue("addressNumber", branch.addressNumber || "");
-      form.setFieldValue("addressComplement", branch.addressComplement || "");
-      form.setFieldValue("addressDistrict", branch.addressDistrict || "");
-      form.setFieldValue("addressCity", branch.addressCity || "");
-      form.setFieldValue("addressState", branch.addressState || "");
-      form.setFieldValue("addressZipCode", branch.addressZipCode || "");
-      form.setFieldValue("notes", branch.notes || "");
-      form.setFieldValue("active", branch.active);
-    } else if (!isEditing) {
-      // Reset form when creating
+    if (!isEditing) {
       form.reset();
+      return;
     }
-  }, [branch, isEditing, form]);
+
+    populateFormFields(branch);
+  }, [branch, isEditing, form, populateFormFields]);
 
   const isLoading =
     branchLoading ||
@@ -480,7 +513,8 @@ export function BranchFormDialog({
               Cancelar
             </Button>
             <Button disabled={isLoading} type="submit">
-              {isLoading ? "Salvando..." : isEditing ? "Atualizar" : "Criar"}
+              {isLoading && "Salvando..."}
+              {isEditing ? "Atualizar" : "Criar"}
             </Button>
           </DialogFooter>
         </form>

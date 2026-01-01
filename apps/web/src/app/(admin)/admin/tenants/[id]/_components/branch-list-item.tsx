@@ -20,8 +20,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { trpcClient } from "@/utils/trpc";
+import { DeleteBranchDialog } from "./delete-branch-dialog";
 
-type Branch = {
+interface Branch {
   id: string;
   name: string;
   isMain: boolean;
@@ -32,20 +33,20 @@ type Branch = {
   addressCity: string | null;
   addressState: string | null;
   active: boolean;
-};
+}
 
-type BranchListItemProps = {
+interface BranchListItemProps {
   branch: Branch;
   onEdit: (branchId: string) => void;
   onRefresh: () => void;
-};
+}
 
 export function BranchListItem({
   branch,
   onEdit,
   onRefresh,
 }: BranchListItemProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const deleteBranchMutation = useMutation({
     mutationFn: (branchId: string) =>
@@ -58,25 +59,15 @@ export function BranchListItem({
   });
 
   const handleDelete = async () => {
-    if (
-      !confirm(
-        `Tem certeza que deseja deletar a filial "${branch.name}"? Esta ação não pode ser desfeita.`
-      )
-    ) {
-      return;
-    }
-
-    setIsDeleting(true);
     try {
       await deleteBranchMutation.mutateAsync(branch.id);
       toast.success("Filial deletada com sucesso!");
+      setDeleteDialogOpen(false);
       onRefresh();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Erro ao deletar filial"
       );
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -131,8 +122,7 @@ export function BranchListItem({
               )}
               <DropdownMenuItem
                 className="text-destructive"
-                disabled={isDeleting}
-                onClick={handleDelete}
+                onClick={() => setDeleteDialogOpen(true)}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Deletar
@@ -169,6 +159,14 @@ export function BranchListItem({
           )}
         </div>
       </CardContent>
+
+      <DeleteBranchDialog
+        branchName={branch.name}
+        isPending={deleteBranchMutation.isPending}
+        onConfirm={handleDelete}
+        onOpenChange={setDeleteDialogOpen}
+        open={deleteDialogOpen}
+      />
     </Card>
   );
 }

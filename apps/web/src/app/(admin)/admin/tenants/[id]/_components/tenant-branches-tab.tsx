@@ -4,15 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { CardListSkeleton } from "@/components/ui/list-skeleton";
 import { trpc } from "@/utils/trpc";
-import { BranchFormDialog } from "../branches/_components/branch-form-dialog";
-import { BranchListItem } from "../branches/_components/branch-list-item";
+import { BranchFormDialog } from "./branch-form-dialog";
+import { BranchListItem } from "./branch-list-item";
 
-type TenantBranchesTabProps = {
+interface TenantBranchesTabProps {
   tenantId: string;
-};
+}
 
 export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -60,32 +67,45 @@ export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
       </div>
 
       {/* Content */}
-      {branchesLoading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <Skeleton className="h-32 w-full" key={i} />
-          ))}
-        </div>
-      ) : branches.length === 0 ? (
-        <Empty>
-          <EmptyTitle>Nenhuma Filial Encontrada</EmptyTitle>
-          <EmptyDescription>Nenhuma filial cadastrada ainda.</EmptyDescription>
-          <Button onClick={() => setIsDialogOpen(true)}>
-            <PlusCircle className="mr-2 size-4" /> Adicionar Primeira Filial
-          </Button>
-        </Empty>
-      ) : (
-        <div className="space-y-4">
-          {branches.map((branch) => (
-            <BranchListItem
-              branch={branch}
-              key={branch.id}
-              onEdit={handleEdit}
-              onRefresh={refetchBranches}
-            />
-          ))}
-        </div>
-      )}
+      {(() => {
+        if (branchesLoading) {
+          return <CardListSkeleton count={3} />;
+        }
+        if (branches.length === 0) {
+          return (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <PlusCircle className="h-6 w-6" />
+                </EmptyMedia>
+                <EmptyTitle>Nenhuma Filial Encontrada</EmptyTitle>
+                <EmptyDescription>
+                  Nenhuma filial cadastrada ainda. Comece criando sua primeira
+                  filial.
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button onClick={() => setIsDialogOpen(true)}>
+                  <PlusCircle className="mr-2 size-4" /> Adicionar Primeira
+                  Filial
+                </Button>
+              </EmptyContent>
+            </Empty>
+          );
+        }
+        return (
+          <div className="space-y-4">
+            {branches.map((branch) => (
+              <BranchListItem
+                branch={branch}
+                key={branch.id}
+                onEdit={handleEdit}
+                onRefresh={refetchBranches}
+              />
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Dialogs */}
       <BranchFormDialog

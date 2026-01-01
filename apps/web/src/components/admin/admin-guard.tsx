@@ -5,10 +5,10 @@ import { TenantListSkeleton } from "@/components/tenant-loading";
 import { useTenant } from "@/contexts/tenant-context";
 import { AccessDenied } from "./access-denied";
 
-type AdminGuardProps = {
+interface AdminGuardProps {
   children: ReactNode;
   fallback?: ReactNode;
-};
+}
 
 /**
  * Componente guard que verifica se o usuário tem permissão de admin.
