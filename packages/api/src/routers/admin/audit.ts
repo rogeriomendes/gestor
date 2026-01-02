@@ -3,12 +3,12 @@ import { AuditAction, AuditResourceType } from "@gestor/db/types";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { adminProcedure, router, tenantProcedure } from "../index";
+import { adminProcedure, router, tenantProcedure } from "../../index";
 import {
   createPaginationResponse,
   getPaginationParams,
   paginationSchema,
-} from "../lib/pagination";
+} from "../../lib/pagination";
 
 export const auditRouter = router({
   /**
@@ -20,15 +20,15 @@ export const auditRouter = router({
       paginationSchema.extend({
         tenantId: z.string().optional(),
         userId: z.string().optional(),
-        action: z.nativeEnum(AuditAction).optional(),
-        resourceType: z.nativeEnum(AuditResourceType).optional(),
+        action: z.enum(AuditAction).optional(),
+        resourceType: z.enum(AuditResourceType).optional(),
         resourceId: z.string().optional(),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
         search: z.string().optional(),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
       const where: any = {
@@ -96,7 +96,7 @@ export const auditRouter = router({
    */
   getLog: adminProcedure
     .input(z.object({ logId: z.string() }))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const log = await prisma.auditLog.findUnique({
         where: { id: input.logId },
         include: {
@@ -135,8 +135,8 @@ export const auditRouter = router({
   listMyTenantLogs: tenantProcedure
     .input(
       paginationSchema.extend({
-        action: z.nativeEnum(AuditAction).optional(),
-        resourceType: z.nativeEnum(AuditResourceType).optional(),
+        action: z.enum(AuditAction).optional(),
+        resourceType: z.enum(AuditResourceType).optional(),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
       })
@@ -215,7 +215,7 @@ export const auditRouter = router({
         })
         .optional()
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const dateFilter: any = {};
       if (input?.startDate && input?.endDate) {
         dateFilter.createdAt = {

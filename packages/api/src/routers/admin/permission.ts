@@ -1,9 +1,10 @@
 import prisma from "@gestor/db";
-import { Role } from "@gestor/db/types";
+import { AuditAction, AuditResourceType, Role } from "@gestor/db/types";
 import { z } from "zod";
 
-import { adminProcedure, router } from "../index";
-import { clearPermissionCache } from "../middleware/permissions";
+import { adminProcedure, router } from "../../index";
+import { clearPermissionCache } from "../../middleware/permissions";
+import { createAuditLogFromContext } from "../../utils/audit-log";
 
 export const permissionRouter = router({
   /**
@@ -21,7 +22,7 @@ export const permissionRouter = router({
    * Obter permissões de uma role específica
    */
   getRolePermissions: adminProcedure
-    .input(z.object({ role: z.nativeEnum(Role) }))
+    .input(z.object({ role: z.enum(Role) }))
     .query(async ({ input }) => {
       const rolePermissions = await prisma.rolePermission.findMany({
         where: {
@@ -46,7 +47,7 @@ export const permissionRouter = router({
   updateRolePermissions: adminProcedure
     .input(
       z.object({
-        role: z.nativeEnum(Role),
+        role: z.enum(Role),
         permissions: z.array(
           z.object({
             permissionId: z.string(),

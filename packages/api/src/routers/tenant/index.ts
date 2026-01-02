@@ -8,14 +8,14 @@ import {
   protectedProcedure,
   router,
   tenantProcedure,
-} from "../index";
+} from "../../index";
 import {
   createPaginationResponse,
   getPaginationParams,
   paginationSchema,
-} from "../lib/pagination";
-import { requireAnyRole, requireRole } from "../middleware/roles";
-import { createAuditLogFromContext } from "../utils/audit-log";
+} from "../../lib/pagination";
+import { requireAnyRole, requireRole } from "../../middleware/roles";
+import { createAuditLogFromContext } from "../../utils/audit-log";
 
 export const tenantRouter = router({
   /**

@@ -1,4 +1,4 @@
-import { protectedProcedure, router } from "../index";
+import { protectedProcedure, router } from "../../index";
 
 export const debugRouter = router({
   /**

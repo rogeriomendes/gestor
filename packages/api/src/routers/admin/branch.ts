@@ -3,13 +3,13 @@ import { AuditAction, AuditResourceType } from "@gestor/db/types";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { adminProcedure, router } from "../index";
+import { adminProcedure, router } from "../../index";
 import {
   createPaginationResponse,
   getPaginationParams,
   paginationSchema,
-} from "../lib/pagination";
-import { createAuditLogFromContext } from "../utils/audit-log";
+} from "../../lib/pagination";
+import { createAuditLogFromContext } from "../../utils/audit-log";
 
 export const branchRouter = router({
   /**
@@ -22,7 +22,7 @@ export const branchRouter = router({
         active: z.boolean().optional(),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
       const where = {
@@ -55,7 +55,7 @@ export const branchRouter = router({
    */
   getBranch: adminProcedure
     .input(z.object({ branchId: z.string() }))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const branch = await prisma.tenantBranch.findUnique({
         where: { id: input.branchId },
         include: {
@@ -217,7 +217,7 @@ export const branchRouter = router({
           .regex(/^\d{14}$/, "CNPJ must contain exactly 14 digits")
           .optional()
           .or(z.literal("")),
-        email: z.string().email("Invalid email").optional().or(z.literal("")),
+        email: z.email("Invalid email").optional().or(z.literal("")),
         phone: z.string().optional(),
         addressStreet: z.string().optional(),
         addressNumber: z.string().optional(),

@@ -1,9 +1,7 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
 
 import { adminRouter } from "./admin";
-import { auditRouter } from "./audit";
 import { debugRouter } from "./debug";
-import { permissionRouter } from "./permission";
 import { tenantRouter } from "./tenant";
 
 export const appRouter = router({
@@ -18,8 +16,6 @@ export const appRouter = router({
   }),
   admin: adminRouter,
   tenant: tenantRouter,
-  permission: permissionRouter,
-  audit: auditRouter,
   debug: debugRouter,
 });
 
