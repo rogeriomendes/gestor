@@ -4,4 +4,5 @@ export {
   AuditAction,
   AuditResourceType,
   Role,
+  SubscriptionStatus,
 } from "../prisma/generated/client";

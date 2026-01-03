@@ -47,7 +47,7 @@ function AdminUsersPageContent() {
   const tenants = tenantsData?.data || [];
 
   const breadcrumbs = [
-    { label: "Admin", href: "/admin" as Route },
+    { label: "Dashboard", href: "/admin" as Route },
     { label: "Usuários", isCurrent: true },
   ];
 

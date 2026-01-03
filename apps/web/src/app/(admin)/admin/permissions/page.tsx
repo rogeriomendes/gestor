@@ -120,7 +120,7 @@ function PermissionsPageContent() {
   };
 
   const breadcrumbs = [
-    { label: "Admin", href: "/admin" as Route },
+    { label: "Dashboard", href: "/admin" as Route },
     { label: "Permissões", isCurrent: true },
   ];
 

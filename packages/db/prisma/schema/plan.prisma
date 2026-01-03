@@ -1,0 +1,49 @@
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+model Plan {
+  id          String   @id @default(cuid())
+  name        String   // Nome do plano
+  description String?  // Descrição opcional
+  price       Decimal  @default(0) @db.Decimal(10, 2) // Valor do plano em reais
+  active      Boolean  @default(true) // Se o plano está ativo para novas assinaturas
+  isDefault   Boolean  @default(false) // Se é o plano padrão para novos tenants
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relações
+  subscriptions Subscription[]
+
+  @@index([active])
+  @@index([isDefault])
+  @@map("plan")
+}
+
+model Subscription {
+  id          String             @id @default(cuid())
+  tenantId    String             @unique // Uma assinatura por tenant
+  planId      String
+  status      SubscriptionStatus @default(TRIAL)
+  startDate   DateTime           @default(now())
+  expiresAt   DateTime?          // Data de expiração (null = sem expiração)
+  trialEndsAt DateTime?          // Data de término do trial
+  
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  // Relações
+  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan        Plan               @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([planId])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([status, expiresAt])
+  @@map("subscription")
+}

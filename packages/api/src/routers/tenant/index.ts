@@ -16,8 +16,12 @@ import {
 } from "../../lib/pagination";
 import { requireAnyRole, requireRole } from "../../middleware/roles";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+import { subscriptionRouter } from "./subscription";
 
 export const tenantRouter = router({
+  // Sub-router para assinaturas
+  subscription: subscriptionRouter,
+
   /**
    * Obter estatísticas do tenant (para dashboard)
    * Permite acesso mesmo com assinatura expirada para exibir informações

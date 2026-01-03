@@ -19,6 +19,14 @@ const ACTION_LABELS: Record<string, string> = {
   RESTORE_BRANCH: "Restaurar Filial",
   UPDATE_PERMISSIONS: "Atualizar Permissões",
   INITIALIZE_PERMISSIONS: "Inicializar Permissões",
+  CREATE_PLAN: "Criar Plano",
+  UPDATE_PLAN: "Atualizar Plano",
+  DELETE_PLAN: "Deletar Plano",
+  ACTIVATE_PLAN: "Ativar Plano",
+  DEACTIVATE_PLAN: "Desativar Plano",
+  CREATE_SUBSCRIPTION: "Criar Assinatura",
+  UPDATE_SUBSCRIPTION: "Atualizar Assinatura",
+  CANCEL_SUBSCRIPTION: "Cancelar Assinatura",
 };
 
 const RESOURCE_TYPE_LABELS: Record<string, string> = {
@@ -27,6 +35,8 @@ const RESOURCE_TYPE_LABELS: Record<string, string> = {
   TENANT_USER: "Usuário do Tenant",
   BRANCH: "Filial",
   PERMISSION: "Permissão",
+  PLAN: "Plano",
+  SUBSCRIPTION: "Assinatura",
 };
 
 interface AuditLogItemProps {

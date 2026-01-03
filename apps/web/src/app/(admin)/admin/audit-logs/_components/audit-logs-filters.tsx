@@ -1,23 +1,16 @@
 "use client";
 
-import { Filter } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const ACTION_LABELS: Record<string, string> = {
   CREATE_TENANT: "Criar Tenant",
@@ -35,6 +28,14 @@ const ACTION_LABELS: Record<string, string> = {
   RESTORE_BRANCH: "Restaurar Filial",
   UPDATE_PERMISSIONS: "Atualizar Permissões",
   INITIALIZE_PERMISSIONS: "Inicializar Permissões",
+  CREATE_PLAN: "Criar Plano",
+  UPDATE_PLAN: "Atualizar Plano",
+  DELETE_PLAN: "Deletar Plano",
+  ACTIVATE_PLAN: "Ativar Plano",
+  DEACTIVATE_PLAN: "Desativar Plano",
+  CREATE_SUBSCRIPTION: "Criar Assinatura",
+  UPDATE_SUBSCRIPTION: "Atualizar Assinatura",
+  CANCEL_SUBSCRIPTION: "Cancelar Assinatura",
 };
 
 const RESOURCE_TYPE_LABELS: Record<string, string> = {
@@ -43,6 +44,8 @@ const RESOURCE_TYPE_LABELS: Record<string, string> = {
   TENANT_USER: "Usuário do Tenant",
   BRANCH: "Filial",
   PERMISSION: "Permissão",
+  PLAN: "Plano",
+  SUBSCRIPTION: "Assinatura",
 };
 
 interface Tenant {
@@ -63,16 +66,16 @@ interface AuditLogsFiltersProps {
   selectedResourceType: string;
   selectedTenant: string;
   selectedUser: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
   tenants: Tenant[];
   users: User[];
   onActionChange: (value: string) => void;
   onResourceTypeChange: (value: string) => void;
   onTenantChange: (value: string) => void;
   onUserChange: (value: string) => void;
-  onStartDateChange: (value: string) => void;
-  onEndDateChange: (value: string) => void;
+  onStartDateChange: (value: Date | undefined) => void;
+  onEndDateChange: (value: Date | undefined) => void;
   onResetFilters: () => void;
 }
 
@@ -93,115 +96,222 @@ export function AuditLogsFilters({
   onEndDateChange,
   onResetFilters,
 }: AuditLogsFiltersProps) {
+  const actionOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "all", label: "Todas as ações" },
+      ...Object.entries(ACTION_LABELS).map(([value, label]) => ({
+        value,
+        label,
+      })),
+    ],
+    []
+  );
+
+  const resourceTypeOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "all", label: "Todos os tipos" },
+      ...Object.entries(RESOURCE_TYPE_LABELS).map(([value, label]) => ({
+        value,
+        label,
+      })),
+    ],
+    []
+  );
+
+  const tenantOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "all", label: "Todos os tenants" },
+      ...tenants.map((tenant) => ({
+        value: tenant.id,
+        label: tenant.name,
+      })),
+    ],
+    [tenants]
+  );
+
+  const userOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "all", label: "Todos os usuários" },
+      ...users.map((user) => ({
+        value: user.id,
+        label: `${user.user.name} (${user.user.email})`,
+      })),
+    ],
+    [users]
+  );
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Conta filtros ativos
+  const activeFiltersCount = [
+    selectedAction !== "all",
+    selectedResourceType !== "all",
+    selectedTenant !== "all",
+    selectedUser !== "all",
+    startDate !== undefined,
+    endDate !== undefined,
+  ].filter(Boolean).length;
+
+  // Labels para filtros ativos
+  const activeFilters = [
+    selectedAction !== "all" && {
+      id: "action",
+      label: ACTION_LABELS[selectedAction] || selectedAction,
+      onClear: () => onActionChange("all"),
+    },
+    selectedResourceType !== "all" && {
+      id: "resourceType",
+      label: RESOURCE_TYPE_LABELS[selectedResourceType] || selectedResourceType,
+      onClear: () => onResourceTypeChange("all"),
+    },
+    selectedTenant !== "all" && {
+      id: "tenant",
+      label: tenants.find((t) => t.id === selectedTenant)?.name || "Tenant",
+      onClear: () => onTenantChange("all"),
+    },
+    selectedUser !== "all" && {
+      id: "user",
+      label: users.find((u) => u.id === selectedUser)?.user.name || "Usuário",
+      onClear: () => onUserChange("all"),
+    },
+    startDate && {
+      id: "startDate",
+      label: `De: ${startDate.toLocaleDateString("pt-BR")}`,
+      onClear: () => onStartDateChange(undefined),
+    },
+    endDate && {
+      id: "endDate",
+      label: `Até: ${endDate.toLocaleDateString("pt-BR")}`,
+      onClear: () => onEndDateChange(undefined),
+    },
+  ].filter(Boolean) as { id: string; label: string; onClear: () => void }[];
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Filter className="h-5 w-5" />
-          Filtros
-        </CardTitle>
-        <CardDescription>
-          Filtre os logs por ação, tipo de recurso, tenant, usuário ou data
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Field>
-            <FieldLabel>Ação</FieldLabel>
-            <Select onValueChange={onActionChange} value={selectedAction}>
-              <SelectTrigger>
-                <SelectValue placeholder="Todas as ações" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as ações</SelectItem>
-                {Object.entries(ACTION_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+    <div className="flex flex-wrap items-center gap-2">
+      <Popover onOpenChange={setIsOpen} open={isOpen}>
+        <PopoverTrigger
+          render={
+            <Button size="sm" variant="outline">
+              <SlidersHorizontal className="mr-2 h-4 w-4" />
+              Filtros
+              {activeFiltersCount > 0 && (
+                <Badge className="ml-2" variant="secondary">
+                  {activeFiltersCount}
+                </Badge>
+              )}
+            </Button>
+          }
+        />
 
-          <Field>
-            <FieldLabel>Tipo de Recurso</FieldLabel>
-            <Select
-              onValueChange={onResourceTypeChange}
-              value={selectedResourceType}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Todos os tipos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os tipos</SelectItem>
-                {Object.entries(RESOURCE_TYPE_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+        <PopoverContent align="start" className="w-[520px] p-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <span className="font-medium text-muted-foreground text-xs">
+                Ação
+              </span>
+              <Combobox
+                emptyMessage="Nenhuma ação encontrada."
+                onValueChange={onActionChange}
+                options={actionOptions}
+                placeholder="Todas as ações"
+                searchPlaceholder="Buscar ação..."
+                value={selectedAction}
+              />
+            </div>
 
-          <Field>
-            <FieldLabel>Tenant</FieldLabel>
-            <Select onValueChange={onTenantChange} value={selectedTenant}>
-              <SelectTrigger>
-                <SelectValue placeholder="Todos os tenants" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os tenants</SelectItem>
-                {tenants.map((tenant) => (
-                  <SelectItem key={tenant.id} value={tenant.id}>
-                    {tenant.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+            <div className="space-y-1.5">
+              <span className="font-medium text-muted-foreground text-xs">
+                Tipo de Recurso
+              </span>
+              <Combobox
+                emptyMessage="Nenhum tipo encontrado."
+                onValueChange={onResourceTypeChange}
+                options={resourceTypeOptions}
+                placeholder="Todos os tipos"
+                searchPlaceholder="Buscar tipo..."
+                value={selectedResourceType}
+              />
+            </div>
 
-          <Field>
-            <FieldLabel>Usuário</FieldLabel>
-            <Select onValueChange={onUserChange} value={selectedUser}>
-              <SelectTrigger>
-                <SelectValue placeholder="Todos os usuários" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os usuários</SelectItem>
-                {users.map((user) => (
-                  <SelectItem key={user.id} value={user.id}>
-                    {user.user.name} ({user.user.email})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+            <div className="space-y-1.5">
+              <span className="font-medium text-muted-foreground text-xs">
+                Tenant
+              </span>
+              <Combobox
+                emptyMessage="Nenhum tenant encontrado."
+                onValueChange={onTenantChange}
+                options={tenantOptions}
+                placeholder="Todos os tenants"
+                searchPlaceholder="Buscar tenant..."
+                value={selectedTenant}
+              />
+            </div>
 
-          <Field>
-            <FieldLabel>Data Inicial</FieldLabel>
-            <Input
-              onChange={(e) => onStartDateChange(e.target.value)}
-              type="date"
-              value={startDate}
-            />
-          </Field>
+            <div className="space-y-1.5">
+              <span className="font-medium text-muted-foreground text-xs">
+                Usuário
+              </span>
+              <Combobox
+                emptyMessage="Nenhum usuário encontrado."
+                onValueChange={onUserChange}
+                options={userOptions}
+                placeholder="Todos os usuários"
+                searchPlaceholder="Buscar usuário..."
+                value={selectedUser}
+              />
+            </div>
 
-          <Field>
-            <FieldLabel>Data Final</FieldLabel>
-            <Input
-              onChange={(e) => onEndDateChange(e.target.value)}
-              type="date"
-              value={endDate}
-            />
-          </Field>
+            <div className="space-y-1.5">
+              <span className="font-medium text-muted-foreground text-xs">
+                Data Inicial
+              </span>
+              <DatePicker
+                onChange={onStartDateChange}
+                placeholder="Data inicial"
+                value={startDate}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="font-medium text-muted-foreground text-xs">
+                Data Final
+              </span>
+              <DatePicker
+                onChange={onEndDateChange}
+                placeholder="Data final"
+                value={endDate}
+              />
+            </div>
+          </div>
+
+          {activeFiltersCount > 0 && (
+            <div className="mt-4 flex justify-end border-t pt-4">
+              <Button onClick={onResetFilters} size="sm" variant="ghost">
+                <X className="mr-1 h-3 w-3" />
+                Limpar filtros
+              </Button>
+            </div>
+          )}
+        </PopoverContent>
+      </Popover>
+
+      {/* Badges de filtros ativos */}
+      {activeFilters.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {activeFilters.map((filter) => (
+            <Badge className="gap-1 pr-1" key={filter.id} variant="secondary">
+              {filter.label}
+              <button
+                className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={filter.onClear}
+                type="button"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
         </div>
-
-        <div className="mt-4 flex justify-end">
-          <Button onClick={onResetFilters} variant="outline">
-            Limpar Filtros
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 }

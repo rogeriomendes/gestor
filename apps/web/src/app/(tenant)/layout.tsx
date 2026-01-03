@@ -2,6 +2,7 @@
 
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { TenantSidebar } from "@/components/sidebars/tenant-sidebar";
+import { SubscriptionGuard } from "@/components/subscription";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function TenantLayout({
@@ -13,7 +14,9 @@ export default function TenantLayout({
     <AuthGuard requiredRole="tenant">
       <SidebarProvider>
         <TenantSidebar />
-        <SidebarInset>{children}</SidebarInset>
+        <SidebarInset>
+          <SubscriptionGuard>{children}</SubscriptionGuard>
+        </SidebarInset>
       </SidebarProvider>
     </AuthGuard>
   );

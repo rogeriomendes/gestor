@@ -3,7 +3,9 @@ import { router } from "../../index";
 import { auditRouter } from "./audit";
 import { branchRouter } from "./branch";
 import { permissionRouter } from "./permission";
+import { plansRouter } from "./plans";
 import { statsRouter } from "./stats";
+import { subscriptionsRouter } from "./subscriptions";
 import { tenantsRouter } from "./tenants";
 import { usersRouter } from "./users";
 
@@ -35,4 +37,6 @@ export const adminRouter = router({
   branch: branchRouter,
   permission: permissionRouter,
   audit: auditRouter,
+  plans: plansRouter,
+  subscriptions: subscriptionsRouter,
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -21,16 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { trpc, trpcClient } from "@/utils/trpc";
+import { trpcClient } from "@/utils/trpc";
 
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
-type AddUserDialogProps = {
+interface AddUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tenantId: string;
   onSuccess: () => void;
-};
+}
 
 export function AddUserDialog({
   open,
@@ -46,13 +46,13 @@ export function AddUserDialog({
   const [newUserPassword, setNewUserPassword] = useState("");
 
   // Buscar usuários disponíveis (apenas para referência, não para seleção)
-  const { data: allUsers, isLoading: allUsersLoading } = useQuery({
-    ...trpc.admin.listAllUsers.queryOptions({
-      page: 1,
-      limit: 100,
-    }),
-    enabled: open && !createUserMode,
-  });
+  // const { data: allUsers, isLoading: allUsersLoading } = useQuery({
+  //   ...trpc.admin.listAllUsers.queryOptions({
+  //     page: 1,
+  //     limit: 100,
+  //   }),
+  //   enabled: open && !createUserMode,
+  // });
 
   const inviteUserMutation = useMutation({
     mutationFn: (input: { email: string; role: Role }) =>

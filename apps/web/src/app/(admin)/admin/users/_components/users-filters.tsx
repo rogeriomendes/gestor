@@ -1,26 +1,19 @@
 "use client";
 
-import { Search } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Search, X } from "lucide-react";
+import { useMemo } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
+import { Input } from "@/components/ui/input";
+
+const ROLE_LABELS: Record<string, string> = {
+  SUPER_ADMIN: "Super Admin",
+  TENANT_ADMIN: "Admin de Tenant",
+  TENANT_OWNER: "Proprietário",
+  TENANT_USER_MANAGER: "Gerente de Usuários",
+  TENANT_USER: "Usuário",
+};
 
 interface Tenant {
   id: string;
@@ -46,72 +39,104 @@ export function UsersFilters({
   onTenantChange,
   onRoleChange,
 }: UsersFiltersProps) {
+  const tenantOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "all", label: "Todos os tenants" },
+      ...tenants.map((tenant) => ({
+        value: tenant.id,
+        label: tenant.name,
+      })),
+    ],
+    [tenants]
+  );
+
+  const roleOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "all", label: "Todas as funções" },
+      ...Object.entries(ROLE_LABELS).map(([value, label]) => ({
+        value,
+        label,
+      })),
+    ],
+    []
+  );
+
+  // Labels para filtros ativos
+  const activeFilters = [
+    selectedTenant !== "all" && {
+      id: "tenant",
+      label: tenants.find((t) => t.id === selectedTenant)?.name || "Tenant",
+      onClear: () => onTenantChange("all"),
+    },
+    selectedRole !== "all" && {
+      id: "role",
+      label: ROLE_LABELS[selectedRole] || selectedRole,
+      onClear: () => onRoleChange("all"),
+    },
+  ].filter(Boolean) as { id: string; label: string; onClear: () => void }[];
+
+  const handleResetFilters = () => {
+    onTenantChange("all");
+    onRoleChange("all");
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Filtros</CardTitle>
-        <CardDescription>
-          Filtre os usuários por nome, email, tenant ou função
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4 md:grid-cols-3">
-          <Field>
-            <FieldLabel>Buscar</FieldLabel>
-            <FieldDescription>
-              Busque por nome ou email do usuário
-            </FieldDescription>
-            <InputGroup>
-              <InputGroupInput
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Nome ou email..."
-                value={search}
-              />
-              <InputGroupAddon>
-                <Search />
-              </InputGroupAddon>
-            </InputGroup>
-          </Field>
+    <div className="flex flex-wrap items-center gap-2">
+      {/* Campo de busca */}
+      <div className="relative w-full max-w-xs">
+        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          className="pl-9"
+          onChange={(e) => onSearchChange(e.target.value)}
+          placeholder="Buscar por nome ou email..."
+          value={search}
+        />
+      </div>
 
-          <Field>
-            <FieldLabel>Tenant</FieldLabel>
-            <FieldDescription>Filtre por tenant específico</FieldDescription>
-            <Select onValueChange={onTenantChange} value={selectedTenant}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os tenants</SelectItem>
-                {tenants.map((tenant) => (
-                  <SelectItem key={tenant.id} value={tenant.id}>
-                    {tenant.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+      {/* Filtros diretos (sem popover pois são apenas 2) */}
+      <div className="w-44">
+        <Combobox
+          emptyMessage="Nenhum tenant encontrado."
+          onValueChange={onTenantChange}
+          options={tenantOptions}
+          placeholder="Tenant"
+          searchPlaceholder="Buscar tenant..."
+          value={selectedTenant}
+        />
+      </div>
 
-          <Field>
-            <FieldLabel>Função</FieldLabel>
-            <FieldDescription>Filtre por função do usuário</FieldDescription>
-            <Select onValueChange={onRoleChange} value={selectedRole}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as funções</SelectItem>
-                <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
-                <SelectItem value="TENANT_ADMIN">Admin de Tenant</SelectItem>
-                <SelectItem value="TENANT_OWNER">Proprietário</SelectItem>
-                <SelectItem value="TENANT_USER_MANAGER">
-                  Gerente de Usuários
-                </SelectItem>
-                <SelectItem value="TENANT_USER">Usuário</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
+      <div className="w-44">
+        <Combobox
+          emptyMessage="Nenhuma função encontrada."
+          onValueChange={onRoleChange}
+          options={roleOptions}
+          placeholder="Função"
+          searchPlaceholder="Buscar função..."
+          value={selectedRole}
+        />
+      </div>
+
+      {/* Badges de filtros ativos */}
+      {activeFilters.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {activeFilters.map((filter) => (
+            <Badge className="gap-1 pr-1" key={filter.id} variant="secondary">
+              {filter.label}
+              <button
+                className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={filter.onClear}
+                type="button"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+          <Button onClick={handleResetFilters} size="sm" variant="ghost">
+            <X className="mr-1 h-3 w-3" />
+            Limpar
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 }

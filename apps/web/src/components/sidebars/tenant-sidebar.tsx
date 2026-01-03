@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import isActive from "@/lib/is-active";
 import UserCard from "../user-card";
+import { SubscriptionCard } from "./subscription-card";
 import { tenantMenuItens, tenantSettingsMenuItens } from "./tenant-menu-itens";
 
 export function TenantSidebar() {
@@ -176,7 +177,7 @@ export function TenantSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup className="mt-auto mb-4">
+        <SidebarGroup className="mt-auto">
           {/* <SidebarGroupLabel>Configurações</SidebarGroupLabel> */}
           <SidebarGroupContent>
             <SidebarMenu>
@@ -198,7 +199,8 @@ export function TenantSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="mt-4">
+        <SubscriptionCard />
         <UserCard />
       </SidebarFooter>
     </Sidebar>

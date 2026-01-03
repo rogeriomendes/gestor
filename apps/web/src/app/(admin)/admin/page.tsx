@@ -37,7 +37,7 @@ function AdminPageContent() {
           <Button>Gerenciar Tenants</Button>
         </Link>
       }
-      breadcrumbs={[{ label: "Admin" }]}
+      breadcrumbs={[{ label: "Dashboard" }]}
       subtitle="Visão geral do sistema e métricas principais"
       title="Área Administrativa"
     >

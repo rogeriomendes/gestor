@@ -1,7 +1,9 @@
 import {
   Building2,
+  CreditCard,
   FileText,
   LayoutDashboard,
+  Package,
   Shield,
   Users,
 } from "lucide-react";
@@ -22,6 +24,16 @@ export const adminMenuItens: MenuItemProps[] = [
     title: "Usuários",
     url: "/admin/users",
     icon: Users,
+  },
+  {
+    title: "Planos",
+    url: "/admin/plans",
+    icon: Package,
+  },
+  {
+    title: "Assinaturas",
+    url: "/admin/subscriptions",
+    icon: CreditCard,
   },
   {
     title: "Permissões",

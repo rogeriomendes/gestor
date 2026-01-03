@@ -23,8 +23,8 @@ export const auditRouter = router({
         action: z.enum(AuditAction).optional(),
         resourceType: z.enum(AuditResourceType).optional(),
         resourceId: z.string().optional(),
-        startDate: z.date().optional(),
-        endDate: z.date().optional(),
+        startDate: z.coerce.date().optional(),
+        endDate: z.coerce.date().optional(),
         search: z.string().optional(),
       })
     )
@@ -137,8 +137,8 @@ export const auditRouter = router({
       paginationSchema.extend({
         action: z.enum(AuditAction).optional(),
         resourceType: z.enum(AuditResourceType).optional(),
-        startDate: z.date().optional(),
-        endDate: z.date().optional(),
+        startDate: z.coerce.date().optional(),
+        endDate: z.coerce.date().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -210,8 +210,8 @@ export const auditRouter = router({
       z
         .object({
           tenantId: z.string().optional(),
-          startDate: z.date().optional(),
-          endDate: z.date().optional(),
+          startDate: z.coerce.date().optional(),
+          endDate: z.coerce.date().optional(),
         })
         .optional()
     )

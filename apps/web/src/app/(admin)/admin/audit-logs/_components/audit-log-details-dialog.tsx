@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ACTION_LABELS: Record<string, string> = {
   CREATE_TENANT: "Criar Tenant",
@@ -24,6 +25,14 @@ const ACTION_LABELS: Record<string, string> = {
   RESTORE_BRANCH: "Restaurar Filial",
   UPDATE_PERMISSIONS: "Atualizar Permissões",
   INITIALIZE_PERMISSIONS: "Inicializar Permissões",
+  CREATE_PLAN: "Criar Plano",
+  UPDATE_PLAN: "Atualizar Plano",
+  DELETE_PLAN: "Deletar Plano",
+  ACTIVATE_PLAN: "Ativar Plano",
+  DEACTIVATE_PLAN: "Desativar Plano",
+  CREATE_SUBSCRIPTION: "Criar Assinatura",
+  UPDATE_SUBSCRIPTION: "Atualizar Assinatura",
+  CANCEL_SUBSCRIPTION: "Cancelar Assinatura",
 };
 
 const RESOURCE_TYPE_LABELS: Record<string, string> = {
@@ -32,6 +41,8 @@ const RESOURCE_TYPE_LABELS: Record<string, string> = {
   TENANT_USER: "Usuário do Tenant",
   BRANCH: "Filial",
   PERMISSION: "Permissão",
+  PLAN: "Plano",
+  SUBSCRIPTION: "Assinatura",
 };
 
 interface AuditLogDetails {
@@ -53,17 +64,107 @@ interface AuditLogDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   logDetails: AuditLogDetails | undefined;
+  isLoading?: boolean;
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <Skeleton className="mb-2 h-4 w-16" />
+          <Skeleton className="h-5 w-32" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-4 w-24" />
+          <Skeleton className="h-5 w-28" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-4 w-16" />
+          <Skeleton className="h-5 w-48" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-4 w-16" />
+          <Skeleton className="h-5 w-36" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-4 w-20" />
+          <Skeleton className="h-5 w-40" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-4 w-8" />
+          <Skeleton className="h-5 w-32" />
+        </div>
+      </div>
+      <div>
+        <Skeleton className="mb-2 h-4 w-20" />
+        <Skeleton className="h-32 w-full rounded-md" />
+      </div>
+    </div>
+  );
+}
+
+function LogDetailsContent({ logDetails }: { logDetails: AuditLogDetails }) {
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <p className="text-muted-foreground text-sm">Ação</p>
+          <p className="font-medium">
+            {ACTION_LABELS[logDetails.action] || logDetails.action}
+          </p>
+        </div>
+        <div>
+          <p className="text-muted-foreground text-sm">Tipo de Recurso</p>
+          <p className="font-medium">
+            {RESOURCE_TYPE_LABELS[logDetails.resourceType] ||
+              logDetails.resourceType}
+          </p>
+        </div>
+        <div>
+          <p className="text-muted-foreground text-sm">Usuário</p>
+          <p className="font-medium">
+            {logDetails.user?.name || "Desconhecido"} (
+            {logDetails.user?.email || "N/A"})
+          </p>
+        </div>
+        {logDetails.tenant && (
+          <div>
+            <p className="text-muted-foreground text-sm">Tenant</p>
+            <p className="font-medium">{logDetails.tenant.name}</p>
+          </div>
+        )}
+        <div>
+          <p className="text-muted-foreground text-sm">Data/Hora</p>
+          <p className="font-medium">
+            {new Date(logDetails.createdAt).toLocaleString("pt-BR")}
+          </p>
+        </div>
+        {logDetails.ipAddress && (
+          <div>
+            <p className="text-muted-foreground text-sm">IP</p>
+            <p className="font-medium">{logDetails.ipAddress}</p>
+          </div>
+        )}
+      </div>
+      {logDetails.metadata !== undefined && logDetails.metadata !== null && (
+        <div>
+          <p className="mb-2 text-muted-foreground text-sm">Metadados</p>
+          <pre className="max-h-64 overflow-auto rounded-md bg-muted p-4 text-xs">
+            {JSON.stringify(logDetails.metadata, null, 2)}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function AuditLogDetailsDialog({
   open,
   onOpenChange,
   logDetails,
+  isLoading = false,
 }: AuditLogDetailsDialogProps) {
-  if (!logDetails) {
-    return null;
-  }
-
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="max-w-2xl">
@@ -73,56 +174,11 @@ export function AuditLogDetailsDialog({
             Informações completas sobre esta ação
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <p className="text-muted-foreground text-sm">Ação</p>
-              <p className="font-medium">
-                {ACTION_LABELS[logDetails.action] || logDetails.action}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground text-sm">Tipo de Recurso</p>
-              <p className="font-medium">
-                {RESOURCE_TYPE_LABELS[logDetails.resourceType] ||
-                  logDetails.resourceType}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground text-sm">Usuário</p>
-              <p className="font-medium">
-                {logDetails.user?.name || "Desconhecido"} (
-                {logDetails.user?.email || "N/A"})
-              </p>
-            </div>
-            {logDetails.tenant && (
-              <div>
-                <p className="text-muted-foreground text-sm">Tenant</p>
-                <p className="font-medium">{logDetails.tenant.name}</p>
-              </div>
-            )}
-            <div>
-              <p className="text-muted-foreground text-sm">Data/Hora</p>
-              <p className="font-medium">
-                {new Date(logDetails.createdAt).toLocaleString("pt-BR")}
-              </p>
-            </div>
-            {logDetails.ipAddress && (
-              <div>
-                <p className="text-muted-foreground text-sm">IP</p>
-                <p className="font-medium">{logDetails.ipAddress}</p>
-              </div>
-            )}
-          </div>
-          {logDetails.metadata && (
-            <div>
-              <p className="mb-2 text-muted-foreground text-sm">Metadados</p>
-              <pre className="max-h-64 overflow-auto rounded-md bg-muted p-4 text-xs">
-                {JSON.stringify(logDetails.metadata, null, 2)}
-              </pre>
-            </div>
-          )}
-        </div>
+        {isLoading || !logDetails ? (
+          <LoadingSkeleton />
+        ) : (
+          <LogDetailsContent logDetails={logDetails} />
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -7,10 +7,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { TenantGuard, type TenantWithRelations } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { Button } from "@/components/ui/button";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { TenantBranchesTab } from "./_components/tenant-branches-tab";
 import { TenantDetailsForm } from "./_components/tenant-details-form";
+import { TenantSubscriptionTab } from "./_components/tenant-subscription-tab";
 import { TenantTabs } from "./_components/tenant-tabs";
 import { TenantUsersTab } from "./_components/tenant-users-tab";
 
@@ -23,9 +23,9 @@ interface TenantPageContentProps {
 
 function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"details" | "users" | "branches">(
-    "details"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "details" | "users" | "branches" | "subscription"
+  >("details");
 
   // Todos os hooks são sempre chamados, garantindo ordem consistente
   // Carregar usuários sempre para exibir a contagem na aba, mesmo quando não está ativa
@@ -100,7 +100,7 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
   };
 
   const breadcrumbs = [
-    { label: "Admin", href: "/admin" as Route },
+    { label: "Dashboard", href: "/admin" as Route },
     { label: "Tenants", href: "/admin/tenants" as Route },
     { label: tenant.name, isCurrent: true },
   ];
@@ -121,11 +121,11 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
 
   return (
     <PageLayout
-      actions={
-        <Button onClick={() => router.push("/admin/tenants")} variant="outline">
-          Voltar para Tenants
-        </Button>
-      }
+      // actions={
+      //   <Button onClick={() => router.push("/admin/tenants")} variant="outline">
+      //     Voltar para Tenants
+      //   </Button>
+      // }
       backHref="/admin/tenants"
       breadcrumbs={breadcrumbs}
       showBackButton={true}
@@ -162,7 +162,10 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
             />
           );
         }
-        return <TenantBranchesTab tenantId={tenantId} />;
+        if (activeTab === "branches") {
+          return <TenantBranchesTab tenantId={tenantId} />;
+        }
+        return <TenantSubscriptionTab tenantId={tenantId} />;
       })()}
     </PageLayout>
   );

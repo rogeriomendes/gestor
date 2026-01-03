@@ -1,5 +1,6 @@
 "use client";
 
+import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,7 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { ListSkeleton } from "@/components/ui/list-skeleton";
 import { AuditLogItem } from "./audit-log-item";
 
@@ -74,6 +80,9 @@ export function AuditLogsList({
         </CardHeader>
         <CardContent>
           <Empty>
+            <EmptyMedia variant="icon">
+              <FileText />
+            </EmptyMedia>
             <EmptyTitle>Nenhum log encontrado</EmptyTitle>
             <EmptyDescription>
               Não há registros de auditoria para os filtros selecionados.

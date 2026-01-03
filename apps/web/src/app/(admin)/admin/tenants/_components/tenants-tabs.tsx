@@ -14,7 +14,7 @@ export function TenantsTabs({
   return (
     <nav className="flex space-x-4 border-b">
       <button
-        className={`border-b-2 px-1 py-4 font-medium text-sm ${
+        className={`border-b-2 px-1 pb-4 font-medium text-sm ${
           activeTab === "active"
             ? "border-primary text-primary"
             : "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
@@ -25,7 +25,7 @@ export function TenantsTabs({
         Ativos
       </button>
       <button
-        className={`border-b-2 px-1 py-4 font-medium text-sm ${
+        className={`border-b-2 px-1 pb-4 font-medium text-sm ${
           activeTab === "deleted"
             ? "border-primary text-primary"
             : "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"

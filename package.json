@@ -25,18 +25,18 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "turbo": "^2.6.3",
     "@biomejs/biome": "2.3.10",
-    "ultracite": "6.5.0",
+    "@types/node": "^22.13.11",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
+    "turbo": "^2.6.3",
     "typescript": "catalog:",
-    "@types/node": "^22.13.11"
+    "ultracite": "6.5.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
       "pnpm dlx ultracite fix"
     ]
   },
-  "packageManager": "pnpm@10.17.1"
+  "packageManager": "pnpm@10.27.0"
 }

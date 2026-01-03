@@ -7,7 +7,7 @@ import { TenantForm } from "./_components/tenant-form";
 
 function NewTenantPageContent() {
   const breadcrumbs = [
-    { label: "Admin", href: "/admin" as Route },
+    { label: "Dashboard", href: "/admin" as Route },
     { label: "Tenants", href: "/admin/tenants" as Route },
     { label: "Novo Tenant", isCurrent: true },
   ];

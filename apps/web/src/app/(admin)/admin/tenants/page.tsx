@@ -14,6 +14,7 @@ import { DeleteTenantDialog } from "./_components/delete-tenant-dialog";
 import { DeletedTenantsList } from "./_components/deleted-tenants-list";
 import { PermanentDeleteTenantDialog } from "./_components/permanent-delete-tenant-dialog";
 import { RestoreTenantDialog } from "./_components/restore-tenant-dialog";
+import { TenantsFilters } from "./_components/tenants-filters";
 import { TenantsList } from "./_components/tenants-list";
 import { TenantsTabs } from "./_components/tenants-tabs";
 
@@ -32,6 +33,8 @@ function _AdminTenantsPageContent() {
     | undefined
   >(undefined);
   const [activeTab, setActiveTab] = useState("active");
+  const [search, setSearch] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
 
   const {
     data: tenantsData,
@@ -125,11 +128,29 @@ function _AdminTenantsPageContent() {
 
   const _isLoading = isTenantsLoading;
 
-  const tenants = tenantsData?.data || [];
+  const allTenants = tenantsData?.data || [];
   const deletedTenants = deletedTenantsData?.data || [];
 
+  // Filtrar tenants
+  const tenants = allTenants.filter((tenant) => {
+    const matchesSearch =
+      search === "" ||
+      tenant.name.toLowerCase().includes(search.toLowerCase()) ||
+      tenant.slug.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      selectedStatus === "all" ||
+      (selectedStatus === "active" && tenant.active) ||
+      (selectedStatus === "inactive" && !tenant.active);
+    return matchesSearch && matchesStatus;
+  });
+
+  const handleResetFilters = () => {
+    setSearch("");
+    setSelectedStatus("all");
+  };
+
   const breadcrumbs = [
-    { label: "Admin", href: "/admin" as Route },
+    { label: "Dashboard", href: "/admin" as Route },
     { label: "Tenants", isCurrent: true },
   ];
 
@@ -147,11 +168,22 @@ function _AdminTenantsPageContent() {
       title="Gerenciar Tenants"
     >
       <div className="space-y-4">
-        <TenantsTabs
-          activeTab={activeTab}
-          deletedCount={deletedTenants.length}
-          onTabChange={setActiveTab}
-        />
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <TenantsTabs
+            activeTab={activeTab}
+            deletedCount={deletedTenants.length}
+            onTabChange={setActiveTab}
+          />
+          {activeTab === "active" && (
+            <TenantsFilters
+              onResetFilters={handleResetFilters}
+              onSearchChange={setSearch}
+              onStatusChange={setSelectedStatus}
+              search={search}
+              selectedStatus={selectedStatus}
+            />
+          )}
+        </div>
 
         {activeTab === "active" && (
           <TenantsList

@@ -17,8 +17,8 @@ function AuditLogsPageContent() {
   const [selectedTenant, setSelectedTenant] = useState<string>("all");
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [selectedLog, setSelectedLog] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   const { data: logsData, isLoading: isLoadingLogs } = useQuery({
     ...trpc.audit.listLogs.queryOptions({
@@ -40,7 +40,15 @@ function AuditLogsPageContent() {
           | "DELETE_BRANCH"
           | "RESTORE_BRANCH"
           | "UPDATE_PERMISSIONS"
-          | "INITIALIZE_PERMISSIONS",
+          | "INITIALIZE_PERMISSIONS"
+          | "CREATE_PLAN"
+          | "UPDATE_PLAN"
+          | "DELETE_PLAN"
+          | "ACTIVATE_PLAN"
+          | "DEACTIVATE_PLAN"
+          | "CREATE_SUBSCRIPTION"
+          | "UPDATE_SUBSCRIPTION"
+          | "CANCEL_SUBSCRIPTION",
       }),
       ...(selectedResourceType !== "all" && {
         resourceType: selectedResourceType as
@@ -48,12 +56,14 @@ function AuditLogsPageContent() {
           | "USER"
           | "TENANT_USER"
           | "BRANCH"
-          | "PERMISSION",
+          | "PERMISSION"
+          | "PLAN"
+          | "SUBSCRIPTION",
       }),
       ...(selectedTenant !== "all" && { tenantId: selectedTenant }),
       ...(selectedUser !== "all" && { userId: selectedUser }),
-      ...(startDate && { startDate: new Date(startDate) }),
-      ...(endDate && { endDate: new Date(endDate) }),
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
     }),
   });
 
@@ -65,7 +75,7 @@ function AuditLogsPageContent() {
     ...trpc.admin.listAllUsers.queryOptions({ page: 1, limit: 100 }),
   });
 
-  const { data: logDetails } = useQuery({
+  const { data: logDetails, isLoading: isLoadingDetails } = useQuery({
     ...trpc.audit.getLog.queryOptions({ logId: selectedLog || "" }),
     enabled: !!selectedLog,
   });
@@ -80,15 +90,15 @@ function AuditLogsPageContent() {
     setSelectedResourceType("all");
     setSelectedTenant("all");
     setSelectedUser("all");
-    setStartDate("");
-    setEndDate("");
+    setStartDate(undefined);
+    setEndDate(undefined);
     setPage(1);
   };
 
   return (
     <PageLayout
       breadcrumbs={[
-        { label: "Admin", href: "/admin" },
+        { label: "Dashboard", href: "/admin" },
         { label: "Logs de Auditoria" },
       ]}
       subtitle="Histórico completo de todas as ações realizadas no sistema"
@@ -121,6 +131,7 @@ function AuditLogsPageContent() {
       />
 
       <AuditLogDetailsDialog
+        isLoading={isLoadingDetails}
         logDetails={logDetails}
         onOpenChange={(open: boolean) => !open && setSelectedLog(null)}
         open={!!selectedLog}

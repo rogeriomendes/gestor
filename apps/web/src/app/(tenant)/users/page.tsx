@@ -130,48 +130,47 @@ export default function UsersPage() {
       subtitle="Gerencie os usuários do seu tenant"
       title="Usuários"
     >
-      <div className="space-y-6 p-6">
-        <div className="space-y-4">
-          <Input
-            className="max-w-sm"
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Buscar usuários..."
-            value={search}
-          />
-        </div>
-
-        <UsersList
-          isLoading={usersLoading}
-          onEdit={handleEdit}
-          onRemove={handleRemove}
-          onUpdateRole={handleUpdateRole}
-          users={users}
+      <div className="space-y-4">
+        <Input
+          className="max-w-sm"
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Buscar usuários..."
+          value={search}
         />
+      </div>
 
-        <AddUserDialog
-          onOpenChange={setAddUserDialogOpen}
-          onSuccess={refetch}
-          open={addUserDialogOpen}
-          tenantId={tenant.id}
+      <UsersList
+        isLoading={usersLoading}
+        onEdit={handleEdit}
+        onRemove={handleRemove}
+        onUpdateRole={handleUpdateRole}
+        users={users}
+      />
+
+      <AddUserDialog
+        onOpenChange={setAddUserDialogOpen}
+        onSuccess={refetch}
+        open={addUserDialogOpen}
+        tenantId={tenant.id}
+      />
+
+      {/* Edit User Dialog */}
+      {editingUser && (
+        <EditUserDialog
+          onOpenChange={(open: boolean) => !open && setEditingUser(null)}
+          onSuccess={() => {
+            refetch();
+            setEditingUser(null);
+          }}
+          open={!!editingUser}
+          userEmail={editingUser.email}
+          userId={editingUser.id}
+          userName={editingUser.name}
         />
-
-        {/* Edit User Dialog */}
-        {editingUser && (
-          <EditUserDialog
-            onOpenChange={(open: boolean) => !open && setEditingUser(null)}
-            onSuccess={() => {
-              refetch();
-              setEditingUser(null);
-            }}
-            open={!!editingUser}
-            userEmail={editingUser.email}
-            userId={editingUser.id}
-            userName={editingUser.name}
-          />
-        )}
-      </PageLayout>
-    );
-  }
+      )}
+    </PageLayout>
+  );
+}
