@@ -30,7 +30,7 @@ export function requireTenant() {
     if (!ctx.tenant) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "User must be associated with a tenant",
+        message: "Usuário deve estar associado a um cliente",
       });
     }
 
@@ -74,21 +74,21 @@ export function requireActiveTenant() {
     if (!ctx.tenant) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "User must be associated with a tenant",
+        message: "Usuário deve estar associado a um cliente",
       });
     }
 
     if (!ctx.tenant.active) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "Tenant is not active",
+        message: "Cliente não está ativo",
       });
     }
 
     if (ctx.tenant.deletedAt) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "Tenant has been deleted",
+        message: "Cliente foi deletado",
       });
     }
 

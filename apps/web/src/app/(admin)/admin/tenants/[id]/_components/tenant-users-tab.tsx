@@ -83,7 +83,7 @@ export function TenantUsersTab({
             <div>
               <CardTitle>Usuários</CardTitle>
               <CardDescription>
-                Gerencie os usuários associados a este tenant
+                Gerencie os usuários associados a este cliente
               </CardDescription>
             </div>
             <Button onClick={() => setIsDialogOpen(true)}>
@@ -125,11 +125,11 @@ export function TenantUsersTab({
                       <UserPlus className="h-6 w-6" />
                     </EmptyMedia>
                     <EmptyTitle>
-                      Nenhum usuário encontrado para este tenant
+                      Nenhum usuário encontrado para este cliente
                     </EmptyTitle>
                     <EmptyDescription>
-                      Nenhum usuário foi associado a este tenant ainda. Adicione
-                      usuários para começar.
+                      Nenhum usuário foi associado a este cliente ainda.
+                      Adicione usuários para começar.
                     </EmptyDescription>
                   </EmptyHeader>
                 </Empty>

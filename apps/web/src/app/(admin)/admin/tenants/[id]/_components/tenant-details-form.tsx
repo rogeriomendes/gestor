@@ -112,7 +112,7 @@ export function TenantDetailsForm({
 
       await updateTenantMutation.mutateAsync(updateData, {
         onSuccess: () => {
-          toast.success("Tenant atualizado com sucesso!");
+          toast.success("Cliente atualizado com sucesso!");
           onSuccess();
         },
         onError: (error) => {

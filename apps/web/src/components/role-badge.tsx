@@ -20,7 +20,7 @@ const roleConfig: Record<Role, { label: string; className: string }> = {
       "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
   },
   TENANT_ADMIN: {
-    label: "Admin de Tenant",
+    label: "Admin de Cliente",
     className:
       "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
   },

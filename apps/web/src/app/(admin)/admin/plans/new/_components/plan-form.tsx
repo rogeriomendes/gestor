@@ -179,7 +179,7 @@ export function PlanForm() {
                     className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     htmlFor={field.name}
                   >
-                    Plano padrão (para novos tenants)
+                    Plano padrão (para novos clientes)
                   </label>
                 </div>
               )}

@@ -15,8 +15,8 @@ export const queryClient = new QueryClient({
       // Não mostrar toast para erros esperados em páginas públicas
       // ou quando o usuário não está autenticado
       if (
-        error.message?.includes("Tenant not found") ||
-        error.message?.includes("User must be associated with a tenant") ||
+        error.message?.includes("Cliente não encontrado") ||
+        error.message?.includes("Usuário deve estar associado a um cliente") ||
         error.message?.includes("Authentication required") ||
         error.message?.includes("UNAUTHORIZED")
       ) {

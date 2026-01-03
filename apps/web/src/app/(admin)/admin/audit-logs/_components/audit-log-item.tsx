@@ -4,10 +4,10 @@ import { Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const ACTION_LABELS: Record<string, string> = {
-  CREATE_TENANT: "Criar Tenant",
-  UPDATE_TENANT: "Atualizar Tenant",
-  DELETE_TENANT: "Deletar Tenant",
-  RESTORE_TENANT: "Restaurar Tenant",
+  CREATE_TENANT: "Criar Cliente",
+  UPDATE_TENANT: "Atualizar Cliente",
+  DELETE_TENANT: "Deletar Cliente",
+  RESTORE_TENANT: "Restaurar Cliente",
   CREATE_USER: "Criar Usuário",
   UPDATE_USER: "Atualizar Usuário",
   UPDATE_USER_ROLE: "Atualizar Role",
@@ -30,9 +30,9 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 const RESOURCE_TYPE_LABELS: Record<string, string> = {
-  TENANT: "Tenant",
+  TENANT: "Cliente",
   USER: "Usuário",
-  TENANT_USER: "Usuário do Tenant",
+  TENANT_USER: "Usuário do Cliente",
   BRANCH: "Filial",
   PERMISSION: "Permissão",
   PLAN: "Plano",
@@ -74,7 +74,7 @@ export function AuditLogItem({ log, onClick }: AuditLogItemProps) {
           </div>
           <div className="mt-2 flex items-center gap-4 text-muted-foreground text-sm">
             <span>Por: {log.user?.name || "Usuário desconhecido"}</span>
-            {log.tenant && <span>Tenant: {log.tenant.name}</span>}
+            {log.tenant && <span>Cliente: {log.tenant.name}</span>}
             <span className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               {new Date(log.createdAt).toLocaleString("pt-BR")}

@@ -9,10 +9,10 @@ import { Input } from "@/components/ui/input";
 
 const ROLE_LABELS: Record<string, string> = {
   SUPER_ADMIN: "Super Admin",
-  TENANT_ADMIN: "Admin de Tenant",
-  TENANT_OWNER: "Proprietário",
-  TENANT_USER_MANAGER: "Gerente de Usuários",
-  TENANT_USER: "Usuário",
+  TENANT_ADMIN: "Admin de Cliente",
+  TENANT_OWNER: "Proprietário do Cliente",
+  TENANT_USER_MANAGER: "Gerente de Usuários do Cliente",
+  TENANT_USER: "Usuário do Cliente",
 };
 
 interface Tenant {
@@ -41,7 +41,7 @@ export function UsersFilters({
 }: UsersFiltersProps) {
   const tenantOptions: ComboboxOption[] = useMemo(
     () => [
-      { value: "all", label: "Todos os tenants" },
+      { value: "all", label: "Todos os clientes" },
       ...tenants.map((tenant) => ({
         value: tenant.id,
         label: tenant.name,
@@ -65,7 +65,7 @@ export function UsersFilters({
   const activeFilters = [
     selectedTenant !== "all" && {
       id: "tenant",
-      label: tenants.find((t) => t.id === selectedTenant)?.name || "Tenant",
+      label: tenants.find((t) => t.id === selectedTenant)?.name || "Cliente",
       onClear: () => onTenantChange("all"),
     },
     selectedRole !== "all" && {
@@ -96,11 +96,11 @@ export function UsersFilters({
       {/* Filtros diretos (sem popover pois são apenas 2) */}
       <div className="w-44">
         <Combobox
-          emptyMessage="Nenhum tenant encontrado."
+          emptyMessage="Nenhum cliente encontrado."
           onValueChange={onTenantChange}
           options={tenantOptions}
-          placeholder="Tenant"
-          searchPlaceholder="Buscar tenant..."
+          placeholder="Cliente"
+          searchPlaceholder="Buscar cliente..."
           value={selectedTenant}
         />
       </div>

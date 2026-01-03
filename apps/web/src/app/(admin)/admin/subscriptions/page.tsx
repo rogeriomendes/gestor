@@ -108,7 +108,7 @@ function AdminSubscriptionsPageContent() {
 
   const handleCreateSubscription = async () => {
     if (!selectedTenantId) {
-      toast.error("Selecione um tenant");
+      toast.error("Selecione um cliente");
       return;
     }
     await createTrialMutation.mutateAsync(
@@ -168,7 +168,7 @@ function AdminSubscriptionsPageContent() {
         )
       }
       breadcrumbs={breadcrumbs}
-      subtitle="Visualizar e gerenciar assinaturas de tenants"
+      subtitle="Visualizar e gerenciar assinaturas de clientes"
       title="Gerenciar Assinaturas"
     >
       <div className="space-y-4">
@@ -205,11 +205,11 @@ function AdminSubscriptionsPageContent() {
           <DialogHeader>
             <DialogTitle>Cancelar assinatura</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja cancelar a assinatura do tenant "
+              Tem certeza que deseja cancelar a assinatura do cliente "
               {selectedSubscription?.tenant.name}"?
               <br />
               <br />
-              <strong>Atenção:</strong> O tenant perderá acesso às
+              <strong>Atenção:</strong> O cliente perderá acesso às
               funcionalidades do sistema.
             </DialogDescription>
           </DialogHeader>
@@ -239,16 +239,16 @@ function AdminSubscriptionsPageContent() {
           <DialogHeader>
             <DialogTitle>Criar Assinatura</DialogTitle>
             <DialogDescription>
-              Selecione um tenant para criar uma assinatura trial de 14 dias.
+              Selecione um cliente para criar uma assinatura trial de 14 dias.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Select
-              onValueChange={setSelectedTenantId}
+              onValueChange={(value) => setSelectedTenantId(value ?? "")}
               value={selectedTenantId}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione um tenant" />
+                <SelectValue>Selecione um cliente</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {tenantsWithoutSubscription.map((tenant) => (

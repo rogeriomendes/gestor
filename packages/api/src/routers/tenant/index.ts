@@ -30,7 +30,7 @@ export const tenantRouter = router({
     if (!ctx.tenant) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: "Tenant não encontrado",
+        message: "Cliente não encontrado",
       });
     }
 
@@ -143,7 +143,7 @@ export const tenantRouter = router({
       if (!ctx.tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -189,7 +189,7 @@ export const tenantRouter = router({
       if (!ctx.tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -267,7 +267,7 @@ export const tenantRouter = router({
       if (!ctx.tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -344,7 +344,7 @@ export const tenantRouter = router({
       if (!ctx.tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -436,7 +436,7 @@ export const tenantRouter = router({
       if (!ctx.tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 

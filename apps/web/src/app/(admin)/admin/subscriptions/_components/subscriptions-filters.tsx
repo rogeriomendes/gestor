@@ -66,7 +66,7 @@ export function SubscriptionsFilters({
 
   const tenantOptions: ComboboxOption[] = useMemo(
     () => [
-      { value: "all", label: "Todos os tenants" },
+      { value: "all", label: "Todos os clientes" },
       ...tenants.map((tenant) => ({
         value: tenant.id,
         label: tenant.name,
@@ -102,7 +102,7 @@ export function SubscriptionsFilters({
     },
     selectedTenant !== "all" && {
       id: "tenant",
-      label: tenants.find((t) => t.id === selectedTenant)?.name || "Tenant",
+      label: tenants.find((t) => t.id === selectedTenant)?.name || "Cliente",
       onClear: () => onTenantChange("all"),
     },
     selectedPlan !== "all" && {
@@ -147,14 +147,14 @@ export function SubscriptionsFilters({
 
             <div className="space-y-1.5">
               <span className="font-medium text-muted-foreground text-xs">
-                Tenant
+                Cliente
               </span>
               <Combobox
-                emptyMessage="Nenhum tenant encontrado."
+                emptyMessage="Nenhum cliente encontrado."
                 onValueChange={onTenantChange}
                 options={tenantOptions}
-                placeholder="Todos os tenants"
-                searchPlaceholder="Buscar tenant..."
+                placeholder="Todos os clientes"
+                searchPlaceholder="Buscar cliente..."
                 value={selectedTenant}
               />
             </div>

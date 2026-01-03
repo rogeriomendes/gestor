@@ -31,10 +31,16 @@ export function DeleteTenantDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Deletar Tenant</DialogTitle>
+          <DialogTitle>Deletar Cliente</DialogTitle>
           <DialogDescription>
-            Tem certeza que deseja deletar {tenantName} ({tenantSlug})? O tenant
-            será movido para a lixeira e poderá ser restaurado posteriormente.
+<<<<<<< Updated upstream
+            Tem certeza que deseja deletar "{tenantName}"? O cliente será movido
+            para a lixeira e poderá ser restaurado posteriormente.
+=======
+            Tem certeza que deseja deletar "{tenantName}"? O
+            cliente será movido para a lixeira e poderá ser restaurado
+            posteriormente.
+>>>>>>> Stashed changes
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

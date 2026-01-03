@@ -107,11 +107,11 @@ export const permissionRouter = router({
     // Definir todas as permissões possíveis
     const allPermissions = [
       // Tenant
-      { resource: "TENANT", action: "CREATE", name: "Criar Tenants" },
-      { resource: "TENANT", action: "READ", name: "Visualizar Tenants" },
-      { resource: "TENANT", action: "UPDATE", name: "Editar Tenants" },
-      { resource: "TENANT", action: "DELETE", name: "Deletar Tenants" },
-      { resource: "TENANT", action: "MANAGE", name: "Gerenciar Tenants" },
+      { resource: "TENANT", action: "CREATE", name: "Criar Clientes" },
+      { resource: "TENANT", action: "READ", name: "Visualizar Clientes" },
+      { resource: "TENANT", action: "UPDATE", name: "Editar Clientes" },
+      { resource: "TENANT", action: "DELETE", name: "Deletar Clientes" },
+      { resource: "TENANT", action: "MANAGE", name: "Gerenciar Clientes" },
 
       // User
       { resource: "USER", action: "CREATE", name: "Criar Usuários" },

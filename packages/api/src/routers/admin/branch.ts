@@ -123,7 +123,7 @@ export const branchRouter = router({
       if (!tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -154,7 +154,7 @@ export const branchRouter = router({
         if (existingBranch) {
           throw new TRPCError({
             code: "CONFLICT",
-            message: "Já existe uma filial com este CNPJ para este tenant",
+            message: "Já existe uma filial com este CNPJ para este cliente",
           });
         }
       }
@@ -285,7 +285,7 @@ export const branchRouter = router({
         if (existingBranch) {
           throw new TRPCError({
             code: "CONFLICT",
-            message: "Já existe uma filial com este CNPJ para este tenant",
+            message: "Já existe uma filial com este CNPJ para este cliente",
           });
         }
       }

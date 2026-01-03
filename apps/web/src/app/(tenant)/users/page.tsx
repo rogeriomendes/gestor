@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserPlus } from "lucide-react";
+import type { Route } from "next";
 import { useState } from "react";
 import { toast } from "sonner";
 import { EditUserDialog } from "@/app/(admin)/admin/users/_components/edit-user-dialog";
@@ -124,10 +125,10 @@ export default function UsersPage() {
         </Button>
       }
       breadcrumbs={[
-        { label: tenant.name, href: "/dashboard" },
+        { label: tenant.name, href: "/dashboard" as Route },
         { label: "Usuários" },
       ]}
-      subtitle="Gerencie os usuários do seu tenant"
+      subtitle="Gerencie os usuários do seu cliente"
       title="Usuários"
     >
       <div className="space-y-4">

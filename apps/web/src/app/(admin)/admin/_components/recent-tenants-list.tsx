@@ -35,8 +35,8 @@ export function RecentTenantsList({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Tenants Recentes</CardTitle>
-        <CardDescription>Últimos tenants criados</CardDescription>
+        <CardTitle>Clientes Recentes</CardTitle>
+        <CardDescription>Últimos clientes criados</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -44,9 +44,9 @@ export function RecentTenantsList({
         ) : tenants.length === 0 ? (
           <Empty>
             <EmptyHeader>
-              <EmptyTitle>Nenhum tenant encontrado</EmptyTitle>
+              <EmptyTitle>Nenhum cliente encontrado</EmptyTitle>
               <EmptyDescription>
-                Ainda não há tenants cadastrados no sistema.
+                Ainda não há clientes cadastrados no sistema.
               </EmptyDescription>
             </EmptyHeader>
           </Empty>

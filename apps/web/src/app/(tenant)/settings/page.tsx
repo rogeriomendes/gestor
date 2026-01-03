@@ -122,7 +122,7 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle>Acesso Negado</CardTitle>
             <CardDescription>
-              Você não tem permissão para acessar as configurações do tenant.
+              Você não tem permissão para acessar as configurações do cliente.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -148,24 +148,24 @@ export default function SettingsPage() {
         { label: tenant.name, href: "/" },
         { label: "Configurações" },
       ]}
-      subtitle="Gerencie as configurações do seu tenant"
+      subtitle="Gerencie as configurações do seu cliente"
       title="Configurações"
     >
       <Card>
         <CardHeader>
           <CardTitle>Informações Básicas</CardTitle>
           <CardDescription>
-            Atualize as informações básicas do tenant
+            Atualize as informações básicas do cliente
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="name">Nome do Tenant</Label>
+              <Label htmlFor="name">Nome do Cliente</Label>
               <Input
                 id="name"
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Nome do tenant"
+                placeholder="Nome do cliente"
                 required
                 value={name}
               />

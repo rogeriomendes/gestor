@@ -169,7 +169,7 @@ function AdminPlansPageContent() {
               Tem certeza que deseja desativar o plano "{selectedPlan?.name}"?
               <br />
               <br />
-              Assinaturas existentes não serão afetadas, mas novos tenants não
+              Assinaturas existentes não serão afetadas, mas novos clientes não
               poderão selecionar este plano.
             </DialogDescription>
           </DialogHeader>

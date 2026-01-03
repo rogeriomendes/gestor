@@ -82,7 +82,7 @@ export function SubscriptionsList({
           <EmptyTitle>Nenhuma assinatura encontrada</EmptyTitle>
           <EmptyDescription>
             Não há assinaturas cadastradas. Você pode criar uma assinatura para
-            um tenant existente ou criar um novo tenant (que já receberá um
+            um cliente existente ou criar um novo cliente (que já receberá um
             trial automaticamente).
           </EmptyDescription>
         </EmptyHeader>
@@ -97,7 +97,7 @@ export function SubscriptionsList({
               onClick={() => router.push("/admin/tenants/new")}
               variant="outline"
             >
-              <Building2 className="mr-2 h-4 w-4" /> Criar Tenant
+              <Building2 className="mr-2 h-4 w-4" /> Criar Cliente
             </Button>
           </div>
         </EmptyContent>
@@ -157,7 +157,7 @@ export function SubscriptionsList({
                   className="text-gray-500 ring-1 ring-gray-400/20 ring-inset"
                   variant="outline"
                 >
-                  Tenant inativo
+                  Cliente inativo
                 </Badge>
               )}
               <DropdownMenu>
@@ -184,7 +184,7 @@ export function SubscriptionsList({
                         router.push(`/admin/tenants/${subscription.tenant.id}`)
                       }
                     >
-                      <Building2 className="mr-2 h-4 w-4" /> Ver Tenant
+                      <Building2 className="mr-2 h-4 w-4" /> Ver Cliente
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     {subscription.status !== "CANCELLED" && (

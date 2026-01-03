@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/popover";
 
 const ACTION_LABELS: Record<string, string> = {
-  CREATE_TENANT: "Criar Tenant",
-  UPDATE_TENANT: "Atualizar Tenant",
-  DELETE_TENANT: "Deletar Tenant",
-  RESTORE_TENANT: "Restaurar Tenant",
+  CREATE_TENANT: "Criar Cliente",
+  UPDATE_TENANT: "Atualizar Cliente",
+  DELETE_TENANT: "Deletar Cliente",
+  RESTORE_TENANT: "Restaurar Cliente",
   CREATE_USER: "Criar Usuário",
   UPDATE_USER: "Atualizar Usuário",
   UPDATE_USER_ROLE: "Atualizar Role",
@@ -39,9 +39,9 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 const RESOURCE_TYPE_LABELS: Record<string, string> = {
-  TENANT: "Tenant",
+  TENANT: "Cliente",
   USER: "Usuário",
-  TENANT_USER: "Usuário do Tenant",
+  TENANT_USER: "Usuário do Cliente",
   BRANCH: "Filial",
   PERMISSION: "Permissão",
   PLAN: "Plano",
@@ -120,7 +120,7 @@ export function AuditLogsFilters({
 
   const tenantOptions: ComboboxOption[] = useMemo(
     () => [
-      { value: "all", label: "Todos os tenants" },
+      { value: "all", label: "Todos os clientes" },
       ...tenants.map((tenant) => ({
         value: tenant.id,
         label: tenant.name,
@@ -166,7 +166,7 @@ export function AuditLogsFilters({
     },
     selectedTenant !== "all" && {
       id: "tenant",
-      label: tenants.find((t) => t.id === selectedTenant)?.name || "Tenant",
+      label: tenants.find((t) => t.id === selectedTenant)?.name || "Cliente",
       onClear: () => onTenantChange("all"),
     },
     selectedUser !== "all" && {
@@ -235,14 +235,14 @@ export function AuditLogsFilters({
 
             <div className="space-y-1.5">
               <span className="font-medium text-muted-foreground text-xs">
-                Tenant
+                Cliente
               </span>
               <Combobox
-                emptyMessage="Nenhum tenant encontrado."
+                emptyMessage="Nenhum cliente encontrado."
                 onValueChange={onTenantChange}
                 options={tenantOptions}
-                placeholder="Todos os tenants"
-                searchPlaceholder="Buscar tenant..."
+                placeholder="Todos os clientes"
+                searchPlaceholder="Buscar cliente..."
                 value={selectedTenant}
               />
             </div>

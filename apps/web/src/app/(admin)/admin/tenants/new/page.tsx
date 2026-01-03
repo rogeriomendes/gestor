@@ -8,8 +8,8 @@ import { TenantForm } from "./_components/tenant-form";
 function NewTenantPageContent() {
   const breadcrumbs = [
     { label: "Dashboard", href: "/admin" as Route },
-    { label: "Tenants", href: "/admin/tenants" as Route },
-    { label: "Novo Tenant", isCurrent: true },
+    { label: "Clientes", href: "/admin/tenants" as Route },
+    { label: "Novo Cliente", isCurrent: true },
   ];
 
   return (
@@ -17,8 +17,8 @@ function NewTenantPageContent() {
       backHref="/admin/tenants"
       breadcrumbs={breadcrumbs}
       showBackButton={true}
-      subtitle="Preencha os dados para criar um novo tenant"
-      title="Criar Novo Tenant"
+      subtitle="Preencha os dados para criar um novo cliente"
+      title="Criar Novo Cliente"
     >
       <TenantForm />
     </PageLayout>

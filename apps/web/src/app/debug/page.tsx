@@ -19,7 +19,7 @@ export default function DebugPage() {
 
       <div className="space-y-4">
         <div className="rounded-lg border p-4">
-          <h2 className="mb-2 font-semibold">Tenant Context (Frontend)</h2>
+          <h2 className="mb-2 font-semibold">Cliente Context (Frontend)</h2>
           <pre className="overflow-auto rounded bg-muted p-2 text-xs">
             {JSON.stringify(
               {

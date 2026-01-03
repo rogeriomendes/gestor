@@ -68,7 +68,7 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
   const handleRemoveUser = async (userId: string) => {
     try {
       await removeUserMutation.mutateAsync({ tenantId, userId });
-      toast.success("Usuário removido do tenant com sucesso!");
+      toast.success("Usuário removido do cliente com sucesso!");
       refetchUsers();
       refetchTenant();
     } catch (error) {
@@ -101,11 +101,11 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/admin" as Route },
-    { label: "Tenants", href: "/admin/tenants" as Route },
+    { label: "Clientes", href: "/admin/tenants" as Route },
     { label: tenant.name, isCurrent: true },
   ];
 
-  // Filtrar usuários que não estão no tenant
+  // Filtrar usuários que não estão no cliente
   const availableUsers =
     allUsers?.data.filter(
       (user) => !user.tenant || user.tenant?.id !== tenantId

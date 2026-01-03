@@ -59,9 +59,9 @@ export function DeletedTenantsList({
           <EmptyMedia variant="icon">
             <TrashIcon className="h-6 w-6" />
           </EmptyMedia>
-          <EmptyTitle>Nenhum tenant deletado</EmptyTitle>
+          <EmptyTitle>Nenhum cliente deletado</EmptyTitle>
           <EmptyDescription>
-            Não há tenants deletados no momento.
+            Não há clientes deletados no momento.
           </EmptyDescription>
         </EmptyHeader>
       </Empty>

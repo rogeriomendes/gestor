@@ -10,10 +10,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ACTION_LABELS: Record<string, string> = {
-  CREATE_TENANT: "Criar Tenant",
-  UPDATE_TENANT: "Atualizar Tenant",
-  DELETE_TENANT: "Deletar Tenant",
-  RESTORE_TENANT: "Restaurar Tenant",
+  CREATE_TENANT: "Criar Cliente",
+  UPDATE_TENANT: "Atualizar Cliente",
+  DELETE_TENANT: "Deletar Cliente",
+  RESTORE_TENANT: "Restaurar Cliente",
   CREATE_USER: "Criar Usuário",
   UPDATE_USER: "Atualizar Usuário",
   UPDATE_USER_ROLE: "Atualizar Role",
@@ -36,9 +36,9 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 const RESOURCE_TYPE_LABELS: Record<string, string> = {
-  TENANT: "Tenant",
+  TENANT: "Cliente",
   USER: "Usuário",
-  TENANT_USER: "Usuário do Tenant",
+  TENANT_USER: "Usuário do Cliente",
   BRANCH: "Filial",
   PERMISSION: "Permissão",
   PLAN: "Plano",
@@ -130,7 +130,7 @@ function LogDetailsContent({ logDetails }: { logDetails: AuditLogDetails }) {
         </div>
         {logDetails.tenant && (
           <div>
-            <p className="text-muted-foreground text-sm">Tenant</p>
+            <p className="text-muted-foreground text-sm">Cliente</p>
             <p className="font-medium">{logDetails.tenant.name}</p>
           </div>
         )}

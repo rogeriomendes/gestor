@@ -91,7 +91,7 @@ export function TenantSubscriptionTab({
         <CardHeader>
           <CardTitle>Sem Assinatura</CardTitle>
           <CardDescription>
-            Este tenant não possui uma assinatura configurada.
+            Este cliente não possui uma assinatura configurada.
           </CardDescription>
         </CardHeader>
         <CardContent>

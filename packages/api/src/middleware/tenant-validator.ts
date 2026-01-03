@@ -27,7 +27,7 @@ export function validateTenantAccess() {
     if (!ctx.tenant) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "User must be associated with a tenant",
+        message: "Usuário deve estar associado a um cliente",
       });
     }
 

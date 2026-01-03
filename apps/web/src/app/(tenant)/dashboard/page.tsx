@@ -52,13 +52,13 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Bem-vindo!</CardTitle>
             <CardDescription>
-              Você ainda não está associado a um tenant.
+              Você ainda não está associado a um cliente.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground text-sm">
               Entre em contato com um administrador para ser adicionado a um
-              tenant.
+              cliente.
             </p>
           </CardContent>
         </Card>
@@ -74,7 +74,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Bem-vindo!</CardTitle>
             <CardDescription>
-              Você ainda não está associado a um tenant.
+              Você ainda não está associado a um cliente.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -84,8 +84,8 @@ export default function DashboardPage() {
               </p>
               <ul className="list-inside list-disc space-y-1 text-muted-foreground text-sm">
                 <li>Acessar a área de administração</li>
-                <li>Criar novos tenants</li>
-                <li>Gerenciar todos os tenants do sistema</li>
+                <li>Criar novos clientes</li>
+                <li>Gerenciar todos os clientes do sistema</li>
               </ul>
               <div className="mt-4">
                 <a href="/admin">
@@ -93,7 +93,7 @@ export default function DashboardPage() {
                     className="rounded-none bg-primary px-4 py-2 font-medium text-primary-foreground text-sm hover:bg-primary/80"
                     type="button"
                   >
-                    Ir para Área Admin
+                    Ir para Área de Administração
                   </button>
                 </a>
               </div>
@@ -112,7 +112,7 @@ export default function DashboardPage() {
   const isLoadingDashboard = isLoading || statsLoading;
 
   return (
-    <PageLayout subtitle="Visão geral do seu tenant" title="Dashboard">
+    <PageLayout subtitle="Visão geral do seu cliente" title="Dashboard">
       {isLoadingDashboard ? (
         <TenantDashboardSkeleton />
       ) : (
@@ -178,7 +178,7 @@ export default function DashboardPage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader>
-                <CardTitle>Informações do Tenant</CardTitle>
+                <CardTitle>Informações do Cliente</CardTitle>
                 <CardDescription>Dados gerais</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">

@@ -54,9 +54,9 @@ function SubscriptionDetailsPageContent() {
       <PageLayout breadcrumbs={breadcrumbs} title="Assinatura não encontrada">
         <Card>
           <CardHeader>
-            <CardTitle>Tenant sem assinatura</CardTitle>
+            <CardTitle>Cliente sem assinatura</CardTitle>
             <CardDescription>
-              Este tenant não possui uma assinatura. Você pode criar uma
+              Este cliente não possui uma assinatura. Você pode criar uma
               assinatura trial.
             </CardDescription>
           </CardHeader>
@@ -89,7 +89,7 @@ function SubscriptionDetailsPageContent() {
             status={subscription.status as SubscriptionStatus}
           />
           <Link href={`/admin/tenants/${subscription.tenant.id}`}>
-            <Button variant="outline">Ver Tenant</Button>
+            <Button variant="outline">Ver Cliente</Button>
           </Link>
         </div>
       }
@@ -106,7 +106,7 @@ function SubscriptionDetailsPageContent() {
           <CardContent>
             <dl className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <dt className="text-muted-foreground">Tenant</dt>
+                <dt className="text-muted-foreground">Cliente</dt>
                 <dd className="font-medium">{subscription.tenant.name}</dd>
               </div>
               <div>

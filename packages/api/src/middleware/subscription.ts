@@ -17,7 +17,7 @@ export function requireActiveSubscription() {
     if (!ctx.subscription) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "Tenant não possui assinatura ativa",
+        message: "Cliente não possui assinatura ativa",
       });
     }
 

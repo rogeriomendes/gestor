@@ -31,10 +31,10 @@ export function RestoreTenantDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Restaurar Tenant</DialogTitle>
+          <DialogTitle>Restaurar Cliente</DialogTitle>
           <DialogDescription>
             Tem certeza que deseja restaurar {tenantName} ({tenantSlug})? O
-            tenant será reativado e voltará a aparecer na lista de tenants
+            cliente será reativado e voltará a aparecer na lista de clientes
             ativos.
           </DialogDescription>
         </DialogHeader>

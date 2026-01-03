@@ -38,7 +38,7 @@ export function TenantNotesSection({ form }: TenantNotesSectionProps) {
       <CardHeader>
         <CardTitle>Observações</CardTitle>
         <CardDescription>
-          Observações adicionais sobre este tenant
+          Observações adicionais sobre este cliente
         </CardDescription>
       </CardHeader>
       <CardContent>

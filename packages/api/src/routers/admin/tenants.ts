@@ -85,7 +85,7 @@ export const tenantsRouter = router({
       if (!tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -142,7 +142,7 @@ export const tenantsRouter = router({
       if (existingTenant) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "Já existe um tenant com este slug",
+          message: "Já existe um cliente com este slug",
         });
       }
 
@@ -270,7 +270,7 @@ export const tenantsRouter = router({
       if (!existingTenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -283,7 +283,7 @@ export const tenantsRouter = router({
         if (slugExists) {
           throw new TRPCError({
             code: "CONFLICT",
-            message: "Já existe um tenant com este slug",
+            message: "Já existe um cliente com este slug",
           });
         }
       }
@@ -345,7 +345,7 @@ export const tenantsRouter = router({
       if (!ctx.isSuperAdmin) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Apenas SUPER_ADMIN pode deletar tenants",
+          message: "Apenas SUPER_ADMIN pode deletar clientes",
         });
       }
 
@@ -361,14 +361,14 @@ export const tenantsRouter = router({
       if (!tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
       if (tenant.deletedAt) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Tenant já está deletado",
+          message: "Cliente já está deletado",
         });
       }
 
@@ -414,7 +414,7 @@ export const tenantsRouter = router({
       if (!ctx.isSuperAdmin) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Apenas SUPER_ADMIN pode visualizar tenants deletados",
+          message: "Apenas SUPER_ADMIN pode visualizar clientes deletados",
         });
       }
 
@@ -482,7 +482,7 @@ export const tenantsRouter = router({
       if (!ctx.isSuperAdmin) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Apenas SUPER_ADMIN pode restaurar tenants",
+          message: "Apenas SUPER_ADMIN pode restaurar clientes",
         });
       }
 
@@ -493,14 +493,14 @@ export const tenantsRouter = router({
       if (!tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
       if (!tenant.deletedAt) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Tenant não está deletado",
+          message: "Cliente não está deletado",
         });
       }
 
@@ -541,7 +541,7 @@ export const tenantsRouter = router({
       if (!ctx.isSuperAdmin) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Apenas SUPER_ADMIN pode deletar tenants permanentemente",
+          message: "Apenas SUPER_ADMIN pode deletar clientes permanentemente",
         });
       }
 
@@ -557,7 +557,7 @@ export const tenantsRouter = router({
       if (!tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -565,7 +565,7 @@ export const tenantsRouter = router({
         throw new TRPCError({
           code: "BAD_REQUEST",
           message:
-            "Tenant deve ser deletado (soft delete) antes da exclusão permanente",
+            "Cliente deve ser deletado (soft delete) antes da exclusão permanente",
         });
       }
 

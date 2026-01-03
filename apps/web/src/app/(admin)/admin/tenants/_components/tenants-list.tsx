@@ -58,14 +58,14 @@ export function TenantsList({
           <EmptyMedia variant="icon">
             <PlusCircle className="h-6 w-6" />
           </EmptyMedia>
-          <EmptyTitle>Nenhum tenant encontrado</EmptyTitle>
+          <EmptyTitle>Nenhum cliente encontrado</EmptyTitle>
           <EmptyDescription>
-            Comece criando seu primeiro tenant.
+            Comece criando seu primeiro cliente.
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <Button onClick={() => router.push("/admin/tenants/new")}>
-            Criar Tenant
+            Criar Cliente
           </Button>
         </EmptyContent>
       </Empty>

@@ -171,7 +171,7 @@ export const usersRouter = router({
         if (!tenant) {
           throw new TRPCError({
             code: "NOT_FOUND",
-            message: "Tenant não encontrado",
+            message: "Cliente não encontrado",
           });
         }
       }

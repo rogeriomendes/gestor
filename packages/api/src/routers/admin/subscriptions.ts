@@ -133,7 +133,7 @@ export const subscriptionsRouter = router({
       if (!tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -145,7 +145,8 @@ export const subscriptionsRouter = router({
       if (existingSubscription) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "Tenant já possui uma assinatura. Use a opção de atualizar.",
+          message:
+            "Cliente já possui uma assinatura. Use a opção de atualizar.",
         });
       }
 
@@ -222,7 +223,7 @@ export const subscriptionsRouter = router({
       if (!tenant) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Tenant não encontrado",
+          message: "Cliente não encontrado",
         });
       }
 
@@ -234,7 +235,7 @@ export const subscriptionsRouter = router({
       if (existingSubscription) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "Tenant já possui uma assinatura",
+          message: "Cliente já possui uma assinatura",
         });
       }
 

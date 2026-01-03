@@ -21,9 +21,11 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { ListSkeleton } from "@/components/ui/list-skeleton";
+import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/utils/trpc";
 
 function AdminPageContent() {
+  const { data: session } = authClient.useSession();
   const { data: stats, isLoading: statsLoading } = useQuery({
     ...trpc.admin.getStats.queryOptions(),
   });
@@ -34,19 +36,19 @@ function AdminPageContent() {
     <PageLayout
       actions={
         <Link href="/admin/tenants">
-          <Button>Gerenciar Tenants</Button>
+          <Button>Gerenciar Clientes</Button>
         </Link>
       }
       breadcrumbs={[{ label: "Dashboard" }]}
       subtitle="Visão geral do sistema e métricas principais"
-      title="Área Administrativa"
+      title={`Seja bem-vindo, ${session?.user?.name ?? "Administrador"}!`}
     >
       {/* Cards de Métricas Principais */}
       <div className="grid grid-cols-2 gap-6 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="font-medium text-sm">
-              Total de Tenants
+              Total de Clientes
             </CardTitle>
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -98,8 +100,8 @@ function AdminPageContent() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Tenants Recentes</CardTitle>
-                <CardDescription>Últimos tenants criados</CardDescription>
+                <CardTitle>Clientes Recentes</CardTitle>
+                <CardDescription>Últimos clientes criados</CardDescription>
               </div>
               <Link href="/admin/tenants">
                 <Button size="sm" variant="ghost">
@@ -120,9 +122,9 @@ function AdminPageContent() {
                   return (
                     <Empty>
                       <EmptyHeader>
-                        <EmptyTitle>Nenhum tenant encontrado</EmptyTitle>
+                        <EmptyTitle>Nenhum cliente encontrado</EmptyTitle>
                         <EmptyDescription>
-                          Ainda não há tenants cadastrados no sistema.
+                          Ainda não há clientes cadastrados no sistema.
                         </EmptyDescription>
                       </EmptyHeader>
                     </Empty>

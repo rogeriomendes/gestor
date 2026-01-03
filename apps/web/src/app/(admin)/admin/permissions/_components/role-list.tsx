@@ -10,7 +10,7 @@ import {
 
 const ROLE_LABELS: Record<string, string> = {
   SUPER_ADMIN: "Super Admin",
-  TENANT_ADMIN: "Admin de Tenant",
+  TENANT_ADMIN: "Admin de Cliente",
   TENANT_OWNER: "Proprietário",
   TENANT_USER_MANAGER: "Gerente de Usuários",
   TENANT_USER: "Usuário",

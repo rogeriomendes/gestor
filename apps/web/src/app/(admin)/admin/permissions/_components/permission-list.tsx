@@ -18,7 +18,7 @@ import {
 import { PermissionItem } from "./permission-item";
 
 const RESOURCE_LABELS: Record<string, string> = {
-  TENANT: "Tenants",
+  TENANT: "Clientes",
   USER: "Usuários",
   BRANCH: "Filiais",
   SETTINGS: "Configurações",
@@ -28,7 +28,7 @@ const RESOURCE_LABELS: Record<string, string> = {
 
 const ROLE_LABELS: Record<string, string> = {
   SUPER_ADMIN: "Super Admin",
-  TENANT_ADMIN: "Admin de Tenant",
+  TENANT_ADMIN: "Admin de Cliente",
   TENANT_OWNER: "Proprietário",
   TENANT_USER_MANAGER: "Gerente de Usuários",
   TENANT_USER: "Usuário",
@@ -41,17 +41,17 @@ type Role =
   | "TENANT_USER_MANAGER"
   | "TENANT_USER";
 
-type Permission = {
+interface Permission {
   id: string;
   name: string;
   action: string;
   resource: string;
-};
+}
 
-type RolePermission = {
+interface RolePermission {
   permissionId: string;
   granted: boolean;
-};
+}
 
 interface PermissionListProps {
   selectedRole: Role | null;

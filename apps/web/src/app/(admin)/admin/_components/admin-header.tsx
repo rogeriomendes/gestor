@@ -9,11 +9,11 @@ export function AdminHeader() {
       <div>
         <h2 className="font-bold text-2xl">Área Administrativa</h2>
         <p className="text-muted-foreground text-sm">
-          Gerencie todos os tenants do sistema
+          Gerencie todos os clientes do sistema
         </p>
       </div>
       <Link href="/admin/tenants">
-        <Button>Gerenciar Tenants</Button>
+        <Button>Gerenciar Clientes</Button>
       </Link>
     </div>
   );

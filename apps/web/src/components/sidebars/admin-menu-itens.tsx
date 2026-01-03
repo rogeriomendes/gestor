@@ -16,7 +16,7 @@ export const adminMenuItens: MenuItemProps[] = [
     icon: LayoutDashboard,
   },
   {
-    title: "Tenants",
+    title: "Clientes",
     url: "/admin/tenants",
     icon: Building2,
   },
@@ -41,7 +41,7 @@ export const adminMenuItens: MenuItemProps[] = [
     icon: Shield,
   },
   {
-    title: "Audit Logs",
+    title: "Logs de Auditoria",
     url: "/admin/audit-logs",
     icon: FileText,
   },

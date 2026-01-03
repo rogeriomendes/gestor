@@ -89,7 +89,7 @@ export function AddUserDialog({
         userId: selectedUser,
         role: selectedRole,
       });
-      toast.success("Usuário adicionado ao tenant com sucesso!");
+      toast.success("Usuário adicionado ao cliente com sucesso!");
       onSuccess();
       onOpenChange(false);
       setSelectedUser(null);
@@ -113,7 +113,7 @@ export function AddUserDialog({
         tenantId,
         role: selectedRole,
       });
-      toast.success("Usuário criado e adicionado ao tenant com sucesso!");
+      toast.success("Usuário criado e adicionado ao cliente com sucesso!");
       onSuccess();
       onOpenChange(false);
       setCreateUserMode(false);
@@ -147,10 +147,10 @@ export function AddUserDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Adicionar Usuário ao Tenant</DialogTitle>
+          <DialogTitle>Adicionar Usuário ao Cliente</DialogTitle>
           <DialogDescription>
             {createUserMode
-              ? "Crie um novo usuário e adicione-o a este tenant"
+              ? "Crie um novo usuário e adicione-o a este cliente"
               : "Selecione um usuário existente ou crie um novo"}
           </DialogDescription>
         </DialogHeader>
@@ -201,11 +201,15 @@ export function AddUserDialog({
                   <SelectValue>Selecione a função</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="TENANT_USER">Usuário</SelectItem>
-                  <SelectItem value="TENANT_USER_MANAGER">
-                    Gerente de Usuários
+                  <SelectItem value="TENANT_USER">
+                    Usuário do Cliente
                   </SelectItem>
-                  <SelectItem value="TENANT_OWNER">Proprietário</SelectItem>
+                  <SelectItem value="TENANT_USER_MANAGER">
+                    Gerente de Usuários do Cliente
+                  </SelectItem>
+                  <SelectItem value="TENANT_OWNER">
+                    Proprietário do Cliente
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </FieldContent>

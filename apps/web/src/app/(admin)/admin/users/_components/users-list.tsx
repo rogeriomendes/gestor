@@ -182,7 +182,7 @@ export function UsersList({
                             className="text-muted-foreground text-xs underline hover:text-primary"
                             href={`/admin/tenants/${user.tenant.id}`}
                           >
-                            Ver tenant
+                            Ver cliente
                           </Link>
                         </div>
                       )}

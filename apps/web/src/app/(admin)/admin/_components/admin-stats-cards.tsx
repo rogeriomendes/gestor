@@ -28,8 +28,8 @@ export function AdminStatsCards({
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       <Card>
         <CardHeader>
-          <CardTitle>Total de Tenants</CardTitle>
-          <CardDescription>Tenants cadastrados no sistema</CardDescription>
+          <CardTitle>Total de Clientes</CardTitle>
+          <CardDescription>Clientes cadastrados no sistema</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="font-bold text-2xl">{totalTenants}</p>
@@ -38,8 +38,8 @@ export function AdminStatsCards({
 
       <Card>
         <CardHeader>
-          <CardTitle>Tenants Ativos</CardTitle>
-          <CardDescription>Tenants com status ativo</CardDescription>
+          <CardTitle>Clientes Ativos</CardTitle>
+          <CardDescription>Clientes com status ativo</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="font-bold text-2xl">{activeTenants}</p>

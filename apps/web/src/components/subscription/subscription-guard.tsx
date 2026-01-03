@@ -72,7 +72,7 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
   if (!subscription) {
     return (
       <SubscriptionBlockedScreen
-        description="Seu tenant não possui uma assinatura configurada. Entre em contato com o administrador para ativar sua assinatura."
+        description="Seu cliente não possui uma assinatura configurada. Entre em contato com o administrador para ativar sua assinatura."
         icon={<AlertTriangle className="h-12 w-12 text-yellow-500" />}
         title="Sem Assinatura Ativa"
       />

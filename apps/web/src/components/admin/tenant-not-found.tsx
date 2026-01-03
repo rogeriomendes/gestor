@@ -8,16 +8,16 @@ export function TenantNotFound() {
 
   return (
     <div className="container mx-auto max-w-7xl p-6 text-center">
-      <h1 className="mb-4 font-bold text-2xl">Tenant Não Encontrado</h1>
+      <h1 className="mb-4 font-bold text-2xl">Cliente Não Encontrado</h1>
       <p className="text-muted-foreground">
-        O tenant que você está procurando não existe.
+        O cliente que você está procurando não existe.
       </p>
       <Button
         className="mt-4"
         onClick={() => router.push("/admin/tenants")}
         variant="outline"
       >
-        Voltar para Tenants
+        Voltar para Clientes
       </Button>
     </div>
   );

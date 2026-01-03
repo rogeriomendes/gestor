@@ -101,7 +101,7 @@ export function TenantForm() {
     onSubmit: async ({ value }) => {
       await createTenantMutation.mutateAsync(value, {
         onSuccess: (tenant) => {
-          toast.success("Tenant created successfully!");
+          toast.success("Cliente criado com sucesso!");
           router.push(`/admin/tenants/${tenant.id}`);
         },
         onError: (error) => {
@@ -244,7 +244,7 @@ export function TenantForm() {
           </h3>
           <p className="text-muted-foreground text-sm">
             Estes dados serão usados para criar a primeira filial (matriz) do
-            tenant. Você poderá adicionar mais filiais depois.
+            cliente. Você poderá adicionar mais filiais depois.
           </p>
         </div>
         <div className="space-y-4">
@@ -464,7 +464,7 @@ export function TenantForm() {
           Cancel
         </Button>
         <Button disabled={createTenantMutation.isPending} type="submit">
-          {createTenantMutation.isPending ? "Creating..." : "Create Tenant"}
+          {createTenantMutation.isPending ? "Criando..." : "Criar Cliente"}
         </Button>
       </div>
     </form>

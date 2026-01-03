@@ -38,7 +38,7 @@ export function TenantBasicInfoSection({ form }: TenantBasicInfoSectionProps) {
     <Card>
       <CardHeader>
         <CardTitle>Informações Básicas</CardTitle>
-        <CardDescription>Informações básicas do tenant</CardDescription>
+        <CardDescription>Informações básicas do cliente</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">

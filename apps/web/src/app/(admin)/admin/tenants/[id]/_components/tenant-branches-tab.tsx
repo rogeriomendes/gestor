@@ -58,7 +58,7 @@ export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
         <div>
           <h3 className="font-semibold text-lg">Filiais</h3>
           <p className="text-muted-foreground text-sm">
-            Gerenciar filiais deste tenant
+            Gerenciar filiais deste cliente
           </p>
         </div>
         <Button onClick={() => setIsDialogOpen(true)}>
