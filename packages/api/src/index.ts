@@ -1,7 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 
 import type { Context } from "./context";
-import { requireSuperAdmin, requireTenantAdmin } from "./middleware/roles";
+import { requireSuperAdmin } from "./middleware/roles";
 import { requireActiveTenant, requireTenant } from "./middleware/tenant";
 
 export const t = initTRPC.context<Context>().create();
@@ -19,22 +19,39 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
     });
   }
   return next({
-    ctx: {
-      ...ctx,
-      session: ctx.session,
-    },
+    ctx,
   });
 });
 
 /**
- * Procedure para operações de super admin
+ * Procedure para operações de super admin (apenas SUPER_ADMIN)
  */
 export const superAdminProcedure = protectedProcedure.use(requireSuperAdmin());
 
 /**
- * Procedure para operações de admin (super admin ou tenant admin)
+ * Procedure para operações de admin
+ * Permite SUPER_ADMIN ou usuários com permissões adequadas
+ * As permissões específicas devem ser verificadas em cada rota
  */
-export const adminProcedure = protectedProcedure.use(requireTenantAdmin());
+export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (!ctx.session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Authentication required",
+    });
+  }
+
+  if (!ctx.role) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Usuário não possui uma role válida",
+    });
+  }
+
+  return next({
+    ctx,
+  });
+});
 
 /**
  * Procedure para operações que requerem tenant

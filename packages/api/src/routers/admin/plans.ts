@@ -9,13 +9,16 @@ import {
   getPaginationParams,
   paginationSchema,
 } from "../../lib/pagination";
+import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
 
 export const plansRouter = router({
   /**
    * Listar todos os planos (com paginação)
+   * Requer permissão SETTINGS:READ
    */
   list: adminProcedure
+    .use(requirePermission("SETTINGS", "READ"))
     .input(
       paginationSchema.extend({
         search: z.string().optional(),
@@ -63,8 +66,10 @@ export const plansRouter = router({
 
   /**
    * Obter detalhes de um plano específico
+   * Requer permissão SETTINGS:READ
    */
   get: adminProcedure
+    .use(requirePermission("SETTINGS", "READ"))
     .input(z.object({ planId: z.string() }))
     .query(async ({ input }) => {
       const plan = await prisma.plan.findUnique({
@@ -101,8 +106,10 @@ export const plansRouter = router({
 
   /**
    * Criar novo plano
+   * Requer permissão SETTINGS:MANAGE
    */
   create: adminProcedure
+    .use(requirePermission("SETTINGS", "MANAGE"))
     .input(
       z.object({
         name: z.string().min(1, "Nome é obrigatório"),
@@ -151,8 +158,10 @@ export const plansRouter = router({
 
   /**
    * Atualizar plano
+   * Requer permissão SETTINGS:MANAGE
    */
   update: adminProcedure
+    .use(requirePermission("SETTINGS", "MANAGE"))
     .input(
       z.object({
         planId: z.string(),
@@ -229,8 +238,10 @@ export const plansRouter = router({
   /**
    * Desativar plano (soft delete)
    * Não afeta assinaturas existentes
+   * Requer permissão SETTINGS:MANAGE
    */
   deactivate: adminProcedure
+    .use(requirePermission("SETTINGS", "MANAGE"))
     .input(z.object({ planId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const plan = await prisma.plan.findUnique({
@@ -283,8 +294,10 @@ export const plansRouter = router({
 
   /**
    * Reativar plano
+   * Requer permissão SETTINGS:MANAGE
    */
   activate: adminProcedure
+    .use(requirePermission("SETTINGS", "MANAGE"))
     .input(z.object({ planId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const plan = await prisma.plan.findUnique({

@@ -9,13 +9,16 @@ import {
   getPaginationParams,
   paginationSchema,
 } from "../../lib/pagination";
+import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
 
 export const tenantsRouter = router({
   /**
    * Listar todos os tenants (com paginação)
+   * Requer permissão TENANT:READ
    */
   list: adminProcedure
+    .use(requirePermission("TENANT", "READ"))
     .input(
       paginationSchema.extend({
         search: z.string().optional(),
@@ -59,8 +62,10 @@ export const tenantsRouter = router({
 
   /**
    * Obter detalhes de um tenant específico
+   * Requer permissão TENANT:READ
    */
   get: adminProcedure
+    .use(requirePermission("TENANT", "READ"))
     .input(z.object({ tenantId: z.string() }))
     .query(async ({ input }) => {
       const tenant = await prisma.tenant.findUnique({
@@ -94,8 +99,10 @@ export const tenantsRouter = router({
 
   /**
    * Criar novo tenant
+   * Requer permissão TENANT:CREATE
    */
   create: adminProcedure
+    .use(requirePermission("TENANT", "CREATE"))
     .input(
       z.object({
         name: z.string().min(1, "Name is required"),
@@ -238,8 +245,10 @@ export const tenantsRouter = router({
 
   /**
    * Atualizar tenant
+   * Requer permissão TENANT:UPDATE
    */
   update: adminProcedure
+    .use(requirePermission("TENANT", "UPDATE"))
     .input(
       z.object({
         tenantId: z.string(),
@@ -336,19 +345,12 @@ export const tenantsRouter = router({
     }),
 
   /**
-   * Deletar tenant (soft delete - apenas super admin)
+   * Deletar tenant (soft delete) - requer permissão TENANT:DELETE
    */
   delete: adminProcedure
+    .use(requirePermission("TENANT", "DELETE"))
     .input(z.object({ tenantId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // Apenas super admin pode deletar
-      if (!ctx.isSuperAdmin) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Apenas SUPER_ADMIN pode deletar clientes",
-        });
-      }
-
       const tenant = await prisma.tenant.findUnique({
         where: { id: input.tenantId },
         include: {
@@ -409,15 +411,8 @@ export const tenantsRouter = router({
         search: z.string().optional(),
       })
     )
+    .use(requirePermission("TENANT", "READ"))
     .query(async ({ ctx, input }) => {
-      // Apenas super admin pode ver lixeira
-      if (!ctx.isSuperAdmin) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Apenas SUPER_ADMIN pode visualizar clientes deletados",
-        });
-      }
-
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
       const where = {
@@ -473,19 +468,13 @@ export const tenantsRouter = router({
     }),
 
   /**
-   * Restaurar tenant deletado (apenas super admin)
+   * Restaurar tenant deletado
+   * Requer permissão TENANT:UPDATE
    */
   restore: adminProcedure
+    .use(requirePermission("TENANT", "UPDATE"))
     .input(z.object({ tenantId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // Apenas super admin pode restaurar
-      if (!ctx.isSuperAdmin) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Apenas SUPER_ADMIN pode restaurar clientes",
-        });
-      }
-
       const tenant = await prisma.tenant.findUnique({
         where: { id: input.tenantId },
       });
@@ -532,19 +521,12 @@ export const tenantsRouter = router({
     }),
 
   /**
-   * Excluir permanentemente um tenant (apenas super admin)
+   * Excluir permanentemente um tenant - requer permissão TENANT:DELETE
    */
   permanentlyDelete: adminProcedure
+    .use(requirePermission("TENANT", "DELETE"))
     .input(z.object({ tenantId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // Apenas super admin pode excluir permanentemente
-      if (!ctx.isSuperAdmin) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Apenas SUPER_ADMIN pode deletar clientes permanentemente",
-        });
-      }
-
       const tenant = await prisma.tenant.findUnique({
         where: { id: input.tenantId },
         include: {

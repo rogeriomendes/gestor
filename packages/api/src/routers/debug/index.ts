@@ -10,7 +10,7 @@ export const debugRouter = router({
       role: ctx.role,
       tenant: ctx.tenant,
       isSuperAdmin: ctx.isSuperAdmin,
-      isTenantAdmin: ctx.isTenantAdmin,
+      permissions: Array.from(ctx.permissions),
     };
   }),
 });

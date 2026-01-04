@@ -14,7 +14,7 @@ import {
   getPaginationParams,
   paginationSchema,
 } from "../../lib/pagination";
-import { requireAnyRole, requireRole } from "../../middleware/roles";
+import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
 import { subscriptionRouter } from "./subscription";
 
@@ -25,56 +25,59 @@ export const tenantRouter = router({
   /**
    * Obter estatísticas do tenant (para dashboard)
    * Permite acesso mesmo com assinatura expirada para exibir informações
+   * Requer permissão DASHBOARD:READ
    */
-  getTenantStats: tenantProcedure.query(async ({ ctx }) => {
-    if (!ctx.tenant) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Cliente não encontrado",
-      });
-    }
+  getTenantStats: tenantProcedure
+    .use(requirePermission("DASHBOARD", "READ"))
+    .query(async ({ ctx }) => {
+      if (!ctx.tenant) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Cliente não encontrado",
+        });
+      }
 
-    const [users, branches] = await Promise.all([
-      prisma.user.findMany({
-        where: {
-          tenantId: ctx.tenant.id,
-        },
-        select: {
-          id: true,
-          role: true,
-        },
-      }),
-      prisma.tenantBranch.findMany({
-        where: {
-          tenantId: ctx.tenant.id,
-          deletedAt: null,
-        },
-        select: {
-          id: true,
-          isMain: true,
-          active: true,
-        },
-      }),
-    ]);
+      const [users, branches] = await Promise.all([
+        prisma.user.findMany({
+          where: {
+            tenantId: ctx.tenant.id,
+          },
+          select: {
+            id: true,
+            role: true,
+          },
+        }),
+        prisma.tenantBranch.findMany({
+          where: {
+            tenantId: ctx.tenant.id,
+            deletedAt: null,
+          },
+          select: {
+            id: true,
+            isMain: true,
+            active: true,
+          },
+        }),
+      ]);
 
-    // Contar usuários por role
-    const usersByRole = users.reduce(
-      (acc, user) => {
-        const role = (user as any).role || "SEM_ROLE";
-        acc[role] = (acc[role] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
+      // Contar usuários por role
+      const usersByRole = users.reduce(
+        (acc, user) => {
+          const role = (user as any).role || "SEM_ROLE";
+          acc[role] = (acc[role] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
 
-    return {
-      totalUsers: users.length,
-      usersByRole,
-      totalBranches: branches.length,
-      activeBranches: branches.filter((b) => b.active).length,
-      mainBranches: branches.filter((b) => b.isMain).length,
-    };
-  }),
+      return {
+        totalUsers: users.length,
+        usersByRole,
+        totalBranches: branches.length,
+        activeBranches: branches.filter((b) => b.active).length,
+        mainBranches: branches.filter((b) => b.isMain).length,
+      };
+    }),
 
   /**
    * Obter informações do tenant do usuário logado
@@ -87,9 +90,9 @@ export const tenantRouter = router({
       return null;
     }
 
-    // SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
+    // SUPER_ADMIN não precisa de tenant
     // Retornar apenas a role (tenant será null)
-    if (ctx.isSuperAdmin || ctx.isTenantAdmin) {
+    if (ctx.isSuperAdmin) {
       return {
         id: "",
         name: "",
@@ -129,10 +132,10 @@ export const tenantRouter = router({
   }),
 
   /**
-   * Atualizar configurações do tenant (apenas TENANT_OWNER)
+   * Atualizar configurações do tenant (requer permissão TENANT:UPDATE)
    */
   updateMyTenant: activeTenantProcedure
-    .use(requireRole(Role.TENANT_OWNER))
+    .use(requirePermission("TENANT", "UPDATE"))
     .input(
       z.object({
         name: z.string().min(1).optional(),
@@ -175,10 +178,10 @@ export const tenantRouter = router({
     }),
 
   /**
-   * Listar usuários do tenant (TENANT_OWNER, TENANT_USER_MANAGER)
+   * Listar usuários do tenant (requer permissão USER:READ)
    */
   listUsers: activeTenantProcedure
-    .use(requireAnyRole([Role.TENANT_OWNER, Role.TENANT_USER_MANAGER]))
+    .use(requirePermission("USER", "READ"))
     .input(
       paginationSchema.extend({
         search: z.string().optional(),
@@ -245,10 +248,10 @@ export const tenantRouter = router({
     }),
 
   /**
-   * Convidar usuário para o tenant (TENANT_OWNER, TENANT_USER_MANAGER)
+   * Convidar usuário para o tenant (requer permissão USER:CREATE)
    */
   inviteUser: activeTenantProcedure
-    .use(requireAnyRole([Role.TENANT_OWNER, Role.TENANT_USER_MANAGER]))
+    .use(requirePermission("USER", "CREATE"))
     .input(
       z.object({
         email: z.string().email("Invalid email address"),
@@ -322,10 +325,10 @@ export const tenantRouter = router({
     }),
 
   /**
-   * Atualizar role de usuário (TENANT_OWNER, TENANT_USER_MANAGER)
+   * Atualizar role de usuário (requer permissão USER:UPDATE)
    */
   updateUserRole: activeTenantProcedure
-    .use(requireAnyRole([Role.TENANT_OWNER, Role.TENANT_USER_MANAGER]))
+    .use(requirePermission("USER", "UPDATE"))
     .input(
       z.object({
         userId: z.string(),
@@ -427,10 +430,10 @@ export const tenantRouter = router({
     }),
 
   /**
-   * Remover usuário do tenant (TENANT_OWNER, TENANT_USER_MANAGER)
+   * Remover usuário do tenant (requer permissão USER:DELETE)
    */
   removeUser: activeTenantProcedure
-    .use(requireAnyRole([Role.TENANT_OWNER, Role.TENANT_USER_MANAGER]))
+    .use(requirePermission("USER", "DELETE"))
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       if (!ctx.tenant) {

@@ -4,12 +4,12 @@ import { isSubscriptionActive } from "../utils/subscription";
 
 /**
  * Middleware que garante que o tenant tem uma assinatura ativa
- * SUPER_ADMIN e TENANT_ADMIN são isentos desta verificação
+ * SUPER_ADMIN é isento desta verificação
  */
 export function requireActiveSubscription() {
   return ({ ctx, next }: { ctx: Context; next: any }) => {
-    // Admins são isentos
-    if (ctx.isSuperAdmin || ctx.isTenantAdmin) {
+    // SUPER_ADMIN é isento (pode acessar qualquer tenant)
+    if (ctx.isSuperAdmin) {
       return next({ ctx });
     }
 

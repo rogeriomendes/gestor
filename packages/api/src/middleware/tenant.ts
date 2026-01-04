@@ -3,27 +3,20 @@ import type { Context } from "../context";
 
 /**
  * Verifica se o usuário tem um tenant associado
- * SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
+ * SUPER_ADMIN não precisa de tenant (pode acessar qualquer tenant)
  */
 export function requireTenant() {
   return ({ ctx, next }: { ctx: Context; next: any }) => {
     if (!ctx.session) {
       throw new TRPCError({
         code: "UNAUTHORIZED",
-        message: "Authentication required",
+        message: "Autenticação necessária",
       });
     }
 
-    // SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
-    if (ctx.isSuperAdmin || ctx.isTenantAdmin) {
-      return next({
-        ctx: {
-          ...ctx,
-          session: ctx.session,
-          tenant: ctx.tenant,
-          role: ctx.role,
-        },
-      });
+    // SUPER_ADMIN não precisa de tenant (pode gerenciar qualquer tenant)
+    if (ctx.isSuperAdmin) {
+      return next({ ctx });
     }
 
     // Outros roles precisam de tenant
@@ -34,40 +27,26 @@ export function requireTenant() {
       });
     }
 
-    return next({
-      ctx: {
-        ...ctx,
-        session: ctx.session,
-        tenant: ctx.tenant,
-        role: ctx.role,
-      },
-    });
+    return next({ ctx });
   };
 }
 
 /**
  * Verifica se o usuário tem um tenant ativo
- * SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
+ * SUPER_ADMIN não precisa de tenant (pode acessar qualquer tenant)
  */
 export function requireActiveTenant() {
   return ({ ctx, next }: { ctx: Context; next: any }) => {
     if (!ctx.session) {
       throw new TRPCError({
         code: "UNAUTHORIZED",
-        message: "Authentication required",
+        message: "Autenticação necessária",
       });
     }
 
-    // SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
-    if (ctx.isSuperAdmin || ctx.isTenantAdmin) {
-      return next({
-        ctx: {
-          ...ctx,
-          session: ctx.session,
-          tenant: ctx.tenant,
-          role: ctx.role,
-        },
-      });
+    // SUPER_ADMIN não precisa de tenant (pode gerenciar qualquer tenant)
+    if (ctx.isSuperAdmin) {
+      return next({ ctx });
     }
 
     // Outros roles precisam de tenant ativo
@@ -92,13 +71,6 @@ export function requireActiveTenant() {
       });
     }
 
-    return next({
-      ctx: {
-        ...ctx,
-        session: ctx.session,
-        tenant: ctx.tenant,
-        role: ctx.role,
-      },
-    });
+    return next({ ctx });
   };
 }

@@ -10,13 +10,16 @@ import {
   getPaginationParams,
   paginationSchema,
 } from "../../lib/pagination";
+import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
 
 export const usersRouter = router({
   /**
    * Listar todos os usuários de todos os tenants (com paginação)
+   * Requer permissão USER:READ
    */
   listAll: adminProcedure
+    .use(requirePermission("USER", "READ"))
     .input(
       paginationSchema.extend({
         tenantId: z.string().optional(),
@@ -82,8 +85,10 @@ export const usersRouter = router({
 
   /**
    * Listar usuários de um tenant específico
+   * Requer permissão USER:READ
    */
   listByTenant: adminProcedure
+    .use(requirePermission("USER", "READ"))
     .input(
       paginationSchema.extend({
         tenantId: z.string(),
@@ -133,8 +138,10 @@ export const usersRouter = router({
 
   /**
    * Criar novo usuário
+   * Requer permissão USER:CREATE
    */
   create: adminProcedure
+    .use(requirePermission("USER", "CREATE"))
     .input(
       z.object({
         name: z.string().min(1, "Name is required"),
@@ -280,8 +287,10 @@ export const usersRouter = router({
 
   /**
    * Atualizar informações do usuário
+   * Requer permissão USER:UPDATE
    */
   update: adminProcedure
+    .use(requirePermission("USER", "UPDATE"))
     .input(
       z.object({
         userId: z.string(),
@@ -360,8 +369,10 @@ export const usersRouter = router({
 
   /**
    * Resetar senha do usuário
+   * Requer permissão USER:UPDATE
    */
   resetPassword: adminProcedure
+    .use(requirePermission("USER", "UPDATE"))
     .input(
       z.object({
         userId: z.string(),
@@ -421,8 +432,10 @@ export const usersRouter = router({
 
   /**
    * Adicionar usuário a um tenant
+   * Requer permissão USER:CREATE
    */
   addToTenant: adminProcedure
+    .use(requirePermission("USER", "CREATE"))
     .input(
       z.object({
         tenantId: z.string(),
@@ -503,8 +516,10 @@ export const usersRouter = router({
 
   /**
    * Remover usuário de um tenant
+   * Requer permissão USER:DELETE
    */
   removeFromTenant: adminProcedure
+    .use(requirePermission("USER", "DELETE"))
     .input(
       z.object({
         tenantId: z.string(),
@@ -567,8 +582,10 @@ export const usersRouter = router({
 
   /**
    * Atualizar role de usuário em um tenant
+   * Requer permissão USER:UPDATE
    */
   updateRoleInTenant: adminProcedure
+    .use(requirePermission("USER", "UPDATE"))
     .input(
       z.object({
         tenantId: z.string(),

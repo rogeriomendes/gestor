@@ -4,22 +4,20 @@ import type { Context } from "../context";
 
 /**
  * Middleware que garante que queries incluem filtro por tenantId
- * (exceto para admins que podem acessar todos os tenants)
+ * (exceto para SUPER_ADMIN que pode acessar todos os tenants)
  */
 export function validateTenantAccess() {
   return async ({
     ctx,
     next,
-    path,
-    type,
   }: {
     ctx: Context;
     next: any;
     path: string;
     type: string;
   }) => {
-    // Admins podem acessar dados de todos os tenants
-    if (ctx.isSuperAdmin || ctx.isTenantAdmin) {
+    // SUPER_ADMIN pode acessar dados de todos os tenants
+    if (ctx.isSuperAdmin) {
       return next({ ctx });
     }
 

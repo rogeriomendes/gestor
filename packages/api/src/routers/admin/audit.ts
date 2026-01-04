@@ -9,13 +9,16 @@ import {
   getPaginationParams,
   paginationSchema,
 } from "../../lib/pagination";
+import { requirePermission } from "../../middleware/permissions";
 
 export const auditRouter = router({
   /**
    * Listar audit logs (admin)
    * Permite filtrar por tenant, usuário, ação, tipo de recurso e data
+   * Requer permissão AUDIT_LOG:READ
    */
   listLogs: adminProcedure
+    .use(requirePermission("AUDIT_LOG", "READ"))
     .input(
       paginationSchema.extend({
         tenantId: z.string().optional(),
@@ -93,8 +96,10 @@ export const auditRouter = router({
 
   /**
    * Obter detalhes de um log específico
+   * Requer permissão AUDIT_LOG:READ
    */
   getLog: adminProcedure
+    .use(requirePermission("AUDIT_LOG", "READ"))
     .input(z.object({ logId: z.string() }))
     .query(async ({ input }) => {
       const log = await prisma.auditLog.findUnique({
@@ -131,8 +136,10 @@ export const auditRouter = router({
   /**
    * Listar audit logs do tenant atual (tenant)
    * Apenas logs relacionados ao tenant do usuário
+   * Requer permissão AUDIT_LOG:READ
    */
   listMyTenantLogs: tenantProcedure
+    .use(requirePermission("AUDIT_LOG", "READ"))
     .input(
       paginationSchema.extend({
         action: z.enum(AuditAction).optional(),
@@ -204,8 +211,10 @@ export const auditRouter = router({
 
   /**
    * Obter estatísticas de audit logs (admin)
+   * Requer permissão AUDIT_LOG:READ
    */
   getStats: adminProcedure
+    .use(requirePermission("AUDIT_LOG", "READ"))
     .input(
       z
         .object({

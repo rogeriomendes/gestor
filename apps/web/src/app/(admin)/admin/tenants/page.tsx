@@ -76,7 +76,7 @@ function _AdminTenantsPageContent() {
       { id: selectedTenant.id },
       {
         onSuccess: () => {
-          toast.success("Tenant deletado com sucesso!");
+          toast.success("Cliente deletado com sucesso!");
           refetchTenants();
           setDeleteDialogOpen(false);
         },
@@ -95,7 +95,7 @@ function _AdminTenantsPageContent() {
       { id: selectedTenant.id },
       {
         onSuccess: () => {
-          toast.success("Tenant restaurado com sucesso!");
+          toast.success("Cliente restaurado com sucesso!");
           refetchDeletedTenants();
           refetchTenants();
           setRestoreDialogOpen(false);
@@ -115,7 +115,7 @@ function _AdminTenantsPageContent() {
       { id: selectedTenant.id },
       {
         onSuccess: () => {
-          toast.success("Tenant excluído permanentemente!");
+          toast.success("Cliente excluído permanentemente!");
           refetchDeletedTenants();
           setPermanentDeleteDialogOpen(false);
         },
@@ -151,7 +151,7 @@ function _AdminTenantsPageContent() {
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/admin" as Route },
-    { label: "Tenants", isCurrent: true },
+    { label: "Clientes", isCurrent: true },
   ];
 
   return (
@@ -159,13 +159,13 @@ function _AdminTenantsPageContent() {
       actions={
         <Link href="/admin/tenants/new">
           <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Criar Tenant
+            <PlusCircle className="mr-2 h-4 w-4" /> Criar Cliente
           </Button>
         </Link>
       }
       breadcrumbs={breadcrumbs}
-      subtitle="Criar e gerenciar todos os tenants do sistema"
-      title="Gerenciar Tenants"
+      subtitle="Criar e gerenciar todos os clientes do sistema"
+      title="Gerenciar Clientes"
     >
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">

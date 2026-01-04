@@ -9,13 +9,16 @@ import {
   getPaginationParams,
   paginationSchema,
 } from "../../lib/pagination";
+import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
 
 export const branchRouter = router({
   /**
    * Listar todas as filiais de um tenant
+   * Requer permissão BRANCH:READ
    */
   listBranches: adminProcedure
+    .use(requirePermission("BRANCH", "READ"))
     .input(
       paginationSchema.extend({
         tenantId: z.string(),
@@ -52,8 +55,10 @@ export const branchRouter = router({
 
   /**
    * Obter detalhes de uma filial específica
+   * Requer permissão BRANCH:READ
    */
   getBranch: adminProcedure
+    .use(requirePermission("BRANCH", "READ"))
     .input(z.object({ branchId: z.string() }))
     .query(async ({ input }) => {
       const branch = await prisma.tenantBranch.findUnique({
@@ -81,8 +86,10 @@ export const branchRouter = router({
 
   /**
    * Criar nova filial
+   * Requer permissão BRANCH:CREATE
    */
   createBranch: adminProcedure
+    .use(requirePermission("BRANCH", "CREATE"))
     .input(
       z.object({
         tenantId: z.string(),
@@ -204,8 +211,10 @@ export const branchRouter = router({
 
   /**
    * Atualizar filial
+   * Requer permissão BRANCH:UPDATE
    */
   updateBranch: adminProcedure
+    .use(requirePermission("BRANCH", "UPDATE"))
     .input(
       z.object({
         branchId: z.string(),
@@ -356,8 +365,10 @@ export const branchRouter = router({
 
   /**
    * Deletar filial (soft delete)
+   * Requer permissão BRANCH:DELETE
    */
   deleteBranch: adminProcedure
+    .use(requirePermission("BRANCH", "DELETE"))
     .input(z.object({ branchId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const branch = await prisma.tenantBranch.findUnique({
@@ -454,8 +465,10 @@ export const branchRouter = router({
 
   /**
    * Definir filial como principal
+   * Requer permissão BRANCH:UPDATE
    */
   setMainBranch: adminProcedure
+    .use(requirePermission("BRANCH", "UPDATE"))
     .input(z.object({ branchId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const branch = await prisma.tenantBranch.findUnique({

@@ -1,12 +1,11 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { useTenant } from "@/contexts/tenant-context";
 import { useCanManageTenant, useCanManageUsers } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
-
 import { RoleBadge } from "./role-badge";
 
 export function TenantHeader() {
@@ -53,7 +52,7 @@ export function TenantHeader() {
                     ? "bg-muted text-foreground"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
-                href={item.href}
+                href={item.href as Route}
                 key={item.href}
               >
                 {item.label}

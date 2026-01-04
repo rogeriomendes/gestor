@@ -105,7 +105,7 @@ export function AddUserDialog({
         tenantId,
         role: selectedRole,
       });
-      toast.success("Usuário criado e adicionado ao tenant com sucesso!");
+      toast.success("Usuário criado e adicionado ao cliente com sucesso!");
       onSuccess();
       onOpenChange(false);
       setCreateUserMode(false);
@@ -133,10 +133,10 @@ export function AddUserDialog({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Adicionar Usuário ao Tenant</DialogTitle>
+          <DialogTitle>Adicionar Usuário ao Cliente</DialogTitle>
           <DialogDescription>
             {createUserMode
-              ? "Criar um novo usuário e adicioná-lo ao tenant"
+              ? "Criar um novo usuário e adicioná-lo ao cliente"
               : "Convidar um usuário existente ou criar um novo"}
           </DialogDescription>
         </DialogHeader>
