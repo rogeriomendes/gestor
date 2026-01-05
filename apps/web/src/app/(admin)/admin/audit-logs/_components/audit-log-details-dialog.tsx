@@ -8,42 +8,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const ACTION_LABELS: Record<string, string> = {
-  CREATE_TENANT: "Criar Cliente",
-  UPDATE_TENANT: "Atualizar Cliente",
-  DELETE_TENANT: "Deletar Cliente",
-  RESTORE_TENANT: "Restaurar Cliente",
-  CREATE_USER: "Criar Usuário",
-  UPDATE_USER: "Atualizar Usuário",
-  UPDATE_USER_ROLE: "Atualizar Role",
-  REMOVE_USER: "Remover Usuário",
-  INVITE_USER: "Convidar Usuário",
-  CREATE_BRANCH: "Criar Filial",
-  UPDATE_BRANCH: "Atualizar Filial",
-  DELETE_BRANCH: "Deletar Filial",
-  RESTORE_BRANCH: "Restaurar Filial",
-  UPDATE_PERMISSIONS: "Atualizar Permissões",
-  INITIALIZE_PERMISSIONS: "Inicializar Permissões",
-  CREATE_PLAN: "Criar Plano",
-  UPDATE_PLAN: "Atualizar Plano",
-  DELETE_PLAN: "Deletar Plano",
-  ACTIVATE_PLAN: "Ativar Plano",
-  DEACTIVATE_PLAN: "Desativar Plano",
-  CREATE_SUBSCRIPTION: "Criar Assinatura",
-  UPDATE_SUBSCRIPTION: "Atualizar Assinatura",
-  CANCEL_SUBSCRIPTION: "Cancelar Assinatura",
-};
-
-const RESOURCE_TYPE_LABELS: Record<string, string> = {
-  TENANT: "Cliente",
-  USER: "Usuário",
-  TENANT_USER: "Usuário do Cliente",
-  BRANCH: "Filial",
-  PERMISSION: "Permissão",
-  PLAN: "Plano",
-  SUBSCRIPTION: "Assinatura",
-};
+import {
+  getAuditActionLabel,
+  getAuditResourceTypeLabel,
+} from "@/lib/audit-labels";
+import { formatDateTime } from "@/lib/date-utils";
 
 interface AuditLogDetails {
   action: string;
@@ -111,14 +80,13 @@ function LogDetailsContent({ logDetails }: { logDetails: AuditLogDetails }) {
         <div>
           <p className="text-muted-foreground text-sm">Ação</p>
           <p className="font-medium">
-            {ACTION_LABELS[logDetails.action] || logDetails.action}
+            {getAuditActionLabel(logDetails.action)}
           </p>
         </div>
         <div>
           <p className="text-muted-foreground text-sm">Tipo de Recurso</p>
           <p className="font-medium">
-            {RESOURCE_TYPE_LABELS[logDetails.resourceType] ||
-              logDetails.resourceType}
+            {getAuditResourceTypeLabel(logDetails.resourceType)}
           </p>
         </div>
         <div>
@@ -136,9 +104,7 @@ function LogDetailsContent({ logDetails }: { logDetails: AuditLogDetails }) {
         )}
         <div>
           <p className="text-muted-foreground text-sm">Data/Hora</p>
-          <p className="font-medium">
-            {new Date(logDetails.createdAt).toLocaleString("pt-BR")}
-          </p>
+          <p className="font-medium">{formatDateTime(logDetails.createdAt)}</p>
         </div>
         {logDetails.ipAddress && (
           <div>

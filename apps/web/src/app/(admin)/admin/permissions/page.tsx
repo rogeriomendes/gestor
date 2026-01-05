@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { RefreshCw } from "lucide-react";
 import type { Route } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
@@ -62,6 +62,98 @@ function PermissionsPageContent() {
     }) => trpcClient.permission.updateRolePermissions.mutate(input),
   });
 
+  // Sincronizar permissões quando MANAGE estiver marcado
+  useEffect(() => {
+    if (
+      !(selectedRole && permissions && rolePermissions) ||
+      rolePermissionsLoading ||
+      updateRolePermissionsMutation.isPending
+    ) {
+      return;
+    }
+
+    // Agrupar permissões por recurso
+    const permissionsByResource = permissions.reduce(
+      (acc, perm) => {
+        const resource = perm.resource;
+        if (!acc[resource]) {
+          acc[resource] = [];
+        }
+        acc[resource].push(perm);
+        return acc;
+      },
+      {} as Record<string, typeof permissions>
+    );
+
+    const currentPermissionsMap = new Map(
+      rolePermissions.map((rp) => [rp.permissionId, rp.granted])
+    );
+
+    let needsUpdate = false;
+    const updatedPermissionsMap = new Map(currentPermissionsMap);
+
+    // Para cada recurso, verificar se MANAGE está marcado
+    for (const [, resourcePermissions] of Object.entries(
+      permissionsByResource
+    )) {
+      const managePermission = resourcePermissions.find(
+        (p) => p.action === "MANAGE"
+      );
+
+      if (!managePermission) {
+        continue;
+      }
+
+      const isManageGranted =
+        currentPermissionsMap.get(managePermission.id) ?? false;
+
+      // Se MANAGE está marcado, garantir que todas as outras também estão
+      if (isManageGranted) {
+        for (const perm of resourcePermissions) {
+          const isCurrentlyGranted =
+            currentPermissionsMap.get(perm.id) ?? false;
+          if (!isCurrentlyGranted) {
+            updatedPermissionsMap.set(perm.id, true);
+            needsUpdate = true;
+          }
+        }
+      }
+    }
+
+    // Se precisa atualizar, fazer a sincronização
+    if (needsUpdate) {
+      const updatedPermissions = Array.from(
+        updatedPermissionsMap.entries()
+      ).map(([id, granted]) => ({
+        permissionId: id,
+        granted,
+      }));
+
+      updateRolePermissionsMutation.mutate(
+        {
+          role: selectedRole,
+          permissions: updatedPermissions,
+        },
+        {
+          onSuccess: () => {
+            refetchRolePermissions();
+          },
+          onError: (error: Error) => {
+            console.error("Erro ao sincronizar permissões:", error);
+          },
+        }
+      );
+    }
+  }, [
+    selectedRole,
+    permissions,
+    rolePermissions,
+    rolePermissionsLoading,
+    updateRolePermissionsMutation.isPending,
+    updateRolePermissionsMutation,
+    refetchRolePermissions,
+  ]);
+
   const handleInitializePermissions = async () => {
     await initializePermissionsMutation.mutateAsync(undefined, {
       onSuccess: () => {
@@ -82,7 +174,13 @@ function PermissionsPageContent() {
     permissionId: string,
     currentlyGranted: boolean
   ) => {
-    if (!selectedRole) {
+    if (!(selectedRole && permissions)) {
+      return;
+    }
+
+    // Encontrar a permissão que está sendo alterada
+    const toggledPermission = permissions.find((p) => p.id === permissionId);
+    if (!toggledPermission) {
       return;
     }
 
@@ -92,15 +190,161 @@ function PermissionsPageContent() {
         granted: rp.granted,
       })) || [];
 
+    const newGrantedValue = !currentlyGranted;
+
+    // Se está marcando MANAGE, marcar todas as outras permissões do mesmo recurso
+    if (toggledPermission.action === "MANAGE" && newGrantedValue) {
+      const resourcePermissions = permissions.filter(
+        (p) => p.resource === toggledPermission.resource
+      );
+
+      const updatedPermissionsMap = new Map(
+        currentPermissions.map((p) => [p.permissionId, p.granted])
+      );
+
+      // Marcar todas as permissões do recurso
+      resourcePermissions.forEach((perm) => {
+        updatedPermissionsMap.set(perm.id, true);
+      });
+
+      const updatedPermissions = Array.from(
+        updatedPermissionsMap.entries()
+      ).map(([id, granted]) => ({
+        permissionId: id,
+        granted,
+      }));
+
+      await updateRolePermissionsMutation.mutateAsync(
+        {
+          role: selectedRole,
+          permissions: updatedPermissions,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Permissões atualizadas com sucesso!");
+            refetchRolePermissions();
+          },
+          onError: (error: Error) => {
+            toast.error(error.message || "Erro ao atualizar permissões");
+          },
+        }
+      );
+      return;
+    }
+
+    // Se está desmarcando qualquer permissão (exceto MANAGE), desmarcar MANAGE também
+    if (toggledPermission.action !== "MANAGE" && !newGrantedValue) {
+      const resourcePermissions = permissions.filter(
+        (p) => p.resource === toggledPermission.resource
+      );
+      const managePermission = resourcePermissions.find(
+        (p) => p.action === "MANAGE"
+      );
+
+      const updatedPermissionsMap = new Map(
+        currentPermissions.map((p) => [p.permissionId, p.granted])
+      );
+
+      // Desmarcar a permissão clicada
+      updatedPermissionsMap.set(permissionId, false);
+
+      // Desmarcar MANAGE se existir
+      if (managePermission) {
+        updatedPermissionsMap.set(managePermission.id, false);
+      }
+
+      const updatedPermissions = Array.from(
+        updatedPermissionsMap.entries()
+      ).map(([id, granted]) => ({
+        permissionId: id,
+        granted,
+      }));
+
+      await updateRolePermissionsMutation.mutateAsync(
+        {
+          role: selectedRole,
+          permissions: updatedPermissions,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Permissões atualizadas com sucesso!");
+            refetchRolePermissions();
+          },
+          onError: (error: Error) => {
+            toast.error(error.message || "Erro ao atualizar permissões");
+          },
+        }
+      );
+      return;
+    }
+
+    // Se está marcando uma permissão individual, verificar se todas estão marcadas para marcar MANAGE
+    if (toggledPermission.action !== "MANAGE" && newGrantedValue) {
+      const resourcePermissions = permissions.filter(
+        (p) => p.resource === toggledPermission.resource
+      );
+      const managePermission = resourcePermissions.find(
+        (p) => p.action === "MANAGE"
+      );
+      const otherPermissions = resourcePermissions.filter(
+        (p) => p.action !== "MANAGE"
+      );
+
+      const updatedPermissionsMap = new Map(
+        currentPermissions.map((p) => [p.permissionId, p.granted])
+      );
+
+      // Marcar a permissão clicada
+      updatedPermissionsMap.set(permissionId, true);
+
+      // Verificar se todas as outras permissões (exceto MANAGE) estão marcadas
+      const allOthersGranted = otherPermissions.every((perm) => {
+        if (perm.id === permissionId) {
+          return true; // A que acabou de ser marcada
+        }
+        return updatedPermissionsMap.get(perm.id) ?? false;
+      });
+
+      // Se todas estão marcadas, marcar MANAGE também
+      if (allOthersGranted && managePermission) {
+        updatedPermissionsMap.set(managePermission.id, true);
+      }
+
+      const updatedPermissions = Array.from(
+        updatedPermissionsMap.entries()
+      ).map(([id, granted]) => ({
+        permissionId: id,
+        granted,
+      }));
+
+      await updateRolePermissionsMutation.mutateAsync(
+        {
+          role: selectedRole,
+          permissions: updatedPermissions,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Permissões atualizadas com sucesso!");
+            refetchRolePermissions();
+          },
+          onError: (error: Error) => {
+            toast.error(error.message || "Erro ao atualizar permissões");
+          },
+        }
+      );
+      return;
+    }
+
+    // Caso padrão: apenas alternar a permissão
     const updatedPermissions = currentPermissions.some(
       (p) => p.permissionId === permissionId
     )
       ? currentPermissions.map((p) =>
           p.permissionId === permissionId
-            ? { ...p, granted: !currentlyGranted }
+            ? { ...p, granted: newGrantedValue }
             : p
         )
-      : [...currentPermissions, { permissionId, granted: !currentlyGranted }];
+      : [...currentPermissions, { permissionId, granted: newGrantedValue }];
 
     await updateRolePermissionsMutation.mutateAsync(
       {

@@ -1,6 +1,13 @@
 "use client";
 
-import { ChevronDownIcon, UserIcon } from "lucide-react";
+import {
+  BadgeCheckIcon,
+  ChevronsUpDownIcon,
+  CoinsIcon,
+  LogOutIcon,
+  SettingsIcon,
+  UserIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -39,21 +46,22 @@ export default function UserCard() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger
+            className="[&_svg]:size-4"
             render={
               <SidebarMenuButton
-                className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground [&_svg]:size-6"
+                className="cursor-pointer data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
                 size="lg"
               />
             }
           >
-            <ItemMedia className="rounded-full bg-sidebar-accent">
+            <ItemMedia className="rounded-full bg-sidebar-accent [&_svg]:size-6">
               <UserIcon className="m-1" />
             </ItemMedia>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{session.user.name}</span>
               <span className="truncate text-xs">{session.user.email}</span>
             </div>
-            <ChevronDownIcon />
+            <ChevronsUpDownIcon />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>
@@ -78,9 +86,16 @@ export default function UserCard() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>Conta</DropdownMenuItem>
-              <DropdownMenuItem>Faturamento</DropdownMenuItem>
+              <DropdownMenuItem>
+                <BadgeCheckIcon />
+                Conta
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <CoinsIcon />
+                Faturamento
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push("/settings")}>
+                <SettingsIcon />
                 Configurações
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -98,6 +113,7 @@ export default function UserCard() {
                 }}
                 variant="destructive"
               >
+                <LogOutIcon />
                 Sair
               </DropdownMenuItem>
             </DropdownMenuGroup>

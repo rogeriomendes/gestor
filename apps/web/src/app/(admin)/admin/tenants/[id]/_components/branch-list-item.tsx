@@ -90,22 +90,36 @@ export function BranchListItem({
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <CardTitle>{branch.name}</CardTitle>
-              {branch.isMain && <Badge variant="default">Principal</Badge>}
-              {!branch.active && <Badge variant="secondary">Inativa</Badge>}
+    <Card className="transition-shadow hover:shadow-md">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <CardTitle className="text-base">{branch.name}</CardTitle>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {branch.isMain && (
+                  <Badge className="text-xs" variant="default">
+                    Principal
+                  </Badge>
+                )}
+                {!branch.active && (
+                  <Badge className="text-xs" variant="secondary">
+                    Inativa
+                  </Badge>
+                )}
+              </div>
             </div>
             {branch.legalName && (
-              <CardDescription>{branch.legalName}</CardDescription>
+              <CardDescription className="mt-1.5 text-sm">
+                {branch.legalName}
+              </CardDescription>
             )}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger
-              render={<Button size="icon" variant="ghost" />}
+              render={
+                <Button className="shrink-0" size="icon" variant="ghost" />
+              }
             >
               <MoreHorizontal className="h-4 w-4" />
               <span className="sr-only">Menu</span>
@@ -131,30 +145,36 @@ export function BranchListItem({
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2 text-sm">
+      <CardContent className="pt-0">
+        <div className="grid gap-3 text-sm sm:grid-cols-2">
           {branch.cnpj && (
-            <div className="flex items-center gap-2">
-              <span className="w-24 text-muted-foreground">CNPJ:</span>
-              <span>{branch.cnpj}</span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="w-20 shrink-0 font-medium text-muted-foreground">
+                CNPJ:
+              </span>
+              <span className="font-mono text-xs">{branch.cnpj}</span>
             </div>
           )}
           {branch.email && (
-            <div className="flex items-center gap-2">
-              <span className="w-24 text-muted-foreground">Email:</span>
-              <span>{branch.email}</span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="w-20 shrink-0 font-medium text-muted-foreground">
+                Email:
+              </span>
+              <span className="truncate">{branch.email}</span>
             </div>
           )}
           {branch.phone && (
-            <div className="flex items-center gap-2">
-              <span className="w-24 text-muted-foreground">Telefone:</span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="w-20 shrink-0 font-medium text-muted-foreground">
+                Telefone:
+              </span>
               <span>{branch.phone}</span>
             </div>
           )}
           {addressParts.length > 0 && (
-            <div className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
-              <span>{addressParts.join(", ")}</span>
+            <div className="flex min-w-0 items-start gap-2 sm:col-span-2">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+              <span className="break-words">{addressParts.join(", ")}</span>
             </div>
           )}
         </div>

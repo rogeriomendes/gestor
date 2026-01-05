@@ -30,6 +30,7 @@ export const usersRouter = router({
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
       const where: any = {
+        deletedAt: null, // Apenas usuários não deletados
         ...(input.tenantId && { tenantId: input.tenantId }),
         ...(input.search && {
           OR: [
@@ -149,7 +150,13 @@ export const usersRouter = router({
         password: z.string().min(8, "Password must be at least 8 characters"),
         tenantId: z.string().optional(),
         role: z
-          .enum(["TENANT_OWNER", "TENANT_USER_MANAGER", "TENANT_USER"])
+          .enum([
+            "SUPER_ADMIN",
+            "TENANT_ADMIN",
+            "TENANT_OWNER",
+            "TENANT_USER_MANAGER",
+            "TENANT_USER",
+          ])
           .optional(),
       })
     )
@@ -166,6 +173,14 @@ export const usersRouter = router({
         throw new TRPCError({
           code: "CONFLICT",
           message: "Já existe um usuário com este email",
+        });
+      }
+
+      // Validar que SUPER_ADMIN não pode ter tenantId
+      if (input.role === "SUPER_ADMIN" && input.tenantId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "SUPER_ADMIN não pode estar associado a um cliente",
         });
       }
 
@@ -647,5 +662,199 @@ export const usersRouter = router({
       );
 
       return updatedUser;
+    }),
+
+  /**
+   * Deletar usuário (soft delete)
+   * Requer permissão USER:DELETE
+   */
+  delete: adminProcedure
+    .use(requirePermission("USER", "DELETE"))
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await prisma.user.findUnique({
+        where: { id: input.userId },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Usuário não encontrado",
+        });
+      }
+
+      if (user.deletedAt) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Usuário já está deletado",
+        });
+      }
+
+      // Não permitir deletar a si mesmo
+      if (user.id === ctx.session.user.id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Não é possível deletar seu próprio usuário",
+        });
+      }
+
+      // Soft delete
+      const deletedUser = await prisma.user.update({
+        where: { id: input.userId },
+        data: {
+          deletedAt: new Date(),
+          deletedBy: ctx.session.user.id,
+        },
+      });
+
+      // Registrar no audit log
+      await createAuditLogFromContext(
+        {
+          action: AuditAction.DELETE_USER,
+          resourceType: user.tenantId
+            ? AuditResourceType.TENANT_USER
+            : AuditResourceType.USER,
+          resourceId: user.id,
+          metadata: {
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            tenantId: user.tenantId || null,
+          },
+        },
+        ctx
+      );
+
+      return deletedUser;
+    }),
+
+  /**
+   * Restaurar usuário deletado
+   * Requer permissão USER:DELETE
+   */
+  restore: adminProcedure
+    .use(requirePermission("USER", "DELETE"))
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await prisma.user.findUnique({
+        where: { id: input.userId },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Usuário não encontrado",
+        });
+      }
+
+      if (!user.deletedAt) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Usuário não está deletado",
+        });
+      }
+
+      // Restaurar usuário
+      const restoredUser = await prisma.user.update({
+        where: { id: input.userId },
+        data: {
+          deletedAt: null,
+          deletedBy: null,
+        },
+      });
+
+      // Registrar no audit log
+      await createAuditLogFromContext(
+        {
+          action: AuditAction.RESTORE_USER,
+          resourceType: user.tenantId
+            ? AuditResourceType.TENANT_USER
+            : AuditResourceType.USER,
+          resourceId: user.id,
+          metadata: {
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            tenantId: user.tenantId || null,
+          },
+        },
+        ctx
+      );
+
+      return restoredUser;
+    }),
+
+  /**
+   * Listar usuários deletados (lixeira)
+   * Requer permissão USER:READ
+   */
+  listDeleted: adminProcedure
+    .use(requirePermission("USER", "READ"))
+    .input(
+      paginationSchema.extend({
+        tenantId: z.string().optional(),
+        search: z.string().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { skip, take } = getPaginationParams(input.page, input.limit);
+
+      const where: any = {
+        deletedAt: { not: null }, // Apenas usuários deletados
+        ...(input.tenantId && { tenantId: input.tenantId }),
+        ...(input.search && {
+          OR: [
+            { name: { contains: input.search, mode: "insensitive" as const } },
+            { email: { contains: input.search, mode: "insensitive" as const } },
+          ],
+        }),
+      };
+
+      const [users, total] = await Promise.all([
+        prisma.user.findMany({
+          where: where as any,
+          skip,
+          take,
+          orderBy: { deletedAt: "desc" },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+            tenantId: true,
+            deletedAt: true,
+            deletedBy: true,
+            createdAt: true,
+            tenant: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
+          },
+        }),
+        prisma.user.count({ where: where as any }),
+      ]);
+
+      return {
+        data: users.map((user: any) => ({
+          id: user.id,
+          userId: user.id,
+          role: user.role,
+          deletedAt: user.deletedAt,
+          deletedBy: user.deletedBy,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            createdAt: user.createdAt,
+          },
+          tenant: user.tenant,
+        })),
+        pagination: createPaginationResponse(input.page, input.limit, total),
+      };
     }),
 });

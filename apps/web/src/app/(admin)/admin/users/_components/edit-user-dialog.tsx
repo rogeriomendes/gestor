@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -14,9 +14,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { trpcClient } from "@/utils/trpc";
+import { trpc, trpcClient } from "@/utils/trpc";
 import { ResetPasswordSection } from "./reset-password-section";
 import { UserBasicInfoSection } from "./user-basic-info-section";
+import { UserTenantSection } from "./user-tenant-section";
 
 interface EditUserDialogProps {
   open: boolean;
@@ -24,6 +25,8 @@ interface EditUserDialogProps {
   userId: string;
   userName: string;
   userEmail: string;
+  userTenantId?: string | null;
+  userRole?: string | null;
   onSuccess: () => void;
 }
 
@@ -33,12 +36,28 @@ export function EditUserDialog({
   userId,
   userName,
   userEmail,
+  userTenantId,
+  userRole,
   onSuccess,
 }: EditUserDialogProps) {
   const [name, setName] = useState(userName);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPasswordFields, setShowPasswordFields] = useState(false);
+
+  // Usar tenantId e role passados como props, ou buscar se não disponíveis
+  const { data: userData, refetch: refetchUser } = useQuery({
+    ...trpc.admin.listAllUsers.queryOptions({
+      page: 1,
+      limit: 100,
+    }),
+    enabled: open && !(userTenantId || userRole), // Só buscar se não tiver os dados
+    select: (data) => data.data.find((u) => u.user.id === userId) || null,
+  });
+
+  // Priorizar dados passados como props, depois dados da query
+  const currentTenantId = userTenantId ?? userData?.tenant?.id ?? null;
+  const currentRole = userRole ?? userData?.role ?? null;
 
   // Resetar campos quando o diálogo abrir/fechar
   useEffect(() => {
@@ -47,8 +66,9 @@ export function EditUserDialog({
       setNewPassword("");
       setConfirmPassword("");
       setShowPasswordFields(false);
+      refetchUser();
     }
-  }, [open, userName]);
+  }, [open, userName, refetchUser]);
 
   const updateUserMutation = useMutation({
     mutationFn: (input: { userId: string; name?: string; email?: string }) =>
@@ -151,6 +171,18 @@ export function EditUserDialog({
             email={userEmail}
             name={name}
             onNameChange={setName}
+          />
+
+          <Separator />
+
+          <UserTenantSection
+            currentRole={currentRole}
+            currentTenantId={currentTenantId}
+            onSuccess={() => {
+              refetchUser();
+              onSuccess();
+            }}
+            userId={userId}
           />
 
           <Separator />

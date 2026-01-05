@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { RoleBadge } from "@/components/role-badge";
 import {
   Sidebar,
@@ -15,12 +15,14 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useTenant } from "@/contexts/tenant-context";
+import isActive from "@/lib/is-active";
 import UserCard from "../user-card";
 import { adminMenuItens } from "./admin-menu-itens";
 
 export function AdminSidebar() {
   const { role } = useTenant();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   return (
     <Sidebar className="print:hidden" variant="inset">
@@ -45,7 +47,7 @@ export function AdminSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {adminMenuItens.map((item) => {
-                const isLinkActive = pathname === item.url;
+                const isLinkActive = isActive(item.url, pathname, searchParams);
                 return (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton

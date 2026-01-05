@@ -26,6 +26,7 @@ import {
 import { trpc, trpcClient } from "@/utils/trpc";
 import { SubscriptionsFilters } from "./_components/subscriptions-filters";
 import { SubscriptionsList } from "./_components/subscriptions-list";
+import { SubscriptionsStatsCards } from "./_components/subscriptions-stats-cards";
 
 type SubscriptionStatus = "TRIAL" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 
@@ -171,7 +172,23 @@ function AdminSubscriptionsPageContent() {
       subtitle="Visualizar e gerenciar assinaturas de clientes"
       title="Gerenciar Assinaturas"
     >
-      <div className="space-y-4">
+      <div className="space-y-6">
+        <SubscriptionsStatsCards
+          activeSubscriptions={
+            subscriptions.filter((s) => s.status === "ACTIVE").length
+          }
+          cancelledSubscriptions={
+            subscriptions.filter((s) => s.status === "CANCELLED").length
+          }
+          expiredSubscriptions={
+            subscriptions.filter((s) => s.status === "EXPIRED").length
+          }
+          totalSubscriptions={subscriptions.length}
+          trialSubscriptions={
+            subscriptions.filter((s) => s.status === "TRIAL").length
+          }
+        />
+
         <SubscriptionsFilters
           onPlanChange={setFilterPlan}
           onResetFilters={handleResetFilters}

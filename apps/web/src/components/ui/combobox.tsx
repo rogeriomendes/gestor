@@ -17,6 +17,7 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
+  DrawerTrigger,
 } from "@/components/ui/drawer";
 import {
   Popover,
@@ -114,21 +115,23 @@ export function Combobox({
 
   return (
     <Drawer onOpenChange={setOpen} open={open}>
-      <Button
-        aria-expanded={open}
-        className={cn("w-full justify-between font-normal", className)}
-        onClick={() => setOpen(true)}
-        role="combobox"
-        variant="outline"
-      >
-        {triggerContent}
-      </Button>
+      <DrawerTrigger asChild>
+        <Button
+          aria-expanded={open}
+          className={cn("w-full justify-between font-normal", className)}
+          onClick={() => setOpen(true)}
+          role="combobox"
+          variant="outline"
+        >
+          {triggerContent}
+        </Button>
+      </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="sr-only">
           <DrawerTitle>{placeholder}</DrawerTitle>
           <DrawerDescription>Selecione uma opção da lista</DrawerDescription>
         </DrawerHeader>
-        <div className="p-4 pt-0">{CommandContent}</div>
+        <div className="p-2 pt-4">{CommandContent}</div>
       </DrawerContent>
     </Drawer>
   );

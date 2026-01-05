@@ -3,6 +3,13 @@
 import { MoreHorizontal, RotateCcw, TrashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -49,84 +56,123 @@ export function DeletedTenantsList({
   onPermanentDelete,
 }: DeletedTenantsListProps) {
   if (isLoading) {
-    return <ListItemSkeleton count={5} />;
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {tenants.length} cliente{tenants.length !== 1 ? "s" : ""} deletado
+            {tenants.length !== 1 ? "s" : ""}
+          </CardTitle>
+          <CardDescription>
+            Clientes que foram deletados e podem ser restaurados
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ListItemSkeleton count={5} />
+        </CardContent>
+      </Card>
+    );
   }
 
   if (tenants.length === 0) {
     return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <TrashIcon className="h-6 w-6" />
-          </EmptyMedia>
-          <EmptyTitle>Nenhum cliente deletado</EmptyTitle>
-          <EmptyDescription>
-            Não há clientes deletados no momento.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <Card>
+        <CardHeader>
+          <CardTitle>0 clientes deletados</CardTitle>
+          <CardDescription>
+            Clientes que foram deletados e podem ser restaurados
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <TrashIcon className="h-6 w-6" />
+              </EmptyMedia>
+              <EmptyTitle>Nenhum cliente deletado</EmptyTitle>
+              <EmptyDescription>
+                Não há clientes deletados no momento.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="rounded-md border">
-      {tenants.map((tenant) => (
-        <div
-          className="flex items-center justify-between border-b p-4 last:border-b-0"
-          key={tenant.id}
-        >
-          <div className="flex items-center space-x-4">
-            <div>
-              <div className="font-medium">{tenant.name}</div>
-              <p className="text-muted-foreground text-sm">{tenant.slug}</p>
-              <p className="text-muted-foreground text-xs">
-                {tenant.deletedAt && (
-                  <>
-                    Deletado em:{" "}
-                    {new Date(tenant.deletedAt).toLocaleString("pt-BR")}
-                  </>
-                )}
-                {tenant.deletedByUser && (
-                  <>
-                    {" "}
-                    por{" "}
-                    {tenant.deletedByUser.name || tenant.deletedByUser.email}
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-muted-foreground text-xs">
-              {tenant._count.users} usuários
-            </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button className="h-8 w-8 p-0" variant="ghost" />}
-              >
-                <span className="sr-only">Abrir menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => onRestore(tenant)}>
-                    <RotateCcw className="mr-2 h-4 w-4" /> Restaurar
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={() => onPermanentDelete(tenant)}
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          {tenants.length} cliente{tenants.length !== 1 ? "s" : ""} deletado
+          {tenants.length !== 1 ? "s" : ""}
+        </CardTitle>
+        <CardDescription>
+          Clientes que foram deletados e podem ser restaurados
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-md border">
+          {tenants.map((tenant) => (
+            <div
+              className="flex items-center justify-between border-b p-4 last:border-b-0"
+              key={tenant.id}
+            >
+              <div className="flex items-center space-x-4">
+                <div>
+                  <div className="font-medium">{tenant.name}</div>
+                  <p className="text-muted-foreground text-sm">{tenant.slug}</p>
+                  <p className="text-muted-foreground text-xs">
+                    {tenant.deletedAt && (
+                      <>
+                        Deletado em:{" "}
+                        {new Date(tenant.deletedAt).toLocaleString("pt-BR")}
+                      </>
+                    )}
+                    {tenant.deletedByUser && (
+                      <>
+                        {" "}
+                        por{" "}
+                        {tenant.deletedByUser.name ||
+                          tenant.deletedByUser.email}
+                      </>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-muted-foreground text-xs">
+                  {tenant._count.users} usuários
+                </span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={<Button className="h-8 w-8 p-0" variant="ghost" />}
                   >
-                    <TrashIcon className="mr-2 h-4 w-4" /> Excluir
-                    Permanentemente
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                    <span className="sr-only">Abrir menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                      <DropdownMenuItem onClick={() => onRestore(tenant)}>
+                        <RotateCcw className="mr-2 h-4 w-4" /> Restaurar
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-destructive"
+                        onClick={() => onPermanentDelete(tenant)}
+                      >
+                        <TrashIcon className="mr-2 h-4 w-4" /> Excluir
+                        Permanentemente
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      </CardContent>
+    </Card>
   );
 }

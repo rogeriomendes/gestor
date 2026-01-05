@@ -14,6 +14,8 @@ model User {
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  deletedBy     String?
   sessions      Session[]
   accounts      Account[]
   tenant        Tenant?   @relation(fields: [tenantId], references: [id], onDelete: SetNull)
@@ -24,6 +26,7 @@ model User {
   @@index([role])
   @@index([tenantId, role])
   @@index([banned])
+  @@index([deletedAt])
   @@map("user")
 }
 

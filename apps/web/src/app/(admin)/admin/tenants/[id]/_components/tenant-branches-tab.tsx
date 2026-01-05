@@ -5,6 +5,13 @@ import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -12,10 +19,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { CardListSkeleton } from "@/components/ui/list-skeleton";
 import { trpc } from "@/utils/trpc";
 import { BranchFormDialog } from "./branch-form-dialog";
 import { BranchListItem } from "./branch-list-item";
+import { BranchListSkeleton } from "./branch-list-skeleton";
 
 interface TenantBranchesTabProps {
   tenantId: string;
@@ -67,45 +74,57 @@ export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
       </div>
 
       {/* Content */}
-      {(() => {
-        if (branchesLoading) {
-          return <CardListSkeleton count={3} />;
-        }
-        if (branches.length === 0) {
-          return (
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <PlusCircle className="h-6 w-6" />
-                </EmptyMedia>
-                <EmptyTitle>Nenhuma Filial Encontrada</EmptyTitle>
-                <EmptyDescription>
-                  Nenhuma filial cadastrada ainda. Comece criando sua primeira
-                  filial.
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <Button onClick={() => setIsDialogOpen(true)}>
-                  <PlusCircle className="mr-2 size-4" /> Adicionar Primeira
-                  Filial
-                </Button>
-              </EmptyContent>
-            </Empty>
-          );
-        }
-        return (
-          <div className="space-y-4">
-            {branches.map((branch) => (
-              <BranchListItem
-                branch={branch}
-                key={branch.id}
-                onEdit={handleEdit}
-                onRefresh={refetchBranches}
-              />
-            ))}
-          </div>
-        );
-      })()}
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {branches.length} filial{branches.length !== 1 ? "is" : ""}
+          </CardTitle>
+          <CardDescription>
+            Lista de todas as filiais cadastradas para este cliente
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            if (branchesLoading) {
+              return <BranchListSkeleton count={3} />;
+            }
+            if (branches.length === 0) {
+              return (
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <PlusCircle className="h-6 w-6" />
+                    </EmptyMedia>
+                    <EmptyTitle>Nenhuma Filial Encontrada</EmptyTitle>
+                    <EmptyDescription>
+                      Nenhuma filial cadastrada ainda. Comece criando sua
+                      primeira filial.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button onClick={() => setIsDialogOpen(true)}>
+                      <PlusCircle className="mr-2 size-4" /> Adicionar Primeira
+                      Filial
+                    </Button>
+                  </EmptyContent>
+                </Empty>
+              );
+            }
+            return (
+              <div className="space-y-4">
+                {branches.map((branch) => (
+                  <BranchListItem
+                    branch={branch}
+                    key={branch.id}
+                    onEdit={handleEdit}
+                    onRefresh={refetchBranches}
+                  />
+                ))}
+              </div>
+            );
+          })()}
+        </CardContent>
+      </Card>
 
       {/* Dialogs */}
       <BranchFormDialog

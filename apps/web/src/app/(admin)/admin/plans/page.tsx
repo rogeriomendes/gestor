@@ -134,7 +134,17 @@ function AdminPlansPageContent() {
       subtitle="Criar e gerenciar planos de assinatura"
       title="Gerenciar Planos"
     >
-      <div className="space-y-4">
+      <div className="space-y-6">
+        {/* <PlansStatsCards
+          activePlans={plans.filter((p) => p.active).length}
+          inactivePlans={plans.filter((p) => !p.active).length}
+          totalPlans={plans.length}
+          totalSubscriptions={plans.reduce(
+            (acc, plan) => acc + (plan._count?.subscriptions || 0),
+            0
+          )}
+        /> */}
+
         <PlansFilters
           onResetFilters={handleResetFilters}
           onSearchChange={setSearch}

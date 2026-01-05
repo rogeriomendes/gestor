@@ -1,6 +1,6 @@
 "use client";
 
-import { Edit, MoreHorizontal, Users } from "lucide-react";
+import { Edit, MoreHorizontal, RotateCcw, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { RoleBadge } from "@/components/role-badge";
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +54,15 @@ interface UsersListProps {
     | undefined;
   selectedRole: string;
   onPageChange: (page: number) => void;
-  onEdit: (userId: string, userName: string, userEmail: string) => void;
+  onEdit: (
+    userId: string,
+    userName: string,
+    userEmail: string,
+    tenantId?: string | null,
+    role?: string | null
+  ) => void;
+  onDelete?: (userId: string) => void;
+  onRestore?: (userId: string) => void;
 }
 
 export function UsersList({
@@ -64,6 +72,8 @@ export function UsersList({
   selectedRole,
   onPageChange,
   onEdit,
+  onDelete,
+  onRestore,
 }: UsersListProps) {
   const filteredUsers = users.filter((user) => {
     if (!user?.user) {
@@ -209,13 +219,32 @@ export function UsersList({
                             onEdit(
                               user.user.id,
                               user.user.name,
-                              user.user.email
+                              user.user.email,
+                              user.tenant?.id || null,
+                              user.role || null
                             )
                           }
                         >
                           <Edit className="mr-2 h-4 w-4" />
                           Editar Usuário
                         </DropdownMenuItem>
+                        {onDelete && (
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => onDelete(user.user.id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Deletar Usuário
+                          </DropdownMenuItem>
+                        )}
+                        {onRestore && (
+                          <DropdownMenuItem
+                            onClick={() => onRestore(user.user.id)}
+                          >
+                            <RotateCcw className="mr-2 h-4 w-4" />
+                            Restaurar Usuário
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>

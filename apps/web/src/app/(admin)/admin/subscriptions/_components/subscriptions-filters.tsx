@@ -10,13 +10,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-const STATUS_LABELS: Record<string, string> = {
-  TRIAL: "Trial",
-  ACTIVE: "Ativa",
-  EXPIRED: "Expirada",
-  CANCELLED: "Cancelada",
-};
+import {
+  getSubscriptionStatusLabel,
+  SUBSCRIPTION_STATUS_LABELS,
+} from "@/lib/status-labels";
 
 interface Tenant {
   id: string;
@@ -56,9 +53,9 @@ export function SubscriptionsFilters({
   const statusOptions: ComboboxOption[] = useMemo(
     () => [
       { value: "all", label: "Todos os status" },
-      ...Object.entries(STATUS_LABELS).map(([value, label]) => ({
+      ...Object.entries(SUBSCRIPTION_STATUS_LABELS).map(([value, label]) => ({
         value,
-        label,
+        label: label as string,
       })),
     ],
     []
@@ -97,7 +94,7 @@ export function SubscriptionsFilters({
   const activeFilters = [
     selectedStatus !== "all" && {
       id: "status",
-      label: STATUS_LABELS[selectedStatus] || selectedStatus,
+      label: getSubscriptionStatusLabel(selectedStatus),
       onClear: () => onStatusChange("all"),
     },
     selectedTenant !== "all" && {

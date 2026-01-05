@@ -11,42 +11,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-const ACTION_LABELS: Record<string, string> = {
-  CREATE_TENANT: "Criar Cliente",
-  UPDATE_TENANT: "Atualizar Cliente",
-  DELETE_TENANT: "Deletar Cliente",
-  RESTORE_TENANT: "Restaurar Cliente",
-  CREATE_USER: "Criar Usuário",
-  UPDATE_USER: "Atualizar Usuário",
-  UPDATE_USER_ROLE: "Atualizar Role",
-  REMOVE_USER: "Remover Usuário",
-  INVITE_USER: "Convidar Usuário",
-  CREATE_BRANCH: "Criar Filial",
-  UPDATE_BRANCH: "Atualizar Filial",
-  DELETE_BRANCH: "Deletar Filial",
-  RESTORE_BRANCH: "Restaurar Filial",
-  UPDATE_PERMISSIONS: "Atualizar Permissões",
-  INITIALIZE_PERMISSIONS: "Inicializar Permissões",
-  CREATE_PLAN: "Criar Plano",
-  UPDATE_PLAN: "Atualizar Plano",
-  DELETE_PLAN: "Deletar Plano",
-  ACTIVATE_PLAN: "Ativar Plano",
-  DEACTIVATE_PLAN: "Desativar Plano",
-  CREATE_SUBSCRIPTION: "Criar Assinatura",
-  UPDATE_SUBSCRIPTION: "Atualizar Assinatura",
-  CANCEL_SUBSCRIPTION: "Cancelar Assinatura",
-};
-
-const RESOURCE_TYPE_LABELS: Record<string, string> = {
-  TENANT: "Cliente",
-  USER: "Usuário",
-  TENANT_USER: "Usuário do Cliente",
-  BRANCH: "Filial",
-  PERMISSION: "Permissão",
-  PLAN: "Plano",
-  SUBSCRIPTION: "Assinatura",
-};
+import {
+  AUDIT_ACTION_LABELS,
+  AUDIT_RESOURCE_TYPE_LABELS,
+  getAuditActionLabel,
+  getAuditResourceTypeLabel,
+} from "@/lib/audit-labels";
+import { formatDate } from "@/lib/date-utils";
 
 interface Tenant {
   id: string;
@@ -99,7 +70,7 @@ export function AuditLogsFilters({
   const actionOptions: ComboboxOption[] = useMemo(
     () => [
       { value: "all", label: "Todas as ações" },
-      ...Object.entries(ACTION_LABELS).map(([value, label]) => ({
+      ...Object.entries(AUDIT_ACTION_LABELS).map(([value, label]) => ({
         value,
         label,
       })),
@@ -110,7 +81,7 @@ export function AuditLogsFilters({
   const resourceTypeOptions: ComboboxOption[] = useMemo(
     () => [
       { value: "all", label: "Todos os tipos" },
-      ...Object.entries(RESOURCE_TYPE_LABELS).map(([value, label]) => ({
+      ...Object.entries(AUDIT_RESOURCE_TYPE_LABELS).map(([value, label]) => ({
         value,
         label,
       })),
@@ -156,12 +127,12 @@ export function AuditLogsFilters({
   const activeFilters = [
     selectedAction !== "all" && {
       id: "action",
-      label: ACTION_LABELS[selectedAction] || selectedAction,
+      label: getAuditActionLabel(selectedAction),
       onClear: () => onActionChange("all"),
     },
     selectedResourceType !== "all" && {
       id: "resourceType",
-      label: RESOURCE_TYPE_LABELS[selectedResourceType] || selectedResourceType,
+      label: getAuditResourceTypeLabel(selectedResourceType),
       onClear: () => onResourceTypeChange("all"),
     },
     selectedTenant !== "all" && {
@@ -176,12 +147,12 @@ export function AuditLogsFilters({
     },
     startDate && {
       id: "startDate",
-      label: `De: ${startDate.toLocaleDateString("pt-BR")}`,
+      label: `De: ${formatDate(startDate)}`,
       onClear: () => onStartDateChange(undefined),
     },
     endDate && {
       id: "endDate",
-      label: `Até: ${endDate.toLocaleDateString("pt-BR")}`,
+      label: `Até: ${formatDate(endDate)}`,
       onClear: () => onEndDateChange(undefined),
     },
   ].filter(Boolean) as { id: string; label: string; onClear: () => void }[];

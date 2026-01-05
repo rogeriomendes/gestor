@@ -4,16 +4,11 @@ import { Search, X } from "lucide-react";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
-
-const ROLE_LABELS: Record<string, string> = {
-  SUPER_ADMIN: "Super Admin",
-  TENANT_ADMIN: "Admin de Cliente",
-  TENANT_OWNER: "Proprietário do Cliente",
-  TENANT_USER_MANAGER: "Gerente de Usuários do Cliente",
-  TENANT_USER: "Usuário do Cliente",
-};
+import { Label } from "@/components/ui/label";
+import { getRoleLabel, ROLE_LABELS_WITH_CONTEXT } from "@/lib/role-labels";
 
 interface Tenant {
   id: string;
@@ -24,20 +19,24 @@ interface UsersFiltersProps {
   search: string;
   selectedTenant: string;
   selectedRole: string;
+  showDeleted: boolean;
   tenants: Tenant[];
   onSearchChange: (value: string) => void;
   onTenantChange: (value: string) => void;
   onRoleChange: (value: string) => void;
+  onShowDeletedChange: (value: boolean) => void;
 }
 
 export function UsersFilters({
   search,
   selectedTenant,
   selectedRole,
+  showDeleted,
   tenants,
   onSearchChange,
   onTenantChange,
   onRoleChange,
+  onShowDeletedChange,
 }: UsersFiltersProps) {
   const tenantOptions: ComboboxOption[] = useMemo(
     () => [
@@ -53,9 +52,9 @@ export function UsersFilters({
   const roleOptions: ComboboxOption[] = useMemo(
     () => [
       { value: "all", label: "Todas as funções" },
-      ...Object.entries(ROLE_LABELS).map(([value, label]) => ({
+      ...Object.entries(ROLE_LABELS_WITH_CONTEXT).map(([value, label]) => ({
         value,
-        label,
+        label: label as string,
       })),
     ],
     []
@@ -70,14 +69,20 @@ export function UsersFilters({
     },
     selectedRole !== "all" && {
       id: "role",
-      label: ROLE_LABELS[selectedRole] || selectedRole,
+      label: getRoleLabel(selectedRole, true),
       onClear: () => onRoleChange("all"),
+    },
+    showDeleted && {
+      id: "deleted",
+      label: "Deletados",
+      onClear: () => onShowDeletedChange(false),
     },
   ].filter(Boolean) as { id: string; label: string; onClear: () => void }[];
 
   const handleResetFilters = () => {
     onTenantChange("all");
     onRoleChange("all");
+    onShowDeletedChange(false);
   };
 
   return (
@@ -114,6 +119,21 @@ export function UsersFilters({
           searchPlaceholder="Buscar função..."
           value={selectedRole}
         />
+      </div>
+
+      {/* Filtro de deletados */}
+      <div className="flex items-center gap-2">
+        <Checkbox
+          checked={showDeleted}
+          id="show-deleted"
+          onCheckedChange={(checked) => onShowDeletedChange(checked === true)}
+        />
+        <Label
+          className="cursor-pointer font-normal text-sm"
+          htmlFor="show-deleted"
+        >
+          Mostrar deletados
+        </Label>
       </div>
 
       {/* Badges de filtros ativos */}

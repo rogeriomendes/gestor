@@ -70,6 +70,43 @@ export const permissionRouter = router({
       // Limpar cache
       clearPermissionCache();
 
+      // Buscar informações das permissões para o log
+      const permissionIds = input.permissions.map((p) => p.permissionId);
+      const permissionsDetails = await prisma.permission.findMany({
+        where: {
+          id: {
+            in: permissionIds,
+          },
+        },
+      });
+
+      const permissionsMap = new Map(permissionsDetails.map((p) => [p.id, p]));
+
+      // Separar permissões concedidas e negadas
+      const grantedPermissions = input.permissions
+        .filter((p) => p.granted)
+        .map((p) => {
+          const perm = permissionsMap.get(p.permissionId);
+          return {
+            id: p.permissionId,
+            name: perm?.name || "Desconhecida",
+            resource: perm?.resource || "UNKNOWN",
+            action: perm?.action || "UNKNOWN",
+          };
+        });
+
+      const deniedPermissions = input.permissions
+        .filter((p) => !p.granted)
+        .map((p) => {
+          const perm = permissionsMap.get(p.permissionId);
+          return {
+            id: p.permissionId,
+            name: perm?.name || "Desconhecida",
+            resource: perm?.resource || "UNKNOWN",
+            action: perm?.action || "UNKNOWN",
+          };
+        });
+
       // Deletar todas as permissões existentes da role
       await prisma.rolePermission.deleteMany({
         where: {
@@ -97,8 +134,10 @@ export const permissionRouter = router({
           metadata: {
             role: input.role,
             permissionsCount: input.permissions.length,
-            grantedPermissions: input.permissions.filter((p) => p.granted)
-              .length,
+            grantedCount: grantedPermissions.length,
+            deniedCount: deniedPermissions.length,
+            grantedPermissions,
+            deniedPermissions,
           },
         },
         ctx
@@ -258,6 +297,42 @@ export const permissionRouter = router({
         }
       }
 
+      // Buscar informações das permissões criadas para o log
+      const createdPermissions = await prisma.permission.findMany({
+        orderBy: [{ resource: "asc" }, { action: "asc" }],
+      });
+
+      // Preparar detalhes das permissões por role
+      const rolePermissionsDetails: Record<
+        string,
+        Array<{ name: string; resource: string; action: string }>
+      > = {};
+
+      for (const [role, permissionKeys] of Object.entries(defaultPermissions)) {
+        if (role === "SUPER_ADMIN") continue;
+
+        const rolePerms = permissionKeys
+          .map((key) => {
+            const [resource, action] = key.split(":");
+            const perm = createdPermissions.find(
+              (p) => p.resource === resource && p.action === action
+            );
+            return perm
+              ? {
+                  name: perm.name,
+                  resource: perm.resource,
+                  action: perm.action,
+                }
+              : null;
+          })
+          .filter(
+            (p): p is { name: string; resource: string; action: string } =>
+              p !== null
+          );
+
+        rolePermissionsDetails[role] = rolePerms;
+      }
+
       // Registrar inicialização de permissões no audit log
       await createAuditLogFromContext(
         {
@@ -267,6 +342,12 @@ export const permissionRouter = router({
           metadata: {
             totalPermissions: allPermissions.length,
             rolesConfigured: Object.keys(defaultPermissions).length,
+            permissionsByRole: rolePermissionsDetails,
+            allPermissions: createdPermissions.map((p) => ({
+              name: p.name,
+              resource: p.resource,
+              action: p.action,
+            })),
           },
         },
         ctx

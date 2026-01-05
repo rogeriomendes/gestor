@@ -1,14 +1,7 @@
 "use client";
 
 import { CheckCircle2, XCircle } from "lucide-react";
-
-const ACTION_LABELS: Record<string, string> = {
-  CREATE: "Criar",
-  READ: "Visualizar",
-  UPDATE: "Editar",
-  DELETE: "Deletar",
-  MANAGE: "Gerenciar (Tudo)",
-};
+import { getPermissionActionLabel } from "@/lib/permission-labels";
 
 interface PermissionItemProps {
   permissionId: string;
@@ -30,7 +23,7 @@ export function PermissionItem({
   return (
     <div className="flex items-center justify-between rounded-md border p-3">
       <div className="flex-1">
-        <div className="font-medium">{ACTION_LABELS[action] || action}</div>
+        <div className="font-medium">{getPermissionActionLabel(action)}</div>
         <div className="text-muted-foreground text-xs">{name}</div>
       </div>
       <button

@@ -13,6 +13,13 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -67,118 +74,154 @@ export function PlansList({
   const router = useRouter();
 
   if (isLoading) {
-    return <ListItemSkeleton count={5} />;
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {plans.length} plano{plans.length !== 1 ? "s" : ""}
+          </CardTitle>
+          <CardDescription>
+            Lista de todos os planos de assinatura cadastrados
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ListItemSkeleton count={5} />
+        </CardContent>
+      </Card>
+    );
   }
 
   if (plans.length === 0) {
     return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <PlusCircle className="h-6 w-6" />
-          </EmptyMedia>
-          <EmptyTitle>Nenhum plano encontrado</EmptyTitle>
-          <EmptyDescription>
-            Comece criando seu primeiro plano.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
-          <Button onClick={() => router.push("/admin/plans/new")}>
-            Criar Plano
-          </Button>
-        </EmptyContent>
-      </Empty>
+      <Card>
+        <CardHeader>
+          <CardTitle>0 planos</CardTitle>
+          <CardDescription>
+            Lista de todos os planos de assinatura cadastrados
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <PlusCircle className="h-6 w-6" />
+              </EmptyMedia>
+              <EmptyTitle>Nenhum plano encontrado</EmptyTitle>
+              <EmptyDescription>
+                Comece criando seu primeiro plano.
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button onClick={() => router.push("/admin/plans/new")}>
+                Criar Plano
+              </Button>
+            </EmptyContent>
+          </Empty>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="rounded-md border">
-      {plans.map((plan) => (
-        <div
-          className="flex items-center justify-between border-b p-4 last:border-b-0"
-          key={plan.id}
-        >
-          <div className="flex items-center space-x-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <Link
-                  className="font-medium hover:underline"
-                  href={`/admin/plans/${plan.id}`}
-                >
-                  {plan.name}
-                </Link>
-                {plan.isDefault && (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          {plans.length} plano{plans.length !== 1 ? "s" : ""}
+        </CardTitle>
+        <CardDescription>
+          Lista de todos os planos de assinatura cadastrados
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-md border">
+          {plans.map((plan) => (
+            <div
+              className="flex items-center justify-between border-b p-4 last:border-b-0"
+              key={plan.id}
+            >
+              <div className="flex items-center space-x-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      className="font-medium hover:underline"
+                      href={`/admin/plans/${plan.id}`}
+                    >
+                      {plan.name}
+                    </Link>
+                    {plan.isDefault && (
+                      <Badge
+                        className="text-yellow-700 ring-1 ring-yellow-600/20 ring-inset"
+                        variant="outline"
+                      >
+                        <Star className="mr-1 h-3 w-3" /> Padrão
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    {plan.description || "Sem descrição"}
+                  </p>
+                  <p className="font-medium text-sm">
+                    {formatPrice(plan.price)}/mês
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {plan.active ? (
                   <Badge
-                    className="text-yellow-700 ring-1 ring-yellow-600/20 ring-inset"
+                    className="text-green-700 ring-1 ring-green-600/20 ring-inset"
                     variant="outline"
                   >
-                    <Star className="mr-1 h-3 w-3" /> Padrão
+                    <Check className="mr-1 h-3 w-3" /> Ativo
+                  </Badge>
+                ) : (
+                  <Badge
+                    className="text-red-700 ring-1 ring-red-600/20 ring-inset"
+                    variant="outline"
+                  >
+                    Inativo
                   </Badge>
                 )}
-              </div>
-              <p className="text-muted-foreground text-sm">
-                {plan.description || "Sem descrição"}
-              </p>
-              <p className="font-medium text-sm">
-                {formatPrice(plan.price)}/mês
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            {plan.active ? (
-              <Badge
-                className="text-green-700 ring-1 ring-green-600/20 ring-inset"
-                variant="outline"
-              >
-                <Check className="mr-1 h-3 w-3" /> Ativo
-              </Badge>
-            ) : (
-              <Badge
-                className="text-red-700 ring-1 ring-red-600/20 ring-inset"
-                variant="outline"
-              >
-                Inativo
-              </Badge>
-            )}
-            <span className="text-muted-foreground text-xs">
-              {plan._count.subscriptions} assinatura
-              {plan._count.subscriptions !== 1 ? "s" : ""}
-            </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button className="h-8 w-8 p-0" variant="ghost" />}
-              >
-                <span className="sr-only">Abrir menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                  <DropdownMenuItem
-                    onClick={() => router.push(`/admin/plans/${plan.id}`)}
+                <span className="text-muted-foreground text-xs">
+                  {plan._count.subscriptions} assinatura
+                  {plan._count.subscriptions !== 1 ? "s" : ""}
+                </span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={<Button className="h-8 w-8 p-0" variant="ghost" />}
                   >
-                    <MoreHorizontal className="mr-2 h-4 w-4" /> Ver/Editar
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {plan.active ? (
-                    <DropdownMenuItem
-                      className="text-destructive"
-                      disabled={plan.isDefault}
-                      onClick={() => onDeactivate(plan)}
-                    >
-                      <PowerOff className="mr-2 h-4 w-4" /> Desativar
-                    </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem onClick={() => onActivate(plan)}>
-                      <Power className="mr-2 h-4 w-4" /> Ativar
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                    <span className="sr-only">Abrir menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                      <DropdownMenuItem
+                        onClick={() => router.push(`/admin/plans/${plan.id}`)}
+                      >
+                        <MoreHorizontal className="mr-2 h-4 w-4" /> Ver/Editar
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {plan.active ? (
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          disabled={plan.isDefault}
+                          onClick={() => onDeactivate(plan)}
+                        >
+                          <PowerOff className="mr-2 h-4 w-4" /> Desativar
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem onClick={() => onActivate(plan)}>
+                          <Power className="mr-2 h-4 w-4" /> Ativar
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      </CardContent>
+    </Card>
   );
 }

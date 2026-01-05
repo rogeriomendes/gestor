@@ -16,7 +16,6 @@ import { PermanentDeleteTenantDialog } from "./_components/permanent-delete-tena
 import { RestoreTenantDialog } from "./_components/restore-tenant-dialog";
 import { TenantsFilters } from "./_components/tenants-filters";
 import { TenantsList } from "./_components/tenants-list";
-import { TenantsTabs } from "./_components/tenants-tabs";
 
 function _AdminTenantsPageContent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -32,7 +31,7 @@ function _AdminTenantsPageContent() {
       }
     | undefined
   >(undefined);
-  const [activeTab, setActiveTab] = useState("active");
+  const [showDeleted, setShowDeleted] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
 
@@ -50,7 +49,7 @@ function _AdminTenantsPageContent() {
     refetch: refetchDeletedTenants,
   } = useQuery({
     ...trpc.admin.listDeletedTenants.queryOptions({ page: 1, limit: 100 }),
-    enabled: activeTab === "deleted",
+    enabled: showDeleted,
   });
 
   const deleteTenantMutation = useMutation({
@@ -131,7 +130,7 @@ function _AdminTenantsPageContent() {
   const allTenants = tenantsData?.data || [];
   const deletedTenants = deletedTenantsData?.data || [];
 
-  // Filtrar tenants
+  // Filtrar tenants ativos
   const tenants = allTenants.filter((tenant) => {
     const matchesSearch =
       search === "" ||
@@ -144,9 +143,19 @@ function _AdminTenantsPageContent() {
     return matchesSearch && matchesStatus;
   });
 
+  // Filtrar tenants deletados
+  const filteredDeletedTenants = deletedTenants.filter((tenant) => {
+    const matchesSearch =
+      search === "" ||
+      tenant.name.toLowerCase().includes(search.toLowerCase()) ||
+      tenant.slug.toLowerCase().includes(search.toLowerCase());
+    return matchesSearch;
+  });
+
   const handleResetFilters = () => {
     setSearch("");
     setSelectedStatus("all");
+    setShowDeleted(false);
   };
 
   const breadcrumbs = [
@@ -167,41 +176,25 @@ function _AdminTenantsPageContent() {
       subtitle="Criar e gerenciar todos os clientes do sistema"
       title="Gerenciar Clientes"
     >
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <TenantsTabs
-            activeTab={activeTab}
-            deletedCount={deletedTenants.length}
-            onTabChange={setActiveTab}
-          />
-          {activeTab === "active" && (
-            <TenantsFilters
-              onResetFilters={handleResetFilters}
-              onSearchChange={setSearch}
-              onStatusChange={setSelectedStatus}
-              search={search}
-              selectedStatus={selectedStatus}
-            />
-          )}
-        </div>
+      <div className="space-y-6">
+        {/* <TenantsStatsCards
+          activeTenants={tenants.filter((t) => t.active).length}
+          deletedTenants={deletedTenants.length}
+          inactiveTenants={tenants.filter((t) => !t.active).length}
+          totalTenants={tenants.length}
+        /> */}
 
-        {activeTab === "active" && (
-          <TenantsList
-            isLoading={isTenantsLoading}
-            onDelete={(tenant) => {
-              setSelectedTenant({
-                id: tenant.id,
-                name: tenant.name,
-                slug: tenant.slug,
-                active: tenant.active,
-              });
-              setDeleteDialogOpen(true);
-            }}
-            tenants={tenants}
-          />
-        )}
+        <TenantsFilters
+          onResetFilters={handleResetFilters}
+          onSearchChange={setSearch}
+          onShowDeletedChange={setShowDeleted}
+          onStatusChange={setSelectedStatus}
+          search={search}
+          selectedStatus={selectedStatus}
+          showDeleted={showDeleted}
+        />
 
-        {activeTab === "deleted" && (
+        {showDeleted ? (
           <DeletedTenantsList
             isLoading={isDeletedTenantsLoading}
             onPermanentDelete={(tenant) => {
@@ -222,7 +215,21 @@ function _AdminTenantsPageContent() {
               });
               setRestoreDialogOpen(true);
             }}
-            tenants={deletedTenants}
+            tenants={filteredDeletedTenants}
+          />
+        ) : (
+          <TenantsList
+            isLoading={isTenantsLoading}
+            onDelete={(tenant) => {
+              setSelectedTenant({
+                id: tenant.id,
+                name: tenant.name,
+                slug: tenant.slug,
+                active: tenant.active,
+              });
+              setDeleteDialogOpen(true);
+            }}
+            tenants={tenants}
           />
         )}
       </div>

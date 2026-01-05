@@ -4,28 +4,29 @@ import { Search, X } from "lucide-react";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
-
-const STATUS_LABELS: Record<string, string> = {
-  all: "Todos",
-  active: "Ativos",
-  inactive: "Inativos",
-};
+import { Label } from "@/components/ui/label";
+import { getActivationStatusLabel } from "@/lib/status-labels";
 
 interface TenantsFiltersProps {
   search: string;
   selectedStatus: string;
+  showDeleted: boolean;
   onSearchChange: (value: string) => void;
   onStatusChange: (value: string) => void;
+  onShowDeletedChange: (value: boolean) => void;
   onResetFilters: () => void;
 }
 
 export function TenantsFilters({
   search,
   selectedStatus,
+  showDeleted,
   onSearchChange,
   onStatusChange,
+  onShowDeletedChange,
   onResetFilters,
 }: TenantsFiltersProps) {
   const statusOptions: ComboboxOption[] = useMemo(
@@ -37,7 +38,7 @@ export function TenantsFilters({
     []
   );
 
-  const hasActiveFilters = selectedStatus !== "all";
+  const hasActiveFilters = selectedStatus !== "all" || showDeleted;
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -64,19 +65,48 @@ export function TenantsFilters({
         />
       </div>
 
-      {/* Badge de filtro ativo */}
+      {/* Filtro de deletados */}
+      <div className="flex items-center gap-2">
+        <Checkbox
+          checked={showDeleted}
+          id="show-deleted"
+          onCheckedChange={(checked) => onShowDeletedChange(checked === true)}
+        />
+        <Label
+          className="cursor-pointer font-normal text-sm"
+          htmlFor="show-deleted"
+        >
+          Mostrar deletados
+        </Label>
+      </div>
+
+      {/* Badges de filtros ativos */}
       {hasActiveFilters && (
-        <div className="flex items-center gap-1.5">
-          <Badge className="gap-1 pr-1" variant="secondary">
-            {STATUS_LABELS[selectedStatus]}
-            <button
-              className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20"
-              onClick={() => onStatusChange("all")}
-              type="button"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          </Badge>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {selectedStatus !== "all" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              {getActivationStatusLabel(selectedStatus)}
+              <button
+                className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => onStatusChange("all")}
+                type="button"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {showDeleted && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Deletados
+              <button
+                className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => onShowDeletedChange(false)}
+                type="button"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
           <Button onClick={onResetFilters} size="sm" variant="ghost">
             <X className="mr-1 h-3 w-3" />
             Limpar

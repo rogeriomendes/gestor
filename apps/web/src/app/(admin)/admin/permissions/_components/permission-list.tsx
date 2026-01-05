@@ -15,24 +15,9 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { getPermissionResourceLabel } from "@/lib/permission-labels";
+import { ROLE_LABELS } from "@/lib/role-labels";
 import { PermissionItem } from "./permission-item";
-
-const RESOURCE_LABELS: Record<string, string> = {
-  TENANT: "Clientes",
-  USER: "Usuários",
-  BRANCH: "Filiais",
-  SETTINGS: "Configurações",
-  DASHBOARD: "Dashboard",
-  AUDIT_LOG: "Logs de Auditoria",
-};
-
-const ROLE_LABELS: Record<string, string> = {
-  SUPER_ADMIN: "Super Admin",
-  TENANT_ADMIN: "Admin de Cliente",
-  TENANT_OWNER: "Proprietário",
-  TENANT_USER_MANAGER: "Gerente de Usuários",
-  TENANT_USER: "Usuário",
-};
 
 type Role =
   | "SUPER_ADMIN"
@@ -138,30 +123,32 @@ export function PermissionList({
       <CardContent>
         <div className="space-y-6">
           {Object.entries(permissionsByResource).map(
-            ([resource, resourcePermissions]) => (
-              <div key={resource}>
-                <h3 className="mb-3 font-semibold">
-                  {RESOURCE_LABELS[resource] || resource}
-                </h3>
-                <div className="space-y-2">
-                  {resourcePermissions.map((permission) => {
-                    const isGranted =
-                      rolePermissionsMap.get(permission.id) ?? false;
-                    return (
-                      <PermissionItem
-                        action={permission.action}
-                        isGranted={isGranted}
-                        isPending={isPending}
-                        key={permission.id}
-                        name={permission.name}
-                        onToggle={onTogglePermission}
-                        permissionId={permission.id}
-                      />
-                    );
-                  })}
+            ([resource, resourcePermissions]) => {
+              return (
+                <div key={resource}>
+                  <h3 className="mb-3 font-semibold">
+                    {getPermissionResourceLabel(resource)}
+                  </h3>
+                  <div className="space-y-2">
+                    {resourcePermissions.map((permission) => {
+                      const isGranted =
+                        rolePermissionsMap.get(permission.id) ?? false;
+                      return (
+                        <PermissionItem
+                          action={permission.action}
+                          isGranted={isGranted}
+                          isPending={isPending}
+                          key={permission.id}
+                          name={permission.name}
+                          onToggle={onTogglePermission}
+                          permissionId={permission.id}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )
+              );
+            }
           )}
         </div>
       </CardContent>

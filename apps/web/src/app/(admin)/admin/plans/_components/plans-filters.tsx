@@ -6,12 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
-
-const STATUS_LABELS: Record<string, string> = {
-  all: "Todos",
-  active: "Ativos",
-  inactive: "Inativos",
-};
+import { getPlanStatusLabel } from "@/lib/status-labels";
 
 interface PlansFiltersProps {
   search: string;
@@ -68,7 +63,7 @@ export function PlansFilters({
       {hasActiveFilters && (
         <div className="flex items-center gap-1.5">
           <Badge className="gap-1 pr-1" variant="secondary">
-            {STATUS_LABELS[selectedStatus]}
+            {getPlanStatusLabel(selectedStatus)}
             <button
               className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20"
               onClick={() => onStatusChange("all")}
