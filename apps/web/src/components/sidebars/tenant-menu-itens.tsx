@@ -1,5 +1,4 @@
 import {
-  Bug,
   ChartColumn,
   ChartNoAxesColumn,
   Coins,
@@ -26,11 +25,6 @@ export const tenantMenuItens: MenuItemProps[] = [
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
-  },
-  {
-    title: "Teste Gestor",
-    url: "/gestor-test",
-    icon: Bug,
   },
   {
     title: "Relatórios",

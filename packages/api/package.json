@@ -15,15 +15,12 @@
     "@gestor/config": "workspace:*"
   },
   "dependencies": {
-    "@prisma/adapter-mariadb": "^7.2.0",
     "@trpc/server": "catalog:",
     "@trpc/client": "catalog:",
     "next": "^16.0.10",
     "dotenv": "catalog:",
     "zod": "catalog:",
     "@gestor/auth": "workspace:*",
-    "@gestor/db": "workspace:*",
-    "@gestor/db-dfe": "workspace:*",
-    "@gestor/db-gestor": "workspace:*"
+    "@gestor/db": "workspace:*"
   }
 }

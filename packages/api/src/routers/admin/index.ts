@@ -2,7 +2,6 @@ import { router } from "../../index";
 
 import { auditRouter } from "./audit";
 import { branchRouter } from "./branch";
-import { databaseCredentialsRouter } from "./database-credentials";
 import { permissionRouter } from "./permission";
 import { plansRouter } from "./plans";
 import { statsRouter } from "./stats";
@@ -43,5 +42,4 @@ export const adminRouter = router({
   audit: auditRouter,
   plans: plansRouter,
   subscriptions: subscriptionsRouter,
-  databaseCredentials: databaseCredentialsRouter,
 });

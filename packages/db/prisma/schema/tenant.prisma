@@ -22,16 +22,6 @@ model Tenant {
   // Observações gerais
   notes         String?  // Observações/Notas
   
-  // Credenciais do Banco de Dados MySQL (criptografadas)
-  // Mesmas credenciais usadas para db-gestor e db-dfe
-  dbMysqlHost          String?  // Host do MySQL
-  dbMysqlPort          Int?     // Porta do MySQL (padrão: 3306)
-  dbMysqlUsername      String?  // Usuário do MySQL
-  dbMysqlPassword      String?  // Senha do MySQL (criptografada)
-  
-  // Configuração de uso dos bancos
-  dbDfeEnabled         Boolean  @default(false) // Se o db-dfe está habilitado para este tenant
-  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
@@ -50,7 +40,6 @@ model Tenant {
   @@index([email])
   @@map("tenant")
 }
-
 
 model TenantBranch {
   id        String   @id @default(cuid())
