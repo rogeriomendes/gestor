@@ -34,7 +34,7 @@ export const auditRouter = router({
     .query(async ({ input }) => {
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
-      const where: any = {
+      const where = {
         ...(input.tenantId && { tenantId: input.tenantId }),
         ...(input.userId && { userId: input.userId }),
         ...(input.action && { action: input.action }),
@@ -158,7 +158,7 @@ export const auditRouter = router({
 
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
-      const where: any = {
+      const where = {
         tenantId: ctx.tenant.id,
         ...(input.action && { action: input.action }),
         ...(input.resourceType && { resourceType: input.resourceType }),
@@ -241,7 +241,7 @@ export const auditRouter = router({
         };
       }
 
-      const where: any = {
+      const where = {
         ...(input?.tenantId && { tenantId: input.tenantId }),
         ...dateFilter,
       };

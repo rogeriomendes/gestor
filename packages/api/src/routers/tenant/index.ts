@@ -16,11 +16,15 @@ import {
 } from "../../lib/pagination";
 import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+import { gestorTestRouter } from "./gestor-test";
 import { subscriptionRouter } from "./subscription";
 
 export const tenantRouter = router({
   // Sub-router para assinaturas
   subscription: subscriptionRouter,
+
+  // Sub-router para testes do db-gestor
+  gestorTest: gestorTestRouter,
 
   /**
    * Obter estatísticas do tenant (para dashboard)
@@ -129,6 +133,48 @@ export const tenantRouter = router({
       ...tenant,
       role: ctx.role,
     };
+  }),
+
+  /**
+   * Verificar se o tenant tem credenciais do db-gestor configuradas
+   */
+  hasGestorCredentials: tenantProcedure.query(async ({ ctx }) => {
+    if (!ctx.tenant) {
+      return false;
+    }
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: ctx.tenant.id },
+      select: {
+        dbMysqlHost: true,
+        dbMysqlUsername: true,
+        dbMysqlPassword: true,
+      },
+    });
+
+    return !!(
+      tenant?.dbMysqlHost &&
+      tenant?.dbMysqlUsername &&
+      tenant?.dbMysqlPassword
+    );
+  }),
+
+  /**
+   * Verificar se o db-dfe está habilitado para o tenant
+   */
+  hasDfeEnabled: tenantProcedure.query(async ({ ctx }) => {
+    if (!ctx.tenant) {
+      return false;
+    }
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: ctx.tenant.id },
+      select: {
+        dbDfeEnabled: true,
+      },
+    });
+
+    return tenant?.dbDfeEnabled;
   }),
 
   /**

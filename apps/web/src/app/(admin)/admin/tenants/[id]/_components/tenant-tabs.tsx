@@ -1,6 +1,6 @@
 "use client";
 
-type Tab = "details" | "users" | "branches" | "subscription";
+type Tab = "details" | "users" | "branches" | "subscription" | "database";
 
 interface TenantTabsProps {
   activeTab: Tab;
@@ -61,6 +61,17 @@ export function TenantTabs({
           type="button"
         >
           Assinatura
+        </button>
+        <button
+          className={`border-b-2 px-1 pb-4 font-medium text-sm ${
+            activeTab === "database"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
+          }`}
+          onClick={() => onTabChange("database")}
+          type="button"
+        >
+          Banco de Dados
         </button>
       </nav>
     </div>

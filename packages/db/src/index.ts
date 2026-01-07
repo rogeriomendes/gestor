@@ -21,3 +21,7 @@ prisma.$on("error" as never, (e: unknown) => {
 });
 
 export default prisma;
+
+// Export encryption and MySQL connection utilities
+export * from "./encryption";
+export * from "./mysql-connections";

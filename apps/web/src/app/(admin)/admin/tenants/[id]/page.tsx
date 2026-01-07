@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { TenantGuard, type TenantWithRelations } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { trpc, trpcClient } from "@/utils/trpc";
+import { DatabaseTab } from "./_components/database-tab";
 import { TenantBranchesTab } from "./_components/tenant-branches-tab";
 import { TenantDetailsForm } from "./_components/tenant-details-form";
 import { TenantSubscriptionTab } from "./_components/tenant-subscription-tab";
@@ -24,7 +25,7 @@ interface TenantPageContentProps {
 function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<
-    "details" | "users" | "branches" | "subscription"
+    "details" | "users" | "branches" | "subscription" | "database"
   >("details");
 
   // Todos os hooks são sempre chamados, garantindo ordem consistente
@@ -164,6 +165,9 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
         }
         if (activeTab === "branches") {
           return <TenantBranchesTab tenantId={tenantId} />;
+        }
+        if (activeTab === "database") {
+          return <DatabaseTab tenantId={tenantId} />;
         }
         return <TenantSubscriptionTab tenantId={tenantId} />;
       })()}

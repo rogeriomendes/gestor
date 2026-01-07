@@ -35,7 +35,7 @@ const branchSchema = z.object({
     .regex(/^\d{14}$/, "CNPJ must contain exactly 14 digits")
     .optional()
     .or(z.literal("")),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
+  email: z.email("Invalid email").optional().or(z.literal("")),
   phone: z.string().optional(),
   addressStreet: z.string().optional(),
   addressNumber: z.string().optional(),
