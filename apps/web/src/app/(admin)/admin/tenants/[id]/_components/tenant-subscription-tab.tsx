@@ -82,7 +82,7 @@ export function TenantSubscriptionTab({
   });
 
   if (isLoading) {
-    return <ListItemSkeleton count={2} />;
+    return <ListItemSkeleton count={1} />;
   }
 
   if (!subscription) {

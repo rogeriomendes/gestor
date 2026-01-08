@@ -21,6 +21,9 @@
     "dotenv": "catalog:",
     "zod": "catalog:",
     "@gestor/auth": "workspace:*",
-    "@gestor/db": "workspace:*"
+    "@gestor/db": "workspace:*",
+    "@gestor/db-gestor": "workspace:*",
+    "@gestor/db-dfe": "workspace:*",
+    "lru-cache": "^11.2.4"
   }
 }

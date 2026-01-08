@@ -2,6 +2,7 @@ import {
   ChartColumn,
   ChartNoAxesColumn,
   Coins,
+  Database,
   File,
   FileCheck,
   FileSearch2,
@@ -128,5 +129,10 @@ export const tenantSettingsMenuItens: MenuItemProps[] = [
     title: "Usuários",
     url: "/users",
     icon: Users,
+  },
+  {
+    title: "Teste de Conexão",
+    url: "/test",
+    icon: Database,
   },
 ];

@@ -18,7 +18,11 @@
     "db:push": "turbo -F @gestor/db db:push",
     "db:studio": "turbo -F @gestor/db db:studio",
     "db:generate": "turbo -F @gestor/db db:generate",
-    "db:migrate": "turbo -F @gestor/db db:migrate"
+    "db:migrate": "turbo -F @gestor/db db:migrate",
+    "db:gestor:studio": "turbo -F @gestor/db-gestor db:studio",
+    "db:gestor:generate": "turbo -F @gestor/db-gestor db:generate",
+    "db:dfe:studio": "turbo -F @gestor/db-dfe db:studio",
+    "db:dfe:generate": "turbo -F @gestor/db-dfe db:generate"
   },
   "dependencies": {
     "dotenv": "catalog:",

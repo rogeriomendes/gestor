@@ -102,7 +102,7 @@ export function TenantForm() {
       await createTenantMutation.mutateAsync(value, {
         onSuccess: (tenant) => {
           toast.success("Cliente criado com sucesso!");
-          router.push(`/admin/tenants/${tenant.id}`);
+          router.push(`/admin/tenants/${tenant?.id || ""}`);
         },
         onError: (error) => {
           toast.error(error.message);

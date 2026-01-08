@@ -4,7 +4,7 @@ export const debugRouter = router({
   /**
    * Endpoint de debug para verificar contexto do usuário
    */
-  getMyContext: protectedProcedure.query(async ({ ctx }) => {
+  getMyContext: protectedProcedure.query(({ ctx }) => {
     return {
       userId: ctx.session?.user?.id,
       role: ctx.role,

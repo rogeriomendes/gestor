@@ -5,6 +5,7 @@ import { branchRouter } from "./branch";
 import { permissionRouter } from "./permission";
 import { plansRouter } from "./plans";
 import { statsRouter } from "./stats";
+import { statusRouter } from "./status";
 import { subscriptionsRouter } from "./subscriptions";
 import { tenantsRouter } from "./tenants";
 import { usersRouter } from "./users";
@@ -19,6 +20,7 @@ export const adminRouter = router({
   listDeletedTenants: tenantsRouter.listDeleted,
   restoreTenant: tenantsRouter.restore,
   permanentlyDeleteTenant: tenantsRouter.permanentlyDelete,
+  testDatabaseConnection: tenantsRouter.testDatabaseConnection,
 
   // Rotas de usuários (mantendo nomes originais para compatibilidade)
   listAllUsers: usersRouter.listAll,
@@ -42,4 +44,5 @@ export const adminRouter = router({
   audit: auditRouter,
   plans: plansRouter,
   subscriptions: subscriptionsRouter,
+  status: statusRouter,
 });

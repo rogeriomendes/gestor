@@ -13,7 +13,7 @@ export const appRouter = router({
   privateData: protectedProcedure.query(({ ctx }) => {
     return {
       message: "Este é um dado privado",
-      user: ctx.session.user,
+      user: ctx.session?.user,
     };
   }),
   admin: adminRouter,

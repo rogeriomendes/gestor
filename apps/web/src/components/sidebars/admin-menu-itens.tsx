@@ -1,4 +1,5 @@
 import {
+  Activity,
   Building2,
   CreditCard,
   FileText,
@@ -44,5 +45,10 @@ export const adminMenuItens: MenuItemProps[] = [
     title: "Logs de Auditoria",
     url: "/admin/audit-logs",
     icon: FileText,
+  },
+  {
+    title: "Status",
+    url: "/admin/status",
+    icon: Activity,
   },
 ];

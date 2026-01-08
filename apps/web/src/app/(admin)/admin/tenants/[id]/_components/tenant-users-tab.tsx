@@ -92,66 +92,58 @@ export function TenantUsersTab({
           </div>
         </CardHeader>
         <CardContent>
-          {(() => {
-            if (isLoading) {
-              return (
-                <div className="space-y-2">
-                  {Array.from(
-                    { length: 3 },
-                    (_, i) => `skeleton-user-${i}`
-                  ).map((key) => (
-                    <div
-                      className="flex items-center justify-between rounded-lg border p-4"
-                      key={key}
-                    >
-                      <div className="flex items-center gap-4">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-32" />
-                          <Skeleton className="h-3 w-48" />
-                        </div>
+          {isLoading && (
+            <div className="space-y-2">
+              {Array.from({ length: 3 }, (_, i) => `skeleton-user-${i}`).map(
+                (key) => (
+                  <div
+                    className="flex items-center justify-between rounded-lg border p-4"
+                    key={key}
+                  >
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-48" />
                       </div>
-                      <Skeleton className="h-8 w-8" />
                     </div>
-                  ))}
-                </div>
-              );
-            }
-            if (users.length === 0) {
-              return (
-                <Empty>
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <UserPlus className="h-6 w-6" />
-                    </EmptyMedia>
-                    <EmptyTitle>
-                      Nenhum usuário encontrado para este cliente
-                    </EmptyTitle>
-                    <EmptyDescription>
-                      Nenhum usuário foi associado a este cliente ainda.
-                      Adicione usuários para começar.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              );
-            }
-            return (
-              <div className="space-y-2">
-                {users.map((user) => (
-                  <UserListItem
-                    email={user.email}
-                    key={user.id}
-                    name={user.name}
-                    onEdit={handleEdit}
-                    onRemove={onRemove}
-                    onUpdateRole={onUpdateRole}
-                    role={user.role}
-                    userId={user.id}
-                  />
-                ))}
-              </div>
-            );
-          })()}
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                )
+              )}
+            </div>
+          )}
+          {!isLoading && users.length === 0 ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <UserPlus className="h-6 w-6" />
+                </EmptyMedia>
+                <EmptyTitle>
+                  Nenhum usuário encontrado para este cliente
+                </EmptyTitle>
+                <EmptyDescription>
+                  Nenhum usuário foi associado a este cliente ainda. Adicione
+                  usuários para começar.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <div className="space-y-2">
+              {users.map((user) => (
+                <UserListItem
+                  email={user.email}
+                  key={user.id}
+                  name={user.name}
+                  onEdit={handleEdit}
+                  onRemove={onRemove}
+                  onUpdateRole={onUpdateRole}
+                  role={user.role}
+                  userId={user.id}
+                />
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 

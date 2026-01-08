@@ -2,16 +2,17 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { TenantGuard, type TenantWithRelations } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { TenantBranchesTab } from "./_components/tenant-branches-tab";
+import { TenantDatabaseTab } from "./_components/tenant-database-tab";
 import { TenantDetailsForm } from "./_components/tenant-details-form";
 import { TenantSubscriptionTab } from "./_components/tenant-subscription-tab";
-import { TenantTabs } from "./_components/tenant-tabs";
 import { TenantUsersTab } from "./_components/tenant-users-tab";
 
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
@@ -22,9 +23,8 @@ interface TenantPageContentProps {
 }
 
 function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<
-    "details" | "users" | "branches" | "subscription"
+    "details" | "database" | "users" | "branches" | "subscription"
   >("details");
 
   // Todos os hooks são sempre chamados, garantindo ordem consistente
@@ -121,52 +121,54 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
 
   return (
     <PageLayout
-      // actions={
-      //   <Button onClick={() => router.push("/admin/tenants")} variant="outline">
-      //     Voltar para Tenants
-      //   </Button>
-      // }
       backHref="/admin/tenants"
       breadcrumbs={breadcrumbs}
       showBackButton={true}
       subtitle={`${tenant.slug} ${tenant.active ? "• Ativo" : "• Inativo"}`}
       title={tenant.name}
     >
-      <TenantTabs
-        activeTab={activeTab}
-        branchesCount={
-          (tenant as { branches?: Array<{ id: string }> }).branches?.length || 0
-        }
-        onTabChange={setActiveTab}
-        usersCount={tenant.users?.length || 0}
-      />
+      <Tabs
+        onValueChange={(value) => setActiveTab(value as typeof activeTab)}
+        value={activeTab}
+      >
+        <TabsList variant="line">
+          <TabsTrigger value="details">Detalhes</TabsTrigger>
+          <TabsTrigger value="database">Banco de Dados</TabsTrigger>
+          <TabsTrigger value="users">
+            Usuários ({tenantUsers?.data.length || 0})
+          </TabsTrigger>
+          <TabsTrigger value="branches">
+            Filiais ({tenant.branches?.length || 0})
+          </TabsTrigger>
+          <TabsTrigger value="subscription">Assinatura</TabsTrigger>
+        </TabsList>
 
-      {/* Tab Content */}
-      {(() => {
-        if (activeTab === "details") {
-          return (
-            <TenantDetailsForm onSuccess={refetchTenant} tenant={tenant} />
-          );
-        }
-        if (activeTab === "users") {
-          return (
-            <TenantUsersTab
-              availableUsers={availableUsers}
-              availableUsersLoading={allUsersLoading}
-              isLoading={usersLoading}
-              onRefresh={handleRefresh}
-              onRemove={handleRemoveUser}
-              onUpdateRole={handleUpdateUserRole}
-              tenantId={tenantId}
-              users={usersList}
-            />
-          );
-        }
-        if (activeTab === "branches") {
-          return <TenantBranchesTab tenantId={tenantId} />;
-        }
-        return <TenantSubscriptionTab tenantId={tenantId} />;
-      })()}
+        {/* Tab Content */}
+        <TabsContent value="details">
+          <TenantDetailsForm onSuccess={refetchTenant} tenant={tenant} />
+        </TabsContent>
+        <TabsContent value="database">
+          <TenantDatabaseTab onSuccess={refetchTenant} tenant={tenant} />
+        </TabsContent>
+        <TabsContent value="users">
+          <TenantUsersTab
+            availableUsers={availableUsers}
+            availableUsersLoading={allUsersLoading}
+            isLoading={usersLoading}
+            onRefresh={handleRefresh}
+            onRemove={handleRemoveUser}
+            onUpdateRole={handleUpdateUserRole}
+            tenantId={tenantId}
+            users={usersList}
+          />
+        </TabsContent>
+        <TabsContent value="branches">
+          <TenantBranchesTab tenantId={tenantId} />
+        </TabsContent>
+        <TabsContent value="subscription">
+          <TenantSubscriptionTab tenantId={tenantId} />
+        </TabsContent>
+      </Tabs>
     </PageLayout>
   );
 }

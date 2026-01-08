@@ -11,6 +11,12 @@ import {
 } from "../../lib/pagination";
 import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+import {
+  testDatabaseConnection,
+  validateConnectionParams,
+} from "../../utils/db-connection-validator";
+import { decryptPassword, encryptPassword } from "../../utils/encryption";
+import { closeTenantConnections } from "../../utils/tenant-db-clients";
 
 export const tenantsRouter = router({
   /**
@@ -138,6 +144,11 @@ export const tenantsRouter = router({
           .optional()
           .or(z.literal("")),
         notes: z.string().optional(),
+        // Credenciais de banco de dados
+        dbHost: z.string().optional().or(z.literal("")),
+        dbPort: z.string().optional().or(z.literal("")),
+        dbUsername: z.string().optional().or(z.literal("")),
+        dbPassword: z.string().optional().or(z.literal("")),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -153,6 +164,33 @@ export const tenantsRouter = router({
         });
       }
 
+      // Validar credenciais se fornecidas
+      if (
+        input.dbHost ||
+        input.dbPort ||
+        input.dbUsername ||
+        input.dbPassword
+      ) {
+        const validation = validateConnectionParams(
+          input.dbHost,
+          input.dbPort,
+          input.dbUsername,
+          input.dbPassword
+        );
+        if (!validation.valid) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Credenciais inválidas: ${validation.errors.join(", ")}`,
+          });
+        }
+      }
+
+      // Criptografar senha se fornecida
+      const encryptedPassword =
+        input.dbPassword && input.dbPassword.trim() !== ""
+          ? encryptPassword(input.dbPassword)
+          : null;
+
       // Criar tenant
       const tenant = await prisma.tenant.create({
         data: {
@@ -163,6 +201,19 @@ export const tenantsRouter = router({
           phone: input.phone || null,
           website: input.website || null,
           notes: input.notes || null,
+          dbHost:
+            input.dbHost && input.dbHost.trim() !== ""
+              ? input.dbHost.trim()
+              : null,
+          dbPort:
+            input.dbPort && input.dbPort.trim() !== ""
+              ? input.dbPort.trim()
+              : null,
+          dbUsername:
+            input.dbUsername && input.dbUsername.trim() !== ""
+              ? input.dbUsername.trim()
+              : null,
+          dbPassword: encryptedPassword,
         },
       });
 
@@ -266,6 +317,11 @@ export const tenantsRouter = router({
         phone: z.string().optional(),
         website: z.url("Invalid URL").optional().or(z.literal("")),
         notes: z.string().optional(),
+        // Credenciais de banco de dados
+        dbHost: z.string().optional().or(z.literal("")),
+        dbPort: z.string().optional().or(z.literal("")),
+        dbUsername: z.string().optional().or(z.literal("")),
+        dbPassword: z.string().optional().or(z.literal("")),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -297,6 +353,27 @@ export const tenantsRouter = router({
         }
       }
 
+      // Validar credenciais se fornecidas
+      if (
+        updateData.dbHost !== undefined ||
+        updateData.dbPort !== undefined ||
+        updateData.dbUsername !== undefined ||
+        updateData.dbPassword !== undefined
+      ) {
+        const validation = validateConnectionParams(
+          updateData.dbHost,
+          updateData.dbPort,
+          updateData.dbUsername,
+          updateData.dbPassword
+        );
+        if (!validation.valid) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Credenciais inválidas: ${validation.errors.join(", ")}`,
+          });
+        }
+      }
+
       // Preparar dados para atualização (apenas campos que existem no Tenant)
       const updateFields: any = {};
       if (updateData.name !== undefined) updateFields.name = updateData.name;
@@ -318,10 +395,51 @@ export const tenantsRouter = router({
       if (updateData.notes !== undefined)
         updateFields.notes = updateData.notes || null;
 
+      // Campos de credenciais
+      if (updateData.dbHost !== undefined)
+        updateFields.dbHost =
+          updateData.dbHost && updateData.dbHost.trim() !== ""
+            ? updateData.dbHost.trim()
+            : null;
+      if (updateData.dbPort !== undefined)
+        updateFields.dbPort =
+          updateData.dbPort && updateData.dbPort.trim() !== ""
+            ? updateData.dbPort.trim()
+            : null;
+      if (updateData.dbUsername !== undefined)
+        updateFields.dbUsername =
+          updateData.dbUsername && updateData.dbUsername.trim() !== ""
+            ? updateData.dbUsername.trim()
+            : null;
+      if (updateData.dbPassword !== undefined) {
+        // Criptografar senha apenas se fornecida e não vazia
+        updateFields.dbPassword =
+          updateData.dbPassword && updateData.dbPassword.trim() !== ""
+            ? encryptPassword(updateData.dbPassword)
+            : null;
+      }
+
+      // Verificar se credenciais de banco foram alteradas
+      const credentialsChanged =
+        updateFields.dbHost !== undefined ||
+        updateFields.dbPort !== undefined ||
+        updateFields.dbUsername !== undefined ||
+        updateFields.dbPassword !== undefined;
+
       const tenant = await prisma.tenant.update({
         where: { id: tenantId },
         data: updateFields,
       });
+
+      // Se as credenciais foram alteradas, fechar conexões antigas do cache
+      if (credentialsChanged) {
+        const closedCount = closeTenantConnections(tenantId);
+        if (closedCount > 0) {
+          console.log(
+            `Fechadas ${closedCount} conexão(ões) do tenant ${tenantId} devido à atualização de credenciais`
+          );
+        }
+      }
 
       // Registrar no audit log
       await createAuditLogFromContext(
@@ -336,6 +454,7 @@ export const tenantsRouter = router({
               slug: existingTenant.slug,
               active: existingTenant.active,
             },
+            credentialsChanged,
           },
         },
         ctx
@@ -379,10 +498,18 @@ export const tenantsRouter = router({
         where: { id: input.tenantId },
         data: {
           deletedAt: new Date(),
-          deletedBy: ctx.session.user.id,
+          deletedBy: ctx.session?.user?.id || null,
           active: false,
         },
       });
+
+      // Fechar todas as conexões do tenant deletado
+      const closedCount = closeTenantConnections(input.tenantId);
+      if (closedCount > 0) {
+        console.log(
+          `Fechadas ${closedCount} conexão(ões) do tenant ${input.tenantId} devido à exclusão`
+        );
+      }
 
       // Registrar no audit log
       await createAuditLogFromContext(
@@ -412,7 +539,7 @@ export const tenantsRouter = router({
       })
     )
     .use(requirePermission("TENANT", "READ"))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
       const where = {
@@ -526,7 +653,7 @@ export const tenantsRouter = router({
   permanentlyDelete: adminProcedure
     .use(requirePermission("TENANT", "DELETE"))
     .input(z.object({ tenantId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       const tenant = await prisma.tenant.findUnique({
         where: { id: input.tenantId },
         include: {
@@ -554,11 +681,147 @@ export const tenantsRouter = router({
       // Verificar se tem muitos dados (opcional: adicionar validação)
       // Por enquanto, apenas deletar
 
+      // Fechar todas as conexões do tenant antes da exclusão permanente
+      const closedCount = closeTenantConnections(input.tenantId);
+      if (closedCount > 0) {
+        console.log(
+          `Fechadas ${closedCount} conexão(ões) do tenant ${input.tenantId} devido à exclusão permanente`
+        );
+      }
+
       // Exclusão permanente (cascade vai deletar relacionamentos)
       await prisma.tenant.delete({
         where: { id: input.tenantId },
       });
 
       return { success: true };
+    }),
+
+  /**
+   * Testar conexão de banco de dados
+   * Requer permissão TENANT:UPDATE
+   */
+  testDatabaseConnection: adminProcedure
+    .use(requirePermission("TENANT", "UPDATE"))
+    .input(
+      z.object({
+        tenantId: z.string().optional(),
+        dbHost: z.string().optional(),
+        dbPort: z.string().optional(),
+        dbUsername: z.string().optional(),
+        dbPassword: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      let host: string | undefined;
+      let port: string | undefined;
+      let username: string | undefined;
+      let password: string | undefined;
+
+      // Se algum valor de credencial foi fornecido no input (mesmo que vazio),
+      // usar os valores do input para testar antes de salvar
+      // Caso contrário, se tenantId estiver presente, buscar do banco
+      const hasAnyInputValue =
+        input.dbHost !== undefined ||
+        input.dbPort !== undefined ||
+        input.dbUsername !== undefined ||
+        input.dbPassword !== undefined;
+
+      if (hasAnyInputValue) {
+        // Usar credenciais fornecidas diretamente (mesmo que vazias)
+        host = input.dbHost?.trim() || undefined;
+        port = input.dbPort?.trim() || undefined;
+        username = input.dbUsername?.trim() || undefined;
+        password = input.dbPassword?.trim() || undefined;
+      } else if (input.tenantId) {
+        // Se não há credenciais no input, buscar do tenant
+        const tenant = await prisma.tenant.findUnique({
+          where: { id: input.tenantId },
+          select: {
+            dbHost: true,
+            dbPort: true,
+            dbUsername: true,
+            dbPassword: true,
+          },
+        });
+
+        if (!tenant) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Cliente não encontrado",
+          });
+        }
+
+        host = tenant.dbHost || undefined;
+        port = tenant.dbPort || undefined;
+        username = tenant.dbUsername || undefined;
+        password = tenant.dbPassword
+          ? decryptPassword(tenant.dbPassword)
+          : undefined;
+      }
+
+      // Validar formato
+      const validation = validateConnectionParams(
+        host,
+        port,
+        username,
+        password
+      );
+      if (!validation.valid) {
+        return {
+          success: false,
+          error: validation.errors.join(", "),
+          gestor: { success: false },
+          dfe: { success: false },
+        };
+      }
+
+      // Testar conexões reais
+      const gestorResult = await testDatabaseConnection(
+        host!,
+        port!,
+        username!,
+        password!,
+        "bussolla_db"
+      );
+      const dfeResult = await testDatabaseConnection(
+        host!,
+        port!,
+        username!,
+        password!,
+        "opytex_db_dfe"
+      );
+
+      const allSuccess = gestorResult.success && dfeResult.success;
+
+      // Construir mensagem de erro amigável (consolidada para evitar duplicação)
+      let errorMessage: string | undefined;
+      if (!allSuccess) {
+        // Se ambos falharam com o mesmo erro, mostrar apenas uma mensagem
+        if (
+          !(gestorResult.success || dfeResult.success) &&
+          gestorResult.error === dfeResult.error
+        ) {
+          errorMessage = gestorResult.error || "Erro desconhecido";
+        } else {
+          // Se os erros são diferentes ou apenas um falhou, consolidar removendo duplicatas
+          const errors: string[] = [];
+          if (!gestorResult.success) {
+            errors.push(gestorResult.error || "Erro desconhecido");
+          }
+          if (!dfeResult.success) {
+            errors.push(dfeResult.error || "Erro desconhecido");
+          }
+          // Remover duplicatas mantendo a ordem
+          errorMessage = [...new Set(errors)].join(". ");
+        }
+      }
+
+      return {
+        success: allSuccess,
+        error: errorMessage,
+        gestor: gestorResult,
+        dfe: dfeResult,
+      };
     }),
 });

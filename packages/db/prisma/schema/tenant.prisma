@@ -22,6 +22,12 @@ model Tenant {
   // Observações gerais
   notes         String?  // Observações/Notas
   
+  // Credenciais de banco de dados MySQL (compartilhadas para db-gestor e db-dfe)
+  dbHost        String?  // Host do servidor MySQL
+  dbPort        String?  // Porta do servidor MySQL
+  dbUsername    String?  // Username para conexão
+  dbPassword    String?  // Password criptografada para conexão
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
