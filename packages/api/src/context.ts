@@ -49,9 +49,14 @@ export async function createContext(req: NextRequest) {
         );
       }
 
-      // SUPER_ADMIN não precisa de tenant
+      // SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
       // Outros roles precisam de tenant para funcionar
-      if (role && role !== Role.SUPER_ADMIN && !tenant) {
+      if (
+        role &&
+        role !== Role.SUPER_ADMIN &&
+        role !== Role.TENANT_ADMIN &&
+        !tenant
+      ) {
         // Role que exige tenant mas não tem - limpar role
         role = null;
         tenant = null;

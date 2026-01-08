@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -67,9 +68,11 @@ export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
               <CardTitle>Filiais</CardTitle>
               <CardDescription>Gerenciar filiais deste cliente</CardDescription>
             </div>
-            <Button onClick={() => setIsDialogOpen(true)}>
-              <PlusCircle className="mr-2 size-4" /> Adicionar Filial
-            </Button>
+            <PermissionGuard action="CREATE" resource="BRANCH">
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <PlusCircle className="mr-2 size-4" /> Adicionar Filial
+              </Button>
+            </PermissionGuard>
           </div>
         </CardHeader>
         <CardContent>
@@ -87,10 +90,12 @@ export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button onClick={() => setIsDialogOpen(true)}>
-                  <PlusCircle className="mr-2 size-4" /> Adicionar Primeira
-                  Filial
-                </Button>
+                <PermissionGuard action="CREATE" resource="BRANCH">
+                  <Button onClick={() => setIsDialogOpen(true)}>
+                    <PlusCircle className="mr-2 size-4" /> Adicionar Primeira
+                    Filial
+                  </Button>
+                </PermissionGuard>
               </EmptyContent>
             </Empty>
           ) : (

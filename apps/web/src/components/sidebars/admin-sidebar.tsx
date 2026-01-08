@@ -16,8 +16,40 @@ import {
 } from "@/components/ui/sidebar";
 import { useTenant } from "@/contexts/tenant-context";
 import isActive from "@/lib/is-active";
+import { useHasPermission } from "@/lib/permissions";
 import UserCard from "../user-card";
-import { adminMenuItens } from "./admin-menu-itens";
+import { adminMenuItens, type MenuItemProps } from "./admin-menu-itens";
+
+function MenuItemWithPermission({
+  item,
+  pathname,
+  searchParams,
+}: {
+  item: MenuItemProps;
+  pathname: string;
+  searchParams: URLSearchParams;
+}) {
+  const hasPermission = item.permission
+    ? useHasPermission(item.permission.resource, item.permission.action)
+    : true;
+
+  if (!hasPermission) {
+    return null;
+  }
+
+  const isLinkActive = isActive(item.url, pathname, searchParams);
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        isActive={isLinkActive}
+        render={<Link href={item.url} />}
+      >
+        <item.icon />
+        <span>{item.title}</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
 
 export function AdminSidebar() {
   const { role } = useTenant();
@@ -46,20 +78,14 @@ export function AdminSidebar() {
           {/* <SidebarGroupLabel>Navegação</SidebarGroupLabel> */}
           <SidebarGroupContent>
             <SidebarMenu>
-              {adminMenuItens.map((item) => {
-                const isLinkActive = isActive(item.url, pathname, searchParams);
-                return (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      isActive={isLinkActive}
-                      render={<Link href={item.url} />}
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {adminMenuItens.map((item) => (
+                <MenuItemWithPermission
+                  item={item}
+                  key={item.url}
+                  pathname={pathname}
+                  searchParams={searchParams}
+                />
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

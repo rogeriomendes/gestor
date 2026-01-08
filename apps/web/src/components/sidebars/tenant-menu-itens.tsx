@@ -26,6 +26,7 @@ export const tenantMenuItens: MenuItemProps[] = [
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
+    permission: { resource: "DASHBOARD", action: "READ" },
   },
   {
     title: "Relatórios",
@@ -124,15 +125,18 @@ export const tenantSettingsMenuItens: MenuItemProps[] = [
     title: "Configurações",
     url: "/settings",
     icon: Settings,
+    permission: { resource: "SETTINGS", action: "READ" },
   },
   {
     title: "Usuários",
     url: "/users",
     icon: Users,
+    permission: { resource: "USER", action: "READ" },
   },
   {
     title: "Teste de Conexão",
     url: "/test",
     icon: Database,
+    permission: { resource: "SETTINGS", action: "READ" },
   },
 ];

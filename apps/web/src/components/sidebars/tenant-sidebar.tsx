@@ -29,9 +29,159 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import isActive from "@/lib/is-active";
+import { useHasPermission } from "@/lib/permissions";
 import UserCard from "../user-card";
 import { SubscriptionCard } from "./subscription-card";
 import { tenantMenuItens, tenantSettingsMenuItens } from "./tenant-menu-itens";
+import type { MenuItemProps } from "./types";
+
+function TenantMenuItemWithPermission({
+  item,
+  pathname,
+  searchParams,
+  expandedItems,
+  toggleExpanded,
+  handleLinkClick,
+}: {
+  item: MenuItemProps;
+  pathname: string;
+  searchParams: URLSearchParams;
+  expandedItems: Set<string>;
+  toggleExpanded: (title: string) => void;
+  handleLinkClick: () => void;
+}) {
+  const hasPermission = item.permission
+    ? useHasPermission(item.permission.resource, item.permission.action)
+    : true;
+
+  if (!hasPermission) {
+    return null;
+  }
+
+  const isLinkActive = isActive(
+    item.url,
+    item.sub ? `/${String(pathname.split("/")[1])}` : pathname,
+    searchParams
+  );
+
+  return (
+    <Collapsible
+      onOpenChange={() => item.sub && toggleExpanded(item.title)}
+      open={expandedItems.has(item.title)}
+      render={
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            className="cursor-pointer"
+            isActive={isLinkActive}
+            render={
+              item.sub ? (
+                <button
+                  onClick={() => toggleExpanded(item.title)}
+                  type="button"
+                />
+              ) : (
+                <Link href={item.url} onClick={handleLinkClick} />
+              )
+            }
+          >
+            <item.icon />
+            <span>{item.title}</span>
+          </SidebarMenuButton>
+          {item.sub && (
+            <>
+              <CollapsibleTrigger
+                render={
+                  <SidebarMenuAction
+                    className={`right-1.5 mt-0.5 ml-auto size-4 transition-transform duration-300 ${
+                      expandedItems.has(item.title) ? "rotate-90" : "rotate-0"
+                    }`}
+                  />
+                }
+              >
+                <ChevronRightIcon />
+                <span className="sr-only">Toggle</span>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  {item.sub.map((subItem) => (
+                    <SubMenuItemWithPermission
+                      handleLinkClick={handleLinkClick}
+                      key={subItem.title}
+                      pathname={pathname}
+                      searchParams={searchParams}
+                      subItem={subItem}
+                    />
+                  ))}
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </>
+          )}
+        </SidebarMenuItem>
+      }
+    />
+  );
+}
+
+function SubMenuItemWithPermission({
+  subItem,
+  pathname,
+  searchParams,
+  handleLinkClick,
+}: {
+  subItem: MenuItemProps["sub"][number];
+  pathname: string;
+  searchParams: URLSearchParams;
+  handleLinkClick: () => void;
+}) {
+  const hasPermission = subItem.permission
+    ? useHasPermission(subItem.permission.resource, subItem.permission.action)
+    : true;
+
+  if (!hasPermission) {
+    return null;
+  }
+
+  return (
+    <SidebarMenuSubItem>
+      <SidebarMenuSubButton
+        isActive={isActive(subItem.url, pathname, searchParams)}
+        render={<Link href={subItem.url} onClick={handleLinkClick} />}
+      >
+        <subItem.icon />
+        <span>{subItem.title}</span>
+      </SidebarMenuSubButton>
+    </SidebarMenuSubItem>
+  );
+}
+
+function SettingsMenuItemWithPermission({
+  item,
+  pathname,
+}: {
+  item: MenuItemProps;
+  pathname: string;
+}) {
+  const hasPermission = item.permission
+    ? useHasPermission(item.permission.resource, item.permission.action)
+    : true;
+
+  if (!hasPermission) {
+    return null;
+  }
+
+  const isLinkActive = pathname === item.url;
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        isActive={isLinkActive}
+        render={<Link href={item.url} />}
+      >
+        <item.icon />
+        <span>{item.title}</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
 
 export function TenantSidebar() {
   const pathname = usePathname();
@@ -80,100 +230,17 @@ export function TenantSidebar() {
           <SidebarGroupLabel>Navegação</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {tenantMenuItens.map((item) => {
-                const isLinkActive = isActive(
-                  item.url,
-                  item.sub ? `/${String(pathname.split("/")[1])}` : pathname,
-                  searchParams
-                );
-
-                return (
-                  <Collapsible
-                    key={item.title}
-                    onOpenChange={() => item.sub && toggleExpanded(item.title)}
-                    open={expandedItems.has(item.title)}
-                    render={
-                      <SidebarMenuItem>
-                        <SidebarMenuButton
-                          className="cursor-pointer"
-                          isActive={isLinkActive}
-                          render={
-                            item.sub ? (
-                              <button
-                                onClick={() => toggleExpanded(item.title)}
-                                type="button"
-                              />
-                            ) : (
-                              <Link href={item.url} onClick={handleLinkClick} />
-                            )
-                          }
-                        >
-                          <item.icon />
-                          <span>{item.title}</span>
-                          {/* {item.sub && (
-                            <ChevronRightIcon
-                              className={`ml-auto size-4 transition-transform duration-300 ${
-                                expandedItems.has(item.title)
-                                  ? "rotate-90"
-                                  : "rotate-0"
-                              }`}
-                            />
-                          )} */}
-                        </SidebarMenuButton>
-                        {item.sub && (
-                          <>
-                            <CollapsibleTrigger
-                              render={
-                                <SidebarMenuAction
-                                  className={`right-1.5 mt-0.5 ml-auto size-4 transition-transform duration-300 ${
-                                    expandedItems.has(item.title)
-                                      ? "rotate-90"
-                                      : "rotate-0"
-                                  }`}
-                                />
-                                //     <ChevronRightIcon
-                                //   className={`ml-auto size-4 transition-transform duration-300 ${
-                                //     expandedItems.has(item.title)
-                                //       ? "rotate-90"
-                                //       : "rotate-0"
-                                //   }`}
-                                // />
-                              }
-                            >
-                              <ChevronRightIcon />
-                              <span className="sr-only">Toggle</span>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                              <SidebarMenuSub>
-                                {item.sub.map((subItem) => (
-                                  <SidebarMenuSubItem key={subItem.title}>
-                                    <SidebarMenuSubButton
-                                      isActive={isActive(
-                                        subItem.url,
-                                        pathname,
-                                        searchParams
-                                      )}
-                                      render={
-                                        <Link
-                                          href={subItem.url}
-                                          onClick={handleLinkClick}
-                                        />
-                                      }
-                                    >
-                                      <subItem.icon />
-                                      <span>{subItem.title}</span>
-                                    </SidebarMenuSubButton>
-                                  </SidebarMenuSubItem>
-                                ))}
-                              </SidebarMenuSub>
-                            </CollapsibleContent>
-                          </>
-                        )}
-                      </SidebarMenuItem>
-                    }
-                  />
-                );
-              })}
+              {tenantMenuItens.map((item) => (
+                <TenantMenuItemWithPermission
+                  expandedItems={expandedItems}
+                  handleLinkClick={handleLinkClick}
+                  item={item}
+                  key={item.title}
+                  pathname={pathname}
+                  searchParams={searchParams}
+                  toggleExpanded={toggleExpanded}
+                />
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -181,20 +248,13 @@ export function TenantSidebar() {
           {/* <SidebarGroupLabel>Configurações</SidebarGroupLabel> */}
           <SidebarGroupContent>
             <SidebarMenu>
-              {tenantSettingsMenuItens.map((item) => {
-                const isLinkActive = pathname === item.url;
-                return (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      isActive={isLinkActive}
-                      render={<Link href={item.url} />}
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {tenantSettingsMenuItens.map((item) => (
+                <SettingsMenuItemWithPermission
+                  item={item}
+                  key={item.url}
+                  pathname={pathname}
+                />
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

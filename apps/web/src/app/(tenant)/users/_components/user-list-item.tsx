@@ -1,6 +1,7 @@
 "use client";
 
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { RoleBadge } from "@/components/role-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,50 +44,60 @@ export function UserListItem({
         </div>
         <RoleBadge role={role} />
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={<Button className="h-8 w-8 p-0" variant="ghost" />}
-        >
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuGroup>
-            {onEdit && (
-              <>
-                <DropdownMenuItem onClick={() => onEdit(userId, name, email)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Editar Usuário
+      <PermissionGuard action="UPDATE" resource="USER">
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={<Button className="h-8 w-8 p-0" variant="ghost" />}
+          >
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuGroup>
+              <PermissionGuard action="UPDATE" resource="USER">
+                {onEdit && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => onEdit(userId, name, email)}
+                    >
+                      <Edit className="mr-2 h-4 w-4" />
+                      Editar Usuário
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+              </PermissionGuard>
+              <PermissionGuard action="UPDATE" resource="USER">
+                <DropdownMenuLabel>Alterar Role</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => onUpdateRole(userId, "TENANT_USER")}
+                >
+                  User
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onUpdateRole(userId, "TENANT_USER_MANAGER")}
+                >
+                  User Manager
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onUpdateRole(userId, "TENANT_OWNER")}
+                >
+                  Owner
+                </DropdownMenuItem>
+              </PermissionGuard>
+              <PermissionGuard action="DELETE" resource="USER">
                 <DropdownMenuSeparator />
-              </>
-            )}
-            <DropdownMenuLabel>Alterar Role</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => onUpdateRole(userId, "TENANT_USER")}
-            >
-              User
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onUpdateRole(userId, "TENANT_USER_MANAGER")}
-            >
-              User Manager
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onUpdateRole(userId, "TENANT_OWNER")}
-            >
-              Owner
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={() => onRemove(userId)}
-            >
-              <Trash2 className="mr-2 h-4 w-4" /> Remover do Tenant
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => onRemove(userId)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" /> Remover do Tenant
+                </DropdownMenuItem>
+              </PermissionGuard>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </PermissionGuard>
     </div>
   );
 }

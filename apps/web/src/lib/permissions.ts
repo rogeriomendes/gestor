@@ -8,6 +8,24 @@ type Role =
   | "TENANT_USER_MANAGER"
   | "TENANT_USER";
 
+// Tipos de recursos e ações de permissão
+export type PermissionResource =
+  | "TENANT"
+  | "USER"
+  | "BRANCH"
+  | "SETTINGS"
+  | "DASHBOARD"
+  | "AUDIT_LOG";
+
+export type PermissionAction =
+  | "CREATE"
+  | "READ"
+  | "UPDATE"
+  | "DELETE"
+  | "MANAGE";
+
+export type PermissionKey = `${PermissionResource}:${PermissionAction}`;
+
 /**
  * Hook para verificar se usuário tem uma role específica
  */
@@ -52,4 +70,88 @@ export function useIsAdmin(): boolean {
 export function useIsSuperAdmin(): boolean {
   const { isSuperAdmin } = useTenant();
   return isSuperAdmin;
+}
+
+/**
+ * Hook para verificar se o usuário tem uma permissão específica
+ * @param resource - Recurso da permissão (ex: "USER", "TENANT")
+ * @param action - Ação da permissão (ex: "CREATE", "READ", "UPDATE", "DELETE", "MANAGE")
+ * @returns true se o usuário tem a permissão
+ */
+export function useHasPermission(
+  resource: PermissionResource,
+  action: PermissionAction
+): boolean {
+  const { permissions, isSuperAdmin } = useTenant();
+
+  // SUPER_ADMIN tem todas as permissões
+  if (isSuperAdmin) {
+    return true;
+  }
+
+  if (!permissions) {
+    return false;
+  }
+
+  const permissionKey: PermissionKey = `${resource}:${action}`;
+  const manageKey: PermissionKey = `${resource}:MANAGE`;
+
+  // Verificar permissão específica ou MANAGE (que dá acesso completo ao recurso)
+  return permissions.has(permissionKey) || permissions.has(manageKey);
+}
+
+/**
+ * Hook para verificar se o usuário tem qualquer uma das permissões especificadas (OR)
+ * @param permissionsList - Array de permissões { resource, action }
+ * @returns true se o usuário tem pelo menos uma das permissões
+ */
+export function useHasAnyPermission(
+  permissionsList: Array<{
+    resource: PermissionResource;
+    action: PermissionAction;
+  }>
+): boolean {
+  const { permissions, isSuperAdmin } = useTenant();
+
+  if (isSuperAdmin) {
+    return true;
+  }
+
+  if (!permissions) {
+    return false;
+  }
+
+  return permissionsList.some((p) => {
+    const permissionKey: PermissionKey = `${p.resource}:${p.action}`;
+    const manageKey: PermissionKey = `${p.resource}:MANAGE`;
+    return permissions.has(permissionKey) || permissions.has(manageKey);
+  });
+}
+
+/**
+ * Hook para verificar se o usuário tem todas as permissões especificadas (AND)
+ * @param permissionsList - Array de permissões { resource, action }
+ * @returns true se o usuário tem todas as permissões
+ */
+export function useHasAllPermissions(
+  permissionsList: Array<{
+    resource: PermissionResource;
+    action: PermissionAction;
+  }>
+): boolean {
+  const { permissions, isSuperAdmin } = useTenant();
+
+  if (isSuperAdmin) {
+    return true;
+  }
+
+  if (!permissions) {
+    return false;
+  }
+
+  return permissionsList.every((p) => {
+    const permissionKey: PermissionKey = `${p.resource}:${p.action}`;
+    const manageKey: PermissionKey = `${p.resource}:MANAGE`;
+    return permissions.has(permissionKey) || permissions.has(manageKey);
+  });
 }

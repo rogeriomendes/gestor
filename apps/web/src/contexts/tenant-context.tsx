@@ -29,6 +29,7 @@ interface TenantContextValue {
   role: Role | null;
   isSuperAdmin: boolean;
   isTenantAdmin: boolean;
+  permissions: Set<string> | null;
   isLoading: boolean;
   isError: boolean;
   error: Error | null;
@@ -44,6 +45,15 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   const queryResult = useQuery({
     ...trpc.tenant.getMyTenant.queryOptions(),
     enabled: !!session?.user, // Só executa se houver sessão
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    refetchOnWindowFocus: false,
+  });
+
+  // Buscar permissões do usuário
+  const permissionsQuery = useQuery({
+    ...trpc.debug.getMyContext.queryOptions(),
+    enabled: !!session?.user,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutos
     refetchOnWindowFocus: false,
@@ -68,6 +78,11 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   const isSuperAdmin = role === "SUPER_ADMIN";
   const isTenantAdmin = role === "TENANT_ADMIN" || isSuperAdmin;
 
+  // Extrair permissões do contexto
+  const permissions = permissionsQuery.data?.permissions
+    ? new Set(permissionsQuery.data.permissions)
+    : null;
+
   // Extrair dados do tenant (sem role)
   // Se _isAdminWithoutTenant for true, não tem tenant real
   const tenantData =
@@ -88,11 +103,13 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     role,
     isSuperAdmin,
     isTenantAdmin,
-    isLoading: queryResult.isLoading,
-    isError: queryResult.isError,
-    error: queryResult.error as Error | null,
+    permissions,
+    isLoading: queryResult.isLoading || permissionsQuery.isLoading,
+    isError: queryResult.isError || permissionsQuery.isError,
+    error: (queryResult.error || permissionsQuery.error) as Error | null,
     refetch: () => {
       queryResult.refetch();
+      permissionsQuery.refetch();
     },
   };
 

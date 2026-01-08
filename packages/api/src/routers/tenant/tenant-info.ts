@@ -81,9 +81,9 @@ export const tenantInfoRouter = router({
       return null;
     }
 
-    // SUPER_ADMIN não precisa de tenant
+    // SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
     // Retornar apenas a role (tenant será null)
-    if (ctx.isSuperAdmin) {
+    if (ctx.isSuperAdmin || ctx.role === "TENANT_ADMIN") {
       return {
         id: "",
         name: "",

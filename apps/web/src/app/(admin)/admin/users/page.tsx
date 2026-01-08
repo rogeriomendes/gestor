@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -123,10 +124,12 @@ function AdminUsersPageContent() {
   return (
     <PageLayout
       actions={
-        <Button onClick={() => setCreateUserDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Criar Usuário
-        </Button>
+        <PermissionGuard action="CREATE" resource="USER">
+          <Button onClick={() => setCreateUserDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Criar Usuário
+          </Button>
+        </PermissionGuard>
       }
       breadcrumbs={breadcrumbs}
       subtitle="Gerencie todos os usuários do sistema"

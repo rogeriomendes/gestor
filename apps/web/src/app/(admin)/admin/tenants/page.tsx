@@ -8,6 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { DeleteTenantDialog } from "./_components/delete-tenant-dialog";
@@ -166,11 +167,13 @@ function _AdminTenantsPageContent() {
   return (
     <PageLayout
       actions={
-        <Link href="/admin/tenants/new">
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Criar Cliente
-          </Button>
-        </Link>
+        <PermissionGuard action="CREATE" resource="TENANT">
+          <Link href="/admin/tenants/new">
+            <Button>
+              <PlusCircle className="mr-2 h-4 w-4" /> Criar Cliente
+            </Button>
+          </Link>
+        </PermissionGuard>
       }
       breadcrumbs={breadcrumbs}
       subtitle="Criar e gerenciar todos os clientes do sistema"

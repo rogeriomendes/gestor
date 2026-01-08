@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Edit, MapPin, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -115,34 +116,42 @@ export function BranchListItem({
               </CardDescription>
             )}
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button className="shrink-0" size="icon" variant="ghost" />
-              }
-            >
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Menu</span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(branch.id)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Editar
-              </DropdownMenuItem>
-              {!branch.isMain && (
-                <DropdownMenuItem onClick={handleSetMain}>
-                  Definir como Principal
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                className="text-destructive"
-                onClick={() => setDeleteDialogOpen(true)}
+          <PermissionGuard action="UPDATE" resource="BRANCH">
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button className="shrink-0" size="icon" variant="ghost" />
+                }
               >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Deletar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Menu</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <PermissionGuard action="UPDATE" resource="BRANCH">
+                  <DropdownMenuItem onClick={() => onEdit(branch.id)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Editar
+                  </DropdownMenuItem>
+                </PermissionGuard>
+                <PermissionGuard action="UPDATE" resource="BRANCH">
+                  {!branch.isMain && (
+                    <DropdownMenuItem onClick={handleSetMain}>
+                      Definir como Principal
+                    </DropdownMenuItem>
+                  )}
+                </PermissionGuard>
+                <PermissionGuard action="DELETE" resource="BRANCH">
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Deletar
+                  </DropdownMenuItem>
+                </PermissionGuard>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </PermissionGuard>
         </div>
       </CardHeader>
       <CardContent className="pt-0">

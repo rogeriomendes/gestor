@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import { trpcClient } from "@/utils/trpc";
 import { TenantBasicInfoSection } from "./tenant-basic-info-section";
@@ -194,9 +195,13 @@ export function TenantDetailsForm({
         >
           Cancelar
         </Button>
-        <Button disabled={updateTenantMutation.isPending} type="submit">
-          {updateTenantMutation.isPending ? "Salvando..." : "Salvar Alterações"}
-        </Button>
+        <PermissionGuard action="UPDATE" resource="TENANT">
+          <Button disabled={updateTenantMutation.isPending} type="submit">
+            {updateTenantMutation.isPending
+              ? "Salvando..."
+              : "Salvar Alterações"}
+          </Button>
+        </PermissionGuard>
       </div>
     </form>
   );

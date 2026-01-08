@@ -2,6 +2,7 @@
 
 import { Edit, MoreHorizontal, RotateCcw, Trash2, Users } from "lucide-react";
 import Link from "next/link";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { RoleBadge } from "@/components/role-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -204,49 +205,57 @@ export function UsersList({
                         "pt-BR"
                       )}
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button className="h-8 w-8 p-0" variant="ghost" />
-                        }
-                      >
-                        <span className="sr-only">Abrir menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() =>
-                            onEdit(
-                              user.user.id,
-                              user.user.name,
-                              user.user.email,
-                              user.tenant?.id || null,
-                              user.role || null
-                            )
+                    <PermissionGuard action="UPDATE" resource="USER">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          render={
+                            <Button className="h-8 w-8 p-0" variant="ghost" />
                           }
                         >
-                          <Edit className="mr-2 h-4 w-4" />
-                          Editar Usuário
-                        </DropdownMenuItem>
-                        {onDelete && (
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => onDelete(user.user.id)}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Deletar Usuário
-                          </DropdownMenuItem>
-                        )}
-                        {onRestore && (
-                          <DropdownMenuItem
-                            onClick={() => onRestore(user.user.id)}
-                          >
-                            <RotateCcw className="mr-2 h-4 w-4" />
-                            Restaurar Usuário
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          <span className="sr-only">Abrir menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <PermissionGuard action="UPDATE" resource="USER">
+                            <DropdownMenuItem
+                              onClick={() =>
+                                onEdit(
+                                  user.user.id,
+                                  user.user.name,
+                                  user.user.email,
+                                  user.tenant?.id || null,
+                                  user.role || null
+                                )
+                              }
+                            >
+                              <Edit className="mr-2 h-4 w-4" />
+                              Editar Usuário
+                            </DropdownMenuItem>
+                          </PermissionGuard>
+                          <PermissionGuard action="DELETE" resource="USER">
+                            {onDelete && (
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => onDelete(user.user.id)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Deletar Usuário
+                              </DropdownMenuItem>
+                            )}
+                          </PermissionGuard>
+                          {onRestore && (
+                            <PermissionGuard action="UPDATE" resource="USER">
+                              <DropdownMenuItem
+                                onClick={() => onRestore(user.user.id)}
+                              >
+                                <RotateCcw className="mr-2 h-4 w-4" />
+                                Restaurar Usuário
+                              </DropdownMenuItem>
+                            </PermissionGuard>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </PermissionGuard>
                   </div>
                 </div>
               );

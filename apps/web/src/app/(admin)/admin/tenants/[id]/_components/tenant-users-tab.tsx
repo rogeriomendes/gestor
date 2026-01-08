@@ -2,6 +2,7 @@
 
 import { UserPlus } from "lucide-react";
 import { useState } from "react";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -86,9 +87,11 @@ export function TenantUsersTab({
                 Gerencie os usuários associados a este cliente
               </CardDescription>
             </div>
-            <Button onClick={() => setIsDialogOpen(true)}>
-              <UserPlus className="mr-2 size-4" /> Adicionar Usuário
-            </Button>
+            <PermissionGuard action="CREATE" resource="USER">
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <UserPlus className="mr-2 size-4" /> Adicionar Usuário
+              </Button>
+            </PermissionGuard>
           </div>
         </CardHeader>
         <CardContent>

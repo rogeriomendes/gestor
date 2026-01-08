@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { EditUserDialog } from "@/app/(admin)/admin/users/_components/edit-user-dialog";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { TenantUsersSkeleton } from "@/components/tenant-loading";
 import { Button } from "@/components/ui/button";
 import {
@@ -120,9 +121,11 @@ export default function UsersPage() {
   return (
     <PageLayout
       actions={
-        <Button onClick={() => setAddUserDialogOpen(true)}>
-          <UserPlus className="mr-2 h-4 w-4" /> Adicionar Usuário
-        </Button>
+        <PermissionGuard action="CREATE" resource="USER">
+          <Button onClick={() => setAddUserDialogOpen(true)}>
+            <UserPlus className="mr-2 h-4 w-4" /> Adicionar Usuário
+          </Button>
+        </PermissionGuard>
       }
       breadcrumbs={[
         { label: tenant.name, href: "/dashboard" as Route },
