@@ -46,6 +46,16 @@ export function ServerStatusCards() {
     return `${minutes}m`;
   };
 
+  const getMemoryBarColor = (percent: number) => {
+    if (percent > 80) {
+      return "bg-red-500";
+    }
+    if (percent > 60) {
+      return "bg-yellow-500";
+    }
+    return "bg-green-500";
+  };
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       {/* Uso de Memória */}
@@ -64,13 +74,9 @@ export function ServerStatusCards() {
           </p>
           <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-secondary">
             <div
-              className={`h-full transition-all ${
-                status.memory.heapUsedPercent > 80
-                  ? "bg-red-500"
-                  : status.memory.heapUsedPercent > 60
-                    ? "bg-yellow-500"
-                    : "bg-green-500"
-              }`}
+              className={`h-full transition-all ${getMemoryBarColor(
+                status.memory.heapUsedPercent
+              )}`}
               style={{ width: `${status.memory.heapUsedPercent}%` }}
             />
           </div>

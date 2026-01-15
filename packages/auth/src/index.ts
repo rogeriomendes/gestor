@@ -29,7 +29,7 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async (userData) => {
+        before: (userData) => {
           // Remover role inválido antes de criar o usuário
           // O role será definido posteriormente pelo admin
           if (userData.role === "user" || userData.role === "admin") {

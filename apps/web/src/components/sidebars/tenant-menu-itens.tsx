@@ -10,6 +10,7 @@ import {
   HandCoins,
   Landmark,
   LayoutDashboard,
+  LifeBuoy,
   Package,
   PackageOpen,
   Settings,
@@ -126,6 +127,11 @@ export const tenantSettingsMenuItens: MenuItemProps[] = [
     url: "/settings",
     icon: Settings,
     permission: { resource: "SETTINGS", action: "READ" },
+  },
+  {
+    title: "Suporte",
+    url: "/support",
+    icon: LifeBuoy,
   },
   {
     title: "Usuários",

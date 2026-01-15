@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -185,38 +186,44 @@ export function PlansList({
                   {plan._count.subscriptions} assinatura
                   {plan._count.subscriptions !== 1 ? "s" : ""}
                 </span>
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={<Button className="h-8 w-8 p-0" variant="ghost" />}
-                  >
-                    <span className="sr-only">Abrir menu</span>
-                    <MoreHorizontal className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuGroup>
-                      <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                      <DropdownMenuItem
-                        onClick={() => router.push(`/admin/plans/${plan.id}`)}
-                      >
-                        <MoreHorizontal className="mr-2 h-4 w-4" /> Ver/Editar
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {plan.active ? (
+                <PermissionGuard action="UPDATE" resource="PLAN">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button className="h-8 w-8 p-0" variant="ghost" />
+                      }
+                    >
+                      <span className="sr-only">Abrir menu</span>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
                         <DropdownMenuItem
-                          className="text-destructive"
-                          disabled={plan.isDefault}
-                          onClick={() => onDeactivate(plan)}
+                          onClick={() => router.push(`/admin/plans/${plan.id}`)}
                         >
-                          <PowerOff className="mr-2 h-4 w-4" /> Desativar
+                          <MoreHorizontal className="mr-2 h-4 w-4" /> Ver/Editar
                         </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem onClick={() => onActivate(plan)}>
-                          <Power className="mr-2 h-4 w-4" /> Ativar
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                        <DropdownMenuSeparator />
+                        {plan.active ? (
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            disabled={plan.isDefault}
+                            onClick={() => onDeactivate(plan)}
+                          >
+                            <PowerOff className="mr-2 h-4 w-4" /> Desativar
+                          </DropdownMenuItem>
+                        ) : (
+                          <PermissionGuard action="UPDATE" resource="PLAN">
+                            <DropdownMenuItem onClick={() => onActivate(plan)}>
+                              <Power className="mr-2 h-4 w-4" /> Ativar
+                            </DropdownMenuItem>
+                          </PermissionGuard>
+                        )}
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </PermissionGuard>
               </div>
             </div>
           ))}

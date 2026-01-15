@@ -20,6 +20,9 @@ model User {
   accounts      Account[]
   tenant        Tenant?   @relation(fields: [tenantId], references: [id], onDelete: SetNull)
   auditLogs     AuditLog[] // Logs de auditoria criados por este usuário
+  createdTickets SupportTicket[] @relation("CreatedTickets") // Tickets criados por este usuário
+  resolvedTickets SupportTicket[] @relation("ResolvedTickets") // Tickets resolvidos por este usuário
+  ticketReplies SupportTicketReply[] @relation("TicketReplies") // Respostas de tickets
 
   @@unique([email])
   @@index([tenantId])

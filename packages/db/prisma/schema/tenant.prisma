@@ -38,6 +38,7 @@ model Tenant {
   branches TenantBranch[] // Filiais do tenant
   auditLogs AuditLog[] // Logs de auditoria
   subscription Subscription? // Assinatura do tenant
+  supportTickets SupportTicket[] // Tickets de suporte
 
   @@index([slug])
   @@index([active])

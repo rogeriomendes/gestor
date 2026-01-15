@@ -39,9 +39,8 @@ export function RecentTenantsList({
         <CardDescription>Últimos clientes criados</CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <ListSkeleton count={5} itemHeight="h-16" />
-        ) : tenants.length === 0 ? (
+        {isLoading && <ListSkeleton count={5} itemHeight="h-16" />}
+        {!isLoading && tenants.length === 0 && (
           <Empty>
             <EmptyHeader>
               <EmptyTitle>Nenhum cliente encontrado</EmptyTitle>
@@ -50,7 +49,8 @@ export function RecentTenantsList({
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
-        ) : (
+        )}
+        {!isLoading && tenants.length > 0 && (
           <div className="space-y-4">
             {tenants.slice(0, 5).map((tenant) => (
               <div

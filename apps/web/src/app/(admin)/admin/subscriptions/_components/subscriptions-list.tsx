@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -215,32 +216,42 @@ export function SubscriptionsList({
                     <DropdownMenuContent align="end">
                       <DropdownMenuGroup>
                         <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            router.push(
-                              `/admin/subscriptions/${subscription.tenant.id}`
-                            )
-                          }
-                        >
-                          <MoreHorizontal className="mr-2 h-4 w-4" /> Ver/Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            router.push(
-                              `/admin/tenants/${subscription.tenant.id}`
-                            )
-                          }
-                        >
-                          <Building2 className="mr-2 h-4 w-4" /> Ver Cliente
-                        </DropdownMenuItem>
+                        <PermissionGuard action="READ" resource="SUBSCRIPTION">
+                          <DropdownMenuItem
+                            onClick={() =>
+                              router.push(
+                                `/admin/subscriptions/${subscription.tenant.id}`
+                              )
+                            }
+                          >
+                            <MoreHorizontal className="mr-2 h-4 w-4" />{" "}
+                            Ver/Editar
+                          </DropdownMenuItem>
+                        </PermissionGuard>
+                        <PermissionGuard action="READ" resource="TENANT">
+                          <DropdownMenuItem
+                            onClick={() =>
+                              router.push(
+                                `/admin/tenants/${subscription.tenant.id}`
+                              )
+                            }
+                          >
+                            <Building2 className="mr-2 h-4 w-4" /> Ver Cliente
+                          </DropdownMenuItem>
+                        </PermissionGuard>
                         <DropdownMenuSeparator />
                         {subscription.status !== "CANCELLED" && (
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => onCancel(subscription)}
+                          <PermissionGuard
+                            action="UPDATE"
+                            resource="SUBSCRIPTION"
                           >
-                            Cancelar Assinatura
-                          </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => onCancel(subscription)}
+                            >
+                              Cancelar Assinatura
+                            </DropdownMenuItem>
+                          </PermissionGuard>
                         )}
                       </DropdownMenuGroup>
                     </DropdownMenuContent>

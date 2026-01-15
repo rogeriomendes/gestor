@@ -16,71 +16,73 @@ import {
 export const statusRouter = router({
   /**
    * Obter status do servidor
-   * Requer permissão ADMIN:READ ou similar
+   * Requer permissão STATUS:READ
    */
-  getServerStatus: adminProcedure.query(() => {
-    const memoryUsage = process.memoryUsage();
-    const cpuUsage = process.cpuUsage();
+  getServerStatus: adminProcedure
+    .use(requirePermission("STATUS", "READ"))
+    .query(() => {
+      const memoryUsage = process.memoryUsage();
+      const cpuUsage = process.cpuUsage();
 
-    // Calcular porcentagem de uso de memória
-    const heapUsedMB = memoryUsage.heapUsed / 1024 / 1024;
-    const heapTotalMB = memoryUsage.heapTotal / 1024 / 1024;
-    const heapFreeMB =
-      (memoryUsage.heapTotal - memoryUsage.heapUsed) / 1024 / 1024;
-    const rssMB = memoryUsage.rss / 1024 / 1024;
-    const heapUsedPercent =
-      (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
+      // Calcular porcentagem de uso de memória
+      const heapUsedMB = memoryUsage.heapUsed / 1024 / 1024;
+      const heapTotalMB = memoryUsage.heapTotal / 1024 / 1024;
+      const heapFreeMB =
+        (memoryUsage.heapTotal - memoryUsage.heapUsed) / 1024 / 1024;
+      const rssMB = memoryUsage.rss / 1024 / 1024;
+      const heapUsedPercent =
+        (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
 
-    // Calcular uso de CPU (aproximado)
-    const cpuPercent = 0; // Seria necessário calcular com base em intervalos
+      // Calcular uso de CPU (aproximado)
+      const cpuPercent = 0; // Seria necessário calcular com base em intervalos
 
-    // Obter estatísticas de conexões
-    const connectionStats = getConnectionStats();
+      // Obter estatísticas de conexões
+      const connectionStats = getConnectionStats();
 
-    return {
-      memory: {
-        heapUsed: memoryUsage.heapUsed,
-        heapTotal: memoryUsage.heapTotal,
-        heapFree: memoryUsage.heapTotal - memoryUsage.heapUsed,
-        rss: memoryUsage.rss,
-        external: memoryUsage.external,
-        heapUsedMB: Math.round(heapUsedMB * 100) / 100,
-        heapTotalMB: Math.round(heapTotalMB * 100) / 100,
-        heapFreeMB: Math.round(heapFreeMB * 100) / 100,
-        rssMB: Math.round(rssMB * 100) / 100,
-        heapUsedPercent: Math.round(heapUsedPercent * 100) / 100,
-      },
-      cpu: {
-        user: cpuUsage.user,
-        system: cpuUsage.system,
-        percent: cpuPercent,
-      },
-      pools: {
-        gestor: {
-          active: connectionStats.byDatabase.gestor,
-          available: connectionStats.maxSize - connectionStats.total,
-          total: connectionStats.total,
+      return {
+        memory: {
+          heapUsed: memoryUsage.heapUsed,
+          heapTotal: memoryUsage.heapTotal,
+          heapFree: memoryUsage.heapTotal - memoryUsage.heapUsed,
+          rss: memoryUsage.rss,
+          external: memoryUsage.external,
+          heapUsedMB: Math.round(heapUsedMB * 100) / 100,
+          heapTotalMB: Math.round(heapTotalMB * 100) / 100,
+          heapFreeMB: Math.round(heapFreeMB * 100) / 100,
+          rssMB: Math.round(rssMB * 100) / 100,
+          heapUsedPercent: Math.round(heapUsedPercent * 100) / 100,
         },
-        dfe: {
-          active: connectionStats.byDatabase.dfe,
-          available: connectionStats.maxSize - connectionStats.total,
-          total: connectionStats.total,
+        cpu: {
+          user: cpuUsage.user,
+          system: cpuUsage.system,
+          percent: cpuPercent,
         },
-      },
-      uptime: process.uptime(),
-      nodeVersion: process.version,
-      platform: process.platform,
-      arch: process.arch,
-      loadAverage: os.loadavg(),
-    };
-  }),
+        pools: {
+          gestor: {
+            active: connectionStats.byDatabase.gestor,
+            available: connectionStats.maxSize - connectionStats.total,
+            total: connectionStats.total,
+          },
+          dfe: {
+            active: connectionStats.byDatabase.dfe,
+            available: connectionStats.maxSize - connectionStats.total,
+            total: connectionStats.total,
+          },
+        },
+        uptime: process.uptime(),
+        nodeVersion: process.version,
+        platform: process.platform,
+        arch: process.arch,
+        loadAverage: os.loadavg(),
+      };
+    }),
 
   /**
    * Listar todas as conexões ativas
-   * Requer permissão ADMIN:READ
+   * Requer permissão STATUS:READ
    */
   listConnections: adminProcedure
-    .use(requirePermission("ADMIN", "READ"))
+    .use(requirePermission("STATUS", "READ"))
     .query(async () => {
       const connections = listConnections();
 
@@ -111,10 +113,10 @@ export const statusRouter = router({
 
   /**
    * Obter detalhes de uma conexão específica
-   * Requer permissão ADMIN:READ
+   * Requer permissão STATUS:READ
    */
   getConnectionDetails: adminProcedure
-    .use(requirePermission("ADMIN", "READ"))
+    .use(requirePermission("STATUS", "READ"))
     .input(z.object({ connectionId: z.string() }))
     .query(({ input }) => {
       const connection = getConnectionDetails(input.connectionId);
@@ -139,10 +141,10 @@ export const statusRouter = router({
 
   /**
    * Fechar uma conexão específica
-   * Requer permissão ADMIN:UPDATE
+   * Requer permissão STATUS:MANAGE
    */
   closeConnection: adminProcedure
-    .use(requirePermission("ADMIN", "UPDATE"))
+    .use(requirePermission("STATUS", "MANAGE"))
     .input(z.object({ connectionId: z.string() }))
     .mutation(({ input }) => {
       const closed = closeConnection(input.connectionId);
@@ -157,10 +159,10 @@ export const statusRouter = router({
 
   /**
    * Fechar todas as conexões
-   * Requer permissão ADMIN:UPDATE
+   * Requer permissão STATUS:MANAGE
    */
   closeAllConnections: adminProcedure
-    .use(requirePermission("ADMIN", "UPDATE"))
+    .use(requirePermission("STATUS", "MANAGE"))
     .mutation(() => {
       const count = closeAllConnections();
       return { success: true, closedCount: count };
@@ -168,20 +170,20 @@ export const statusRouter = router({
 
   /**
    * Obter estatísticas de conexões
-   * Requer permissão ADMIN:READ
+   * Requer permissão STATUS:READ
    */
   getConnectionStats: adminProcedure
-    .use(requirePermission("ADMIN", "READ"))
+    .use(requirePermission("STATUS", "READ"))
     .query(() => {
       return getConnectionStats();
     }),
 
   /**
    * Limpar cache (fecha todas as conexões)
-   * Requer permissão ADMIN:UPDATE
+   * Requer permissão STATUS:MANAGE
    */
   clearCache: adminProcedure
-    .use(requirePermission("ADMIN", "UPDATE"))
+    .use(requirePermission("STATUS", "MANAGE"))
     .mutation(() => {
       const count = closeAllConnections();
       return { success: true, clearedCount: count };

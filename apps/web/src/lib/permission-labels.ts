@@ -15,14 +15,20 @@ export const PERMISSION_ACTION_LABELS: Record<string, string> = {
 
 /**
  * Labels para recursos de permissões
+ * Separados por área: Admin e Tenant
  */
 export const PERMISSION_RESOURCE_LABELS: Record<string, string> = {
+  // Área Admin
   TENANT: "Clientes",
   USER: "Usuários",
+  PLAN: "Planos",
+  SUBSCRIPTION: "Assinaturas",
+  STATUS: "Status do Sistema",
+  AUDIT_LOG: "Logs de Auditoria",
+  // Área Tenant
   BRANCH: "Filiais",
   SETTINGS: "Configurações",
   DASHBOARD: "Dashboard",
-  AUDIT_LOG: "Logs de Auditoria",
 };
 
 /**

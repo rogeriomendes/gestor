@@ -2,10 +2,13 @@
 enum PermissionResource {
   TENANT
   USER
+  PLAN
+  SUBSCRIPTION
+  STATUS
+  AUDIT_LOG
   BRANCH
   SETTINGS
   DASHBOARD
-  AUDIT_LOG
 }
 
 // Enum de ações que podem ser realizadas

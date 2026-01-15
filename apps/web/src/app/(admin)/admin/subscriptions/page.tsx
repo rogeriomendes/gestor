@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -163,9 +164,11 @@ function AdminSubscriptionsPageContent() {
     <PageLayout
       actions={
         tenantsWithoutSubscription.length > 0 && (
-          <Button onClick={() => setCreateDialogOpen(true)}>
-            <PlusCircle className="mr-2 h-4 w-4" /> Criar Assinatura
-          </Button>
+          <PermissionGuard action="CREATE" resource="SUBSCRIPTION">
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <PlusCircle className="mr-2 h-4 w-4" /> Criar Assinatura
+            </Button>
+          </PermissionGuard>
         )
       }
       breadcrumbs={breadcrumbs}

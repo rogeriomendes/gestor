@@ -1,5 +1,6 @@
 import { router } from "../../index";
 import { subscriptionRouter } from "./subscription";
+import { tenantSupportRouter } from "./support";
 import { tenantDatabaseRouter } from "./tenant-database";
 import { tenantInfoRouter } from "./tenant-info";
 import { tenantUsersRouter } from "./tenant-users";
@@ -18,6 +19,9 @@ export const tenantRouter = router({
   inviteUser: tenantUsersRouter.inviteUser,
   updateUserRole: tenantUsersRouter.updateUserRole,
   removeUser: tenantUsersRouter.removeUser,
+
+  // Rotas de suporte
+  support: tenantSupportRouter,
 
   // Rotas de banco de dados
   checkDatabaseCredentials: tenantDatabaseRouter.checkDatabaseCredentials,

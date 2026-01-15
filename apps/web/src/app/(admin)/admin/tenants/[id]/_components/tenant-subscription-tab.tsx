@@ -5,6 +5,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AlertTriangle, Ban, Check, Clock, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,9 +96,11 @@ export function TenantSubscriptionTab({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href={`/admin/subscriptions/${tenantId}`}>
-            <Button>Criar Assinatura</Button>
-          </Link>
+          <PermissionGuard action="CREATE" resource="SUBSCRIPTION">
+            <Link href={`/admin/subscriptions/${tenantId}`}>
+              <Button>Criar Assinatura</Button>
+            </Link>
+          </PermissionGuard>
         </CardContent>
       </Card>
     );
@@ -126,11 +129,13 @@ export function TenantSubscriptionTab({
                 Informações sobre o plano e assinatura atual
               </CardDescription>
             </div>
-            <Link href={`/admin/subscriptions/${tenantId}`}>
-              <Button variant="outline">
-                <ExternalLink className="mr-2 h-4 w-4" /> Gerenciar
-              </Button>
-            </Link>
+            <PermissionGuard action="READ" resource="SUBSCRIPTION">
+              <Link href={`/admin/subscriptions/${tenantId}`}>
+                <Button variant="outline">
+                  <ExternalLink className="mr-2 h-4 w-4" /> Gerenciar
+                </Button>
+              </Link>
+            </PermissionGuard>
           </div>
         </CardHeader>
         <CardContent>

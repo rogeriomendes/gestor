@@ -8,17 +8,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-type Tenant = {
-  id: string;
-  name: string;
-  slug: string;
-  active: boolean;
-};
-
-type AdminStatsCardsProps = {
+interface AdminStatsCardsProps {
   totalTenants: number;
   activeTenants: number;
-};
+}
 
 export function AdminStatsCards({
   totalTenants,

@@ -8,6 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -124,11 +125,13 @@ function AdminPlansPageContent() {
   return (
     <PageLayout
       actions={
-        <Link href="/admin/plans/new">
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Criar Plano
-          </Button>
-        </Link>
+        <PermissionGuard action="CREATE" resource="PLAN">
+          <Link href="/admin/plans/new">
+            <Button>
+              <PlusCircle className="mr-2 h-4 w-4" /> Criar Plano
+            </Button>
+          </Link>
+        </PermissionGuard>
       }
       breadcrumbs={breadcrumbs}
       subtitle="Criar e gerenciar planos de assinatura"

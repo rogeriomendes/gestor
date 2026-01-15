@@ -65,13 +65,19 @@ export function getGestorPrismaClient(tenant: Tenant): PrismaClient {
   }
 
   // Descriptografar senha
-  const password = decryptPassword(tenant.dbPassword!);
+  if (!tenant.dbPassword) {
+    throw new Error("Senha do banco de dados não encontrada");
+  }
+  const password = decryptPassword(tenant.dbPassword);
 
   // Criar novo cliente
+  if (!(tenant.dbHost && tenant.dbPort && tenant.dbUsername)) {
+    throw new Error("Credenciais do banco de dados incompletas");
+  }
   const prismaClient = createGestorPrismaClient(
-    tenant.dbHost!,
-    tenant.dbPort!,
-    tenant.dbUsername!,
+    tenant.dbHost,
+    tenant.dbPort,
+    tenant.dbUsername,
     password
   );
 
@@ -110,13 +116,19 @@ export function getDfePrismaClient(tenant: Tenant): PrismaClient {
   }
 
   // Descriptografar senha
-  const password = decryptPassword(tenant.dbPassword!);
+  if (!tenant.dbPassword) {
+    throw new Error("Senha do banco de dados não encontrada");
+  }
+  const password = decryptPassword(tenant.dbPassword);
 
   // Criar novo cliente
+  if (!(tenant.dbHost && tenant.dbPort && tenant.dbUsername)) {
+    throw new Error("Credenciais do banco de dados incompletas");
+  }
   const prismaClient = createDfePrismaClient(
-    tenant.dbHost!,
-    tenant.dbPort!,
-    tenant.dbUsername!,
+    tenant.dbHost,
+    tenant.dbPort,
+    tenant.dbUsername,
     password
   );
 
@@ -140,7 +152,7 @@ export function getDfePrismaClient(tenant: Tenant): PrismaClient {
  */
 export function listConnections(): ConnectionMetadata[] {
   const connections: ConnectionMetadata[] = [];
-  for (const [key, value] of connectionCache.entries()) {
+  for (const [, value] of connectionCache.entries()) {
     connections.push(value);
   }
   return connections;
@@ -179,7 +191,7 @@ export function closeConnection(connectionId: string): boolean {
  */
 export function closeAllConnections(): number {
   const count = connectionCache.size;
-  for (const [key, value] of connectionCache.entries()) {
+  for (const [, value] of connectionCache.entries()) {
     value.prismaClient.$disconnect().catch((error) => {
       console.error("Erro ao desconectar Prisma Client:", error);
     });

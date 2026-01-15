@@ -15,10 +15,10 @@ import { createAuditLogFromContext } from "../../utils/audit-log";
 export const plansRouter = router({
   /**
    * Listar todos os planos (com paginação)
-   * Requer permissão SETTINGS:READ
+   * Requer permissão PLAN:READ
    */
   list: adminProcedure
-    .use(requirePermission("SETTINGS", "READ"))
+    .use(requirePermission("PLAN", "READ"))
     .input(
       paginationSchema.extend({
         search: z.string().optional(),
@@ -66,10 +66,10 @@ export const plansRouter = router({
 
   /**
    * Obter detalhes de um plano específico
-   * Requer permissão SETTINGS:READ
+   * Requer permissão PLAN:READ
    */
   get: adminProcedure
-    .use(requirePermission("SETTINGS", "READ"))
+    .use(requirePermission("PLAN", "READ"))
     .input(z.object({ planId: z.string() }))
     .query(async ({ input }) => {
       const plan = await prisma.plan.findUnique({
@@ -106,10 +106,10 @@ export const plansRouter = router({
 
   /**
    * Criar novo plano
-   * Requer permissão SETTINGS:MANAGE
+   * Requer permissão PLAN:CREATE
    */
   create: adminProcedure
-    .use(requirePermission("SETTINGS", "MANAGE"))
+    .use(requirePermission("PLAN", "CREATE"))
     .input(
       z.object({
         name: z.string().min(1, "Nome é obrigatório"),
@@ -158,10 +158,10 @@ export const plansRouter = router({
 
   /**
    * Atualizar plano
-   * Requer permissão SETTINGS:MANAGE
+   * Requer permissão PLAN:UPDATE
    */
   update: adminProcedure
-    .use(requirePermission("SETTINGS", "MANAGE"))
+    .use(requirePermission("PLAN", "UPDATE"))
     .input(
       z.object({
         planId: z.string(),
@@ -238,10 +238,10 @@ export const plansRouter = router({
   /**
    * Desativar plano (soft delete)
    * Não afeta assinaturas existentes
-   * Requer permissão SETTINGS:MANAGE
+   * Requer permissão PLAN:UPDATE
    */
   deactivate: adminProcedure
-    .use(requirePermission("SETTINGS", "MANAGE"))
+    .use(requirePermission("PLAN", "UPDATE"))
     .input(z.object({ planId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const plan = await prisma.plan.findUnique({
@@ -294,10 +294,10 @@ export const plansRouter = router({
 
   /**
    * Reativar plano
-   * Requer permissão SETTINGS:MANAGE
+   * Requer permissão PLAN:UPDATE
    */
   activate: adminProcedure
-    .use(requirePermission("SETTINGS", "MANAGE"))
+    .use(requirePermission("PLAN", "UPDATE"))
     .input(z.object({ planId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const plan = await prisma.plan.findUnique({

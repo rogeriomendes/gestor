@@ -25,7 +25,7 @@ import { trpcClient } from "@/utils/trpc";
 
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
-type User = {
+interface User {
   id: string;
   user: {
     name: string;
@@ -35,16 +35,16 @@ type User = {
     id: string;
     name: string;
   } | null;
-};
+}
 
-type AddUserDialogProps = {
+interface AddUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tenantId: string;
   availableUsers: User[];
   isLoading: boolean;
   onSuccess: () => void;
-};
+}
 
 export function AddUserDialog({
   open,
@@ -94,8 +94,10 @@ export function AddUserDialog({
       onOpenChange(false);
       setSelectedUser(null);
       setSearchUser("");
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao adicionar usuário"
+      );
     }
   };
 
@@ -122,8 +124,10 @@ export function AddUserDialog({
       setNewUserPassword("");
       setSelectedUser(null);
       setSearchUser("");
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao adicionar usuário"
+      );
     }
   };
 
@@ -267,24 +271,28 @@ export function AddUserDialog({
                 </FieldContent>
               </Field>
               <div className="max-h-64 space-y-2 overflow-y-auto">
-                {isLoading ? (
+                {isLoading && (
                   <p className="text-muted-foreground text-sm">
                     Carregando usuários...
                   </p>
-                ) : filteredUsers.length === 0 ? (
+                )}
+                {!isLoading && filteredUsers.length === 0 && (
                   <p className="text-muted-foreground text-sm">
                     Nenhum usuário disponível encontrado
                   </p>
-                ) : (
+                )}
+                {!isLoading &&
+                  filteredUsers.length > 0 &&
                   filteredUsers.map((user) => (
-                    <div
-                      className={`flex cursor-pointer items-center justify-between rounded border p-2 ${
+                    <button
+                      className={`flex w-full cursor-pointer items-center justify-between rounded border p-2 text-left ${
                         selectedUser === user.id
                           ? "border-primary bg-primary/10"
                           : "border-input"
                       }`}
                       key={user.id}
                       onClick={() => setSelectedUser(user.id)}
+                      type="button"
                     >
                       <div>
                         <p className="font-medium text-sm">{user.user.name}</p>
@@ -297,9 +305,8 @@ export function AddUserDialog({
                           {user.tenant.name}
                         </span>
                       )}
-                    </div>
-                  ))
-                )}
+                    </button>
+                  ))}
               </div>
             </div>
           )}

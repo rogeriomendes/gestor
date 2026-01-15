@@ -1,8 +1,11 @@
-/** biome-ignore-all lint/performance/noBarrelFile: <explanation> */
-// Re-export Prisma types for easier imports
+// biome-ignore lint/performance/noBarrelFile: centraliza tipos compartilhados do Prisma
 export {
   AuditAction,
   AuditResourceType,
   Role,
   SubscriptionStatus,
+  TicketCategory,
+  TicketPriority,
+  TicketStatus,
+  type User,
 } from "../prisma/generated/client";

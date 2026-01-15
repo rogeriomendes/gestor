@@ -23,10 +23,10 @@ import {
 export const subscriptionsRouter = router({
   /**
    * Listar todas as assinaturas (com paginação)
-   * Requer permissão SETTINGS:READ
+   * Requer permissão SUBSCRIPTION:READ
    */
   list: adminProcedure
-    .use(requirePermission("SETTINGS", "READ"))
+    .use(requirePermission("SUBSCRIPTION", "READ"))
     .input(
       paginationSchema.extend({
         search: z.string().optional(),
@@ -89,10 +89,10 @@ export const subscriptionsRouter = router({
 
   /**
    * Obter assinatura de um tenant específico
-   * Requer permissão SETTINGS:READ
+   * Requer permissão SUBSCRIPTION:READ
    */
   getByTenant: adminProcedure
-    .use(requirePermission("SETTINGS", "READ"))
+    .use(requirePermission("SUBSCRIPTION", "READ"))
     .input(z.object({ tenantId: z.string() }))
     .query(async ({ input }) => {
       const subscription = await prisma.subscription.findUnique({
@@ -115,10 +115,10 @@ export const subscriptionsRouter = router({
 
   /**
    * Criar assinatura para um tenant
-   * Requer permissão SETTINGS:MANAGE
+   * Requer permissão SUBSCRIPTION:CREATE
    */
   create: adminProcedure
-    .use(requirePermission("SETTINGS", "MANAGE"))
+    .use(requirePermission("SUBSCRIPTION", "CREATE"))
     .input(
       z.object({
         tenantId: z.string(),
@@ -218,10 +218,10 @@ export const subscriptionsRouter = router({
 
   /**
    * Criar assinatura trial para um tenant (usado pelo sistema)
-   * Requer permissão SETTINGS:MANAGE
+   * Requer permissão SUBSCRIPTION:CREATE
    */
   createTrial: adminProcedure
-    .use(requirePermission("SETTINGS", "MANAGE"))
+    .use(requirePermission("SUBSCRIPTION", "CREATE"))
     .input(z.object({ tenantId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // Verificar se tenant existe
@@ -272,10 +272,10 @@ export const subscriptionsRouter = router({
 
   /**
    * Atualizar assinatura
-   * Requer permissão SETTINGS:MANAGE
+   * Requer permissão SUBSCRIPTION:UPDATE
    */
   update: adminProcedure
-    .use(requirePermission("SETTINGS", "MANAGE"))
+    .use(requirePermission("SUBSCRIPTION", "UPDATE"))
     .input(
       z.object({
         subscriptionId: z.string(),
@@ -365,10 +365,10 @@ export const subscriptionsRouter = router({
 
   /**
    * Cancelar assinatura
-   * Requer permissão SETTINGS:MANAGE
+   * Requer permissão SUBSCRIPTION:UPDATE
    */
   cancel: adminProcedure
-    .use(requirePermission("SETTINGS", "MANAGE"))
+    .use(requirePermission("SUBSCRIPTION", "UPDATE"))
     .input(z.object({ subscriptionId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const existingSubscription = await prisma.subscription.findUnique({
@@ -429,10 +429,10 @@ export const subscriptionsRouter = router({
 
   /**
    * Obter lista de planos disponíveis (para dropdown)
-   * Requer permissão SETTINGS:READ
+   * Requer permissão PLAN:READ
    */
   getAvailablePlans: adminProcedure
-    .use(requirePermission("SETTINGS", "READ"))
+    .use(requirePermission("PLAN", "READ"))
     .query(async () => {
       return prisma.plan.findMany({
         where: { active: true },

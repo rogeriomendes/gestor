@@ -1,0 +1,70 @@
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketCategory {
+  BUG
+  FEATURE_REQUEST
+  QUESTION
+  TECHNICAL_ISSUE
+  BILLING
+  OTHER
+}
+
+model SupportTicket {
+  id          String          @id @default(cuid())
+  tenantId    String
+  userId      String          // Quem criou o ticket
+  category    TicketCategory
+  subject     String
+  message     String          @db.Text
+  status      TicketStatus    @default(OPEN)
+  priority    TicketPriority  @default(MEDIUM)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  resolvedAt  DateTime?
+  resolvedBy  String?         // ID do admin que resolveu
+
+  // Relações
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user        User            @relation("CreatedTickets", fields: [userId], references: [id], onDelete: Cascade)
+  resolver    User?           @relation("ResolvedTickets", fields: [resolvedBy], references: [id], onDelete: SetNull)
+  replies     SupportTicketReply[]
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([createdAt])
+  @@index([tenantId, status])
+  @@map("support_ticket")
+}
+
+model SupportTicketReply {
+  id        String        @id @default(cuid())
+  ticketId  String
+  userId    String
+  message   String        @db.Text
+  isAdmin   Boolean       @default(false) // Se a resposta foi feita por um admin
+  createdAt DateTime      @default(now())
+
+  // Relações
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      User          @relation("TicketReplies", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("support_ticket_reply")
+}

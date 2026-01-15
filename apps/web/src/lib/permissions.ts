@@ -9,13 +9,19 @@ type Role =
   | "TENANT_USER";
 
 // Tipos de recursos e ações de permissão
+// Separados por área: Admin e Tenant
 export type PermissionResource =
+  // Recursos da área Admin
   | "TENANT"
   | "USER"
+  | "PLAN"
+  | "SUBSCRIPTION"
+  | "STATUS"
+  | "AUDIT_LOG"
+  // Recursos da área Tenant
   | "BRANCH"
   | "SETTINGS"
-  | "DASHBOARD"
-  | "AUDIT_LOG";
+  | "DASHBOARD";
 
 export type PermissionAction =
   | "CREATE"

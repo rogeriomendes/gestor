@@ -25,6 +25,37 @@ export const permissionRouter = router({
     }),
 
   /**
+   * Verificar se as permissões precisam ser inicializadas/atualizadas
+   * Retorna true se faltam as novas permissões (PLAN, SUBSCRIPTION, STATUS)
+   */
+  checkPermissionsStatus: adminProcedure
+    .use(requirePermission("SETTINGS", "READ"))
+    .query(async () => {
+      const permissions = await prisma.permission.findMany({
+        select: { resource: true },
+      });
+
+      const uniqueResources = new Set(permissions.map((p) => p.resource));
+
+      // Verificar se existem as novas permissões (PLAN, SUBSCRIPTION, STATUS)
+      const hasPlan = uniqueResources.has("PLAN");
+      const hasSubscription = uniqueResources.has("SUBSCRIPTION");
+      const hasStatus = uniqueResources.has("STATUS");
+
+      const needsInitialization =
+        permissions.length > 0 && !(hasPlan && hasSubscription && hasStatus);
+
+      return {
+        needsInitialization,
+        missingResources: [
+          !hasPlan && "PLAN",
+          !hasSubscription && "SUBSCRIPTION",
+          !hasStatus && "STATUS",
+        ].filter(Boolean) as string[],
+      };
+    }),
+
+  /**
    * Obter permissões de uma role específica
    * Requer permissão SETTINGS:READ
    */
@@ -157,29 +188,77 @@ export const permissionRouter = router({
       clearPermissionCache();
 
       // Definir todas as permissões possíveis
+      // Separadas por área: Admin e Tenant
       const allPermissions = [
-        // Tenant
+        // ========== PERMISSÕES DA ÁREA ADMIN ==========
+        // Tenant (Clientes)
         { resource: "TENANT", action: "CREATE", name: "Criar Clientes" },
         { resource: "TENANT", action: "READ", name: "Visualizar Clientes" },
         { resource: "TENANT", action: "UPDATE", name: "Editar Clientes" },
         { resource: "TENANT", action: "DELETE", name: "Deletar Clientes" },
         { resource: "TENANT", action: "MANAGE", name: "Gerenciar Clientes" },
 
-        // User
+        // User (Usuários)
         { resource: "USER", action: "CREATE", name: "Criar Usuários" },
         { resource: "USER", action: "READ", name: "Visualizar Usuários" },
         { resource: "USER", action: "UPDATE", name: "Editar Usuários" },
         { resource: "USER", action: "DELETE", name: "Deletar Usuários" },
         { resource: "USER", action: "MANAGE", name: "Gerenciar Usuários" },
 
-        // Branch
+        // Plan (Planos)
+        { resource: "PLAN", action: "CREATE", name: "Criar Planos" },
+        { resource: "PLAN", action: "READ", name: "Visualizar Planos" },
+        { resource: "PLAN", action: "UPDATE", name: "Editar Planos" },
+        { resource: "PLAN", action: "DELETE", name: "Deletar Planos" },
+        { resource: "PLAN", action: "MANAGE", name: "Gerenciar Planos" },
+
+        // Subscription (Assinaturas)
+        {
+          resource: "SUBSCRIPTION",
+          action: "CREATE",
+          name: "Criar Assinaturas",
+        },
+        {
+          resource: "SUBSCRIPTION",
+          action: "READ",
+          name: "Visualizar Assinaturas",
+        },
+        {
+          resource: "SUBSCRIPTION",
+          action: "UPDATE",
+          name: "Editar Assinaturas",
+        },
+        {
+          resource: "SUBSCRIPTION",
+          action: "DELETE",
+          name: "Deletar Assinaturas",
+        },
+        {
+          resource: "SUBSCRIPTION",
+          action: "MANAGE",
+          name: "Gerenciar Assinaturas",
+        },
+
+        // Status (Status do Sistema)
+        { resource: "STATUS", action: "READ", name: "Visualizar Status" },
+        { resource: "STATUS", action: "MANAGE", name: "Gerenciar Status" },
+
+        // Audit Log (Logs de Auditoria)
+        {
+          resource: "AUDIT_LOG",
+          action: "READ",
+          name: "Visualizar Logs de Auditoria",
+        },
+
+        // ========== PERMISSÕES DA ÁREA TENANT ==========
+        // Branch (Filiais)
         { resource: "BRANCH", action: "CREATE", name: "Criar Filiais" },
         { resource: "BRANCH", action: "READ", name: "Visualizar Filiais" },
         { resource: "BRANCH", action: "UPDATE", name: "Editar Filiais" },
         { resource: "BRANCH", action: "DELETE", name: "Deletar Filiais" },
         { resource: "BRANCH", action: "MANAGE", name: "Gerenciar Filiais" },
 
-        // Settings
+        // Settings (Configurações)
         {
           resource: "SETTINGS",
           action: "READ",
@@ -198,13 +277,6 @@ export const permissionRouter = router({
 
         // Dashboard
         { resource: "DASHBOARD", action: "READ", name: "Visualizar Dashboard" },
-
-        // Audit Log
-        {
-          resource: "AUDIT_LOG",
-          action: "READ",
-          name: "Visualizar Logs de Auditoria",
-        },
       ];
 
       // Criar ou atualizar permissões
@@ -228,30 +300,50 @@ export const permissionRouter = router({
       }
 
       // Definir permissões padrão por role
+      // Separadas por área: Admin e Tenant
       const defaultPermissions: Record<Role, string[]> = {
         SUPER_ADMIN: [], // SUPER_ADMIN tem todas as permissões (verificado no middleware)
+
+        // TENANT_ADMIN: Acesso completo à área admin
         TENANT_ADMIN: [
+          // Admin
           "TENANT:MANAGE",
           "USER:MANAGE",
+          "PLAN:MANAGE",
+          "SUBSCRIPTION:MANAGE",
+          "STATUS:READ",
+          "AUDIT_LOG:READ",
+          // Tenant
           "BRANCH:MANAGE",
           "SETTINGS:MANAGE",
           "DASHBOARD:READ",
-          "AUDIT_LOG:READ",
         ],
+
+        // TENANT_OWNER: Acesso à área tenant (gerenciamento do próprio tenant)
         TENANT_OWNER: [
+          // Tenant
           "USER:MANAGE",
           "BRANCH:MANAGE",
           "SETTINGS:MANAGE",
           "DASHBOARD:READ",
         ],
+
+        // TENANT_USER_MANAGER: Pode gerenciar usuários do tenant
         TENANT_USER_MANAGER: [
+          // Tenant
           "USER:CREATE",
           "USER:READ",
           "USER:UPDATE",
           "USER:DELETE",
           "DASHBOARD:READ",
         ],
-        TENANT_USER: ["DASHBOARD:READ", "SETTINGS:READ"],
+
+        // TENANT_USER: Acesso básico (apenas visualização)
+        TENANT_USER: [
+          // Tenant
+          "DASHBOARD:READ",
+          "SETTINGS:READ",
+        ],
       };
 
       // Aplicar permissões padrão

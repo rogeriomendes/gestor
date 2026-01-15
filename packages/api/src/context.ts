@@ -1,5 +1,6 @@
 import { auth } from "@gestor/auth";
 import prisma from "@gestor/db";
+import type { User } from "@gestor/db/types";
 import { Role } from "@gestor/db/types";
 import type { NextRequest } from "next/server";
 
@@ -26,8 +27,8 @@ export async function createContext(req: NextRequest) {
 
     if (user) {
       // Usar type assertion temporário até regenerar Prisma Client
-      role = (user as any).role as Role | null;
-      tenant = (user as any).tenant;
+      role = (user as User).role as Role | null;
+      tenant = (user as User).tenant;
       isSuperAdmin = role === Role.SUPER_ADMIN;
 
       // Carregar permissões da role

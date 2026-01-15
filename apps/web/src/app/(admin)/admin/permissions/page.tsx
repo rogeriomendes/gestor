@@ -40,6 +40,13 @@ function PermissionsPageContent() {
     ...trpc.permission.listPermissions.queryOptions(),
   });
 
+  const { data: permissionsStatus, refetch: refetchPermissionsStatus } =
+    useQuery({
+      ...trpc.permission.checkPermissionsStatus.queryOptions(),
+    });
+
+  const needsInitialization = permissionsStatus?.needsInitialization ?? false;
+
   const {
     data: rolePermissions,
     isLoading: rolePermissionsLoading,
@@ -159,6 +166,7 @@ function PermissionsPageContent() {
       onSuccess: () => {
         toast.success("Permissões inicializadas com sucesso!");
         refetchPermissions();
+        refetchPermissionsStatus();
         if (selectedRole) {
           refetchRolePermissions();
         }
@@ -203,9 +211,9 @@ function PermissionsPageContent() {
       );
 
       // Marcar todas as permissões do recurso
-      resourcePermissions.forEach((perm) => {
+      for (const perm of resourcePermissions) {
         updatedPermissionsMap.set(perm.id, true);
-      });
+      }
 
       const updatedPermissions = Array.from(
         updatedPermissionsMap.entries()
@@ -413,7 +421,7 @@ function PermissionsPageContent() {
       subtitle="Configure as permissões de cada role do sistema"
       title="Gerenciar Permissões"
     >
-      {!permissions || permissions.length === 0 ? (
+      {(!permissions || permissions.length === 0) && (
         <Card>
           <CardHeader>
             <CardTitle>Nenhuma Permissão Encontrada</CardTitle>
@@ -427,7 +435,25 @@ function PermissionsPageContent() {
             </Button>
           </CardContent>
         </Card>
-      ) : (
+      )}
+      {permissions && permissions.length > 0 && needsInitialization && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Atualização de Permissões Necessária</CardTitle>
+            <CardDescription>
+              Novas permissões foram adicionadas ao sistema (Planos,
+              Assinaturas, Status). Clique no botão abaixo para atualizar o
+              banco de dados e incluir essas novas permissões.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => setInitializeDialogOpen(true)}>
+              Atualizar Permissões
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+      {permissions && permissions.length > 0 && !needsInitialization && (
         <div className="grid gap-6 lg:grid-cols-4">
           <RoleList
             onRoleSelect={setSelectedRole}

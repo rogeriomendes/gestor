@@ -4,13 +4,14 @@ import {
   CreditCard,
   FileText,
   LayoutDashboard,
+  LifeBuoy,
   Package,
   Shield,
   Users,
 } from "lucide-react";
 import type { MenuItemProps } from "./types";
 
-export type { MenuItemProps };
+export type { MenuItemProps } from "./types";
 
 export const adminMenuItens: MenuItemProps[] = [
   {
@@ -35,13 +36,13 @@ export const adminMenuItens: MenuItemProps[] = [
     title: "Planos",
     url: "/admin/plans",
     icon: Package,
-    permission: { resource: "SETTINGS", action: "READ" },
+    permission: { resource: "PLAN", action: "READ" },
   },
   {
     title: "Assinaturas",
     url: "/admin/subscriptions",
     icon: CreditCard,
-    permission: { resource: "SETTINGS", action: "READ" },
+    permission: { resource: "SUBSCRIPTION", action: "READ" },
   },
   {
     title: "Permissões",
@@ -50,15 +51,20 @@ export const adminMenuItens: MenuItemProps[] = [
     permission: { resource: "SETTINGS", action: "READ" },
   },
   {
+    title: "Status",
+    url: "/admin/status",
+    icon: Activity,
+    permission: { resource: "STATUS", action: "READ" },
+  },
+  {
+    title: "Suporte",
+    url: "/admin/support",
+    icon: LifeBuoy,
+  },
+  {
     title: "Logs de Auditoria",
     url: "/admin/audit-logs",
     icon: FileText,
     permission: { resource: "AUDIT_LOG", action: "READ" },
-  },
-  {
-    title: "Status",
-    url: "/admin/status",
-    icon: Activity,
-    permission: { resource: "SETTINGS", action: "READ" },
   },
 ];

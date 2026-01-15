@@ -7,6 +7,7 @@ import { plansRouter } from "./plans";
 import { statsRouter } from "./stats";
 import { statusRouter } from "./status";
 import { subscriptionsRouter } from "./subscriptions";
+import { supportRouter } from "./support";
 import { tenantsRouter } from "./tenants";
 import { usersRouter } from "./users";
 
@@ -42,6 +43,7 @@ export const adminRouter = router({
   branch: branchRouter,
   permission: permissionRouter,
   audit: auditRouter,
+  support: supportRouter,
   plans: plansRouter,
   subscriptions: subscriptionsRouter,
   status: statusRouter,
