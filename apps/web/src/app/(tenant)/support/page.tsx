@@ -18,12 +18,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import {
   Empty,
   EmptyContent,
@@ -242,14 +243,14 @@ export default function TenantSupportPage() {
                             <Badge variant="outline">
                               {
                                 categoryLabels[
-                                  ticket.category as TicketCategory
+                                ticket.category as TicketCategory
                                 ]
                               }
                             </Badge>
                             <Badge
                               variant={
                                 ticket.status === "OPEN" ||
-                                ticket.status === "IN_PROGRESS"
+                                  ticket.status === "IN_PROGRESS"
                                   ? "default"
                                   : "outline"
                               }
@@ -259,7 +260,7 @@ export default function TenantSupportPage() {
                             <Badge variant="secondary">
                               {
                                 priorityLabels[
-                                  ticket.priority as TicketPriority
+                                ticket.priority as TicketPriority
                                 ]
                               }
                             </Badge>
@@ -278,65 +279,67 @@ export default function TenantSupportPage() {
         </Card>
       </div>
 
-      <Dialog onOpenChange={setIsCreating} open={isCreating}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Novo ticket de suporte</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Categoria</Label>
-              <Select
-                onValueChange={(value) =>
-                  setCategoryCreate(value as TicketCategory)
-                }
-                value={categoryCreate}
-              >
-                <SelectTrigger>
-                  <SelectValue>Selecione uma categoria</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="BUG">Bug</SelectItem>
-                  <SelectItem value="FEATURE_REQUEST">
-                    Sugestão de funcionalidade
-                  </SelectItem>
-                  <SelectItem value="QUESTION">Dúvida</SelectItem>
-                  <SelectItem value="TECHNICAL_ISSUE">
-                    Problema técnico
-                  </SelectItem>
-                  <SelectItem value="BILLING">Faturamento</SelectItem>
-                  <SelectItem value="OTHER">Outro</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+      <Credenza onOpenChange={setIsCreating} open={isCreating}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>Novo ticket de suporte</CredenzaTitle>
+          </CredenzaHeader>
+          <CredenzaBody>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Categoria</Label>
+                <Select
+                  onValueChange={(value) =>
+                    setCategoryCreate(value as TicketCategory)
+                  }
+                  value={categoryCreate}
+                >
+                  <SelectTrigger>
+                    <SelectValue>Selecione uma categoria</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BUG">Bug</SelectItem>
+                    <SelectItem value="FEATURE_REQUEST">
+                      Sugestão de funcionalidade
+                    </SelectItem>
+                    <SelectItem value="QUESTION">Dúvida</SelectItem>
+                    <SelectItem value="TECHNICAL_ISSUE">
+                      Problema técnico
+                    </SelectItem>
+                    <SelectItem value="BILLING">Faturamento</SelectItem>
+                    <SelectItem value="OTHER">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="space-y-2">
-              <Label>Assunto</Label>
-              <Input
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Ex.: Erro ao clicar no botão..."
-                value={subject}
-              />
-            </div>
+              <div className="space-y-2">
+                <Label>Assunto</Label>
+                <Input
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Ex.: Erro ao clicar no botão..."
+                  value={subject}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label>Descrição</Label>
-              <Textarea
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Descreva o problema, o que esperava que acontecesse e, se possível, os passos para reproduzir."
-                rows={5}
-                value={message}
-              />
+              <div className="space-y-2">
+                <Label>Descrição</Label>
+                <Textarea
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Descreva o problema, o que esperava que acontecesse e, se possível, os passos para reproduzir."
+                  rows={5}
+                  value={message}
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
+          </CredenzaBody>
+          <CredenzaFooter>
             <Button onClick={() => setIsCreating(false)} variant="outline">
               Cancelar
             </Button>
             <Button onClick={handleCreate}>Enviar ticket</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </PageLayout>
   );
 }

@@ -10,13 +10,13 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { CreateUserDialog } from "./_components/create-user-dialog";
 import { EditUserDialog } from "./_components/edit-user-dialog";
@@ -219,19 +219,19 @@ function AdminUsersPageContent() {
       />
 
       {/* Delete User Confirmation Dialog */}
-      <Dialog
+      <Credenza
         onOpenChange={(open: boolean) => !open && setDeletingUserId(null)}
         open={!!deletingUserId}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmar Exclusão</DialogTitle>
-            <DialogDescription>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>Confirmar Exclusão</CredenzaTitle>
+            <CredenzaDescription>
               Tem certeza que deseja deletar este usuário? Esta ação pode ser
               revertida posteriormente.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaFooter>
             <Button
               disabled={deleteUserMutation.isPending}
               onClick={() => setDeletingUserId(null)}
@@ -246,9 +246,9 @@ function AdminUsersPageContent() {
             >
               {deleteUserMutation.isPending ? "Deletando..." : "Deletar"}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Edit User Dialog */}
       {editingUser && (

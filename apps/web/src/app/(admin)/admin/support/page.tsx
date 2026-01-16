@@ -1,30 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { LifeBuoy } from "lucide-react";
 import type { Route } from "next";
-import Link from "next/link";
 import { useState } from "react";
 
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
-import { ListSkeleton } from "@/components/ui/list-skeleton";
 import {
   Select,
   SelectContent,
@@ -33,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { trpc } from "@/utils/trpc";
+import { SupportTicketsList } from "./_components/support-tickets-list";
 
 type TicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
 type TicketPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
@@ -43,29 +26,6 @@ type TicketCategory =
   | "TECHNICAL_ISSUE"
   | "BILLING"
   | "OTHER";
-
-const statusLabels: Record<TicketStatus, string> = {
-  OPEN: "Aberto",
-  IN_PROGRESS: "Em andamento",
-  RESOLVED: "Resolvido",
-  CLOSED: "Fechado",
-};
-
-const priorityLabels: Record<TicketPriority, string> = {
-  LOW: "Baixa",
-  MEDIUM: "Média",
-  HIGH: "Alta",
-  URGENT: "Urgente",
-};
-
-const categoryLabels: Record<TicketCategory, string> = {
-  BUG: "Erro",
-  FEATURE_REQUEST: "Sugestão de funcionalidade",
-  QUESTION: "Dúvida",
-  TECHNICAL_ISSUE: "Problema técnico",
-  BILLING: "Faturamento",
-  OTHER: "Outro",
-};
 
 function AdminSupportPageContent() {
   const [page, setPage] = useState(1);
@@ -115,7 +75,7 @@ function AdminSupportPageContent() {
               }}
               value={status}
             >
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -133,7 +93,7 @@ function AdminSupportPageContent() {
               }}
               value={category}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -157,7 +117,7 @@ function AdminSupportPageContent() {
               }}
               value={priority}
             >
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -171,94 +131,7 @@ function AdminSupportPageContent() {
           </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Tickets de suporte</CardTitle>
-            <CardDescription>
-              Lista completa de tickets abertos pelos tenants.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading && <ListSkeleton count={8} itemHeight="h-16" />}
-            {!isLoading && tickets.length === 0 && (
-              <Empty className="border-none p-6">
-                <EmptyMedia variant="icon">
-                  <LifeBuoy className="h-6 w-6" />
-                </EmptyMedia>
-                <EmptyHeader>
-                  <EmptyTitle>Nenhum ticket encontrado</EmptyTitle>
-                  <EmptyDescription>
-                    Ainda não há solicitações de suporte registradas.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            )}
-            {!isLoading && tickets.length > 0 && (
-              <div className="space-y-3">
-                {tickets.map((ticket) => (
-                  <Link
-                    href={`/admin/support/${ticket.id}` as Route}
-                    key={ticket.id}
-                  >
-                    <Card
-                      className="rounded border border-border/60 hover:border-primary/70"
-                      size="sm"
-                    >
-                      <CardHeader className="flex flex-row items-center justify-between gap-3">
-                        <div className="space-y-1">
-                          <CardTitle className="font-semibold text-sm">
-                            {ticket.subject}
-                          </CardTitle>
-                          <CardDescription className="line-clamp-1 text-xs">
-                            {ticket.message}
-                          </CardDescription>
-                          <p className="text-[11px] text-muted-foreground">
-                            Cliente:{" "}
-                            {ticket.tenant
-                              ? `${ticket.tenant.name} (${ticket.tenant.slug})`
-                              : "N/A"}
-                            {" • "}Aberto por: {ticket.user?.name ?? "N/A"}
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end gap-1 text-xs">
-                          <div className="flex flex-wrap justify-end gap-1">
-                            <Badge variant="outline">
-                              {
-                                categoryLabels[
-                                  ticket.category as TicketCategory
-                                ]
-                              }
-                            </Badge>
-                            <Badge
-                              variant={
-                                ticket.status === "OPEN" ||
-                                ticket.status === "IN_PROGRESS"
-                                  ? "default"
-                                  : "outline"
-                              }
-                            >
-                              {statusLabels[ticket.status as TicketStatus]}
-                            </Badge>
-                            <Badge variant="secondary">
-                              {
-                                priorityLabels[
-                                  ticket.priority as TicketPriority
-                                ]
-                              }
-                            </Badge>
-                          </div>
-                          <span className="text-[11px] text-muted-foreground">
-                            {new Date(ticket.createdAt).toLocaleString()}
-                          </span>
-                        </div>
-                      </CardHeader>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <SupportTicketsList isLoading={isLoading} tickets={tickets} />
       </div>
     </PageLayout>
   );

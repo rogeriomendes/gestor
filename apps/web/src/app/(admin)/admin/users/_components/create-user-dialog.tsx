@@ -6,13 +6,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -105,81 +106,83 @@ export function CreateUserDialog({
   };
 
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Criar Usuário</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent className="max-w-md">
+        <CredenzaHeader>
+          <CredenzaTitle>Criar Usuário</CredenzaTitle>
+          <CredenzaDescription>
             Crie um novo usuário com permissões de administrador
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome</Label>
-            <Input
-              id="name"
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Nome completo"
-              value={name}
-            />
+        <CredenzaBody>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome</Label>
+              <Input
+                id="name"
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Nome completo"
+                value={name}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@exemplo.com"
+                type="email"
+                value={email}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="role">Role</Label>
+              <Select
+                onValueChange={(value) => setRole(value as Role)}
+                value={role}
+              >
+                <SelectTrigger id="role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SUPER_ADMIN">
+                    {getRoleLabel("SUPER_ADMIN")}
+                  </SelectItem>
+                  <SelectItem value="TENANT_ADMIN">
+                    {getRoleLabel("TENANT_ADMIN")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Mínimo 8 caracteres"
+                type="password"
+                value={password}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+              <Input
+                id="confirmPassword"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Digite a senha novamente"
+                type="password"
+                value={confirmPassword}
+              />
+            </div>
           </div>
+        </CredenzaBody>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@exemplo.com"
-              type="email"
-              value={email}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="role">Role</Label>
-            <Select
-              onValueChange={(value) => setRole(value as Role)}
-              value={role}
-            >
-              <SelectTrigger id="role">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="SUPER_ADMIN">
-                  {getRoleLabel("SUPER_ADMIN")}
-                </SelectItem>
-                <SelectItem value="TENANT_ADMIN">
-                  {getRoleLabel("TENANT_ADMIN")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Mínimo 8 caracteres"
-              type="password"
-              value={password}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-            <Input
-              id="confirmPassword"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Digite a senha novamente"
-              type="password"
-              value={confirmPassword}
-            />
-          </div>
-        </div>
-
-        <DialogFooter>
+        <CredenzaFooter>
           <Button onClick={handleClose} variant="outline">
             Cancelar
           </Button>
@@ -196,8 +199,8 @@ export function CreateUserDialog({
               "Criar Usuário"
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

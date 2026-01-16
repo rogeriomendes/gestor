@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 interface DeleteTenantDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -28,20 +28,20 @@ export function DeleteTenantDialog({
   onConfirm,
 }: DeleteTenantDialogProps) {
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Deletar Cliente</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Deletar Cliente</CredenzaTitle>
+          <CredenzaDescription>
             Tem certeza que deseja deletar{" "}
             <strong>
               {tenantName} ({tenantSlug})
             </strong>
             ? O cliente será movido para a lixeira e poderá ser restaurado
             posteriormente.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaFooter>
           <Button
             disabled={isPending}
             onClick={() => onOpenChange(false)}
@@ -56,8 +56,8 @@ export function DeleteTenantDialog({
           >
             {isPending ? "Deletando..." : "Deletar"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

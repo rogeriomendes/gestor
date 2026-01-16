@@ -6,13 +6,14 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import { Separator } from "@/components/ui/separator";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { ResetPasswordSection } from "./reset-password-section";
@@ -157,49 +158,51 @@ export function EditUserDialog({
     updateUserMutation.isPending || resetPasswordMutation.isPending;
 
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Editar Usuário</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent className="max-w-2xl">
+        <CredenzaHeader>
+          <CredenzaTitle>Editar Usuário</CredenzaTitle>
+          <CredenzaDescription>
             Atualize o nome do usuário ou defina uma nova senha
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
-        <div className="space-y-6">
-          <UserBasicInfoSection
-            email={userEmail}
-            name={name}
-            onNameChange={setName}
-          />
+        <CredenzaBody>
+          <div className="space-y-6">
+            <UserBasicInfoSection
+              email={userEmail}
+              name={name}
+              onNameChange={setName}
+            />
 
-          <Separator />
+            <Separator />
 
-          <UserTenantSection
-            currentRole={currentRole}
-            currentTenantId={currentTenantId}
-            onSuccess={() => {
-              refetchUser();
-              onSuccess();
-            }}
-            userId={userId}
-          />
+            <UserTenantSection
+              currentRole={currentRole}
+              currentTenantId={currentTenantId}
+              onSuccess={() => {
+                refetchUser();
+                onSuccess();
+              }}
+              userId={userId}
+            />
 
-          <Separator />
+            <Separator />
 
-          <ResetPasswordSection
-            confirmPassword={confirmPassword}
-            newPassword={newPassword}
-            onConfirmPasswordChange={setConfirmPassword}
-            onNewPasswordChange={setNewPassword}
-            onTogglePasswordFields={() =>
-              setShowPasswordFields(!showPasswordFields)
-            }
-            showPasswordFields={showPasswordFields}
-          />
-        </div>
+            <ResetPasswordSection
+              confirmPassword={confirmPassword}
+              newPassword={newPassword}
+              onConfirmPasswordChange={setConfirmPassword}
+              onNewPasswordChange={setNewPassword}
+              onTogglePasswordFields={() =>
+                setShowPasswordFields(!showPasswordFields)
+              }
+              showPasswordFields={showPasswordFields}
+            />
+          </div>
+        </CredenzaBody>
 
-        <DialogFooter>
+        <CredenzaFooter>
           <Button onClick={() => onOpenChange(false)} variant="outline">
             Cancelar
           </Button>
@@ -213,8 +216,8 @@ export function EditUserDialog({
               "Salvar Alterações"
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

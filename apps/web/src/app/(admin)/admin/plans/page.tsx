@@ -11,13 +11,13 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { PlansFilters } from "./_components/plans-filters";
 import { PlansList } from "./_components/plans-list";
@@ -137,7 +137,7 @@ function AdminPlansPageContent() {
       subtitle="Criar e gerenciar planos de assinatura"
       title="Gerenciar Planos"
     >
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* <PlansStatsCards
           activePlans={plans.filter((p) => p.active).length}
           inactivePlans={plans.filter((p) => !p.active).length}
@@ -171,22 +171,22 @@ function AdminPlansPageContent() {
       </div>
 
       {/* Deactivate Dialog */}
-      <Dialog
+      <Credenza
         onOpenChange={setDeactivateDialogOpen}
         open={deactivateDialogOpen}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Desativar plano</DialogTitle>
-            <DialogDescription>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>Desativar plano</CredenzaTitle>
+            <CredenzaDescription>
               Tem certeza que deseja desativar o plano "{selectedPlan?.name}"?
               <br />
               <br />
               Assinaturas existentes não serão afetadas, mas novos clientes não
               poderão selecionar este plano.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaFooter>
             <Button
               onClick={() => setDeactivateDialogOpen(false)}
               variant="outline"
@@ -202,22 +202,22 @@ function AdminPlansPageContent() {
                 ? "Desativando..."
                 : "Desativar"}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Activate Dialog */}
-      <Dialog onOpenChange={setActivateDialogOpen} open={activateDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Ativar plano</DialogTitle>
-            <DialogDescription>
+      <Credenza onOpenChange={setActivateDialogOpen} open={activateDialogOpen}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>Ativar plano</CredenzaTitle>
+            <CredenzaDescription>
               Tem certeza que deseja ativar o plano "{selectedPlan?.name}"?
               <br />
               <br />O plano estará disponível para novas assinaturas.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaFooter>
             <Button
               onClick={() => setActivateDialogOpen(false)}
               variant="outline"
@@ -230,9 +230,9 @@ function AdminPlansPageContent() {
             >
               {activatePlanMutation.isPending ? "Ativando..." : "Ativar"}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </PageLayout>
   );
 }

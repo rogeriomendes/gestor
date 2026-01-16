@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 interface PermanentDeleteTenantDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -28,11 +28,11 @@ export function PermanentDeleteTenantDialog({
   onConfirm,
 }: PermanentDeleteTenantDialogProps) {
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Excluir Permanentemente</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Excluir Permanentemente</CredenzaTitle>
+          <CredenzaDescription>
             <strong className="text-destructive">
               ATENÇÃO: Esta ação é irreversível!
             </strong>
@@ -41,9 +41,9 @@ export function PermanentDeleteTenantDialog({
             Tem certeza que deseja excluir permanentemente {tenantName} (
             {tenantSlug})? Todos os dados relacionados serão perdidos e não
             poderão ser recuperados.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaFooter>
           <Button
             disabled={isPending}
             onClick={() => onOpenChange(false)}
@@ -58,8 +58,8 @@ export function PermanentDeleteTenantDialog({
           >
             {isPending ? "Excluindo..." : "Excluir Permanentemente"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

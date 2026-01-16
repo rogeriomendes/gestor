@@ -3,7 +3,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import { toast } from "sonner";
 import { TenantGuard, type TenantWithRelations } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
@@ -23,12 +22,6 @@ interface TenantPageContentProps {
 }
 
 function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
-  const [activeTab, setActiveTab] = useState<
-    "details" | "database" | "users" | "branches" | "subscription"
-  >("details");
-
-  // Todos os hooks são sempre chamados, garantindo ordem consistente
-  // Carregar usuários sempre para exibir a contagem na aba, mesmo quando não está ativa
   const {
     data: tenantUsers,
     isLoading: usersLoading,
@@ -127,10 +120,7 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
       subtitle={`${tenant.slug} ${tenant.active ? "• Ativo" : "• Inativo"}`}
       title={tenant.name}
     >
-      <Tabs
-        onValueChange={(value) => setActiveTab(value as typeof activeTab)}
-        value={activeTab}
-      >
+      <Tabs defaultValue="details">
         <TabsList variant="line">
           <TabsTrigger value="details">Detalhes</TabsTrigger>
           <TabsTrigger value="database">Banco de Dados</TabsTrigger>

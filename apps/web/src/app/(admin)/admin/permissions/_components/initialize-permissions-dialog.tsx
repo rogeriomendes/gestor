@@ -3,14 +3,14 @@
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 interface InitializePermissionsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -25,16 +25,16 @@ export function InitializePermissionsDialog({
   onInitialize,
 }: InitializePermissionsDialogProps) {
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Inicializar Permissões</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Inicializar Permissões</CredenzaTitle>
+          <CredenzaDescription>
             Isso irá criar todas as permissões padrão do sistema e atribuí-las
             às roles. As permissões existentes serão atualizadas.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaFooter>
           <Button
             disabled={isPending}
             onClick={() => onOpenChange(false)}
@@ -52,8 +52,8 @@ export function InitializePermissionsDialog({
               "Inicializar"
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

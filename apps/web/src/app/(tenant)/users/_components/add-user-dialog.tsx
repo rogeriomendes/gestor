@@ -5,13 +5,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -130,124 +131,124 @@ export function AddUserDialog({
   };
 
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Adicionar Usuário ao Cliente</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Adicionar Usuário ao Cliente</CredenzaTitle>
+          <CredenzaDescription>
             {createUserMode
               ? "Criar um novo usuário e adicioná-lo ao cliente"
               : "Convidar um usuário existente ou criar um novo"}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4">
-          {/* Tabs */}
-          <div className="border-b">
-            <nav className="-mb-px flex space-x-4">
-              <button
-                className={`border-b-2 px-1 py-2 font-medium text-sm ${
-                  createUserMode
-                    ? "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
-                    : "border-primary text-primary"
-                }`}
-                onClick={() => {
-                  setCreateUserMode(false);
-                  setSelectedEmail("");
-                }}
-                type="button"
-              >
-                Convidar Existente
-              </button>
-              <button
-                className={`border-b-2 px-1 py-2 font-medium text-sm ${
-                  createUserMode
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
-                }`}
-                onClick={() => {
-                  setCreateUserMode(true);
-                  setSelectedEmail("");
-                }}
-                type="button"
-              >
-                Criar Novo
-              </button>
-            </nav>
-          </div>
-
-          {/* Role Selection */}
-          <div>
-            <Label>Role</Label>
-            <Select
-              onValueChange={(value) => setSelectedRole(value as Role)}
-              value={selectedRole}
-            >
-              <SelectTrigger>
-                <SelectValue>Selecione a role</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="TENANT_USER">Usuário</SelectItem>
-                <SelectItem value="TENANT_USER_MANAGER">
-                  Gerente de Usuários
-                </SelectItem>
-                <SelectItem value="TENANT_OWNER">Proprietário</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Content based on mode */}
-          {createUserMode ? (
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="newUserName">Nome *</Label>
-                <Input
-                  id="newUserName"
-                  onChange={(e) => setNewUserName(e.target.value)}
-                  placeholder="Nome do usuário"
-                  value={newUserName}
-                />
-              </div>
-              <div>
-                <Label htmlFor="newUserEmail">Email *</Label>
-                <Input
-                  id="newUserEmail"
-                  onChange={(e) => setNewUserEmail(e.target.value)}
-                  placeholder="usuario@exemplo.com"
-                  type="email"
-                  value={newUserEmail}
-                />
-              </div>
-              <div>
-                <Label htmlFor="newUserPassword">Senha *</Label>
-                <Input
-                  id="newUserPassword"
-                  onChange={(e) => setNewUserPassword(e.target.value)}
-                  placeholder="Mínimo de 8 caracteres"
-                  type="password"
-                  value={newUserPassword}
-                />
-              </div>
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaBody>
+          <div className="space-y-4">
+            {/* Tabs */}
+            <div className="border-b">
+              <nav className="-mb-px flex space-x-4">
+                <button
+                  className={`border-b-2 px-1 py-2 font-medium text-sm ${createUserMode
+                      ? "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
+                      : "border-primary text-primary"
+                    }`}
+                  onClick={() => {
+                    setCreateUserMode(false);
+                    setSelectedEmail("");
+                  }}
+                  type="button"
+                >
+                  Convidar Existente
+                </button>
+                <button
+                  className={`border-b-2 px-1 py-2 font-medium text-sm ${createUserMode
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
+                    }`}
+                  onClick={() => {
+                    setCreateUserMode(true);
+                    setSelectedEmail("");
+                  }}
+                  type="button"
+                >
+                  Criar Novo
+                </button>
+              </nav>
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="email">Email do Usuário *</Label>
-                <Input
-                  id="email"
-                  onChange={(e) => setSelectedEmail(e.target.value)}
-                  placeholder="usuario@exemplo.com"
-                  type="email"
-                  value={selectedEmail}
-                />
-                <p className="mt-1 text-muted-foreground text-xs">
-                  Digite o email do usuário que deseja convidar. O usuário deve
-                  já estar cadastrado no sistema.
-                </p>
-              </div>
+
+            {/* Role Selection */}
+            <div>
+              <Label>Role</Label>
+              <Select
+                onValueChange={(value) => setSelectedRole(value as Role)}
+                value={selectedRole}
+              >
+                <SelectTrigger>
+                  <SelectValue>Selecione a role</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="TENANT_USER">Usuário</SelectItem>
+                  <SelectItem value="TENANT_USER_MANAGER">
+                    Gerente de Usuários
+                  </SelectItem>
+                  <SelectItem value="TENANT_OWNER">Proprietário</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          )}
-        </div>
-        <DialogFooter>
+
+            {/* Content based on mode */}
+            {createUserMode ? (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="newUserName">Nome *</Label>
+                  <Input
+                    id="newUserName"
+                    onChange={(e) => setNewUserName(e.target.value)}
+                    placeholder="Nome do usuário"
+                    value={newUserName}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="newUserEmail">Email *</Label>
+                  <Input
+                    id="newUserEmail"
+                    onChange={(e) => setNewUserEmail(e.target.value)}
+                    placeholder="usuario@exemplo.com"
+                    type="email"
+                    value={newUserEmail}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="newUserPassword">Senha *</Label>
+                  <Input
+                    id="newUserPassword"
+                    onChange={(e) => setNewUserPassword(e.target.value)}
+                    placeholder="Mínimo de 8 caracteres"
+                    type="password"
+                    value={newUserPassword}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="email">Email do Usuário *</Label>
+                  <Input
+                    id="email"
+                    onChange={(e) => setSelectedEmail(e.target.value)}
+                    placeholder="usuario@exemplo.com"
+                    type="email"
+                    value={selectedEmail}
+                  />
+                  <p className="mt-1 text-muted-foreground text-xs">
+                    Digite o email do usuário que deseja convidar. O usuário
+                    deve já estar cadastrado no sistema.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </CredenzaBody>
+        <CredenzaFooter>
           <Button onClick={handleClose} variant="outline">
             Cancelar
           </Button>
@@ -271,8 +272,8 @@ export function AddUserDialog({
               {inviteUserMutation.isPending ? "Enviando..." : "Convidar"}
             </Button>
           )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

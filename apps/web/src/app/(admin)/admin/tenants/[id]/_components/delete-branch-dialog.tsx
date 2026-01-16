@@ -2,13 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 
 interface DeleteBranchDialogProps {
   open: boolean;
@@ -26,16 +26,16 @@ export function DeleteBranchDialog({
   onConfirm,
 }: DeleteBranchDialogProps) {
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Deletar Filial</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Deletar Filial</CredenzaTitle>
+          <CredenzaDescription>
             Tem certeza que deseja deletar a filial "{branchName}"? Esta ação
             não pode ser desfeita.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaFooter>
           <Button
             disabled={isPending}
             onClick={() => onOpenChange(false)}
@@ -50,8 +50,8 @@ export function DeleteBranchDialog({
           >
             {isPending ? "Deletando..." : "Deletar"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

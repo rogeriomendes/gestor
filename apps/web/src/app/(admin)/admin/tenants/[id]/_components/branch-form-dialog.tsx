@@ -7,13 +7,14 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import {
   Field,
   FieldContent,
@@ -190,60 +191,78 @@ export function BranchFormDialog({
     updateBranchMutation.isPending;
 
   return (
-    <Dialog onOpenChange={onClose} open={open}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
+    <Credenza onOpenChange={onClose} open={open}>
+      <CredenzaContent className="max-h-[90vh] max-w-3xl">
+        <CredenzaHeader>
+          <CredenzaTitle>
             {isEditing ? "Editar Filial" : "Nova Filial"}
-          </DialogTitle>
-          <DialogDescription>
+          </CredenzaTitle>
+          <CredenzaDescription>
             {isEditing
               ? "Atualize as informações da filial"
               : "Preencha os dados da nova filial"}
-          </DialogDescription>
-        </DialogHeader>
+          </CredenzaDescription>
+        </CredenzaHeader>
 
-        <form
-          className="space-y-6"
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Informações Básicas</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <form.Field name="name">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Nome da Filial *
-                    </FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
+        <CredenzaBody>
+          <form
+            className="space-y-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
+          >
+            {/* Basic Information */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Informações Básicas</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <form.Field name="name">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>
+                        Nome da Filial *
+                      </FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
 
-              <form.Field name="isMain">
+                <form.Field name="isMain">
+                  {(field) => (
+                    <Field orientation="horizontal">
+                      <FieldLabel htmlFor={field.name}>
+                        Filial Principal
+                      </FieldLabel>
+                      <FieldContent>
+                        <FieldDescription>
+                          Marque se esta é a matriz/filial principal
+                        </FieldDescription>
+                        <Switch
+                          checked={field.state.value}
+                          id={field.name}
+                          onCheckedChange={field.handleChange}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+              </div>
+
+              <form.Field name="active">
                 {(field) => (
                   <Field orientation="horizontal">
-                    <FieldLabel htmlFor={field.name}>
-                      Filial Principal
-                    </FieldLabel>
+                    <FieldLabel htmlFor={field.name}>Ativa</FieldLabel>
                     <FieldContent>
-                      <FieldDescription>
-                        Marque se esta é a matriz/filial principal
-                      </FieldDescription>
                       <Switch
                         checked={field.state.value}
                         id={field.name}
@@ -256,79 +275,101 @@ export function BranchFormDialog({
               </form.Field>
             </div>
 
-            <form.Field name="active">
-              {(field) => (
-                <Field orientation="horizontal">
-                  <FieldLabel htmlFor={field.name}>Ativa</FieldLabel>
-                  <FieldContent>
-                    <Switch
-                      checked={field.state.value}
-                      id={field.name}
-                      onCheckedChange={field.handleChange}
-                    />
-                    <FieldError errors={field.state.meta.errors} />
-                  </FieldContent>
-                </Field>
-              )}
-            </form.Field>
-          </div>
+            {/* Company Information */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Dados da Empresa</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <form.Field name="legalName">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Razão Social</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
 
-          {/* Company Information */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Dados da Empresa</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <form.Field name="legalName">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Razão Social</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
+                <form.Field name="cnpj">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>
+                        CNPJ (14 dígitos)
+                      </FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          maxLength={14}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            field.handleChange(value);
+                          }}
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+              </div>
 
-              <form.Field name="cnpj">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      CNPJ (14 dígitos)
-                    </FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        maxLength={14}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, "");
-                          field.handleChange(value);
-                        }}
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
+              <div className="grid grid-cols-2 gap-4">
+                <form.Field name="email">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          type="email"
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+
+                <form.Field name="phone">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Telefone</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <form.Field name="email">
+            {/* Address */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Endereço</h3>
+              <form.Field name="addressStreet">
                 {(field) => (
                   <Field>
-                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>Rua</FieldLabel>
                     <FieldContent>
                       <Input
                         id={field.name}
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
-                        type="email"
                         value={field.state.value}
                       />
                       <FieldError errors={field.state.meta.errors} />
@@ -337,34 +378,127 @@ export function BranchFormDialog({
                 )}
               </form.Field>
 
-              <form.Field name="phone">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Telefone</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
+              <div className="grid grid-cols-3 gap-4">
+                <form.Field name="addressNumber">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Número</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+
+                <form.Field name="addressComplement">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Complemento</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+
+                <form.Field name="addressZipCode">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>CEP</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          maxLength={8}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            field.handleChange(value);
+                          }}
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <form.Field name="addressDistrict">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Bairro</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+
+                <form.Field name="addressCity">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Cidade</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+
+                <form.Field name="addressState">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Estado (UF)</FieldLabel>
+                      <FieldContent>
+                        <Input
+                          id={field.name}
+                          maxLength={2}
+                          onBlur={field.handleBlur}
+                          onChange={(e) =>
+                            field.handleChange(e.target.value.toUpperCase())
+                          }
+                          value={field.state.value}
+                        />
+                        <FieldError errors={field.state.meta.errors} />
+                      </FieldContent>
+                    </Field>
+                  )}
+                </form.Field>
+              </div>
             </div>
-          </div>
 
-          {/* Address */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Endereço</h3>
-            <form.Field name="addressStreet">
+            {/* Notes */}
+            <form.Field name="notes">
               {(field) => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>Rua</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Observações</FieldLabel>
                   <FieldContent>
-                    <Input
+                    <Textarea
                       id={field.name}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
@@ -376,149 +510,18 @@ export function BranchFormDialog({
               )}
             </form.Field>
 
-            <div className="grid grid-cols-3 gap-4">
-              <form.Field name="addressNumber">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Número</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
-
-              <form.Field name="addressComplement">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Complemento</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
-
-              <form.Field name="addressZipCode">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>CEP</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        maxLength={8}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, "");
-                          field.handleChange(value);
-                        }}
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <form.Field name="addressDistrict">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Bairro</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
-
-              <form.Field name="addressCity">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Cidade</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
-
-              <form.Field name="addressState">
-                {(field) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Estado (UF)</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id={field.name}
-                        maxLength={2}
-                        onBlur={field.handleBlur}
-                        onChange={(e) =>
-                          field.handleChange(e.target.value.toUpperCase())
-                        }
-                        value={field.state.value}
-                      />
-                      <FieldError errors={field.state.meta.errors} />
-                    </FieldContent>
-                  </Field>
-                )}
-              </form.Field>
-            </div>
-          </div>
-
-          {/* Notes */}
-          <form.Field name="notes">
-            {(field) => (
-              <Field>
-                <FieldLabel htmlFor={field.name}>Observações</FieldLabel>
-                <FieldContent>
-                  <Textarea
-                    id={field.name}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    value={field.state.value}
-                  />
-                  <FieldError errors={field.state.meta.errors} />
-                </FieldContent>
-              </Field>
-            )}
-          </form.Field>
-
-          <DialogFooter>
-            <Button onClick={onClose} type="button" variant="outline">
-              Cancelar
-            </Button>
-            <Button disabled={isLoading} type="submit">
-              {isLoading && "Salvando..."}
-              {isEditing ? "Atualizar" : "Criar"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <CredenzaFooter>
+              <Button onClick={onClose} type="button" variant="outline">
+                Cancelar
+              </Button>
+              <Button disabled={isLoading} type="submit">
+                {isLoading && "Salvando..."}
+                {isEditing ? "Atualizar" : "Criar"}
+              </Button>
+            </CredenzaFooter>
+          </form>
+        </CredenzaBody>
+      </CredenzaContent>
+    </Credenza>
   );
 }

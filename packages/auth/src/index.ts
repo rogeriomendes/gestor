@@ -51,7 +51,7 @@ export const auth = betterAuth({
     admin({
       // Configurar quais usuários são admins
       // Usuários com role "admin" ou IDs específicos
-      adminUserIds: [], // IDs específicos podem ser adicionados aqui
+      // adminUserIds: [], // IDs específicos podem ser adicionados aqui
     }),
   ],
 });

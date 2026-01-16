@@ -1,12 +1,13 @@
 "use client";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   getAuditActionLabel,
@@ -116,7 +117,7 @@ function LogDetailsContent({ logDetails }: { logDetails: AuditLogDetails }) {
       {logDetails.metadata !== undefined && logDetails.metadata !== null && (
         <div>
           <p className="mb-2 text-muted-foreground text-sm">Metadados</p>
-          <pre className="max-h-64 overflow-auto rounded-md bg-muted p-4 text-xs">
+          <pre className="overflow-auto whitespace-pre-line rounded-md bg-muted p-4 text-xs">
             {JSON.stringify(logDetails.metadata, null, 2)}
           </pre>
         </div>
@@ -132,20 +133,22 @@ export function AuditLogDetailsDialog({
   isLoading = false,
 }: AuditLogDetailsDialogProps) {
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Detalhes do Log</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent className="max-w-2xl">
+        <CredenzaHeader>
+          <CredenzaTitle>Detalhes do Log</CredenzaTitle>
+          <CredenzaDescription>
             Informações completas sobre esta ação
-          </DialogDescription>
-        </DialogHeader>
-        {isLoading || !logDetails ? (
-          <LoadingSkeleton />
-        ) : (
-          <LogDetailsContent logDetails={logDetails} />
-        )}
-      </DialogContent>
-    </Dialog>
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaBody>
+          {isLoading || !logDetails ? (
+            <LoadingSkeleton />
+          ) : (
+            <LogDetailsContent logDetails={logDetails} />
+          )}
+        </CredenzaBody>
+      </CredenzaContent>
+    </Credenza>
   );
 }

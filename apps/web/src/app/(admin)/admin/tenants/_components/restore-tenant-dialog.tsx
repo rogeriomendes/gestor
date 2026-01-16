@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 interface RestoreTenantDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -28,17 +28,17 @@ export function RestoreTenantDialog({
   onConfirm,
 }: RestoreTenantDialogProps) {
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Restaurar Cliente</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Restaurar Cliente</CredenzaTitle>
+          <CredenzaDescription>
             Tem certeza que deseja restaurar {tenantName} ({tenantSlug})? O
             cliente será reativado e voltará a aparecer na lista de clientes
             ativos.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaFooter>
           <Button
             disabled={isPending}
             onClick={() => onOpenChange(false)}
@@ -49,8 +49,8 @@ export function RestoreTenantDialog({
           <Button disabled={isPending} onClick={onConfirm}>
             {isPending ? "Restaurando..." : "Restaurar"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

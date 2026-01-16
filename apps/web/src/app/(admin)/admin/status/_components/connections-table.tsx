@@ -17,13 +17,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -227,16 +227,16 @@ export function ConnectionsTable() {
       </Card>
 
       {/* Dialog para fechar conexão individual */}
-      <Dialog onOpenChange={setCloseDialogOpen} open={closeDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Fechar Conexão</DialogTitle>
-            <DialogDescription>
+      <Credenza onOpenChange={setCloseDialogOpen} open={closeDialogOpen}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>Fechar Conexão</CredenzaTitle>
+            <CredenzaDescription>
               Tem certeza que deseja fechar esta conexão? A conexão será
               desconectada e removida do cache.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaFooter>
             <Button onClick={() => setCloseDialogOpen(false)} variant="outline">
               Cancelar
             </Button>
@@ -251,21 +251,21 @@ export function ConnectionsTable() {
             >
               Fechar
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Dialog para fechar todas as conexões */}
-      <Dialog onOpenChange={setCloseAllDialogOpen} open={closeAllDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Fechar Todas as Conexões</DialogTitle>
-            <DialogDescription>
+      <Credenza onOpenChange={setCloseAllDialogOpen} open={closeAllDialogOpen}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>Fechar Todas as Conexões</CredenzaTitle>
+            <CredenzaDescription>
               Tem certeza que deseja fechar todas as conexões ativas? Todas as
               conexões serão desconectadas e o cache será limpo.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaFooter>
             <Button
               onClick={() => setCloseAllDialogOpen(false)}
               variant="outline"
@@ -279,9 +279,9 @@ export function ConnectionsTable() {
             >
               Fechar Todas
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </>
   );
 }

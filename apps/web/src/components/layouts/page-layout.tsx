@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { type BreadcrumbItemType, Breadcrumbs } from "@/components/breadcrumbs";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "../ui/sidebar";
 
 interface PageLayoutProps {
   title: string;
@@ -73,27 +74,23 @@ export function PageLayout({
   };
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-col">
       {/* Header */}
-      <header className="flex shrink-0 flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
-        <div className="flex items-center gap-2 sm:gap-4">
+      <header className="flex shrink-0 flex-row items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex items-center gap-2 md:gap-4">
+          <SidebarTrigger className="md:hidden" />
           {showBackButton && (
-            <Button
-              className="-ml-2"
-              onClick={handleBack}
-              size="icon"
-              variant="ghost"
-            >
+            <Button onClick={handleBack} size="icon" variant="ghost">
               <ArrowLeft className="size-4" />
               <span className="sr-only">Voltar</span>
             </Button>
           )}
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate font-semibold text-lg sm:text-xl md:text-2xl">
+          <div className="">
+            <h1 className="truncate whitespace-pre-line font-semibold text-base md:text-xl">
               {title}
             </h1>
             {subtitle && (
-              <p className="truncate text-muted-foreground text-xs sm:text-sm">
+              <p className="truncate whitespace-pre-line text-muted-foreground text-xs md:text-sm">
                 {subtitle}
               </p>
             )}
@@ -106,14 +103,12 @@ export function PageLayout({
       </header>
 
       {/* Breadcrumbs */}
-      <div className="border-b px-4 py-2 sm:px-6 sm:py-3">
+      <div className="border-b px-4 py-2 md:px-6 md:py-3">
         <Breadcrumbs items={finalBreadcrumbs} />
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col space-y-6 overflow-auto p-6">
-        {children}
-      </div>
+      <div className="flex flex-col space-y-6 p-3 md:p-6">{children}</div>
     </div>
   );
 }

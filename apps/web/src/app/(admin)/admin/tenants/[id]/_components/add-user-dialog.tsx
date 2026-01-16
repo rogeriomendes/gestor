@@ -5,13 +5,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -148,170 +149,171 @@ export function AddUserDialog({
   );
 
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Adicionar Usuário ao Cliente</DialogTitle>
-          <DialogDescription>
+    <Credenza onOpenChange={onOpenChange} open={open}>
+      <CredenzaContent>
+        <CredenzaHeader>
+          <CredenzaTitle>Adicionar Usuário ao Cliente</CredenzaTitle>
+          <CredenzaDescription>
             {createUserMode
               ? "Crie um novo usuário e adicione-o a este cliente"
               : "Selecione um usuário existente ou crie um novo"}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4">
-          {/* Tabs */}
-          <div className="border-b">
-            <nav className="-mb-px flex space-x-4">
-              <button
-                className={`border-b-2 px-1 py-2 font-medium text-sm ${
-                  createUserMode
-                    ? "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
-                    : "border-primary text-primary"
-                }`}
-                onClick={() => {
-                  setCreateUserMode(false);
-                  setSelectedUser(null);
-                }}
-                type="button"
-              >
-                Selecionar Existente
-              </button>
-              <button
-                className={`border-b-2 px-1 py-2 font-medium text-sm ${
-                  createUserMode
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
-                }`}
-                onClick={() => {
-                  setCreateUserMode(true);
-                  setSelectedUser(null);
-                }}
-                type="button"
-              >
-                Criar Novo
-              </button>
-            </nav>
-          </div>
-
-          {/* Role Selection */}
-          <Field>
-            <FieldLabel>Função</FieldLabel>
-            <FieldContent>
-              <Select
-                onValueChange={(value) => setSelectedRole(value as Role)}
-                value={selectedRole}
-              >
-                <SelectTrigger>
-                  <SelectValue>Selecione a função</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="TENANT_USER">
-                    Usuário do Cliente
-                  </SelectItem>
-                  <SelectItem value="TENANT_USER_MANAGER">
-                    Gerente de Usuários do Cliente
-                  </SelectItem>
-                  <SelectItem value="TENANT_OWNER">
-                    Proprietário do Cliente
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </FieldContent>
-          </Field>
-
-          {/* Content based on mode */}
-          {createUserMode ? (
-            <div className="space-y-4">
-              <Field>
-                <FieldLabel htmlFor="newUserName">Nome *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id="newUserName"
-                    onChange={(e) => setNewUserName(e.target.value)}
-                    placeholder="Nome do usuário"
-                    value={newUserName}
-                  />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="newUserEmail">Email *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id="newUserEmail"
-                    onChange={(e) => setNewUserEmail(e.target.value)}
-                    placeholder="usuario@exemplo.com"
-                    type="email"
-                    value={newUserEmail}
-                  />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="newUserPassword">Senha *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    id="newUserPassword"
-                    onChange={(e) => setNewUserPassword(e.target.value)}
-                    placeholder="Mínimo de 8 caracteres"
-                    type="password"
-                    value={newUserPassword}
-                  />
-                </FieldContent>
-              </Field>
+          </CredenzaDescription>
+        </CredenzaHeader>
+        <CredenzaBody>
+          <div className="space-y-4">
+            {/* Tabs */}
+            <div className="border-b">
+              <nav className="-mb-px flex space-x-4">
+                <button
+                  className={`border-b-2 px-1 py-2 font-medium text-sm ${createUserMode
+                      ? "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
+                      : "border-primary text-primary"
+                    }`}
+                  onClick={() => {
+                    setCreateUserMode(false);
+                    setSelectedUser(null);
+                  }}
+                  type="button"
+                >
+                  Selecionar Existente
+                </button>
+                <button
+                  className={`border-b-2 px-1 py-2 font-medium text-sm ${createUserMode
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
+                    }`}
+                  onClick={() => {
+                    setCreateUserMode(true);
+                    setSelectedUser(null);
+                  }}
+                  type="button"
+                >
+                  Criar Novo
+                </button>
+              </nav>
             </div>
-          ) : (
-            <div className="space-y-4">
-              <Field>
-                <FieldLabel>Buscar Usuário</FieldLabel>
-                <FieldContent>
-                  <Input
-                    onChange={(e) => setSearchUser(e.target.value)}
-                    placeholder="Buscar por nome ou email..."
-                    value={searchUser}
-                  />
-                </FieldContent>
-              </Field>
-              <div className="max-h-64 space-y-2 overflow-y-auto">
-                {isLoading && (
-                  <p className="text-muted-foreground text-sm">
-                    Carregando usuários...
-                  </p>
-                )}
-                {!isLoading && filteredUsers.length === 0 && (
-                  <p className="text-muted-foreground text-sm">
-                    Nenhum usuário disponível encontrado
-                  </p>
-                )}
-                {!isLoading &&
-                  filteredUsers.length > 0 &&
-                  filteredUsers.map((user) => (
-                    <button
-                      className={`flex w-full cursor-pointer items-center justify-between rounded border p-2 text-left ${
-                        selectedUser === user.id
-                          ? "border-primary bg-primary/10"
-                          : "border-input"
-                      }`}
-                      key={user.id}
-                      onClick={() => setSelectedUser(user.id)}
-                      type="button"
-                    >
-                      <div>
-                        <p className="font-medium text-sm">{user.user.name}</p>
-                        <p className="text-muted-foreground text-xs">
-                          {user.user.email}
-                        </p>
-                      </div>
-                      {user.tenant && (
-                        <span className="text-muted-foreground text-xs">
-                          {user.tenant.name}
-                        </span>
-                      )}
-                    </button>
-                  ))}
+
+            {/* Role Selection */}
+            <Field>
+              <FieldLabel>Função</FieldLabel>
+              <FieldContent>
+                <Select
+                  onValueChange={(value) => setSelectedRole(value as Role)}
+                  value={selectedRole}
+                >
+                  <SelectTrigger>
+                    <SelectValue>Selecione a função</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="TENANT_USER">
+                      Usuário do Cliente
+                    </SelectItem>
+                    <SelectItem value="TENANT_USER_MANAGER">
+                      Gerente de Usuários do Cliente
+                    </SelectItem>
+                    <SelectItem value="TENANT_OWNER">
+                      Proprietário do Cliente
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </FieldContent>
+            </Field>
+
+            {/* Content based on mode */}
+            {createUserMode ? (
+              <div className="space-y-4">
+                <Field>
+                  <FieldLabel htmlFor="newUserName">Nome *</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      id="newUserName"
+                      onChange={(e) => setNewUserName(e.target.value)}
+                      placeholder="Nome do usuário"
+                      value={newUserName}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="newUserEmail">Email *</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      id="newUserEmail"
+                      onChange={(e) => setNewUserEmail(e.target.value)}
+                      placeholder="usuario@exemplo.com"
+                      type="email"
+                      value={newUserEmail}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="newUserPassword">Senha *</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      id="newUserPassword"
+                      onChange={(e) => setNewUserPassword(e.target.value)}
+                      placeholder="Mínimo de 8 caracteres"
+                      type="password"
+                      value={newUserPassword}
+                    />
+                  </FieldContent>
+                </Field>
               </div>
-            </div>
-          )}
-        </div>
-        <DialogFooter>
+            ) : (
+              <div className="space-y-4">
+                <Field>
+                  <FieldLabel>Buscar Usuário</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      onChange={(e) => setSearchUser(e.target.value)}
+                      placeholder="Buscar por nome ou email..."
+                      value={searchUser}
+                    />
+                  </FieldContent>
+                </Field>
+                <div className="max-h-64 space-y-2 overflow-y-auto">
+                  {isLoading && (
+                    <p className="text-muted-foreground text-sm">
+                      Carregando usuários...
+                    </p>
+                  )}
+                  {!isLoading && filteredUsers.length === 0 && (
+                    <p className="text-muted-foreground text-sm">
+                      Nenhum usuário disponível encontrado
+                    </p>
+                  )}
+                  {!isLoading &&
+                    filteredUsers.length > 0 &&
+                    filteredUsers.map((user) => (
+                      <button
+                        className={`flex w-full cursor-pointer items-center justify-between rounded border p-2 text-left ${selectedUser === user.id
+                            ? "border-primary bg-primary/10"
+                            : "border-input"
+                          }`}
+                        key={user.id}
+                        onClick={() => setSelectedUser(user.id)}
+                        type="button"
+                      >
+                        <div>
+                          <p className="font-medium text-sm">
+                            {user.user.name}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            {user.user.email}
+                          </p>
+                        </div>
+                        {user.tenant && (
+                          <span className="text-muted-foreground text-xs">
+                            {user.tenant.name}
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </CredenzaBody>
+        <CredenzaFooter>
           <Button onClick={handleClose} variant="outline">
             Cancelar
           </Button>
@@ -339,8 +341,8 @@ export function AddUserDialog({
                 : "Adicionar Usuário"}
             </Button>
           )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CredenzaFooter>
+      </CredenzaContent>
+    </Credenza>
   );
 }

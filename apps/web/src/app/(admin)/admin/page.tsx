@@ -21,10 +21,12 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { ListSkeleton } from "@/components/ui/list-skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/utils/trpc";
 
 function AdminPageContent() {
+  const isMobile = useIsMobile();
   const { data: session } = authClient.useSession();
   const { data: stats, isLoading: statsLoading } = useQuery({
     ...trpc.admin.getStats.queryOptions(),
@@ -36,12 +38,21 @@ function AdminPageContent() {
     <PageLayout
       actions={
         <Link href="/admin/tenants">
-          <Button>Gerenciar Clientes</Button>
+          {isMobile ? (
+            <Button size="icon">
+              <Building2 className="h-4 w-4" />
+              <span className="sr-only">Gerenciar Clientes</span>
+            </Button>
+          ) : (
+            <Button className="flex items-center gap-2">
+              <Building2 className="h-4 w-4" /> Gerenciar Clientes
+            </Button>
+          )}
         </Link>
       }
       breadcrumbs={[{ label: "Dashboard" }]}
       subtitle="Visão geral do sistema e métricas principais"
-      title={`Seja bem-vindo, ${session?.user?.name ?? "Administrador"}!`}
+      title={`Seja bem-vindo, ${session?.user?.name.split(" ")[0] ?? "Administrador"}!`}
     >
       {/* Cards de Métricas Principais */}
       <div className="grid grid-cols-2 gap-6 md:grid-cols-2">

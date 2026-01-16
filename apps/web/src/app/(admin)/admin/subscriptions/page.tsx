@@ -10,13 +10,14 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaBody,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+} from "@/components/ui/credenza";
 import {
   Select,
   SelectContent,
@@ -220,20 +221,20 @@ function AdminSubscriptionsPageContent() {
       </div>
 
       {/* Cancel Dialog */}
-      <Dialog onOpenChange={setCancelDialogOpen} open={cancelDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Cancelar assinatura</DialogTitle>
-            <DialogDescription>
+      <Credenza onOpenChange={setCancelDialogOpen} open={cancelDialogOpen}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>Cancelar assinatura</CredenzaTitle>
+            <CredenzaDescription>
               Tem certeza que deseja cancelar a assinatura do cliente "
               {selectedSubscription?.tenant.name}"?
               <br />
               <br />
               <strong>Atenção:</strong> O cliente perderá acesso às
               funcionalidades do sistema.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaFooter>
             <Button
               onClick={() => setCancelDialogOpen(false)}
               variant="outline"
@@ -249,37 +250,39 @@ function AdminSubscriptionsPageContent() {
                 ? "Cancelando..."
                 : "Cancelar Assinatura"}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
 
       {/* Create Subscription Dialog */}
-      <Dialog onOpenChange={setCreateDialogOpen} open={createDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Criar Assinatura</DialogTitle>
-            <DialogDescription>
+      <Credenza onOpenChange={setCreateDialogOpen} open={createDialogOpen}>
+        <CredenzaContent>
+          <CredenzaHeader>
+            <CredenzaTitle>Criar Assinatura</CredenzaTitle>
+            <CredenzaDescription>
               Selecione um cliente para criar uma assinatura trial de 14 dias.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Select
-              onValueChange={(value) => setSelectedTenantId(value ?? "")}
-              value={selectedTenantId}
-            >
-              <SelectTrigger>
-                <SelectValue>Selecione um cliente</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {tenantsWithoutSubscription.map((tenant) => (
-                  <SelectItem key={tenant.id} value={tenant.id}>
-                    {tenant.name} ({tenant.slug})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <DialogFooter>
+            </CredenzaDescription>
+          </CredenzaHeader>
+          <CredenzaBody>
+            <div className="py-4">
+              <Select
+                onValueChange={(value) => setSelectedTenantId(value ?? "")}
+                value={selectedTenantId}
+              >
+                <SelectTrigger>
+                  <SelectValue>Selecione um cliente</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {tenantsWithoutSubscription.map((tenant) => (
+                    <SelectItem key={tenant.id} value={tenant.id}>
+                      {tenant.name} ({tenant.slug})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CredenzaBody>
+          <CredenzaFooter>
             <Button
               onClick={() => {
                 setCreateDialogOpen(false);
@@ -297,9 +300,9 @@ function AdminSubscriptionsPageContent() {
                 ? "Criando..."
                 : "Criar Assinatura Trial"}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </CredenzaFooter>
+        </CredenzaContent>
+      </Credenza>
     </PageLayout>
   );
 }
