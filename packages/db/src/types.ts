@@ -4,6 +4,7 @@ export {
   AuditResourceType,
   Role,
   SubscriptionStatus,
+  type Tenant,
   TicketCategory,
   TicketPriority,
   TicketStatus,

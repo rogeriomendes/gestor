@@ -243,14 +243,14 @@ export default function TenantSupportPage() {
                             <Badge variant="outline">
                               {
                                 categoryLabels[
-                                ticket.category as TicketCategory
+                                  ticket.category as TicketCategory
                                 ]
                               }
                             </Badge>
                             <Badge
                               variant={
                                 ticket.status === "OPEN" ||
-                                  ticket.status === "IN_PROGRESS"
+                                ticket.status === "IN_PROGRESS"
                                   ? "default"
                                   : "outline"
                               }
@@ -260,7 +260,7 @@ export default function TenantSupportPage() {
                             <Badge variant="secondary">
                               {
                                 priorityLabels[
-                                ticket.priority as TicketPriority
+                                  ticket.priority as TicketPriority
                                 ]
                               }
                             </Badge>

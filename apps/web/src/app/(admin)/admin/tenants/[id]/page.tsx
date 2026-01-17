@@ -1,11 +1,15 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { AlertCircle } from "lucide-react";
 import type { Route } from "next";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { TenantGuard, type TenantWithRelations } from "@/components/admin";
+import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { TenantBranchesTab } from "./_components/tenant-branches-tab";
@@ -17,11 +21,20 @@ import { TenantUsersTab } from "./_components/tenant-users-tab";
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
 interface TenantPageContentProps {
-  tenant: TenantWithRelations;
   tenantId: string;
 }
 
-function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
+function TenantPageContent({ tenantId }: TenantPageContentProps) {
+  const {
+    data: tenant,
+    isLoading: tenantLoading,
+    isError: tenantError,
+    error: tenantErrorData,
+    refetch: refetchTenant,
+  } = useQuery({
+    ...trpc.admin.getTenant.queryOptions({ tenantId }),
+    enabled: !!tenantId,
+  });
   const {
     data: tenantUsers,
     isLoading: usersLoading,
@@ -41,11 +54,6 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
       limit: 100,
     }),
     enabled: true,
-  });
-
-  const { refetch: refetchTenant } = useQuery({
-    ...trpc.admin.getTenant.queryOptions({ tenantId }),
-    enabled: false, // Já carregado pelo TenantGuard
   });
 
   const removeUserMutation = useMutation({
@@ -91,6 +99,106 @@ function TenantPageContent({ tenant, tenantId }: TenantPageContentProps) {
     refetchUsers();
     refetchTenant();
   };
+
+  // Mostrar skeleton enquanto carrega
+  if (tenantLoading) {
+    const breadcrumbs = [
+      { label: "Dashboard", href: "/admin" as Route },
+      { label: "Clientes", href: "/admin/tenants" as Route },
+      { label: "Carregando...", isCurrent: true },
+    ];
+
+    return (
+      <PageLayout
+        backHref="/admin/tenants"
+        breadcrumbs={breadcrumbs}
+        showBackButton={true}
+        subtitle="Carregando..."
+        title="Carregando..."
+      >
+        <Tabs defaultValue="details">
+          <TabsList variant="line">
+            <TabsTrigger value="details">Detalhes</TabsTrigger>
+            <TabsTrigger value="database">Banco de Dados</TabsTrigger>
+            <TabsTrigger value="users">Usuários</TabsTrigger>
+            <TabsTrigger value="branches">Filiais</TabsTrigger>
+            <TabsTrigger value="subscription">Assinatura</TabsTrigger>
+          </TabsList>
+
+          <TabsContent className="mt-6" value="details">
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-24 w-full" />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Skeleton className="h-10 w-24" />
+                <Skeleton className="h-10 w-32" />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </PageLayout>
+    );
+  }
+
+  // Mostrar erro se tenant não existe ou houve erro
+  if (tenantError || !tenant) {
+    const breadcrumbs = [
+      { label: "Dashboard", href: "/admin" as Route },
+      { label: "Clientes", href: "/admin/tenants" as Route },
+      { label: "Erro", isCurrent: true },
+    ];
+
+    const errorMessage =
+      tenantErrorData?.message ||
+      "Cliente não encontrado ou você não tem permissão para acessá-lo.";
+
+    return (
+      <PageLayout
+        backHref="/admin/tenants"
+        breadcrumbs={breadcrumbs}
+        showBackButton={true}
+        subtitle="Erro"
+        title="Cliente não encontrado"
+      >
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Erro ao carregar cliente</AlertTitle>
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
+        <div className="mt-4">
+          <Button onClick={() => refetchTenant()} variant="outline">
+            Tentar novamente
+          </Button>
+        </div>
+      </PageLayout>
+    );
+  }
 
   const breadcrumbs = [
     { label: "Dashboard", href: "/admin" as Route },
@@ -168,10 +276,8 @@ export default function EditTenantPage() {
   const tenantId = params.id as string;
 
   return (
-    <TenantGuard tenantId={tenantId}>
-      {({ tenant }) => (
-        <TenantPageContent tenant={tenant} tenantId={tenantId} />
-      )}
-    </TenantGuard>
+    <AdminGuard>
+      <TenantPageContent tenantId={tenantId} />
+    </AdminGuard>
   );
 }

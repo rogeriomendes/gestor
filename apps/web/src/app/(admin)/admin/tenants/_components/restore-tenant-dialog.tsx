@@ -3,13 +3,13 @@
 import { Button } from "@/components/ui/button";
 import {
   Credenza,
-  CredenzaBody,
   CredenzaContent,
   CredenzaDescription,
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
 } from "@/components/ui/credenza";
+
 interface RestoreTenantDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

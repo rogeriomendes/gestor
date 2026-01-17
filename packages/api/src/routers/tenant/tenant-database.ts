@@ -54,14 +54,9 @@ export const tenantDatabaseRouter = router({
         const gestorPrisma = getGestorPrismaClient(ctx.tenant);
 
         // Tentar buscar usuários - como não temos o schema ainda, vamos usar uma query raw
-        // Assumindo que existe uma tabela 'usuario' ou 'users'
-        const users = await gestorPrisma.$queryRaw<Record<string, unknown>[]>`
-          SELECT * FROM usuario LIMIT 50
-        `.catch(async () => {
-          // Se a tabela 'usuario' não existir, tentar 'users'
-          return await gestorPrisma.$queryRaw<Record<string, unknown>[]>`
-            SELECT * FROM users LIMIT 50
-          `;
+        // Assumindo que existe uma tabela 'usuario'
+        const users = await gestorPrisma.usuario.findMany({
+          take: 50,
         });
 
         return {

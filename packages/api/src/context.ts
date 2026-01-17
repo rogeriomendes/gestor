@@ -1,73 +1,128 @@
 import { auth } from "@gestor/auth";
 import prisma from "@gestor/db";
-import type { User } from "@gestor/db/types";
 import { Role } from "@gestor/db/types";
 import type { NextRequest } from "next/server";
 
-export async function createContext(req: NextRequest) {
+type TenantWithCredentials = {
+  id: string;
+  name: string;
+  slug: string;
+  active: boolean;
+  dbHost: string | null;
+  dbPort: string | null;
+  dbUsername: string | null;
+  dbPassword: string | null;
+} | null;
+
+interface ContextReturn {
+  session: { user: { id: string } } | null;
+  db?: unknown;
+  tenant: TenantWithCredentials;
+  role: Role | null;
+  isSuperAdmin: boolean;
+  permissions: Set<string>;
+  req: NextRequest;
+}
+
+export async function createContext(req: NextRequest): Promise<ContextReturn> {
   const session = await auth.api.getSession({
     headers: req.headers,
   });
 
-  let tenant = null;
-  let role: Role | null = null;
-  let isSuperAdmin = false;
-  let permissions: Set<string> = new Set();
+  // Retornar contexto vazio se não houver sessão
+  if (!session?.user?.id) {
+    return {
+      session: null,
+      tenant: null,
+      role: null,
+      isSuperAdmin: false,
+      permissions: new Set<string>(),
+      req,
+    };
+  }
 
-  if (session?.user?.id) {
-    // Buscar User com tenant
-    const user = await prisma.user.findUnique({
+  // Buscar User com tenant
+  const user = await prisma.user.findUnique({
+    where: {
+      id: session.user.id,
+    },
+    select: {
+      id: true,
+      role: true,
+      tenantId: true,
+      tenant: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          active: true,
+          dbHost: true,
+          dbPort: true,
+          dbUsername: true,
+          dbPassword: true,
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    return {
+      session,
+      tenant: null,
+      role: null,
+      isSuperAdmin: false,
+      permissions: new Set<string>(),
+      req,
+    };
+  }
+
+  // Extrair role e tenant do resultado da query
+  const role = user.role as Role | null;
+  const tenant = user.tenant;
+  const isSuperAdmin = role === Role.SUPER_ADMIN;
+
+  // Carregar permissões da role apenas se necessário (não é SUPER_ADMIN)
+  let permissions: Set<string> = new Set();
+  if (role && !isSuperAdmin) {
+    const rolePermissions = await prisma.rolePermission.findMany({
       where: {
-        id: session.user.id,
+        role,
+        granted: true,
       },
       include: {
-        tenant: true,
+        permission: true,
       },
     });
 
-    if (user) {
-      // Usar type assertion temporário até regenerar Prisma Client
-      role = (user as User).role as Role | null;
-      tenant = (user as User).tenant;
-      isSuperAdmin = role === Role.SUPER_ADMIN;
+    permissions = new Set(
+      rolePermissions.map(
+        (rp) => `${rp.permission.resource}:${rp.permission.action}`
+      )
+    );
+  }
 
-      // Carregar permissões da role
-      if (role && !isSuperAdmin) {
-        const rolePermissions = await prisma.rolePermission.findMany({
-          where: {
-            role,
-            granted: true,
-          },
-          include: {
-            permission: true,
-          },
-        });
-
-        permissions = new Set(
-          rolePermissions.map(
-            (rp) => `${rp.permission.resource}:${rp.permission.action}`
-          )
-        );
-      }
-
-      // SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
-      // Outros roles precisam de tenant para funcionar
-      if (
-        role &&
-        role !== Role.SUPER_ADMIN &&
-        role !== Role.TENANT_ADMIN &&
-        !tenant
-      ) {
-        // Role que exige tenant mas não tem - limpar role
-        role = null;
-        tenant = null;
-        permissions = new Set();
-      }
-    }
+  // SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
+  // Outros roles precisam de tenant para funcionar
+  if (
+    role &&
+    role !== Role.SUPER_ADMIN &&
+    role !== Role.TENANT_ADMIN &&
+    !tenant
+  ) {
+    // Role que exige tenant mas não tem - limpar role
+    return {
+      session,
+      tenant: null,
+      role: null,
+      isSuperAdmin: false,
+      permissions: new Set<string>(),
+      req,
+    };
   }
 
   return {
     session,
+    db: prisma,
     tenant,
     role,
     isSuperAdmin,

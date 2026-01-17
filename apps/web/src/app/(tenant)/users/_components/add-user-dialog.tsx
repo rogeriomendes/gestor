@@ -147,10 +147,11 @@ export function AddUserDialog({
             <div className="border-b">
               <nav className="-mb-px flex space-x-4">
                 <button
-                  className={`border-b-2 px-1 py-2 font-medium text-sm ${createUserMode
+                  className={`border-b-2 px-1 py-2 font-medium text-sm ${
+                    createUserMode
                       ? "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
                       : "border-primary text-primary"
-                    }`}
+                  }`}
                   onClick={() => {
                     setCreateUserMode(false);
                     setSelectedEmail("");
@@ -160,10 +161,11 @@ export function AddUserDialog({
                   Convidar Existente
                 </button>
                 <button
-                  className={`border-b-2 px-1 py-2 font-medium text-sm ${createUserMode
+                  className={`border-b-2 px-1 py-2 font-medium text-sm ${
+                    createUserMode
                       ? "border-primary text-primary"
                       : "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
-                    }`}
+                  }`}
                   onClick={() => {
                     setCreateUserMode(true);
                     setSelectedEmail("");

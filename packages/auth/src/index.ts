@@ -1,11 +1,16 @@
 import { expo } from "@better-auth/expo";
 import prisma from "@gestor/db";
-import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins";
+import { authConfig, validateAuthConfig } from "./config";
+
+// Validar configuração antes de inicializar
+validateAuthConfig();
 
 export const auth = betterAuth({
+  secret: process.env.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -26,21 +31,30 @@ export const auth = betterAuth({
       },
     },
   },
+  session: authConfig.session,
+  rateLimit: authConfig.rateLimit,
+  advanced: authConfig.advanced,
+  logger: authConfig.logger,
   databaseHooks: {
     user: {
       create: {
         before: (userData) => {
+          // Normalizar email
+          if (userData.email) {
+            userData.email = userData.email.toLowerCase().trim();
+          }
+
           // Remover role inválido antes de criar o usuário
           // O role será definido posteriormente pelo admin
           if (userData.role === "user" || userData.role === "admin") {
-            return {
+            return Promise.resolve({
               data: {
                 ...userData,
                 role: null,
               },
-            };
+            });
           }
-          return { data: userData };
+          return Promise.resolve({ data: userData });
         },
       },
     },
@@ -49,9 +63,10 @@ export const auth = betterAuth({
     nextCookies(),
     expo(),
     admin({
-      // Configurar quais usuários são admins
-      // Usuários com role "admin" ou IDs específicos
-      // adminUserIds: [], // IDs específicos podem ser adicionados aqui
+      // Usar adminUserIds vazio por padrão
+      // Os roles SUPER_ADMIN e TENANT_ADMIN são gerenciados pelo sistema de permissões customizado
+      // Se necessário, adicione IDs específicos aqui: adminUserIds: ["user_id_1", "user_id_2"]
+      adminUserIds: [],
     }),
   ],
 });

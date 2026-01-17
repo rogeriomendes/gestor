@@ -165,10 +165,11 @@ export function AddUserDialog({
             <div className="border-b">
               <nav className="-mb-px flex space-x-4">
                 <button
-                  className={`border-b-2 px-1 py-2 font-medium text-sm ${createUserMode
+                  className={`border-b-2 px-1 py-2 font-medium text-sm ${
+                    createUserMode
                       ? "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
                       : "border-primary text-primary"
-                    }`}
+                  }`}
                   onClick={() => {
                     setCreateUserMode(false);
                     setSelectedUser(null);
@@ -178,10 +179,11 @@ export function AddUserDialog({
                   Selecionar Existente
                 </button>
                 <button
-                  className={`border-b-2 px-1 py-2 font-medium text-sm ${createUserMode
+                  className={`border-b-2 px-1 py-2 font-medium text-sm ${
+                    createUserMode
                       ? "border-primary text-primary"
                       : "border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700"
-                    }`}
+                  }`}
                   onClick={() => {
                     setCreateUserMode(true);
                     setSelectedUser(null);
@@ -285,10 +287,11 @@ export function AddUserDialog({
                     filteredUsers.length > 0 &&
                     filteredUsers.map((user) => (
                       <button
-                        className={`flex w-full cursor-pointer items-center justify-between rounded border p-2 text-left ${selectedUser === user.id
+                        className={`flex w-full cursor-pointer items-center justify-between rounded border p-2 text-left ${
+                          selectedUser === user.id
                             ? "border-primary bg-primary/10"
                             : "border-input"
-                          }`}
+                        }`}
                         key={user.id}
                         onClick={() => setSelectedUser(user.id)}
                         type="button"
