@@ -65,6 +65,7 @@ export function DataTable<TData>({
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
                 onClick={() => onRowClick?.(row.original)}
+                
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

@@ -1,9 +1,14 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { PlusCircle } from "lucide-react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { MapPin, PlusCircle } from "lucide-react";
 import { useState } from "react";
+import { DataCards } from "@/components/lists/data-cards";
+import { DataTable } from "@/components/lists/data-table";
+import { ResponsiveList } from "@/components/lists/responsive-list";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,21 +17,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import { trpc } from "@/utils/trpc";
 import { BranchFormDialog } from "./branch-form-dialog";
-import { BranchListItem } from "./branch-list-item";
-import { BranchListSkeleton } from "./branch-list-skeleton";
 
 interface TenantBranchesTabProps {
   tenantId: string;
+}
+
+interface Branch {
+  id: string;
+  name: string;
+  isMain: boolean;
+  legalName: string | null;
+  cnpj: string | null;
+  email: string | null;
+  phone: string | null;
+  addressCity: string | null;
+  addressState: string | null;
+  active: boolean;
 }
 
 export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
@@ -46,7 +54,7 @@ export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
     enabled: !!tenantId,
   });
 
-  const branches = branchesData?.data || [];
+  const branches: Branch[] = branchesData?.data || [];
 
   const handleEdit = (branchId: string) => {
     setEditingBranchId(branchId);
@@ -58,6 +66,165 @@ export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
     setEditingBranchId(null);
     refetchBranches();
   };
+
+  const columns: ColumnDef<Branch>[] = [
+    {
+      accessorKey: "name",
+      header: "Nome",
+      cell: ({ row }) => {
+        const branch = row.original;
+        const addressParts = [branch.addressCity, branch.addressState].filter(
+          Boolean
+        );
+
+        return (
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-medium text-sm">{branch.name}</span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {branch.isMain && (
+                  <Badge className="text-xs" variant="default">
+                    Principal
+                  </Badge>
+                )}
+                {!branch.active && (
+                  <Badge className="text-xs" variant="secondary">
+                    Inativa
+                  </Badge>
+                )}
+              </div>
+            </div>
+            {branch.legalName && (
+              <span className="text-muted-foreground text-xs">
+                {branch.legalName}
+              </span>
+            )}
+            {addressParts.length > 0 && (
+              <span className="flex items-center gap-1 text-muted-foreground text-xs">
+                <MapPin className="h-3 w-3" />
+                {addressParts.join(", ")}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "email",
+      header: "Contato",
+      cell: ({ row }) => {
+        const branch = row.original;
+        return (
+          <div className="flex flex-col gap-1 text-xs">
+            {branch.email && (
+              <span className="truncate text-muted-foreground">
+                {branch.email}
+              </span>
+            )}
+            {branch.phone && <span>{branch.phone}</span>}
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => {
+        const branch = row.original;
+        return (
+          <div className="flex justify-end">
+            <PermissionGuard action="UPDATE" resource="BRANCH">
+              <Button
+                onClick={() => handleEdit(branch.id)}
+                size="sm"
+                variant="outline"
+              >
+                Editar
+              </Button>
+            </PermissionGuard>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const renderTable = (data: Branch[]) => (
+    <DataTable<Branch> columns={columns} data={data} />
+  );
+
+  const renderCards = (data: Branch[]) => (
+    <DataCards<Branch>
+      data={data}
+      emptyMessage="Nenhuma filial encontrada."
+      renderCard={(branch) => {
+        const addressParts = [branch.addressCity, branch.addressState].filter(
+          Boolean
+        );
+
+        return (
+          <div className="space-y-1">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="truncate font-semibold text-sm leading-tight">
+                    {branch.name}
+                  </span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {branch.isMain && (
+                      <Badge className="text-xs" variant="default">
+                        Principal
+                      </Badge>
+                    )}
+                    {!branch.active && (
+                      <Badge className="text-xs" variant="secondary">
+                        Inativa
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                {branch.legalName && (
+                  <p className="truncate text-muted-foreground text-xs">
+                    {branch.legalName}
+                  </p>
+                )}
+              </div>
+              <PermissionGuard action="UPDATE" resource="BRANCH">
+                <Button
+                  className="h-6 px-2 text-xs"
+                  onClick={() => handleEdit(branch.id)}
+                  variant="outline"
+                >
+                  Editar
+                </Button>
+              </PermissionGuard>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              {branch.email && (
+                <span className="truncate text-muted-foreground">
+                  {branch.email}
+                </span>
+              )}
+              {branch.phone && (
+                <>
+                  <span className="text-muted-foreground">•</span>
+                  <span className="text-muted-foreground">{branch.phone}</span>
+                </>
+              )}
+              {addressParts.length > 0 && (
+                <>
+                  <span className="text-muted-foreground">•</span>
+                  <span className="flex items-center gap-1 text-muted-foreground">
+                    <MapPin className="h-3 w-3" />
+                    {addressParts.join(", ")}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        );
+      }}
+    />
+  );
 
   return (
     <div className="space-y-6">
@@ -76,40 +243,23 @@ export function TenantBranchesTab({ tenantId }: TenantBranchesTabProps) {
           </div>
         </CardHeader>
         <CardContent>
-          {branchesLoading && <BranchListSkeleton count={1} />}
-          {!branchesLoading && branches.length === 0 ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <PlusCircle className="h-6 w-6" />
-                </EmptyMedia>
-                <EmptyTitle>Nenhuma Filial Encontrada</EmptyTitle>
-                <EmptyDescription>
-                  Nenhuma filial cadastrada ainda. Comece criando sua primeira
-                  filial.
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <PermissionGuard action="CREATE" resource="BRANCH">
-                  <Button onClick={() => setIsDialogOpen(true)}>
-                    <PlusCircle className="mr-2 size-4" /> Adicionar Primeira
-                    Filial
-                  </Button>
-                </PermissionGuard>
-              </EmptyContent>
-            </Empty>
-          ) : (
-            <div className="space-y-4">
-              {branches.map((branch) => (
-                <BranchListItem
-                  branch={branch}
-                  key={branch.id}
-                  onEdit={handleEdit}
-                  onRefresh={refetchBranches}
-                />
-              ))}
-            </div>
-          )}
+          <ResponsiveList<Branch>
+            data={branches}
+            emptyAction={
+              <PermissionGuard action="CREATE" resource="BRANCH">
+                <Button onClick={() => setIsDialogOpen(true)}>
+                  <PlusCircle className="mr-2 size-4" /> Adicionar Primeira
+                  Filial
+                </Button>
+              </PermissionGuard>
+            }
+            emptyDescription="Nenhuma filial cadastrada ainda. Comece criando sua primeira filial."
+            emptyTitle="Nenhuma Filial Encontrada"
+            isLoading={branchesLoading}
+            renderCards={renderCards}
+            renderTable={renderTable}
+            skeletonColumnCount={3}
+          />
         </CardContent>
       </Card>
 

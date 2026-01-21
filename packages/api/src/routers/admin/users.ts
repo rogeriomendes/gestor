@@ -216,6 +216,7 @@ export const usersRouter = router({
                 }
               : undefined,
           },
+          headers: ctx.req.headers,
         });
 
         if (!createUserResult.user) {
@@ -387,7 +388,7 @@ export const usersRouter = router({
    * Requer permissão USER:UPDATE
    */
   resetPassword: adminProcedure
-    // .use(requirePermission("USER", "UPDATE"))
+    .use(requirePermission("USER", "UPDATE"))
     .input(
       z.object({
         userId: z.string(),
@@ -409,14 +410,15 @@ export const usersRouter = router({
         });
       }
 
-      // Usar a API do Better Auth Admin plugin para definir a nova senha
-      // Isso garante que a senha seja hasheada corretamente usando o mesmo algoritmo
+      // Usar exclusivamente a API do Better Auth Admin plugin,
+      // conforme documentação do Admin plugin
       try {
         await auth.api.setUserPassword({
           body: {
             userId: input.userId,
             newPassword: input.newPassword,
           },
+          headers: ctx.req.headers,
         });
       } catch (error) {
         throw new TRPCError({

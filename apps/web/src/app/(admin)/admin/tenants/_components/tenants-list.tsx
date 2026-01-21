@@ -58,7 +58,6 @@ export function TenantsList({
             >
               {tenant.name}
             </Link>
-            <p className="text-muted-foreground text-sm">{tenant.slug}</p>
           </div>
         );
       },
@@ -145,6 +144,7 @@ export function TenantsList({
       columns={columns}
       data={data}
       emptyMessage="Nenhum cliente encontrado."
+      onRowClick={(tenant) => router.push(`/admin/tenants/${tenant.id}`)}
     />
   );
 

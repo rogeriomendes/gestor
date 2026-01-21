@@ -180,12 +180,6 @@ function _AdminTenantsPageContent() {
       title="Gerenciar Clientes"
     >
       <div className="space-y-6">
-        {/* <TenantsStatsCards
-          activeTenants={tenants.filter((t) => t.active).length}
-          deletedTenants={deletedTenants.length}
-          inactiveTenants={tenants.filter((t) => !t.active).length}
-          totalTenants={tenants.length}
-        /> */}
 
         <TenantsFilters
           onResetFilters={handleResetFilters}

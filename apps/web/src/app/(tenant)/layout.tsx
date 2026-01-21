@@ -13,7 +13,11 @@ export default function TenantLayout({
 }) {
   return (
     <AuthGuard requiredRole="tenant">
-      <SidebarProvider>
+      <SidebarProvider
+        style={{
+          "--sidebar-width": "19rem",
+          "--sidebar-width-mobile": "18rem",
+        } as React.CSSProperties}>
         <TenantSidebar />
         <SidebarInset>
           <SubscriptionGuard>

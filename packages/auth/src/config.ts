@@ -1,6 +1,3 @@
-import prisma from "@gestor/db";
-import { Role } from "@gestor/db/types";
-
 /**
  * Configuração centralizada do Better Auth
  */
@@ -108,21 +105,5 @@ export function validateAuthConfig() {
     throw new Error(
       "BETTER_AUTH_SECRET não pode usar o valor padrão em produção!"
     );
-  }
-}
-
-/**
- * Obtém IDs de usuários admin para o plugin admin
- */
-export async function getAdminUserIds(): Promise<string[]> {
-  try {
-    const admins = await prisma.user.findMany({
-      where: { role: Role.SUPER_ADMIN },
-      select: { id: true },
-    });
-    return admins.map((a) => a.id);
-  } catch (error) {
-    console.error("Erro ao buscar admin user IDs:", error);
-    return [];
   }
 }
