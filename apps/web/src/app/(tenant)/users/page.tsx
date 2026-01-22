@@ -42,7 +42,7 @@ export default function UsersPage() {
     isLoading: usersLoading,
     refetch,
   } = useQuery({
-    ...trpc.tenant.listUsers.queryOptions({
+    ...trpc.tenant.users.listUsers.queryOptions({
       page,
       limit: 20,
       ...(search && { search }),
@@ -52,7 +52,7 @@ export default function UsersPage() {
 
   const removeUserMutation = useMutation({
     mutationFn: (input: { userId: string }) =>
-      trpcClient.tenant.removeUser.mutate(input),
+      trpcClient.tenant.users.removeUser.mutate(input),
     onSuccess: () => {
       toast.success("Usuário removido com sucesso");
       refetch();
@@ -66,7 +66,7 @@ export default function UsersPage() {
 
   const updateUserRoleMutation = useMutation({
     mutationFn: (input: { userId: string; role: Role }) =>
-      trpcClient.tenant.updateUserRole.mutate(input),
+      trpcClient.tenant.users.updateUserRole.mutate(input),
     onSuccess: () => {
       toast.success("Role do usuário atualizada com sucesso");
       refetch();

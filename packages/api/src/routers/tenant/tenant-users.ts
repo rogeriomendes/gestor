@@ -14,6 +14,51 @@ import { createAuditLogFromContext } from "../../utils/audit-log";
 
 export const tenantUsersRouter = router({
   /**
+   * Obter informações do perfil do usuário logado
+   * Não requer permissão especial - cada usuário pode ver seu próprio perfil
+   */
+  getMyProfile: activeTenantProcedure.query(async ({ ctx }) => {
+    if (!ctx.session?.user?.id) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Usuário não autenticado",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: ctx.session.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+        tenantId: true,
+      },
+    });
+
+    if (!user) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Usuário não encontrado",
+      });
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      joinedAt: user.createdAt, // Data que entrou no tenant
+    };
+  }),
+
+  /**
    * Listar usuários do tenant (requer permissão USER:READ)
    */
   listUsers: activeTenantProcedure

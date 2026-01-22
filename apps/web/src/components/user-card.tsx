@@ -3,12 +3,11 @@
 import {
   BadgeCheckIcon,
   ChevronsUpDownIcon,
-  CoinsIcon,
   LogOutIcon,
   SettingsIcon,
   UserIcon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import {
   DropdownMenu,
@@ -31,7 +30,14 @@ import { Skeleton } from "./ui/skeleton";
 
 export default function UserCard() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
+
+  // Detecta se está na área admin
+  const isAdminArea = pathname.startsWith("/admin");
+
+  // Define o caminho do perfil baseado no contexto
+  const profilePath = isAdminArea ? "/admin/profile" : "/profile";
 
   if (isPending) {
     return <Skeleton className="h-9 w-24" />;
@@ -86,18 +92,16 @@ export default function UserCard() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push(profilePath)}>
                 <BadgeCheckIcon />
-                Conta
+                Meu Perfil
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CoinsIcon />
-                Faturamento
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push("/settings")}>
-                <SettingsIcon />
-                Configurações
-              </DropdownMenuItem>
+              {!isAdminArea && (
+                <DropdownMenuItem onClick={() => router.push("/settings")}>
+                  <SettingsIcon />
+                  Configurações
+                </DropdownMenuItem>
+              )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

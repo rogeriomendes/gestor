@@ -57,7 +57,7 @@ export function AddUserDialog({
 
   const inviteUserMutation = useMutation({
     mutationFn: (input: { email: string; role: Role }) =>
-      trpcClient.tenant.inviteUser.mutate(input),
+      trpcClient.tenant.users.inviteUser.mutate(input),
   });
 
   const createUserMutation = useMutation({

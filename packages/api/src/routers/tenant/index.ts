@@ -15,10 +15,7 @@ export const tenantRouter = router({
   updateMyTenant: tenantInfoRouter.updateMyTenant,
 
   // Rotas de gerenciamento de usuários
-  listUsers: tenantUsersRouter.listUsers,
-  inviteUser: tenantUsersRouter.inviteUser,
-  updateUserRole: tenantUsersRouter.updateUserRole,
-  removeUser: tenantUsersRouter.removeUser,
+  users: tenantUsersRouter,
 
   // Rotas de suporte
   support: tenantSupportRouter,

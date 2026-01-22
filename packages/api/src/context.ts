@@ -15,7 +15,7 @@ type TenantWithCredentials = {
   dbPassword: string | null;
 } | null;
 
-interface ContextReturn {
+export interface ContextReturn {
   session: { user: { id: string } } | null;
   db?: unknown;
   tenant: TenantWithCredentials;
