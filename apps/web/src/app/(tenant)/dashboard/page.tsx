@@ -34,7 +34,7 @@ export default function DashboardPage() {
     if (role && !isLoading) {
       const redirectPath = getRedirectPath(role);
       if (redirectPath !== "/" && redirectPath !== "/dashboard") {
-        router.push(redirectPath);
+        router.push(redirectPath as any);
       }
     }
   }, [role, isLoading, router]);

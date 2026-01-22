@@ -23,7 +23,7 @@ type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 interface TenantUser {
   id: string;
   userId: string;
-  role: Role;
+  role: Role | null;
   user: {
     id: string;
     name: string;
@@ -93,7 +93,7 @@ export function UsersList({
             onEdit={onEdit}
             onRemove={onRemove}
             onUpdateRole={onUpdateRole}
-            role={tenantUser.role}
+            role={tenantUser.role || "TENANT_USER"}
             userId={tenantUser.userId}
           />
         ))}

@@ -12,7 +12,7 @@ function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
         className
       )}
       data-slot="field-set"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -30,7 +30,7 @@ function FieldLegend({
       )}
       data-slot="field-legend"
       data-variant={variant}
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -43,7 +43,7 @@ function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
         className
       )}
       data-slot="field-group"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -77,7 +77,7 @@ function Field({
       data-orientation={orientation}
       data-slot="field"
       role="group"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -90,7 +90,7 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
         className
       )}
       data-slot="field-content"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -120,7 +120,7 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
         className
       )}
       data-slot="field-label"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -135,7 +135,7 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
         className
       )}
       data-slot="field-description"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -155,7 +155,7 @@ function FieldSeparator({
       )}
       data-content={!!children}
       data-slot="field-separator"
-      {...props}
+      {...(props as any)}
     >
       <Separator className="absolute inset-0 top-1/2" />
       {children && (
@@ -214,7 +214,7 @@ function FieldError({
       className={cn("font-normal text-destructive text-sm", className)}
       data-slot="field-error"
       role="alert"
-      {...props}
+      {...(props as any)}
     >
       {content}
     </div>

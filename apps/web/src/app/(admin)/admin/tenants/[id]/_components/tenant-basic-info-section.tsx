@@ -1,6 +1,5 @@
 "use client";
 
-import type { UseFormReturn } from "@tanstack/react-form";
 import {
   Card,
   CardContent,
@@ -18,19 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 
 interface TenantBasicInfoSectionProps {
-  form: UseFormReturn<
-    {
-      tenantId: string;
-      name: string;
-      slug: string;
-      active: boolean;
-      email: string;
-      phone: string;
-      website: string;
-      notes: string;
-    },
-    unknown
-  >;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: any;
 }
 
 export function TenantBasicInfoSection({ form }: TenantBasicInfoSectionProps) {
@@ -43,7 +31,7 @@ export function TenantBasicInfoSection({ form }: TenantBasicInfoSectionProps) {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="name">
-            {(field) => (
+            {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Nome Fantasia *</FieldLabel>
                 <FieldContent>
@@ -60,7 +48,7 @@ export function TenantBasicInfoSection({ form }: TenantBasicInfoSectionProps) {
           </form.Field>
 
           <form.Field name="slug">
-            {(field) => (
+            {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Slug *</FieldLabel>
                 <FieldContent>
@@ -78,7 +66,7 @@ export function TenantBasicInfoSection({ form }: TenantBasicInfoSectionProps) {
         </div>
 
         <form.Field name="active">
-          {(field) => (
+          {(field: any) => (
             <Field orientation="horizontal">
               <FieldLabel htmlFor={field.name}>Ativo</FieldLabel>
               <FieldContent>

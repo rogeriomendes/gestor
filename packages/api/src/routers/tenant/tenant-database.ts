@@ -18,7 +18,7 @@ export const tenantDatabaseRouter = router({
       };
     }
 
-    const hasCredentials = hasCompleteDatabaseCredentials(ctx.tenant);
+    const hasCredentials = hasCompleteDatabaseCredentials(ctx.tenant as any);
 
     return {
       hasCredentials,
@@ -42,7 +42,7 @@ export const tenantDatabaseRouter = router({
         });
       }
 
-      if (!hasCompleteDatabaseCredentials(ctx.tenant)) {
+      if (!hasCompleteDatabaseCredentials(ctx.tenant as any)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Credenciais de banco de dados não configuradas",
@@ -51,7 +51,7 @@ export const tenantDatabaseRouter = router({
 
       try {
         // Obter Prisma Client do banco gestor
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
         // Tentar buscar usuários - como não temos o schema ainda, vamos usar uma query raw
         // Assumindo que existe uma tabela 'usuario'

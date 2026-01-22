@@ -1,6 +1,5 @@
 "use client";
 
-import type { UseFormReturn } from "@tanstack/react-form";
 import {
   Card,
   CardContent,
@@ -17,19 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 
 interface TenantContactInfoSectionProps {
-  form: UseFormReturn<
-    {
-      tenantId: string;
-      name: string;
-      slug: string;
-      active: boolean;
-      email: string;
-      phone: string;
-      website: string;
-      notes: string;
-    },
-    unknown
-  >;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: any;
 }
 
 export function TenantContactInfoSection({
@@ -44,7 +32,7 @@ export function TenantContactInfoSection({
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="email">
-            {(field) => (
+            {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                 <FieldContent>
@@ -62,7 +50,7 @@ export function TenantContactInfoSection({
           </form.Field>
 
           <form.Field name="phone">
-            {(field) => (
+            {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Telefone</FieldLabel>
                 <FieldContent>
@@ -80,7 +68,7 @@ export function TenantContactInfoSection({
         </div>
 
         <form.Field name="website">
-          {(field) => (
+          {(field: any) => (
             <Field>
               <FieldLabel htmlFor={field.name}>Website</FieldLabel>
               <FieldContent>

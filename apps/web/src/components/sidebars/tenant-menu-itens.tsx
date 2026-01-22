@@ -25,13 +25,13 @@ import type { MenuItemProps } from "./types";
 export const tenantMenuItens: MenuItemProps[] = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: "/dashboard" as any,
     icon: LayoutDashboard,
     permission: { resource: "DASHBOARD", action: "READ" },
   },
   {
     title: "Relatórios",
-    url: "/reports",
+    url: "/reports" as any,
     icon: ChartColumn,
     // sub: [
     //   {
@@ -43,78 +43,78 @@ export const tenantMenuItens: MenuItemProps[] = [
   },
   {
     title: "Produtos",
-    url: "/products",
+    url: "/products" as any,
     icon: Package,
     sub: [
       {
         title: "Cadastrados",
-        url: "/products/list",
+        url: "/products/list" as any,
         icon: PackageOpen,
       },
       {
         title: "Promoções",
-        url: "/products/sale",
+        url: "/products/sale" as any,
         icon: SquarePercent,
       },
       {
         title: "Cartazes",
-        url: "/products/posters",
+        url: "/products/posters" as any,
         icon: FileText,
       },
     ],
   },
   {
     title: "Vendas",
-    url: "/sales",
+    url: "/sales" as any,
     icon: ShoppingCartIcon,
     sub: [
       {
         title: "Gestão de Vendas",
-        url: "/sales/list",
+        url: "/sales/list" as any,
         icon: ShoppingBagIcon,
       },
       {
         title: "Orçamentos e Pedidos",
-        url: "/sales/budget",
+        url: "/sales/budget" as any,
         icon: SheetIcon,
       },
     ],
   },
   {
     title: "Financeiro",
-    url: "/financial",
+    url: "/financial" as any,
     icon: Landmark,
     sub: [
       {
         title: "Movimento do Caixa",
-        url: "/financial/closing",
+        url: "/financial/closing" as any,
         icon: ChartNoAxesColumn,
       },
       {
         title: "Contas a Receber",
-        url: "/financial/bills/receive",
+        url: "/financial/bills/receive" as any,
         icon: HandCoins,
       },
       {
         title: "Contas a Pagar",
-        url: "/financial/bills/pay",
+        url: "/financial/bills/pay" as any,
         icon: Coins,
       },
     ],
   },
   {
     title: "Estoque",
-    url: "/invoice",
+    url: "/invoice" as any,
     icon: File,
     sub: [
       {
         title: "Entrada de Nota Fiscal",
-        url: "/invoice/entry",
+        url: "/invoice/entry" as any,
         icon: FileCheck,
       },
       {
         title: "Doc. Fiscal Eletrônico",
-        url: "/invoice/dfe",
+        url: "/invoice/dfe" as any,
         icon: FileSearch2,
       },
     ],
@@ -124,24 +124,24 @@ export const tenantMenuItens: MenuItemProps[] = [
 export const tenantSettingsMenuItens: MenuItemProps[] = [
   {
     title: "Configurações",
-    url: "/settings",
+    url: "/settings" as any,
     icon: Settings,
     permission: { resource: "SETTINGS", action: "READ" },
   },
   {
     title: "Suporte",
-    url: "/support",
+    url: "/support" as any,
     icon: LifeBuoy,
   },
   {
     title: "Usuários",
-    url: "/users",
+    url: "/users" as any,
     icon: Users,
     permission: { resource: "USER", action: "READ" },
   },
   {
     title: "Teste de Conexão",
-    url: "/test",
+    url: "/test" as any,
     icon: Database,
     permission: { resource: "SETTINGS", action: "READ" },
   },

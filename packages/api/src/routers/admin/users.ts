@@ -208,7 +208,11 @@ export const usersRouter = router({
             email: normalizedEmail, // Usar email normalizado
             password: input.password,
             // Passar role como string ou array
-            role: input.role || undefined,
+            role: input.role
+              ? input.role === "SUPER_ADMIN" || input.role === "TENANT_ADMIN"
+                ? "admin"
+                : "user"
+              : undefined,
             // Passar tenantId como metadata ou campo customizado
             data: input.tenantId
               ? {
@@ -229,7 +233,7 @@ export const usersRouter = router({
         // Atualizar o usuário com tenantId se fornecido
         // O Admin plugin não suporta campos customizados diretamente,
         // então precisamos atualizar manualmente
-        let finalUser = createUserResult.user;
+        let finalUser: any = createUserResult.user;
         if (input.tenantId) {
           finalUser = await prisma.user.update({
             where: { id: createUserResult.user.id },
@@ -272,7 +276,7 @@ export const usersRouter = router({
           name: finalUser.name,
           email: finalUser.email,
           image: finalUser.image || null,
-          role: finalUser.role || null,
+          role: (finalUser.role as any) || undefined,
           tenantId: (finalUser as any).tenantId || null,
           createdAt: finalUser.createdAt,
         };
@@ -693,7 +697,7 @@ export const usersRouter = router({
       }
 
       // Não permitir deletar a si mesmo
-      if (user.id === ctx.session.user.id) {
+      if (ctx.session && user.id === ctx.session.user.id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Não é possível deletar seu próprio usuário",
@@ -705,7 +709,7 @@ export const usersRouter = router({
         where: { id: input.userId },
         data: {
           deletedAt: new Date(),
-          deletedBy: ctx.session.user.id,
+          deletedBy: ctx.session?.user.id || null,
         },
       });
 

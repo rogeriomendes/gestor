@@ -26,28 +26,26 @@ const createTenantSchema = z.object({
       /^[a-z0-9-]+$/,
       "Slug must contain only lowercase letters, numbers, and hyphens"
     ),
-  active: z.boolean().default(true),
-  legalName: z.string().optional(),
+  active: z.boolean(),
+  legalName: z.string(),
   cnpj: z
     .string()
     .regex(/^\d{14}$/, "CNPJ must contain exactly 14 digits")
-    .optional()
     .or(z.literal("")),
-  email: z.email("Invalid email").optional().or(z.literal("")),
-  phone: z.string().optional(),
-  website: z.url("Invalid URL").optional().or(z.literal("")),
-  addressStreet: z.string().optional(),
-  addressNumber: z.string().optional(),
-  addressComplement: z.string().optional(),
-  addressDistrict: z.string().optional(),
-  addressCity: z.string().optional(),
-  addressState: z.string().max(2, "State must be 2 characters (UF)").optional(),
+  email: z.string().email("Invalid email").or(z.literal("")),
+  phone: z.string(),
+  website: z.string().url("Invalid URL").or(z.literal("")),
+  addressStreet: z.string(),
+  addressNumber: z.string(),
+  addressComplement: z.string(),
+  addressDistrict: z.string(),
+  addressCity: z.string(),
+  addressState: z.string().max(2, "State must be 2 characters (UF)"),
   addressZipCode: z
     .string()
     .regex(/^\d{8}$/, "CEP must contain exactly 8 digits")
-    .optional()
     .or(z.literal("")),
-  notes: z.string().optional(),
+  notes: z.string(),
 });
 
 export function TenantForm() {
@@ -99,15 +97,35 @@ export function TenantForm() {
       onSubmit: createTenantSchema,
     },
     onSubmit: async ({ value }) => {
-      await createTenantMutation.mutateAsync(value, {
-        onSuccess: (tenant) => {
-          toast.success("Cliente criado com sucesso!");
-          router.push(`/admin/tenants/${tenant?.id || ""}`);
+      await createTenantMutation.mutateAsync(
+        {
+          name: value.name,
+          slug: value.slug,
+          active: value.active,
+          email: value.email || undefined,
+          phone: value.phone || undefined,
+          website: value.website || undefined,
+          notes: value.notes || undefined,
+          legalName: value.legalName || undefined,
+          cnpj: value.cnpj || undefined,
+          addressStreet: value.addressStreet || undefined,
+          addressNumber: value.addressNumber || undefined,
+          addressComplement: value.addressComplement || undefined,
+          addressDistrict: value.addressDistrict || undefined,
+          addressCity: value.addressCity || undefined,
+          addressState: value.addressState || undefined,
+          addressZipCode: value.addressZipCode || undefined,
         },
-        onError: (error) => {
-          toast.error(error.message);
-        },
-      });
+        {
+          onSuccess: (tenant) => {
+            toast.success("Cliente criado com sucesso!");
+            router.push(`/admin/tenants/${tenant?.id || ""}`);
+          },
+          onError: (error) => {
+            toast.error(error.message);
+          },
+        }
+      );
     },
   });
 

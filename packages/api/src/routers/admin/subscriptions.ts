@@ -203,7 +203,6 @@ export const subscriptionsRouter = router({
           action: AuditAction.CREATE_SUBSCRIPTION,
           resourceType: AuditResourceType.SUBSCRIPTION,
           resourceId: subscription.id,
-          tenantId: input.tenantId,
           metadata: {
             tenantName: tenant.name,
             planName: plan.name,
@@ -256,7 +255,6 @@ export const subscriptionsRouter = router({
           action: AuditAction.CREATE_SUBSCRIPTION,
           resourceType: AuditResourceType.SUBSCRIPTION,
           resourceId: subscription.id,
-          tenantId: input.tenantId,
           metadata: {
             tenantName: tenant.name,
             planName: subscription.plan.name,
@@ -345,7 +343,6 @@ export const subscriptionsRouter = router({
           action: AuditAction.UPDATE_SUBSCRIPTION,
           resourceType: AuditResourceType.SUBSCRIPTION,
           resourceId: subscription.id,
-          tenantId: existingSubscription.tenantId,
           metadata: {
             tenantName: existingSubscription.tenant.name,
             changes: updateData,
@@ -414,7 +411,6 @@ export const subscriptionsRouter = router({
           action: AuditAction.CANCEL_SUBSCRIPTION,
           resourceType: AuditResourceType.SUBSCRIPTION,
           resourceId: subscription.id,
-          tenantId: existingSubscription.tenantId,
           metadata: {
             tenantName: existingSubscription.tenant.name,
             planName: existingSubscription.plan.name,

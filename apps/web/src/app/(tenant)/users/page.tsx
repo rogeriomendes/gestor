@@ -116,7 +116,16 @@ export default function UsersPage() {
     setEditingUser({ id: userId, name, email });
   };
 
-  const users = usersData?.data || [];
+  const users = (usersData?.data || []).map((user) => ({
+    id: user.id,
+    userId: user.userId,
+    role: (user.role || "TENANT_USER") as Role,
+    user: {
+      id: user.user.id,
+      name: user.user.name,
+      email: user.user.email,
+    },
+  }));
 
   return (
     <PageLayout

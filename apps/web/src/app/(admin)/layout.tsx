@@ -12,10 +12,13 @@ export default function AdminLayout({
   return (
     <AuthGuard requiredRole="admin">
       <SidebarProvider
-        style={{
-          "--sidebar-width": "19rem",
-          "--sidebar-width-mobile": "18rem",
-        } as React.CSSProperties}>
+        style={
+          {
+            "--sidebar-width": "19rem",
+            "--sidebar-width-mobile": "18rem",
+          } as React.CSSProperties
+        }
+      >
         <AdminSidebar />
         <SidebarInset>{children}</SidebarInset>
       </SidebarProvider>

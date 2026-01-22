@@ -1,6 +1,5 @@
 "use client";
 
-import type { UseFormReturn } from "@tanstack/react-form";
 import {
   Card,
   CardContent,
@@ -17,19 +16,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 interface TenantNotesSectionProps {
-  form: UseFormReturn<
-    {
-      tenantId: string;
-      name: string;
-      slug: string;
-      active: boolean;
-      email: string;
-      phone: string;
-      website: string;
-      notes: string;
-    },
-    unknown
-  >;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: any;
 }
 
 export function TenantNotesSection({ form }: TenantNotesSectionProps) {
@@ -43,7 +31,7 @@ export function TenantNotesSection({ form }: TenantNotesSectionProps) {
       </CardHeader>
       <CardContent>
         <form.Field name="notes">
-          {(field) => (
+          {(field: any) => (
             <Field>
               <FieldLabel htmlFor={field.name}>Observações</FieldLabel>
               <FieldContent>

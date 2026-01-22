@@ -42,7 +42,7 @@ export function UserListItem({
           <p className="font-medium">{name}</p>
           <p className="text-muted-foreground text-sm">{email}</p>
         </div>
-        <RoleBadge role={role} />
+        {role && <RoleBadge role={role} />}
       </div>
       <PermissionGuard action="UPDATE" resource="USER">
         <DropdownMenu>

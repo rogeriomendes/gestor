@@ -180,7 +180,6 @@ function _AdminTenantsPageContent() {
       title="Gerenciar Clientes"
     >
       <div className="space-y-6">
-
         <TenantsFilters
           onResetFilters={handleResetFilters}
           onSearchChange={setSearch}

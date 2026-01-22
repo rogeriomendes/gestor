@@ -138,7 +138,7 @@ export function TenantDatabaseConfigSection({
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="dbHost">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(field) => (
+            {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Host *</FieldLabel>
                 <FieldContent>
@@ -157,7 +157,7 @@ export function TenantDatabaseConfigSection({
 
           <form.Field name="dbPort">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(field) => (
+            {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Porta *</FieldLabel>
                 <FieldContent>
@@ -179,7 +179,7 @@ export function TenantDatabaseConfigSection({
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="dbUsername">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {(field) => (
+            {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Username *</FieldLabel>
                 <FieldContent>
@@ -197,7 +197,7 @@ export function TenantDatabaseConfigSection({
           </form.Field>
 
           <form.Field name="dbPassword">
-            {(field) => (
+            {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Password *</FieldLabel>
                 <FieldContent>

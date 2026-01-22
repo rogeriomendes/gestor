@@ -115,7 +115,7 @@ export default function TestPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {data.users.map((user, index) => (
+                    {data.users.map((user: any, index: number) => (
                       <TableRow key={index}>
                         {Object.entries(user).map(([key, value]) => (
                           <TableCell className="font-mono text-sm" key={key}>

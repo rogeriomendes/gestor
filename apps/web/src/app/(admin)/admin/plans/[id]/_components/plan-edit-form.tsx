@@ -38,8 +38,8 @@ interface PlanEditFormProps {
 
 const updatePlanSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
-  description: z.string().optional().nullable(),
-  price: z.coerce.number().min(0, "Valor deve ser maior ou igual a zero"),
+  description: z.string(),
+  price: z.number().min(0, "Valor deve ser maior ou igual a zero"),
   active: z.boolean(),
   isDefault: z.boolean(),
 });
@@ -74,6 +74,7 @@ export function PlanEditForm({ plan }: PlanEditFormProps) {
         {
           planId: plan.id,
           ...value,
+          description: value.description || null,
         },
         {
           onSuccess: () => {

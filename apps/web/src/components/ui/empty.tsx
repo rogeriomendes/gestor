@@ -10,7 +10,7 @@ function Empty({ className, ...props }: React.ComponentProps<"div">) {
         className
       )}
       data-slot="empty"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -20,7 +20,7 @@ function EmptyHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       className={cn("flex max-w-sm flex-col items-center gap-2", className)}
       data-slot="empty-header"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -50,7 +50,7 @@ function EmptyMedia({
       className={cn(emptyMediaVariants({ variant, className }))}
       data-slot="empty-icon"
       data-variant={variant}
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -60,7 +60,7 @@ function EmptyTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       className={cn("font-medium text-lg tracking-tight", className)}
       data-slot="empty-title"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -73,7 +73,7 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<"p">) {
         className
       )}
       data-slot="empty-description"
-      {...props}
+      {...(props as any)}
     />
   );
 }
@@ -86,7 +86,7 @@ function EmptyContent({ className, ...props }: React.ComponentProps<"div">) {
         className
       )}
       data-slot="empty-content"
-      {...props}
+      {...(props as any)}
     />
   );
 }

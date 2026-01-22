@@ -128,7 +128,7 @@ function SubMenuItemWithPermission({
   searchParams,
   handleLinkClick,
 }: {
-  subItem: MenuItemProps["sub"][number];
+  subItem: NonNullable<MenuItemProps["sub"]>[number];
   pathname: string;
   searchParams: URLSearchParams;
   handleLinkClick: () => void;

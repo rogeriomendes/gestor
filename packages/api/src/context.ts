@@ -8,6 +8,7 @@ type TenantWithCredentials = {
   name: string;
   slug: string;
   active: boolean;
+  deletedAt: Date | null;
   dbHost: string | null;
   dbPort: string | null;
   dbUsername: string | null;
@@ -56,6 +57,7 @@ export async function createContext(req: NextRequest): Promise<ContextReturn> {
           name: true,
           slug: true,
           active: true,
+          deletedAt: true,
           dbHost: true,
           dbPort: true,
           dbUsername: true,

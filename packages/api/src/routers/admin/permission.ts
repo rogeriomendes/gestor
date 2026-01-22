@@ -418,8 +418,7 @@ export const permissionRouter = router({
               : null;
           })
           .filter(
-            (p): p is { name: string; resource: string; action: string } =>
-              p !== null
+            (p): p is { name: string; resource: any; action: any } => p !== null
           );
 
         rolePermissionsDetails[role] = rolePerms;

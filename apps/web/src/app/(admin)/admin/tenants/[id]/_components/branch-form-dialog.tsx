@@ -29,28 +29,26 @@ import { trpc, trpcClient } from "@/utils/trpc";
 
 const branchSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  isMain: z.boolean().default(false),
-  legalName: z.string().optional(),
+  isMain: z.boolean(),
+  legalName: z.string(),
   cnpj: z
     .string()
     .regex(/^\d{14}$/, "CNPJ must contain exactly 14 digits")
-    .optional()
     .or(z.literal("")),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
-  phone: z.string().optional(),
-  addressStreet: z.string().optional(),
-  addressNumber: z.string().optional(),
-  addressComplement: z.string().optional(),
-  addressDistrict: z.string().optional(),
-  addressCity: z.string().optional(),
-  addressState: z.string().max(2, "State must be 2 characters (UF)").optional(),
+  email: z.string().email("Invalid email").or(z.literal("")),
+  phone: z.string(),
+  addressStreet: z.string(),
+  addressNumber: z.string(),
+  addressComplement: z.string(),
+  addressDistrict: z.string(),
+  addressCity: z.string(),
+  addressState: z.string().max(2, "State must be 2 characters (UF)"),
   addressZipCode: z
     .string()
     .regex(/^\d{8}$/, "CEP must contain exactly 8 digits")
-    .optional()
     .or(z.literal("")),
-  notes: z.string().optional(),
-  active: z.boolean().default(true),
+  notes: z.string(),
+  active: z.boolean(),
 });
 
 interface BranchFormDialogProps {

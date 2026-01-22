@@ -15,10 +15,26 @@ import {
 } from "./permissions";
 
 // Validar configuração antes de inicializar
+// A validação já pula automaticamente durante build do Next.js
 validateAuthConfig();
 
+// Durante build do Next.js, garantir que temos um secret válido
+// (mesmo que seja temporário apenas para o build)
+const authSecret =
+  process.env.BETTER_AUTH_SECRET ||
+  (process.env.NEXT_PHASE === "phase-production-build" ||
+  process.env.NEXT_PHASE === "phase-development-build"
+    ? "build-time-secret-123456789012345678901234567890"
+    : undefined);
+
+if (!authSecret) {
+  throw new Error(
+    "BETTER_AUTH_SECRET não está definido. Configure a variável de ambiente."
+  );
+}
+
 export const auth = betterAuth({
-  secret: process.env.BETTER_AUTH_SECRET,
+  secret: authSecret,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),

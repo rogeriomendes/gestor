@@ -84,8 +84,18 @@ export const authConfig = {
 
 /**
  * Valida configuração do Better Auth
+ * Pula validação durante build do Next.js
  */
 export function validateAuthConfig() {
+  // Pular validação durante build do Next.js
+  // NEXT_PHASE é definido pelo Next.js durante o build
+  if (
+    process.env.NEXT_PHASE === "phase-production-build" ||
+    process.env.NEXT_PHASE === "phase-development-build"
+  ) {
+    return;
+  }
+
   if (!process.env.BETTER_AUTH_SECRET) {
     throw new Error(
       "BETTER_AUTH_SECRET não está definido. Configure a variável de ambiente."

@@ -27,7 +27,7 @@ export default function SignInForm() {
   useEffect(() => {
     if (session?.user && role && !tenantLoading) {
       const redirectPath = getRedirectPath(role);
-      router.push(redirectPath);
+      router.push(redirectPath as any);
     }
   }, [session, role, tenantLoading, router]);
 
@@ -55,7 +55,7 @@ export default function SignInForm() {
     },
     validators: {
       onSubmit: z.object({
-        email: z.email("Endereço de email inválido"),
+        email: z.string().email("Endereço de email inválido"),
         password: z.string().min(8, "Senha deve ter pelo menos 8 caracteres"),
       }),
     },

@@ -27,10 +27,10 @@ import { trpcClient } from "@/utils/trpc";
 
 const createPlanSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
-  description: z.string().optional(),
-  price: z.coerce.number().min(0, "Valor deve ser maior ou igual a zero"),
-  active: z.boolean().default(true),
-  isDefault: z.boolean().default(false),
+  description: z.string(),
+  price: z.number().min(0, "Valor deve ser maior ou igual a zero"),
+  active: z.boolean(),
+  isDefault: z.boolean(),
 });
 
 export function PlanForm() {
@@ -58,15 +58,21 @@ export function PlanForm() {
       onSubmit: createPlanSchema,
     },
     onSubmit: async ({ value }) => {
-      await createPlanMutation.mutateAsync(value, {
-        onSuccess: (plan) => {
-          toast.success("Plano criado com sucesso!");
-          router.push(`/admin/plans/${plan.id}`);
+      await createPlanMutation.mutateAsync(
+        {
+          ...value,
+          description: value.description || undefined,
         },
-        onError: (error) => {
-          toast.error(error.message);
-        },
-      });
+        {
+          onSuccess: (plan) => {
+            toast.success("Plano criado com sucesso!");
+            router.push(`/admin/plans/${plan.id}`);
+          },
+          onError: (error) => {
+            toast.error(error.message);
+          },
+        }
+      );
     },
   });
 

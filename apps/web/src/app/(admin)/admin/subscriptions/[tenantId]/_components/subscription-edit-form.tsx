@@ -57,8 +57,8 @@ interface SubscriptionEditFormProps {
 const updateSubscriptionSchema = z.object({
   planId: z.string().min(1, "Plano é obrigatório"),
   status: z.enum(["TRIAL", "ACTIVE", "EXPIRED", "CANCELLED"]),
-  expiresAt: z.string().optional().nullable(),
-  trialEndsAt: z.string().optional().nullable(),
+  expiresAt: z.string(),
+  trialEndsAt: z.string(),
 });
 
 export function SubscriptionEditForm({
@@ -141,11 +141,14 @@ export function SubscriptionEditForm({
                 <FieldLabel htmlFor={field.name}>Plano</FieldLabel>
                 <FieldContent>
                   <Select
-                    onValueChange={(value) => field.handleChange(value)}
+                    onValueChange={(value) => field.handleChange(value || "")}
                     value={field.state.value}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione um plano" />
+                      <SelectValue>
+                        {availablePlans?.find((p) => p.id === field.state.value)
+                          ?.name || "Selecione um plano"}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {availablePlans?.map((plan) => (
@@ -174,7 +177,17 @@ export function SubscriptionEditForm({
                     value={field.state.value}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o status" />
+                      <SelectValue>
+                        {field.state.value === "TRIAL"
+                          ? "Trial"
+                          : field.state.value === "ACTIVE"
+                            ? "Ativa"
+                            : field.state.value === "EXPIRED"
+                              ? "Expirada"
+                              : field.state.value === "CANCELLED"
+                                ? "Cancelada"
+                                : "Selecione o status"}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="TRIAL">Trial</SelectItem>
