@@ -1,9 +1,10 @@
 import { expo } from "@better-auth/expo";
+import { passkey } from "@better-auth/passkey";
 import prisma from "@gestor/db";
+import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
-import { admin } from "better-auth/plugins";
+import { admin, twoFactor } from "better-auth/plugins";
 import { authConfig, validateAuthConfig } from "./config";
 import {
   ac,
@@ -46,6 +47,18 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  // Provedores sociais (OAuth)
+  socialProviders: {
+    // Google OAuth - requer GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET
+    ...(process.env.GOOGLE_CLIENT_ID &&
+      process.env.GOOGLE_CLIENT_SECRET && {
+        google: {
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          prompt: "select_account",
+        },
+      }),
+  },
   // emailAndPassword: {
   //   enabled: true,
   //   // Configure password hasher to use bcryptjs
@@ -76,6 +89,14 @@ export const auth = betterAuth({
         required: false,
         input: false, // Não permitir que o usuário defina role no signup
       },
+    },
+    // Permitir alteração de email
+    changeEmail: {
+      enabled: true,
+    },
+    // Permitir exclusão de conta
+    deleteUser: {
+      enabled: true,
     },
   },
   session: authConfig.session,
@@ -129,6 +150,26 @@ export const auth = betterAuth({
         "TENANT_USER",
       ],
       impersonationSessionDuration: 60 * 60 * 24, // 24 horas
+    }),
+    // Passkey (WebAuthn) - autenticação sem senha
+    passkey({
+      rpID:
+        process.env.NODE_ENV === "production"
+          ? new URL(process.env.CORS_ORIGIN || "http://localhost:3001").hostname
+          : "localhost",
+      rpName: "FBI Gestor",
+      origin:
+        process.env.NODE_ENV === "production"
+          ? process.env.CORS_ORIGIN || "http://localhost:3001"
+          : "http://localhost:3001",
+    }),
+    // Two-Factor Authentication (2FA) - TOTP
+    twoFactor({
+      issuer: "FBI Gestor",
+      totpOptions: {
+        digits: 6,
+        period: 30,
+      },
     }),
   ],
 });

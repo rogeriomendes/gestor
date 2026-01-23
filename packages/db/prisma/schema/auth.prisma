@@ -12,12 +12,17 @@ model User {
   banReason     String?
   banExpires    DateTime?
   
+  // Campos de 2FA
+  twoFactorEnabled Boolean? @default(false)
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
   deletedBy     String?
   sessions      Session[]
   accounts      Account[]
+  passkeys      Passkey[]
+  twoFactor     TwoFactor?
   tenant        Tenant?   @relation(fields: [tenantId], references: [id], onDelete: SetNull)
   auditLogs     AuditLog[] // Logs de auditoria criados por este usuário
   createdTickets SupportTicket[] @relation("CreatedTickets") // Tickets criados por este usuário
@@ -83,4 +88,37 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+// Passkey (WebAuthn) - autenticação sem senha
+model Passkey {
+  id           String    @id
+  name         String?
+  publicKey    String
+  userId       String
+  credentialID String
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  aaguid       String?
+  createdAt    DateTime? @default(now())
+  
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([credentialID])
+  @@map("passkey")
+}
+
+// Two-Factor Authentication (2FA)
+model TwoFactor {
+  id          String   @id
+  secret      String
+  backupCodes String
+  userId      String   @unique
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("twoFactor")
 }

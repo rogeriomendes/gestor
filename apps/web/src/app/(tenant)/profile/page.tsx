@@ -3,10 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Camera, KeyRound, Mail, Shield, User } from "lucide-react";
+import { Camera, Mail, Shield, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { SecuritySettings } from "@/components/profile/security-settings";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,15 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Credenza,
-  CredenzaBody,
-  CredenzaContent,
-  CredenzaDescription,
-  CredenzaFooter,
-  CredenzaHeader,
-  CredenzaTitle,
-} from "@/components/ui/credenza";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -63,13 +55,6 @@ export default function ProfilePage() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isSavingName, setIsSavingName] = useState(false);
 
-  // Estados para alteração de senha
-  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
-
   // Buscar informações adicionais do usuário
   const { data: userDetails } = useQuery({
     ...trpc.tenant.users.getMyProfile.queryOptions(),
@@ -91,9 +76,15 @@ export default function ProfilePage() {
 
     setIsSavingName(true);
     try {
-      await authClient.updateUser({
+      const result = await authClient.updateUser({
         name: name.trim(),
       });
+
+      if (result.error) {
+        toast.error(result.error.message || "Erro ao atualizar nome");
+        return;
+      }
+
       toast.success("Nome atualizado com sucesso!");
       setIsEditingName(false);
     } catch (error) {
@@ -102,43 +93,6 @@ export default function ProfilePage() {
       );
     } finally {
       setIsSavingName(false);
-    }
-  };
-
-  const handleChangePassword = async () => {
-    if (!(currentPassword && newPassword && confirmPassword)) {
-      toast.error("Preencha todos os campos");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      toast.error("As senhas não coincidem");
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      toast.error("A nova senha deve ter pelo menos 8 caracteres");
-      return;
-    }
-
-    setIsChangingPassword(true);
-    try {
-      await authClient.changePassword({
-        currentPassword,
-        newPassword,
-        revokeOtherSessions: false,
-      });
-      toast.success("Senha alterada com sucesso!");
-      setPasswordDialogOpen(false);
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Erro ao alterar senha"
-      );
-    } finally {
-      setIsChangingPassword(false);
     }
   };
 
@@ -288,143 +242,48 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Card de Segurança */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <KeyRound className="h-5 w-5" />
-              Segurança
-            </CardTitle>
-            <CardDescription>
-              Gerencie suas configurações de segurança
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {/* Alterar Senha */}
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                  <p className="font-medium">Senha</p>
-                  <p className="text-muted-foreground text-sm">
-                    Altere sua senha de acesso
-                  </p>
-                </div>
-                <Button
-                  onClick={() => setPasswordDialogOpen(true)}
-                  variant="outline"
-                >
-                  Alterar senha
-                </Button>
-              </div>
-
-              {/* Informações da Conta */}
-              {userDetails && (
-                <div className="rounded-lg border p-4">
-                  <p className="mb-2 font-medium">Informações da Conta</p>
-                  <div className="grid gap-2 text-sm">
+                {/* Informações da Conta */}
+                {userDetails && (
+                  <div className="space-y-2">
                     {userDetails.createdAt && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
+                      <div className="space-y-1">
+                        <Label className="text-muted-foreground text-sm">
                           Conta criada em
-                        </span>
-                        <span>
+                        </Label>
+                        <p className="text-sm">
                           {format(
                             new Date(userDetails.createdAt),
                             "dd/MM/yyyy 'às' HH:mm",
                             { locale: ptBR }
                           )}
-                        </span>
+                        </p>
                       </div>
                     )}
                     {userDetails.joinedAt && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">
+                      <div className="space-y-1">
+                        <Label className="text-muted-foreground text-sm">
                           Membro desde
-                        </span>
-                        <span>
+                        </Label>
+                        <p className="text-sm">
                           {format(
                             new Date(userDetails.joinedAt),
                             "dd/MM/yyyy 'às' HH:mm",
                             { locale: ptBR }
                           )}
-                        </span>
+                        </p>
                       </div>
                     )}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Dialog de Alteração de Senha */}
-      <Credenza onOpenChange={setPasswordDialogOpen} open={passwordDialogOpen}>
-        <CredenzaContent>
-          <CredenzaHeader>
-            <CredenzaTitle>Alterar Senha</CredenzaTitle>
-            <CredenzaDescription>
-              Digite sua senha atual e a nova senha desejada
-            </CredenzaDescription>
-          </CredenzaHeader>
-          <CredenzaBody>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="currentPassword">Senha Atual</Label>
-                <Input
-                  id="currentPassword"
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Digite sua senha atual"
-                  type="password"
-                  value={currentPassword}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">Nova Senha</Label>
-                <Input
-                  id="newPassword"
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Digite a nova senha"
-                  type="password"
-                  value={newPassword}
-                />
-                <p className="text-muted-foreground text-xs">
-                  Mínimo de 8 caracteres
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
-                <Input
-                  id="confirmPassword"
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirme a nova senha"
-                  type="password"
-                  value={confirmPassword}
-                />
-              </div>
-            </div>
-          </CredenzaBody>
-          <CredenzaFooter>
-            <Button
-              onClick={() => setPasswordDialogOpen(false)}
-              variant="outline"
-            >
-              Cancelar
-            </Button>
-            <Button
-              disabled={isChangingPassword}
-              onClick={handleChangePassword}
-            >
-              {isChangingPassword ? "Alterando..." : "Alterar Senha"}
-            </Button>
-          </CredenzaFooter>
-        </CredenzaContent>
-      </Credenza>
+        {/* Seção de Segurança */}
+        <SecuritySettings />
+      </div>
     </PageLayout>
   );
 }

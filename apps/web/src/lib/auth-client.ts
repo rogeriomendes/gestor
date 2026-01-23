@@ -1,3 +1,4 @@
+import { passkeyClient } from "@better-auth/passkey/client";
 import {
   ac,
   SUPER_ADMIN,
@@ -6,40 +7,16 @@ import {
   TENANT_USER,
   TENANT_USER_MANAGER,
 } from "@gestor/auth/permissions";
-import { adminClient } from "better-auth/client/plugins";
+import { adminClient, twoFactorClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 /**
- * Configuração do auth client
- * O Better Auth infere automaticamente os tipos baseado nos plugins
+ * Configuração do auth client com suporte a:
+ * - Admin (permissões e roles)
+ * - Passkey (WebAuthn)
+ * - Two-Factor Authentication (2FA/TOTP)
+ * - Google OAuth (configurado no servidor)
  */
-// const authClientConfig: {
-//   baseURL?: string;
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   plugins: any[];
-// } = {
-//   plugins: [
-//     adminClient({
-//       ac,
-//       roles: {
-//         SUPER_ADMIN,
-//         TENANT_ADMIN,
-//         TENANT_OWNER,
-//         TENANT_USER_MANAGER,
-//         TENANT_USER,
-//       },
-//     }),
-//   ],
-// };
-
-// if (process.env.NEXT_PUBLIC_BETTER_AUTH_URL) {
-//   // Apenas definir baseURL se a variável de ambiente estiver configurada
-//   // (deve ser uma URL completa, ex: https://api.example.com/api/auth)
-//   authClientConfig.baseURL = process.env.NEXT_PUBLIC_BETTER_AUTH_URL;
-// }
-
-// export const authClient = createAuthClient(authClientConfig);
-
 export const authClient = createAuthClient({
   plugins: [
     adminClient({
@@ -50,6 +27,13 @@ export const authClient = createAuthClient({
         TENANT_OWNER,
         TENANT_USER_MANAGER,
         TENANT_USER,
+      },
+    }),
+    passkeyClient(),
+    twoFactorClient({
+      onTwoFactorRedirect() {
+        // Redirecionar para a página de verificação 2FA
+        window.location.href = "/2fa";
       },
     }),
   ],
