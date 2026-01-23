@@ -27,8 +27,7 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 
 const changeEmailSchema = z.object({
-  newEmail: z
-    .email("Digite um email válido")
+  newEmail: z.email("Digite um email válido"),
 });
 
 export function EmailSection() {

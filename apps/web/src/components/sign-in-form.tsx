@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { Fingerprint, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -213,7 +214,15 @@ export default function SignInForm() {
           <form.Field name="password">
             {(field) => (
               <div className="space-y-2">
-                <Label htmlFor={field.name}>Senha</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor={field.name}>Senha</Label>
+                  <Link
+                    className="text-muted-foreground text-sm hover:text-primary hover:underline"
+                    href="/forgot-password"
+                  >
+                    Esqueceu a senha?
+                  </Link>
+                </div>
                 <Input
                   id={field.name}
                   name={field.name}

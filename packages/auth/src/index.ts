@@ -7,6 +7,11 @@ import { nextCookies } from "better-auth/next-js";
 import { admin, twoFactor } from "better-auth/plugins";
 import { authConfig, validateAuthConfig } from "./config";
 import {
+  sendDeleteAccountEmail,
+  sendResetPasswordEmail,
+  sendVerificationEmail,
+} from "./emails";
+import {
   ac,
   SUPER_ADMIN,
   TENANT_ADMIN,
@@ -46,6 +51,17 @@ export const auth = betterAuth({
   ],
   emailAndPassword: {
     enabled: true,
+    // Enviar email de recuperação de senha
+    sendResetPassword: async ({ user, url }) => {
+      await sendResetPasswordEmail(user.email, url, user.name);
+    },
+  },
+  // Verificação de email
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendVerificationEmail(user.email, url, user.name);
+    },
+    sendOnSignUp: true, // Enviar email de verificação ao cadastrar
   },
   // Provedores sociais (OAuth)
   socialProviders: {
@@ -97,6 +113,9 @@ export const auth = betterAuth({
     // Permitir exclusão de conta
     deleteUser: {
       enabled: true,
+      sendDeleteAccountVerification: async ({ user, url }) => {
+        await sendDeleteAccountEmail(user.email, url, user.name);
+      },
     },
   },
   session: authConfig.session,
