@@ -1,9 +1,8 @@
-import { auth } from "@gestor/auth";
+import { auth, registerInvite } from "@gestor/auth";
 import prisma from "@gestor/db";
 import { AuditAction, AuditResourceType } from "@gestor/db/types";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-
 import { adminProcedure, router } from "../../index";
 import {
   createPaginationResponse,
@@ -12,6 +11,15 @@ import {
 } from "../../lib/pagination";
 import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+
+// Mapeamento de roles para nomes amigáveis
+const roleLabels: Record<string, string> = {
+  SUPER_ADMIN: "Super Administrador",
+  TENANT_ADMIN: "Administrador",
+  TENANT_OWNER: "Proprietário",
+  TENANT_USER_MANAGER: "Gerente de Usuários",
+  TENANT_USER: "Usuário",
+};
 
 export const usersRouter = router({
   /**
@@ -53,7 +61,16 @@ export const usersRouter = router({
             image: true,
             role: true,
             tenantId: true,
+            emailVerified: true,
             createdAt: true,
+            accounts: {
+              where: {
+                providerId: "credential",
+              },
+              select: {
+                password: true,
+              },
+            },
             tenant: {
               select: {
                 id: true,
@@ -67,19 +84,29 @@ export const usersRouter = router({
       ]);
 
       return {
-        data: users.map((user: any) => ({
-          id: user.id,
-          userId: user.id,
-          role: user.role,
-          user: {
+        data: users.map((user: any) => {
+          // Verificar se o usuário está pendente (não tem senha ou email não verificado)
+          const hasPassword = user.accounts.some(
+            (account: any) => account.password !== null
+          );
+          const isPending = !(hasPassword && user.emailVerified);
+
+          return {
             id: user.id,
-            name: user.name,
-            email: user.email,
-            image: user.image,
-            createdAt: user.createdAt,
-          },
-          tenant: user.tenant,
-        })),
+            userId: user.id,
+            role: user.role,
+            isPending,
+            user: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              emailVerified: user.emailVerified,
+              createdAt: user.createdAt,
+            },
+            tenant: user.tenant,
+          };
+        }),
         pagination: createPaginationResponse(input.page, input.limit, total),
       };
     }),
@@ -125,20 +152,45 @@ export const usersRouter = router({
             email: true,
             image: true,
             role: true,
+            emailVerified: true,
             createdAt: true,
+            accounts: {
+              where: {
+                providerId: "credential",
+              },
+              select: {
+                password: true,
+              },
+            },
           },
         }),
         prisma.user.count({ where: where as any }),
       ]);
 
       return {
-        data: users,
+        data: users.map((user: any) => {
+          // Verificar se o usuário está pendente (não tem senha ou email não verificado)
+          const hasPassword = user.accounts.some(
+            (account: any) => account.password !== null
+          );
+          const isPending = !(hasPassword && user.emailVerified);
+
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            role: user.role,
+            isPending,
+          };
+        }),
         pagination: createPaginationResponse(input.page, input.limit, total),
       };
     }),
 
   /**
-   * Criar novo usuário
+   * Criar novo usuário (sem senha)
+   * O usuário receberá um email para ativar a conta e criar sua senha
    * Requer permissão USER:CREATE
    */
   create: adminProcedure
@@ -147,7 +199,6 @@ export const usersRouter = router({
       z.object({
         name: z.string().min(1, "Name is required"),
         email: z.email("Invalid email"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
         tenantId: z.string().optional(),
         role: z
           .enum([
@@ -184,7 +235,8 @@ export const usersRouter = router({
         });
       }
 
-      // Verificar se tenant existe (se fornecido)
+      // Buscar informações do tenant (se fornecido)
+      let tenantName: string | undefined;
       if (input.tenantId) {
         const tenant = await prisma.tenant.findUnique({
           where: { id: input.tenantId },
@@ -196,24 +248,24 @@ export const usersRouter = router({
             message: "Cliente não encontrado",
           });
         }
+        tenantName = tenant.name;
       }
 
-      // Usar a API do Admin plugin do Better Auth para criar o usuário
-      // Isso cria o usuário sem fazer login e com hash correto da senha
+      // Gerar uma senha temporária aleatória (o usuário nunca vai usar)
+      const tempPassword = crypto.randomUUID() + crypto.randomUUID();
+
       try {
         // Criar usuário usando o Admin plugin do Better Auth
         const createUserResult = await auth.api.createUser({
           body: {
             name: input.name,
-            email: normalizedEmail, // Usar email normalizado
-            password: input.password,
-            // Passar role como string ou array
+            email: normalizedEmail,
+            password: tempPassword, // Senha temporária que será substituída
             role: input.role
               ? input.role === "SUPER_ADMIN" || input.role === "TENANT_ADMIN"
                 ? "admin"
                 : "user"
               : undefined,
-            // Passar tenantId como metadata ou campo customizado
             data: input.tenantId
               ? {
                   tenantId: input.tenantId,
@@ -230,27 +282,74 @@ export const usersRouter = router({
           });
         }
 
-        // Atualizar o usuário com tenantId se fornecido
-        // O Admin plugin não suporta campos customizados diretamente,
-        // então precisamos atualizar manualmente
+        // Atualizar o usuário com tenantId e role
         let finalUser: any = createUserResult.user;
-        if (input.tenantId) {
+        if (input.tenantId || input.role) {
           finalUser = await prisma.user.update({
             where: { id: createUserResult.user.id },
             data: {
-              tenantId: input.tenantId,
+              ...(input.tenantId && { tenantId: input.tenantId }),
+              ...(input.role && { role: input.role }),
             },
           });
         }
 
-        // Se role foi fornecido e não foi aplicado pelo plugin, atualizar
-        if (input.role && finalUser.role !== input.role) {
-          finalUser = await prisma.user.update({
-            where: { id: finalUser.id },
-            data: {
-              role: input.role,
+        // Usar a API do Better Auth para gerar o token e enviar email de boas-vindas
+        try {
+          // Primeiro, deletar qualquer token existente para este email
+          await prisma.verification.deleteMany({
+            where: {
+              identifier: normalizedEmail,
             },
           });
+
+          // Buscar informações do admin que está criando o usuário
+          let adminName: string | undefined;
+          if (ctx.session?.user.id) {
+            const adminUser = await prisma.user.findUnique({
+              where: { id: ctx.session.user.id },
+              select: { name: true, email: true },
+            });
+            adminName = adminUser?.name || adminUser?.email;
+          }
+
+          const roleName = input.role ? roleLabels[input.role] : undefined;
+
+          // Registrar o convite ANTES de chamar requestPasswordReset
+          // Isso permite que sendResetPassword detecte que é um convite
+          registerInvite(normalizedEmail, {
+            userName: finalUser.name,
+            invitedBy: adminName,
+            tenantName,
+            roleName,
+          });
+
+          // Usar requestPasswordReset para gerar o token no formato correto do Better Auth
+          // O sendResetPassword vai detectar que é um convite e enviar o email de boas-vindas
+          await auth.api.requestPasswordReset({
+            body: {
+              email: normalizedEmail,
+              redirectTo: "/activate-account",
+            },
+            headers: ctx.req.headers,
+          });
+        } catch (emailError) {
+          console.error(
+            "[User Create] Erro ao enviar email de ativação:",
+            emailError
+          );
+          // Não falha a criação do usuário se o email falhar
+          // O admin pode reenviar depois
+        }
+
+        // Buscar informações do admin para o audit log (se ainda não foi buscado)
+        let adminNameForAudit: string | null = null;
+        if (ctx.session?.user.id) {
+          const adminUser = await prisma.user.findUnique({
+            where: { id: ctx.session.user.id },
+            select: { name: true, email: true },
+          });
+          adminNameForAudit = adminUser?.name || adminUser?.email || null;
         }
 
         // Registrar criação do usuário no audit log
@@ -266,6 +365,7 @@ export const usersRouter = router({
               email: finalUser.email,
               role: finalUser.role,
               tenantId: input.tenantId || null,
+              invitedBy: adminNameForAudit,
             },
           },
           ctx
@@ -283,8 +383,8 @@ export const usersRouter = router({
       } catch (error: any) {
         // Verificar se é erro de email duplicado
         const isDuplicateEmail =
-          error.code === "P2002" || // Prisma unique constraint violation
-          error.status === 409 || // HTTP Conflict
+          error.code === "P2002" ||
+          error.status === 409 ||
           (error.message &&
             (error.message.includes("already exists") ||
               error.message.includes("Unique constraint") ||
@@ -297,10 +397,112 @@ export const usersRouter = router({
           });
         }
 
-        // Retornar mensagem de erro mais específica
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: error.message || "Falha ao criar usuário",
+        });
+      }
+    }),
+
+  /**
+   * Reenviar convite para usuário pendente
+   * Requer permissão USER:UPDATE
+   */
+  resendInvite: adminProcedure
+    .use(requirePermission("USER", "UPDATE"))
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // Verificar se usuário existe
+      const user = await prisma.user.findUnique({
+        where: { id: input.userId },
+        include: {
+          tenant: true,
+          accounts: {
+            where: {
+              providerId: "credential",
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Usuário não encontrado",
+        });
+      }
+
+      const normalizedEmail = user.email.toLowerCase().trim();
+
+      try {
+        // Primeiro, deletar qualquer token existente para este email
+        await prisma.verification.deleteMany({
+          where: {
+            identifier: normalizedEmail,
+          },
+        });
+
+        // Buscar informações do admin que está reenviando o convite
+        let adminName: string | undefined;
+        if (ctx.session?.user.id) {
+          const adminUser = await prisma.user.findUnique({
+            where: { id: ctx.session.user.id },
+            select: { name: true, email: true },
+          });
+          adminName = adminUser?.name || adminUser?.email;
+        }
+
+        const roleName = user.role ? roleLabels[user.role] : undefined;
+        const tenantName = user.tenant?.name;
+
+        // Registrar o convite ANTES de chamar requestPasswordReset
+        registerInvite(normalizedEmail, {
+          userName: user.name,
+          invitedBy: adminName,
+          tenantName,
+          roleName,
+        });
+
+        // Usar requestPasswordReset para gerar o token no formato correto do Better Auth
+        // O sendResetPassword vai detectar que é um convite e enviar o email de boas-vindas
+        await auth.api.requestPasswordReset({
+          body: {
+            email: normalizedEmail,
+            redirectTo: "/activate-account",
+          },
+          headers: ctx.req.headers,
+        });
+
+        // Registrar no audit log
+        await createAuditLogFromContext(
+          {
+            action: AuditAction.UPDATE_USER,
+            resourceType: user.tenantId
+              ? AuditResourceType.TENANT_USER
+              : AuditResourceType.USER,
+            resourceId: user.id,
+            metadata: {
+              userId: user.id,
+              userName: user.name,
+              userEmail: user.email,
+              action: "resend_invite",
+            },
+          },
+          ctx
+        );
+
+        return { success: true };
+      } catch (emailError) {
+        console.error(
+          "[User Resend Invite] Erro ao reenviar convite:",
+          emailError
+        );
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            emailError instanceof Error
+              ? emailError.message
+              : "Erro ao reenviar convite",
         });
       }
     }),

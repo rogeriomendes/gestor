@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -39,17 +39,11 @@ export function CreateUserDialog({
 }: CreateUserDialogProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<Role>("SUPER_ADMIN");
 
   const createUserMutation = useMutation({
-    mutationFn: (input: {
-      name: string;
-      email: string;
-      password: string;
-      role: Role;
-    }) => trpcClient.admin.createUser.mutate(input),
+    mutationFn: (input: { name: string; email: string; role: Role }) =>
+      trpcClient.admin.createUser.mutate(input),
   });
 
   const handleCreate = async () => {
@@ -63,30 +57,16 @@ export function CreateUserDialog({
       return;
     }
 
-    if (!password) {
-      toast.error("Por favor, insira a senha");
-      return;
-    }
-
-    if (password.length < 8) {
-      toast.error("A senha deve ter pelo menos 8 caracteres");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error("As senhas não coincidem");
-      return;
-    }
-
     try {
       await createUserMutation.mutateAsync({
         name: name.trim(),
         email: email.trim(),
-        password,
         role,
       });
 
-      toast.success("Usuário criado com sucesso!");
+      toast.success(
+        "Usuário criado com sucesso! Um email foi enviado para que ele ative sua conta."
+      );
       onSuccess();
       handleClose();
     } catch (error) {
@@ -99,8 +79,6 @@ export function CreateUserDialog({
   const handleClose = () => {
     setName("");
     setEmail("");
-    setPassword("");
-    setConfirmPassword("");
     setRole("SUPER_ADMIN");
     onOpenChange(false);
   };
@@ -111,7 +89,7 @@ export function CreateUserDialog({
         <CredenzaHeader>
           <CredenzaTitle>Criar Usuário</CredenzaTitle>
           <CredenzaDescription>
-            Crie um novo usuário com permissões de administrador
+            O usuário receberá um email para ativar sua conta e criar uma senha.
           </CredenzaDescription>
         </CredenzaHeader>
 
@@ -158,26 +136,14 @@ export function CreateUserDialog({
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mínimo 8 caracteres"
-                type="password"
-                value={password}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-              <Input
-                id="confirmPassword"
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Digite a senha novamente"
-                type="password"
-                value={confirmPassword}
-              />
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
+              <div className="flex items-start gap-2">
+                <Mail className="mt-0.5 h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <p className="text-blue-700 text-sm dark:text-blue-300">
+                  O usuário receberá um email com um link para criar sua própria
+                  senha e ativar a conta.
+                </p>
+              </div>
             </div>
           </div>
         </CredenzaBody>
@@ -196,7 +162,7 @@ export function CreateUserDialog({
                 Criando...
               </>
             ) : (
-              "Criar Usuário"
+              "Criar e Enviar Convite"
             )}
           </Button>
         </CredenzaFooter>

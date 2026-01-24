@@ -11,20 +11,36 @@ export function SecuritySettings() {
   return (
     <div className="space-y-6">
       {/* Credenciais */}
-      <EmailSection />
-      <ChangePasswordSection />
+      <div id="email">
+        <EmailSection />
+      </div>
+      <div id="password">
+        <ChangePasswordSection />
+      </div>
 
       {/* Autenticação */}
-      <PasskeySection />
-      <TwoFactorSection />
-      <BackupCodesSection />
+      <div id="passkey">
+        <PasskeySection />
+      </div>
+      <div id="two-factor">
+        <TwoFactorSection />
+      </div>
+      <div id="backup-codes">
+        <BackupCodesSection />
+      </div>
 
       {/* Contas */}
-      <LinkedAccountsSection />
-      <ActiveSessionsSection />
+      <div id="linked-accounts">
+        <LinkedAccountsSection />
+      </div>
+      <div id="active-sessions">
+        <ActiveSessionsSection />
+      </div>
 
       {/* Zona de perigo */}
-      <DeleteAccountSection />
+      <div id="delete-account">
+        <DeleteAccountSection />
+      </div>
     </div>
   );
 }

@@ -10,7 +10,14 @@ import {
   sendDeleteAccountEmail,
   sendResetPasswordEmail,
   sendVerificationEmail,
+  sendWelcomeInviteEmail,
 } from "./emails";
+import { getInviteInfo, removeInvite } from "./utils/invite-tracker";
+
+// Re-exportar funções de email para uso em outros pacotes
+export { sendWelcomeInviteEmail } from "./emails";
+export { registerInvite } from "./utils/invite-tracker";
+
 import {
   ac,
   SUPER_ADMIN,
@@ -51,9 +58,36 @@ export const auth = betterAuth({
   ],
   emailAndPassword: {
     enabled: true,
-    // Enviar email de recuperação de senha
+    // Enviar email de recuperação de senha ou boas-vindas (se for convite)
     sendResetPassword: async ({ user, url }) => {
-      await sendResetPasswordEmail(user.email, url, user.name);
+      // Verificar se é um convite pendente
+      const inviteInfo = getInviteInfo(user.email);
+
+      if (inviteInfo) {
+        // É um convite - enviar email de boas-vindas
+        await sendWelcomeInviteEmail(user.email, url, {
+          userName: inviteInfo.userName,
+          invitedBy: inviteInfo.invitedBy,
+          tenantName: inviteInfo.tenantName,
+          roleName: inviteInfo.roleName,
+        });
+        // Remover o convite após enviar
+        removeInvite(user.email);
+      } else {
+        // É um reset de senha normal - enviar email de reset
+        await sendResetPasswordEmail(user.email, url, user.name);
+      }
+    },
+    // Callback após reset de senha bem-sucedido
+    onPasswordReset: async ({ user }) => {
+      // Se o email ainda não estiver verificado, marcar como verificado
+      // pois o usuário veio do link do email
+      if (!user.emailVerified) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { emailVerified: true },
+        });
+      }
     },
   },
   // Verificação de email

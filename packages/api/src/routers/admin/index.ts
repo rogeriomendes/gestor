@@ -32,6 +32,7 @@ export const adminRouter = router({
   restoreUser: usersRouter.restore,
   listDeletedUsers: usersRouter.listDeleted,
   resetUserPassword: usersRouter.resetPassword,
+  resendInvite: usersRouter.resendInvite,
   addUserToTenant: usersRouter.addToTenant,
   removeUserFromTenant: usersRouter.removeFromTenant,
   updateUserRoleInTenant: usersRouter.updateRoleInTenant,

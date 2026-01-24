@@ -2,12 +2,12 @@
 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Camera, Mail, Shield, User } from "lucide-react";
+import { Mail, Shield, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { ProfileSidebar } from "@/components/profile/profile-sidebar";
 import { SecuritySettings } from "@/components/profile/security-settings";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,18 +29,6 @@ const ROLE_LABELS: Record<string, string> = {
   TENANT_USER_MANAGER: "Gerente de Usuários",
   TENANT_USER: "Usuário",
 };
-
-function getInitials(name: string | null | undefined): string {
-  if (!name) {
-    return "U";
-  }
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
 
 export default function AdminProfilePage() {
   const { data: session, isPending: isSessionLoading } =
@@ -129,51 +117,31 @@ export default function AdminProfilePage() {
       subtitle="Gerencie suas informações pessoais"
       title="Meu Perfil"
     >
-      <div className="space-y-6">
-        {/* Card de Perfil */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Informações Pessoais
-            </CardTitle>
-            <CardDescription>
-              Visualize e edite suas informações de perfil
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-              {/* Avatar */}
-              <div className="relative">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage
-                    alt={user?.name || "Avatar"}
-                    src={user?.image || undefined}
-                  />
-                  <AvatarFallback className="text-2xl">
-                    {getInitials(user?.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <Button
-                  className="absolute right-0 bottom-0 h-8 w-8 rounded-full p-0"
-                  disabled
-                  size="sm"
-                  title="Em breve"
-                  variant="secondary"
-                >
-                  <Camera className="h-4 w-4" />
-                </Button>
-              </div>
-
-              {/* Informações */}
-              <div className="flex-1 space-y-4">
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <ProfileSidebar />
+        <div className="flex-1 space-y-6">
+          {/* Card de Perfil */}
+          <Card id="personal-info">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Informações Pessoais
+              </CardTitle>
+              <CardDescription>
+                Visualize e edite suas informações de perfil
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
                 {/* Nome */}
-                <div className="space-y-1">
-                  <Label className="text-muted-foreground text-sm">Nome</Label>
+                <div className="space-y-2">
+                  <Label className="font-medium text-muted-foreground text-sm">
+                    Nome
+                  </Label>
                   {isEditingName ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Input
-                        className="max-w-xs"
+                        className="max-w-md"
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Seu nome"
                         value={name}
@@ -197,12 +165,17 @@ export default function AdminProfilePage() {
                       </Button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-lg">{user?.name}</p>
+                    <div className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                          <User className="h-5 w-5 text-primary" />
+                        </div>
+                        <p className="font-semibold text-lg">{user?.name}</p>
+                      </div>
                       <Button
                         onClick={() => setIsEditingName(true)}
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
                       >
                         Editar
                       </Button>
@@ -210,52 +183,57 @@ export default function AdminProfilePage() {
                   )}
                 </div>
 
-                {/* Email */}
-                <div className="space-y-1">
-                  <Label className="text-muted-foreground text-sm">Email</Label>
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <p>{user?.email}</p>
-                  </div>
-                </div>
-
-                {/* Role */}
-                {userRole && (
-                  <div className="space-y-1">
-                    <Label className="text-muted-foreground text-sm">
-                      Função
+                {/* Grid de Informações */}
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Email */}
+                  <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
+                    <Label className="font-medium text-muted-foreground text-sm">
+                      Email
                     </Label>
                     <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4 text-muted-foreground" />
-                      <Badge variant="secondary">
-                        {ROLE_LABELS[userRole] || userRole}
-                      </Badge>
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <p className="font-medium">{user?.email}</p>
                     </div>
                   </div>
-                )}
 
-                {/* Informações da Conta */}
-                {user?.createdAt && (
-                  <div className="space-y-1">
-                    <Label className="text-muted-foreground text-sm">
-                      Conta criada em
-                    </Label>
-                    <p className="text-sm">
-                      {format(
-                        new Date(user.createdAt),
-                        "dd/MM/yyyy 'às' HH:mm",
-                        { locale: ptBR }
-                      )}
-                    </p>
-                  </div>
-                )}
+                  {/* Role */}
+                  {userRole && (
+                    <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
+                      <Label className="font-medium text-muted-foreground text-sm">
+                        Função
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-muted-foreground" />
+                        <Badge className="font-medium" variant="secondary">
+                          {ROLE_LABELS[userRole] || userRole}
+                        </Badge>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Informações da Conta */}
+                  {user?.createdAt && (
+                    <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
+                      <Label className="font-medium text-muted-foreground text-sm">
+                        Conta criada em
+                      </Label>
+                      <p className="font-medium text-sm">
+                        {format(
+                          new Date(user.createdAt),
+                          "dd/MM/yyyy 'às' HH:mm",
+                          { locale: ptBR }
+                        )}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Seção de Segurança */}
-        <SecuritySettings />
+          {/* Seção de Segurança */}
+          <SecuritySettings />
+        </div>
       </div>
     </PageLayout>
   );

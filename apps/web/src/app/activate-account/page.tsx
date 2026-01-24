@@ -1,8 +1,14 @@
 "use client";
 
-import { ArrowLeft, CheckCircle, Loader2, XCircle } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle,
+  Loader2,
+  UserPlus,
+  XCircle,
+} from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -18,37 +24,38 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 
-const resetPasswordSchema = z
+const activateAccountSchema = z
   .object({
-    newPassword: z
+    password: z
       .string()
       .min(1, "A senha é obrigatória")
       .min(8, "A senha deve ter pelo menos 8 caracteres"),
     confirmPassword: z.string().min(1, "Confirme a senha"),
   })
-  .refine((data) => data.newPassword === data.confirmPassword, {
+  .refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não coincidem",
     path: ["confirmPassword"],
   });
 
-function ResetPasswordContent() {
+function ActivateAccountContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const errorParam = searchParams.get("error");
 
-  const [newPassword, setNewPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState<{
-    newPassword?: string;
+    password?: string;
     confirmPassword?: string;
   }>({});
 
   // Verificar se há erro no token
   useEffect(() => {
     if (errorParam === "INVALID_TOKEN") {
-      toast.error("O link de redefinição é inválido ou expirou.");
+      toast.error("O link de ativação é inválido ou expirou.");
     }
   }, [errorParam]);
 
@@ -61,13 +68,13 @@ function ResetPasswordContent() {
     setErrors({});
 
     if (!token) {
-      toast.error("Token de redefinição não encontrado");
+      toast.error("Token de ativação não encontrado");
       return;
     }
 
     // Validação com Zod
-    const result = resetPasswordSchema.safeParse({
-      newPassword,
+    const result = activateAccountSchema.safeParse({
+      password,
       confirmPassword,
     });
     if (!result.success) {
@@ -83,8 +90,9 @@ function ResetPasswordContent() {
 
     setIsLoading(true);
     try {
+      // Usar a API de reset de senha para definir a senha
       const response = await authClient.resetPassword({
-        newPassword,
+        newPassword: password,
         token,
       });
 
@@ -94,16 +102,16 @@ function ResetPasswordContent() {
           errorMessage.includes("invalid") ||
           errorMessage.includes("expired")
         ) {
-          toast.error("O link de redefinição é inválido ou expirou.");
+          toast.error("O link de ativação é inválido ou expirou.");
         } else {
-          toast.error(response.error.message || "Erro ao redefinir senha");
+          toast.error(response.error.message || "Erro ao ativar conta");
         }
         return;
       }
 
       setIsSuccess(true);
     } catch (err) {
-      console.error("Erro ao redefinir senha:", err);
+      console.error("Erro ao ativar conta:", err);
       toast.error("Ocorreu um erro. Tente novamente.");
     } finally {
       setIsLoading(false);
@@ -121,25 +129,13 @@ function ResetPasswordContent() {
             </div>
             <CardTitle>Link inválido ou expirado</CardTitle>
             <CardDescription>
-              O link de redefinição de senha não é mais válido. Por favor,
-              solicite um novo link.
+              O link de ativação não é mais válido. Entre em contato com o
+              administrador para receber um novo convite.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Button
-              className="w-full"
-              render={<Link href="/forgot-password" />}
-            >
-              Solicitar novo link
-            </Button>
-            <Button
-              className="w-full"
-              // onClick={() => router.push("/")}
-              render={<Link href="/" />}
-              variant="ghost"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar para o login
+          <CardContent>
+            <Button className="w-full" render={<Link href="/" />}>
+              Ir para o login
             </Button>
           </CardContent>
         </Card>
@@ -156,15 +152,16 @@ function ResetPasswordContent() {
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
               <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
-            <CardTitle>Senha redefinida!</CardTitle>
+            <CardTitle>Conta ativada!</CardTitle>
             <CardDescription>
-              Sua senha foi alterada com sucesso. Agora você pode fazer login
-              com sua nova senha.
+              Sua conta foi ativada com sucesso. Agora você pode fazer login com
+              seu email e a senha que acabou de criar.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button className="w-full" render={<Link href="/" />}>
-              Ir para o login
+              Fazer login
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </CardContent>
         </Card>
@@ -172,38 +169,43 @@ function ResetPasswordContent() {
     );
   }
 
-  // Formulário de redefinição
+  // Formulário de ativação
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle>Redefinir senha</CardTitle>
-          <CardDescription>Digite sua nova senha abaixo.</CardDescription>
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <UserPlus className="h-6 w-6 text-primary" />
+          </div>
+          <CardTitle>Ative sua conta</CardTitle>
+          <CardDescription>
+            Bem-vindo ao FBI Gestor! Crie uma senha para acessar sua conta.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="newPassword">Nova senha</Label>
+              <Label htmlFor="password">Senha</Label>
               <Input
-                aria-invalid={!!errors.newPassword}
+                aria-invalid={!!errors.password}
                 autoFocus
                 className={
-                  errors.newPassword
+                  errors.password
                     ? "border-destructive focus-visible:ring-destructive"
                     : ""
                 }
                 disabled={isLoading}
-                id="newPassword"
+                id="password"
                 onChange={(e) => {
-                  setNewPassword(e.target.value);
-                  clearError("newPassword");
+                  setPassword(e.target.value);
+                  clearError("password");
                 }}
-                placeholder="Digite a nova senha"
+                placeholder="Crie uma senha"
                 type="password"
-                value={newPassword}
+                value={password}
               />
-              {errors.newPassword ? (
-                <p className="text-destructive text-sm">{errors.newPassword}</p>
+              {errors.password ? (
+                <p className="text-destructive text-sm">{errors.password}</p>
               ) : (
                 <p className="text-muted-foreground text-xs">
                   Mínimo de 8 caracteres
@@ -225,7 +227,7 @@ function ResetPasswordContent() {
                   setConfirmPassword(e.target.value);
                   clearError("confirmPassword");
                 }}
-                placeholder="Confirme a nova senha"
+                placeholder="Confirme sua senha"
                 type="password"
                 value={confirmPassword}
               />
@@ -239,19 +241,11 @@ function ResetPasswordContent() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Redefinindo...
+                  Ativando...
                 </>
               ) : (
-                "Redefinir senha"
+                "Ativar conta"
               )}
-            </Button>
-            <Button
-              className="w-full"
-              render={<Link href="/" />}
-              variant="ghost"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar para o login
             </Button>
           </form>
         </CardContent>
@@ -260,7 +254,7 @@ function ResetPasswordContent() {
   );
 }
 
-export default function ResetPasswordPage() {
+export default function ActivateAccountPage() {
   return (
     <Suspense
       fallback={
@@ -269,7 +263,7 @@ export default function ResetPasswordPage() {
         </div>
       }
     >
-      <ResetPasswordContent />
+      <ActivateAccountContent />
     </Suspense>
   );
 }

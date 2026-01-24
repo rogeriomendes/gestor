@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Loader2, Trash2 } from "lucide-react";
+import { AlertTriangle, Copy, Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -27,13 +27,11 @@ import { authClient } from "@/lib/auth-client";
 
 export function DeleteAccountSection() {
   const router = useRouter();
-  const { data: session } = authClient.useSession();
   const [showDialog, setShowDialog] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmText, setConfirmText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const user = session?.user;
   const expectedConfirmText = "excluir minha conta";
 
   const handleDeleteAccount = async () => {
@@ -75,6 +73,18 @@ export function DeleteAccountSection() {
     setShowDialog(false);
     setPassword("");
     setConfirmText("");
+  };
+
+  const handleCopyConfirmText = async () => {
+    try {
+      await navigator.clipboard.writeText(expectedConfirmText);
+      setConfirmText(expectedConfirmText);
+      toast.success("Texto copiado e colado no campo!");
+    } catch () {
+      // Fallback: apenas colar no input se clipboard falhar
+      setConfirmText(expectedConfirmText);
+      toast.success("Texto colado no campo!");
+    }
   };
 
   return (
@@ -143,9 +153,23 @@ export function DeleteAccountSection() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmDelete">
-                  Digite <strong>{expectedConfirmText}</strong> para confirmar
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="confirmDelete">
+                    Digite{" "}
+                    <span className="font-bold">{expectedConfirmText}</span>{" "}
+                    para confirmar
+                  </Label>
+                  <Button
+                    className="h-7 px-2"
+                    onClick={handleCopyConfirmText}
+                    size="sm"
+                    type="button"
+                    variant="ghost"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    <span className="sr-only">Copiar texto</span>
+                  </Button>
+                </div>
                 <Input
                   id="confirmDelete"
                   onChange={(e) => setConfirmText(e.target.value)}

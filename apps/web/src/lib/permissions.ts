@@ -88,11 +88,17 @@ export function useHasPermission(
   resource: PermissionResource,
   action: PermissionAction
 ): boolean {
-  const { permissions, isSuperAdmin } = useTenant();
+  const { permissions, isSuperAdmin, isLoading, role } = useTenant();
 
   // SUPER_ADMIN tem todas as permissões
-  if (isSuperAdmin) {
+  // Verificar também pela role diretamente caso isSuperAdmin ainda não esteja carregado
+  if (isSuperAdmin || role === "SUPER_ADMIN") {
     return true;
+  }
+
+  // Durante o carregamento, retornar false para evitar mostrar conteúdo antes de verificar permissões
+  if (isLoading) {
+    return false;
   }
 
   if (!permissions) {

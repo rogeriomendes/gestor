@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
+import { Mail } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -61,7 +62,6 @@ export function AddUserDialog({
   const [searchUser, setSearchUser] = useState("");
   const [newUserName, setNewUserName] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
-  const [newUserPassword, setNewUserPassword] = useState("");
 
   const addUserMutation = useMutation({
     mutationFn: (input: { tenantId: string; userId: string; role: Role }) =>
@@ -72,7 +72,6 @@ export function AddUserDialog({
     mutationFn: (input: {
       name: string;
       email: string;
-      password: string;
       tenantId: string;
       role: Role;
     }) => trpcClient.admin.createUser.mutate(input),
@@ -103,7 +102,7 @@ export function AddUserDialog({
   };
 
   const handleCreateUser = async () => {
-    if (!(newUserName && newUserEmail && newUserPassword)) {
+    if (!(newUserName && newUserEmail)) {
       toast.error("Por favor, preencha todos os campos");
       return;
     }
@@ -112,17 +111,17 @@ export function AddUserDialog({
       await createUserMutation.mutateAsync({
         name: newUserName,
         email: newUserEmail,
-        password: newUserPassword,
         tenantId,
         role: selectedRole,
       });
-      toast.success("Usuário criado e adicionado ao cliente com sucesso!");
+      toast.success(
+        "Usuário criado! Um email foi enviado para que ele ative sua conta."
+      );
       onSuccess();
       onOpenChange(false);
       setCreateUserMode(false);
       setNewUserName("");
       setNewUserEmail("");
-      setNewUserPassword("");
       setSelectedUser(null);
       setSearchUser("");
     } catch (error) {
@@ -139,7 +138,6 @@ export function AddUserDialog({
     setCreateUserMode(false);
     setNewUserName("");
     setNewUserEmail("");
-    setNewUserPassword("");
   };
 
   const filteredUsers = availableUsers.filter(
@@ -155,7 +153,7 @@ export function AddUserDialog({
           <CredenzaTitle>Adicionar Usuário ao Cliente</CredenzaTitle>
           <CredenzaDescription>
             {createUserMode
-              ? "Crie um novo usuário e adicione-o a este cliente"
+              ? "O usuário receberá um email para ativar sua conta"
               : "Selecione um usuário existente ou crie um novo"}
           </CredenzaDescription>
         </CredenzaHeader>
@@ -247,18 +245,15 @@ export function AddUserDialog({
                     />
                   </FieldContent>
                 </Field>
-                <Field>
-                  <FieldLabel htmlFor="newUserPassword">Senha *</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="newUserPassword"
-                      onChange={(e) => setNewUserPassword(e.target.value)}
-                      placeholder="Mínimo de 8 caracteres"
-                      type="password"
-                      value={newUserPassword}
-                    />
-                  </FieldContent>
-                </Field>
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
+                  <div className="flex items-start gap-2">
+                    <Mail className="mt-0.5 h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <p className="text-blue-700 text-sm dark:text-blue-300">
+                      O usuário receberá um email com um link para criar sua
+                      própria senha e ativar a conta.
+                    </p>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -323,16 +318,13 @@ export function AddUserDialog({
           {createUserMode ? (
             <Button
               disabled={
-                createUserMutation.isPending ||
-                !newUserName ||
-                !newUserEmail ||
-                !newUserPassword
+                createUserMutation.isPending || !newUserName || !newUserEmail
               }
               onClick={handleCreateUser}
             >
               {createUserMutation.isPending
                 ? "Criando..."
-                : "Criar e Adicionar Usuário"}
+                : "Criar e Enviar Convite"}
             </Button>
           ) : (
             <Button

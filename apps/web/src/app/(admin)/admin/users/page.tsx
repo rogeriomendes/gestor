@@ -84,11 +84,28 @@ function AdminUsersPageContent() {
       trpcClient.admin.restoreUser.mutate({ userId }),
   });
 
+  const resendInviteMutation = useMutation({
+    mutationFn: (userId: string) =>
+      trpcClient.admin.resendInvite.mutate({ userId }),
+  });
+
   const users = usersData?.data || [];
   const pagination = usersData?.pagination;
   const deletedUsers = deletedUsersData?.data || [];
 
   const tenants = tenantsData?.data || [];
+
+  const handleResendInvite = async (userId: string) => {
+    try {
+      await resendInviteMutation.mutateAsync(userId);
+      toast.success("Convite reenviado com sucesso!");
+      refetch();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao reenviar convite"
+      );
+    }
+  };
 
   const handleDeleteUser = async (userId: string) => {
     try {
@@ -201,6 +218,7 @@ function AdminUsersPageContent() {
               })
             }
             onPageChange={setPage}
+            onResendInvite={handleResendInvite}
             pagination={pagination}
             selectedRole={selectedRole}
             users={users}

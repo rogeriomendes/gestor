@@ -23,6 +23,10 @@ interface UserTenantSectionProps {
   currentTenantId: string | null;
   currentRole: string | null;
   onSuccess: () => void;
+  /**
+   * Se true, oculta a seleção de tenant (usado na área do tenant)
+   */
+  hideTenantSelection?: boolean;
 }
 
 export function UserTenantSection({
@@ -30,6 +34,7 @@ export function UserTenantSection({
   currentTenantId,
   currentRole,
   onSuccess,
+  hideTenantSelection = false,
 }: UserTenantSectionProps) {
   // Inicializar com os valores atuais ou padrões
   const [selectedTenantId, setSelectedTenantId] = useState<string>(() => {
@@ -42,12 +47,17 @@ export function UserTenantSection({
   // Atualizar estado quando props mudarem (quando dados do usuário forem carregados)
   useEffect(() => {
     if (currentTenantId !== undefined) {
-      setSelectedTenantId(currentTenantId || "none");
+      // Se hideTenantSelection estiver ativo, sempre manter o tenant atual
+      if (hideTenantSelection && currentTenantId) {
+        setSelectedTenantId(currentTenantId);
+      } else {
+        setSelectedTenantId(currentTenantId || "none");
+      }
     }
     if (currentRole !== undefined) {
       setSelectedRole(currentRole || "TENANT_USER");
     }
-  }, [currentTenantId, currentRole]);
+  }, [currentTenantId, currentRole, hideTenantSelection]);
 
   // Buscar tenants disponíveis
   const { data: tenantsData } = useQuery({
@@ -79,6 +89,25 @@ export function UserTenantSection({
 
   const handleSaveTenant = async () => {
     try {
+      // Se hideTenantSelection estiver ativo, só permitir mudança de role
+      if (hideTenantSelection) {
+        if (currentTenantId && selectedRole !== currentRole) {
+          await trpcClient.admin.updateUserRoleInTenant.mutate({
+            tenantId: currentTenantId,
+            userId,
+            role: selectedRole as
+              | "TENANT_OWNER"
+              | "TENANT_USER_MANAGER"
+              | "TENANT_USER",
+          });
+          toast.success("Função do usuário atualizada com sucesso!");
+          onSuccess();
+          return;
+        }
+        toast.info("Nenhuma alteração foi feita");
+        return;
+      }
+
       // Se estava sem tenant e agora tem
       if (!currentTenantId && selectedTenantId !== "none") {
         await addUserToTenantMutation.mutateAsync({
@@ -159,9 +188,10 @@ export function UserTenantSection({
     }
   };
 
-  const hasChanges =
-    selectedTenantId !== (currentTenantId || "none") ||
-    (currentTenantId && selectedRole !== currentRole);
+  const hasChanges = hideTenantSelection
+    ? currentTenantId && selectedRole !== currentRole
+    : selectedTenantId !== (currentTenantId || "none") ||
+      (currentTenantId && selectedRole !== currentRole);
 
   const isLoading =
     addUserToTenantMutation.isPending || removeUserFromTenantMutation.isPending;
@@ -171,24 +201,32 @@ export function UserTenantSection({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="mb-2 font-medium text-sm">Cliente</h3>
+        <h3 className="mb-2 font-medium text-sm">
+          {hideTenantSelection ? "Função no Cliente" : "Cliente"}
+        </h3>
         <p className="mb-4 text-muted-foreground text-xs">
-          Associe o usuário a um cliente ou remova a associação
+          {hideTenantSelection
+            ? "Altere a função do usuário no cliente"
+            : "Associe o usuário a um cliente ou remova a associação"}
         </p>
 
         <div className="space-y-3">
-          <div className="w-full">
-            <Combobox
-              emptyMessage="Nenhum cliente encontrado."
-              onValueChange={setSelectedTenantId}
-              options={tenantOptions}
-              placeholder="Selecione um cliente"
-              searchPlaceholder="Buscar cliente..."
-              value={selectedTenantId}
-            />
-          </div>
+          {!hideTenantSelection && (
+            <div className="w-full">
+              <Combobox
+                emptyMessage="Nenhum cliente encontrado."
+                onValueChange={setSelectedTenantId}
+                options={tenantOptions}
+                placeholder="Selecione um cliente"
+                searchPlaceholder="Buscar cliente..."
+                value={selectedTenantId}
+              />
+            </div>
+          )}
 
-          {selectedTenantId !== "none" && (
+          {(hideTenantSelection
+            ? currentTenantId
+            : selectedTenantId !== "none") && (
             <div className="space-y-2">
               <Label className="font-medium text-muted-foreground text-sm">
                 Função no Cliente

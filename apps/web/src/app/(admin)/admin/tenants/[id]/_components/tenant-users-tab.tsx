@@ -2,13 +2,14 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { UserPlus } from "lucide-react";
+import { Edit, Mail, MoreHorizontal, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { DataCards } from "@/components/lists/data-cards";
 import { DataTable } from "@/components/lists/data-table";
 import { ResponsiveList } from "@/components/lists/responsive-list";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { RoleBadge } from "@/components/role-badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,6 +37,7 @@ interface User {
   name: string;
   email: string;
   role: Role;
+  isPending?: boolean;
 }
 
 interface AvailableUser {
@@ -58,7 +60,153 @@ interface TenantUsersTabProps {
   availableUsersLoading: boolean;
   onUpdateRole: (userId: string, role: Role) => void;
   onRemove: (userId: string) => void;
+  onResendInvite?: (userId: string) => void;
   onRefresh: () => void;
+}
+
+// Componente para ações da tabela
+function UserActionsCell({
+  user,
+  onEdit,
+  onResendInvite,
+  onUpdateRole,
+  onRemove,
+}: {
+  user: User;
+  onEdit: (userId: string, name: string, email: string) => void;
+  onResendInvite?: (userId: string) => void;
+  onUpdateRole: (userId: string, role: Role) => void;
+  onRemove: (userId: string) => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={<Button className="h-8 w-8 p-0" variant="ghost" />}
+      >
+        <MoreHorizontal className="size-4" />
+        <span className="sr-only">Abrir menu</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            onClick={() => onEdit(user.id, user.name, user.email)}
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            Editar Usuário
+          </DropdownMenuItem>
+          {user.isPending && onResendInvite && (
+            <DropdownMenuItem onClick={() => onResendInvite(user.id)}>
+              <Mail className="mr-2 h-4 w-4" />
+              Reenviar Convite
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Alterar Função</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() => onUpdateRole(user.id, "TENANT_USER")}
+          >
+            Usuário
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onUpdateRole(user.id, "TENANT_OWNER")}
+          >
+            Proprietário
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="text-destructive"
+            onClick={() => onRemove(user.id)}
+          >
+            Remover do Cliente
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+// Componente para card de usuário
+function UserCard({
+  user,
+  onEdit,
+  onResendInvite,
+  onUpdateRole,
+  onRemove,
+}: {
+  user: User;
+  onEdit: (userId: string, name: string, email: string) => void;
+  onResendInvite?: (userId: string) => void;
+  onUpdateRole: (userId: string, role: Role) => void;
+  onRemove: (userId: string) => void;
+}) {
+  return (
+    <div className="space-y-1">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="truncate font-semibold text-sm leading-tight">
+              {user.name}
+            </span>
+            {user.isPending && (
+              <Badge
+                className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                variant="secondary"
+              >
+                Pendente
+              </Badge>
+            )}
+            <RoleBadge
+              role={user.role as "TENANT_OWNER" | "TENANT_USER" | null}
+            />
+          </div>
+          <p className="truncate text-muted-foreground text-xs">{user.email}</p>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={<Button className="h-6 w-6 shrink-0 p-0" variant="ghost" />}
+          >
+            <span className="sr-only">Abrir menu</span>
+            <MoreHorizontal className="size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => onEdit(user.id, user.name, user.email)}
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Editar Usuário
+              </DropdownMenuItem>
+              {user.isPending && onResendInvite && (
+                <DropdownMenuItem onClick={() => onResendInvite(user.id)}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Reenviar Convite
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Alterar Função</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onUpdateRole(user.id, "TENANT_USER")}
+              >
+                Usuário
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onUpdateRole(user.id, "TENANT_OWNER")}
+              >
+                Proprietário
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => onRemove(user.id)}
+              >
+                Remover do Cliente
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
 }
 
 export function TenantUsersTab({
@@ -69,6 +217,7 @@ export function TenantUsersTab({
   availableUsersLoading,
   onUpdateRole,
   onRemove,
+  onResendInvite,
   onRefresh,
 }: TenantUsersTabProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -88,7 +237,17 @@ export function TenantUsersTab({
       header: "Nome",
       cell: ({ row }) => (
         <div className="flex flex-col">
-          <span className="font-medium text-sm">{row.original.name}</span>
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-sm">{row.original.name}</span>
+            {row.original.isPending && (
+              <Badge
+                className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                variant="secondary"
+              >
+                Pendente
+              </Badge>
+            )}
+          </div>
           <span className="text-muted-foreground text-xs">
             {row.original.email}
           </span>
@@ -100,71 +259,23 @@ export function TenantUsersTab({
       header: "Função",
       cell: ({ row }) => (
         <RoleBadge
-          role={
-            row.original.role as
-              | "TENANT_OWNER"
-              | "TENANT_USER_MANAGER"
-              | "TENANT_USER"
-              | null
-          }
+          role={row.original.role as "TENANT_OWNER" | "TENANT_USER" | null}
         />
       ),
     },
     {
       id: "actions",
-      header: "",
+      header: "Ações",
       cell: ({ row }) => {
         const user = row.original;
-
         return (
-          <PermissionGuard action="UPDATE" resource="USER">
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button className="h-8 w-8 p-0" variant="ghost" />}
-              >
-                <span className="sr-only">Abrir menu</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuGroup>
-                  <PermissionGuard action="UPDATE" resource="USER">
-                    <DropdownMenuItem
-                      onClick={() => handleEdit(user.id, user.name, user.email)}
-                    >
-                      Editar Usuário
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel>Alterar Função</DropdownMenuLabel>
-                    <DropdownMenuItem
-                      onClick={() => onUpdateRole(user.id, "TENANT_USER")}
-                    >
-                      Usuário
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        onUpdateRole(user.id, "TENANT_USER_MANAGER")
-                      }
-                    >
-                      Gerente de Usuários
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => onUpdateRole(user.id, "TENANT_OWNER")}
-                    >
-                      Proprietário
-                    </DropdownMenuItem>
-                  </PermissionGuard>
-                  <PermissionGuard action="DELETE" resource="USER">
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="text-destructive"
-                      onClick={() => onRemove(user.id)}
-                    >
-                      Remover do Cliente
-                    </DropdownMenuItem>
-                  </PermissionGuard>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </PermissionGuard>
+          <UserActionsCell
+            onEdit={handleEdit}
+            onRemove={onRemove}
+            onResendInvite={onResendInvite}
+            onUpdateRole={onUpdateRole}
+            user={user}
+          />
         );
       },
     },
@@ -179,76 +290,13 @@ export function TenantUsersTab({
       data={data}
       emptyMessage="Nenhum usuário encontrado para este cliente."
       renderCard={(user) => (
-        <div className="space-y-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className="truncate font-semibold text-sm leading-tight">
-                  {user.name}
-                </span>
-                <RoleBadge
-                  role={
-                    user.role as
-                      | "TENANT_OWNER"
-                      | "TENANT_USER_MANAGER"
-                      | "TENANT_USER"
-                      | null
-                  }
-                />
-              </div>
-              <p className="truncate text-muted-foreground text-xs">
-                {user.email}
-              </p>
-            </div>
-            <PermissionGuard action="UPDATE" resource="USER">
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button className="h-6 w-6 shrink-0 p-0" variant="ghost" />
-                  }
-                >
-                  <span className="sr-only">Abrir menu</span>
-                  <UserPlus className="h-3 w-3" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      onClick={() => handleEdit(user.id, user.name, user.email)}
-                    >
-                      Editar Usuário
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel>Alterar Função</DropdownMenuLabel>
-                    <DropdownMenuItem
-                      onClick={() => onUpdateRole(user.id, "TENANT_USER")}
-                    >
-                      Usuário
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        onUpdateRole(user.id, "TENANT_USER_MANAGER")
-                      }
-                    >
-                      Gerente de Usuários
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => onUpdateRole(user.id, "TENANT_OWNER")}
-                    >
-                      Proprietário
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="text-destructive"
-                      onClick={() => onRemove(user.id)}
-                    >
-                      Remover do Cliente
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </PermissionGuard>
-          </div>
-        </div>
+        <UserCard
+          onEdit={handleEdit}
+          onRemove={onRemove}
+          onResendInvite={onResendInvite}
+          onUpdateRole={onUpdateRole}
+          user={user}
+        />
       )}
     />
   );

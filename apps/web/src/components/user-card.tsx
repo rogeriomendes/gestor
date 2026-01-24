@@ -2,12 +2,16 @@
 
 import {
   BadgeCheckIcon,
+  Check,
   ChevronsUpDownIcon,
   LogOutIcon,
+  Moon,
   SettingsIcon,
+  Sun,
   UserIcon,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { authClient } from "@/lib/auth-client";
 import {
   DropdownMenu,
@@ -16,6 +20,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {
@@ -32,6 +39,7 @@ export default function UserCard() {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
+  const { setTheme, theme } = useTheme();
 
   // Detecta se está na área admin
   const isAdminArea = pathname.startsWith("/admin");
@@ -102,6 +110,38 @@ export default function UserCard() {
                   Configurações
                 </DropdownMenuItem>
               )}
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Sun className="h-4 w-4" />
+                  Tema
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem onClick={() => setTheme("light")}>
+                    <Sun className="mr-2 h-4 w-4" />
+                    Claro
+                    {theme === "light" && (
+                      <Check className="ml-auto size-4 text-primary" />
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("dark")}>
+                    <Moon className="mr-2 h-4 w-4" />
+                    Escuro
+                    {theme === "dark" && (
+                      <Check className="ml-auto size-4 text-primary" />
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("system")}>
+                    <SettingsIcon className="mr-2 h-4 w-4" />
+                    Sistema
+                    {theme === "system" && (
+                      <Check className="ml-auto size-4 text-primary" />
+                    )}
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

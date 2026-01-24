@@ -1,8 +1,9 @@
 "use client";
 
-import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { Edit, Mail, MoreHorizontal, Trash2 } from "lucide-react";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { RoleBadge } from "@/components/role-badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,8 +22,10 @@ interface UserListItemProps {
   name: string;
   email: string;
   role: Role;
+  isPending?: boolean;
   onUpdateRole: (userId: string, role: Role) => void;
   onRemove: (userId: string) => void;
+  onResendInvite?: (userId: string) => void;
   onEdit?: (userId: string, name: string, email: string) => void;
 }
 
@@ -31,15 +34,27 @@ export function UserListItem({
   name,
   email,
   role,
+  isPending,
   onUpdateRole,
   onRemove,
+  onResendInvite,
   onEdit,
 }: UserListItemProps) {
   return (
     <div className="flex items-center justify-between rounded border p-4">
       <div className="flex items-center space-x-4">
         <div>
-          <p className="font-medium">{name}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-medium">{name}</p>
+            {isPending && (
+              <Badge
+                className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                variant="secondary"
+              >
+                Pendente
+              </Badge>
+            )}
+          </div>
           <p className="text-muted-foreground text-sm">{email}</p>
         </div>
         {role && <RoleBadge role={role} />}
@@ -63,6 +78,12 @@ export function UserListItem({
                       <Edit className="mr-2 h-4 w-4" />
                       Editar Usuário
                     </DropdownMenuItem>
+                    {isPending && onResendInvite && (
+                      <DropdownMenuItem onClick={() => onResendInvite(userId)}>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Reenviar Convite
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                   </>
                 )}

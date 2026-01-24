@@ -78,6 +78,20 @@ export default function UsersPage() {
     },
   });
 
+  const resendInviteMutation = useMutation({
+    mutationFn: (input: { userId: string }) =>
+      trpcClient.tenant.users.resendInvite.mutate(input),
+    onSuccess: () => {
+      toast.success("Convite reenviado com sucesso!");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao reenviar convite"
+      );
+    },
+  });
+
   if (tenantLoading) {
     return <TenantUsersSkeleton />;
   }
@@ -116,10 +130,15 @@ export default function UsersPage() {
     setEditingUser({ id: userId, name, email });
   };
 
+  const handleResendInvite = async (userId: string) => {
+    await resendInviteMutation.mutateAsync({ userId });
+  };
+
   const users = (usersData?.data || []).map((user) => ({
     id: user.id,
     userId: user.userId,
     role: (user.role || "TENANT_USER") as Role,
+    isPending: user.isPending,
     user: {
       id: user.user.id,
       name: user.user.name,
@@ -159,6 +178,7 @@ export default function UsersPage() {
         isLoading={usersLoading}
         onEdit={handleEdit}
         onRemove={handleRemove}
+        onResendInvite={handleResendInvite}
         onUpdateRole={handleUpdateRole}
         users={users}
       />
@@ -173,6 +193,7 @@ export default function UsersPage() {
       {/* Edit User Dialog */}
       {editingUser && (
         <EditUserDialog
+          hideTenantSection={true}
           onOpenChange={(open: boolean) => !open && setEditingUser(null)}
           onSuccess={() => {
             refetch();

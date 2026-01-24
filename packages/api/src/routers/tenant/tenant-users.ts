@@ -1,3 +1,4 @@
+import { auth, registerInvite } from "@gestor/auth";
 import prisma from "@gestor/db";
 import { AuditAction, AuditResourceType, Role } from "@gestor/db/types";
 import { TRPCError } from "@trpc/server";
@@ -11,6 +12,14 @@ import {
 } from "../../lib/pagination";
 import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+
+const roleLabels: Record<string, string> = {
+  SUPER_ADMIN: "Super Administrador",
+  TENANT_ADMIN: "Administrador",
+  TENANT_OWNER: "Proprietário",
+  TENANT_USER_MANAGER: "Gerente de Usuários",
+  TENANT_USER: "Usuário",
+};
 
 export const tenantUsersRouter = router({
   /**
@@ -105,25 +114,43 @@ export const tenantUsersRouter = router({
             email: true,
             image: true,
             role: true,
+            emailVerified: true,
             createdAt: true,
+            accounts: {
+              where: {
+                providerId: "credential",
+              },
+              select: {
+                password: true,
+              },
+            },
           },
         }),
         prisma.user.count({ where: where as { tenantId: string } }),
       ]);
 
       return {
-        data: users.map((user) => ({
-          id: user.id,
-          userId: user.id,
-          role: user.role,
-          user: {
+        data: users.map((user) => {
+          // Verificar se o usuário está pendente (não tem senha ou email não verificado)
+          const hasPassword = user.accounts.some(
+            (account) => account.password !== null
+          );
+          const isPending = !(hasPassword && user.emailVerified);
+
+          return {
             id: user.id,
-            name: user.name,
-            email: user.email,
-            image: user.image,
-            createdAt: user.createdAt,
-          },
-        })),
+            userId: user.id,
+            role: user.role,
+            isPending,
+            user: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              createdAt: user.createdAt,
+            },
+          };
+        }),
         pagination: createPaginationResponse(input.page, input.limit, total),
       };
     }),
@@ -377,5 +404,117 @@ export const tenantUsersRouter = router({
       });
 
       return { success: true };
+    }),
+
+  /**
+   * Reenviar convite para usuário pendente
+   * Requer permissão USER:UPDATE
+   */
+  resendInvite: activeTenantProcedure
+    .use(requirePermission("USER", "UPDATE"))
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.tenant) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Cliente não encontrado",
+        });
+      }
+
+      // Verificar se usuário existe e pertence ao tenant
+      const user = await prisma.user.findUnique({
+        where: { id: input.userId },
+        include: {
+          accounts: {
+            where: {
+              providerId: "credential",
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Usuário não encontrado",
+        });
+      }
+
+      if (user.tenantId !== ctx.tenant.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Usuário não pertence a este cliente",
+        });
+      }
+
+      const normalizedEmail = user.email.toLowerCase().trim();
+
+      try {
+        // Primeiro, deletar qualquer token existente para este email
+        await prisma.verification.deleteMany({
+          where: {
+            identifier: normalizedEmail,
+          },
+        });
+
+        // Buscar informações do usuário que está reenviando o convite
+        let inviterName: string | undefined;
+        if (ctx.session?.user.id) {
+          const inviterUser = await prisma.user.findUnique({
+            where: { id: ctx.session.user.id },
+            select: { name: true, email: true },
+          });
+          inviterName = inviterUser?.name || inviterUser?.email;
+        }
+
+        const roleName = user.role ? roleLabels[user.role] : undefined;
+
+        // Registrar o convite ANTES de chamar requestPasswordReset
+        registerInvite(normalizedEmail, {
+          userName: user.name,
+          invitedBy: inviterName,
+          tenantName: ctx.tenant.name,
+          roleName,
+        });
+
+        // Usar requestPasswordReset para gerar o token no formato correto do Better Auth
+        await auth.api.requestPasswordReset({
+          body: {
+            email: normalizedEmail,
+            redirectTo: "/activate-account",
+          },
+          headers: ctx.req.headers,
+        });
+
+        // Registrar no audit log
+        await createAuditLogFromContext(
+          {
+            action: AuditAction.UPDATE_USER,
+            resourceType: AuditResourceType.TENANT_USER,
+            resourceId: user.id,
+            metadata: {
+              userId: user.id,
+              userName: user.name,
+              userEmail: user.email,
+              action: "resend_invite",
+            },
+          },
+          ctx
+        );
+
+        return { success: true };
+      } catch (emailError) {
+        console.error(
+          "[Tenant User Resend Invite] Erro ao reenviar convite:",
+          emailError
+        );
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            emailError instanceof Error
+              ? emailError.message
+              : "Erro ao reenviar convite",
+        });
+      }
     }),
 });

@@ -1,7 +1,14 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Edit, MoreHorizontal, RotateCcw, Trash2, Users } from "lucide-react";
+import {
+  Edit,
+  Mail,
+  MoreHorizontal,
+  RotateCcw,
+  Trash2,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { DataCards } from "@/components/lists/data-cards";
 import { DataTable } from "@/components/lists/data-table";
@@ -26,6 +33,7 @@ interface User {
     createdAt: Date;
   };
   role: string | null;
+  isPending?: boolean;
   tenant: {
     id: string;
     name: string;
@@ -53,6 +61,7 @@ interface UsersListProps {
   ) => void;
   onDelete?: (userId: string) => void;
   onRestore?: (userId: string) => void;
+  onResendInvite?: (userId: string) => void;
 }
 
 export function UsersList({
@@ -64,6 +73,7 @@ export function UsersList({
   onEdit,
   onDelete,
   onRestore,
+  onResendInvite,
 }: UsersListProps) {
   const filteredUsers = users.filter((user) => {
     if (!user?.user) {
@@ -89,6 +99,14 @@ export function UsersList({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-semibold">{user.user.name}</span>
+                {user.isPending && (
+                  <Badge
+                    className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                    variant="secondary"
+                  >
+                    Pendente
+                  </Badge>
+                )}
                 {user.role && (
                   <RoleBadge
                     role={
@@ -177,6 +195,16 @@ export function UsersList({
                     Editar Usuário
                   </DropdownMenuItem>
                 </PermissionGuard>
+                {user.isPending && onResendInvite && (
+                  <PermissionGuard action="UPDATE" resource="USER">
+                    <DropdownMenuItem
+                      onClick={() => onResendInvite(user.user.id)}
+                    >
+                      <Mail className="mr-2 h-4 w-4" />
+                      Reenviar Convite
+                    </DropdownMenuItem>
+                  </PermissionGuard>
+                )}
                 <PermissionGuard action="DELETE" resource="USER">
                   {onDelete && (
                     <DropdownMenuItem
@@ -224,6 +252,14 @@ export function UsersList({
                 <span className="truncate font-semibold text-sm leading-tight">
                   {user.user.name}
                 </span>
+                {user.isPending && (
+                  <Badge
+                    className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                    variant="secondary"
+                  >
+                    Pendente
+                  </Badge>
+                )}
                 {user.role && (
                   <RoleBadge
                     role={
@@ -275,6 +311,19 @@ export function UsersList({
                       Editar Usuário
                     </DropdownMenuItem>
                   </PermissionGuard>
+                  {user.isPending && onResendInvite && (
+                    <PermissionGuard action="UPDATE" resource="USER">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onResendInvite(user.user.id);
+                        }}
+                      >
+                        <Mail className="mr-2 h-4 w-4" />
+                        Reenviar Convite
+                      </DropdownMenuItem>
+                    </PermissionGuard>
+                  )}
                   <PermissionGuard action="DELETE" resource="USER">
                     {onDelete && (
                       <DropdownMenuItem

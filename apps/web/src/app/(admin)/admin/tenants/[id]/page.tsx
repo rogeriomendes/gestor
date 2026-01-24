@@ -66,6 +66,23 @@ function TenantPageContent({ tenantId }: TenantPageContentProps) {
       trpcClient.admin.updateUserRoleInTenant.mutate(input),
   });
 
+  const resendInviteMutation = useMutation({
+    mutationFn: (userId: string) =>
+      trpcClient.admin.resendInvite.mutate({ userId }),
+  });
+
+  const handleResendInvite = async (userId: string) => {
+    try {
+      await resendInviteMutation.mutateAsync(userId);
+      toast.success("Convite reenviado com sucesso!");
+      refetchUsers();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao reenviar convite"
+      );
+    }
+  };
+
   const handleRemoveUser = async (userId: string) => {
     try {
       await removeUserMutation.mutateAsync({ tenantId, userId });
@@ -218,6 +235,7 @@ function TenantPageContent({ tenantId }: TenantPageContentProps) {
       name: user.name,
       email: user.email,
       role: user.role as Role,
+      isPending: user.isPending,
     })) || [];
 
   return (
@@ -255,6 +273,7 @@ function TenantPageContent({ tenantId }: TenantPageContentProps) {
             isLoading={usersLoading}
             onRefresh={handleRefresh}
             onRemove={handleRemoveUser}
+            onResendInvite={handleResendInvite}
             onUpdateRole={handleUpdateUserRole}
             tenantId={tenantId}
             users={usersList}

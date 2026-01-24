@@ -29,6 +29,10 @@ interface EditUserDialogProps {
   userTenantId?: string | null;
   userRole?: string | null;
   onSuccess: () => void;
+  /**
+   * Se true, oculta a seção de seleção de tenant (usado na área do tenant)
+   */
+  hideTenantSection?: boolean;
 }
 
 export function EditUserDialog({
@@ -40,6 +44,7 @@ export function EditUserDialog({
   userTenantId,
   userRole,
   onSuccess,
+  hideTenantSection = false,
 }: EditUserDialogProps) {
   const [name, setName] = useState(userName);
   const [newPassword, setNewPassword] = useState("");
@@ -175,17 +180,22 @@ export function EditUserDialog({
               onNameChange={setName}
             />
 
-            <Separator />
+            {(currentTenantId || !hideTenantSection) && (
+              <>
+                <Separator />
 
-            <UserTenantSection
-              currentRole={currentRole}
-              currentTenantId={currentTenantId}
-              onSuccess={() => {
-                refetchUser();
-                onSuccess();
-              }}
-              userId={userId}
-            />
+                <UserTenantSection
+                  currentRole={currentRole}
+                  currentTenantId={currentTenantId}
+                  hideTenantSelection={hideTenantSection}
+                  onSuccess={() => {
+                    refetchUser();
+                    onSuccess();
+                  }}
+                  userId={userId}
+                />
+              </>
+            )}
 
             <Separator />
 

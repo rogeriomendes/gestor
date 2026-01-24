@@ -5,6 +5,7 @@ import { ChangeEmailTemplate } from "./templates/change-email";
 import { DeleteAccountEmail } from "./templates/delete-account";
 import { ResetPasswordEmail } from "./templates/reset-password";
 import { VerifyEmailTemplate } from "./templates/verify-email";
+import { WelcomeInviteEmail } from "./templates/welcome-invite";
 
 // ============================================
 // Configuração de provedores de email
@@ -167,6 +168,32 @@ export async function sendDeleteAccountEmail(
   return sendEmail({
     to,
     subject: "Confirmação de exclusão de conta - FBI Gestor",
+    html,
+  });
+}
+
+export async function sendWelcomeInviteEmail(
+  to: string,
+  activationLink: string,
+  options?: {
+    userName?: string;
+    invitedBy?: string;
+    tenantName?: string;
+    roleName?: string;
+  }
+) {
+  const html = await render(
+    WelcomeInviteEmail({
+      activationLink,
+      userName: options?.userName,
+      invitedBy: options?.invitedBy,
+      tenantName: options?.tenantName,
+      roleName: options?.roleName,
+    })
+  );
+  return sendEmail({
+    to,
+    subject: "Você foi convidado para o FBI Gestor - Ative sua conta",
     html,
   });
 }
