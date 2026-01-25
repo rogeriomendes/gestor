@@ -47,10 +47,10 @@ export function DataSkeleton({
 
   if (variant === "table") {
     return (
-      <div className="rounded-md border">
+      <div className="overflow-hidden rounded-lg border border-border/50 bg-card shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="border-border/50 border-b hover:bg-transparent">
               {headerIds.map((id) => (
                 <TableHead key={id}>
                   <Skeleton className="h-4 w-20" />
@@ -60,9 +60,9 @@ export function DataSkeleton({
           </TableHeader>
           <TableBody>
             {skeletonIds.map((id) => (
-              <TableRow key={id}>
+              <TableRow className="border-border/30 border-b" key={id}>
                 {headerIds.map((headerId) => (
-                  <TableCell key={headerId}>
+                  <TableCell className="py-3" key={headerId}>
                     <Skeleton className={`${itemHeight} w-full`} />
                   </TableCell>
                 ))}

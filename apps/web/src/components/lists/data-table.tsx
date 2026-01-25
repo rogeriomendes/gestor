@@ -35,13 +35,19 @@ export function DataTable<TData>({
   });
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-hidden rounded-lg border border-border/50 bg-card shadow-sm">
       <Table className="bg-card">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow
+              className="border-border/50 border-b hover:bg-transparent"
+              key={headerGroup.id}
+            >
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  className="font-semibold text-muted-foreground"
+                  key={header.id}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -59,15 +65,15 @@ export function DataTable<TData>({
               <TableRow
                 className={
                   onRowClick
-                    ? "cursor-pointer transition-colors hover:bg-muted/50"
-                    : ""
+                    ? "cursor-pointer border-border/30 border-b transition-all duration-150 hover:bg-muted/50"
+                    : "border-border/30 border-b"
                 }
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
                 onClick={() => onRowClick?.(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell className="py-3" key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -75,7 +81,10 @@ export function DataTable<TData>({
             ))
           ) : (
             <TableRow>
-              <TableCell className="h-24 text-center" colSpan={columns.length}>
+              <TableCell
+                className="h-32 text-center text-muted-foreground"
+                colSpan={columns.length}
+              >
                 {emptyMessage}
               </TableCell>
             </TableRow>

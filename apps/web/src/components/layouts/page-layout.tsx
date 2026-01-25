@@ -76,39 +76,46 @@ export function PageLayout({
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <header className="flex shrink-0 flex-row items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4">
+      <header className="flex shrink-0 flex-row items-center justify-between gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-6 sm:py-4">
         <div className="flex items-center gap-2 md:gap-4">
           <SidebarTrigger className="md:hidden" />
           {showBackButton && (
-            <Button onClick={handleBack} size="icon" variant="ghost">
+            <Button
+              className="transition-all hover:bg-accent"
+              onClick={handleBack}
+              size="icon"
+              variant="ghost"
+            >
               <ArrowLeft className="size-4" />
               <span className="sr-only">Voltar</span>
             </Button>
           )}
-          <div className="">
-            <h1 className="truncate whitespace-pre-line font-semibold text-base md:text-xl">
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate whitespace-pre-line font-semibold text-base tracking-tight md:text-xl">
               {title}
             </h1>
             {subtitle && (
-              <p className="truncate whitespace-pre-line text-muted-foreground text-xs md:text-sm">
+              <p className="mt-0.5 truncate whitespace-pre-line text-muted-foreground text-xs md:text-sm">
                 {subtitle}
               </p>
             )}
           </div>
         </div>
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex shrink-0 items-center justify-end gap-2">
           {actions}
           <ModeToggle />
         </div>
       </header>
 
       {/* Breadcrumbs */}
-      <div className="border-b px-4 py-2 md:px-6 md:py-3">
+      <div className="border-b bg-muted/30 px-4 py-2 md:px-6 md:py-3">
         <Breadcrumbs items={finalBreadcrumbs} />
       </div>
 
       {/* Content */}
-      <div className="flex flex-col space-y-6 p-3 md:p-6">{children}</div>
+      <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col space-y-6 p-4 duration-300 md:p-6 lg:p-8">
+        {children}
+      </div>
     </div>
   );
 }

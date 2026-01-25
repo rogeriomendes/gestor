@@ -18,24 +18,28 @@ export function AdminStatsCards({
   activeTenants,
 }: AdminStatsCardsProps) {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <Card>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <Card className="transition-all duration-200 hover:shadow-md">
         <CardHeader>
-          <CardTitle>Total de Clientes</CardTitle>
-          <CardDescription>Clientes cadastrados no sistema</CardDescription>
+          <CardTitle className="text-base">Total de Clientes</CardTitle>
+          <CardDescription className="text-xs">
+            Clientes cadastrados no sistema
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="font-bold text-2xl">{totalTenants}</p>
+          <p className="font-bold text-3xl tracking-tight">{totalTenants}</p>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="transition-all duration-200 hover:shadow-md">
         <CardHeader>
-          <CardTitle>Clientes Ativos</CardTitle>
-          <CardDescription>Clientes com status ativo</CardDescription>
+          <CardTitle className="text-base">Clientes Ativos</CardTitle>
+          <CardDescription className="text-xs">
+            Clientes com status ativo
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="font-bold text-2xl">{activeTenants}</p>
+          <p className="font-bold text-3xl tracking-tight">{activeTenants}</p>
         </CardContent>
       </Card>
     </div>

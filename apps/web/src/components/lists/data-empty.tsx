@@ -26,17 +26,19 @@ export function DataEmpty({
   className = "",
 }: DataEmptyProps) {
   return (
-    <Empty className={`border-none p-6 ${className}`}>
+    <Empty className={`border-none p-12 ${className}`}>
       {Icon && (
-        <EmptyMedia variant="icon">
-          <Icon className="h-6 w-6" />
+        <EmptyMedia className="mb-4" variant="icon">
+          <Icon className="h-12 w-12 text-muted-foreground/50" />
         </EmptyMedia>
       )}
       <EmptyHeader>
-        <EmptyTitle>{title}</EmptyTitle>
-        <EmptyDescription>{description}</EmptyDescription>
+        <EmptyTitle className="font-semibold text-lg">{title}</EmptyTitle>
+        <EmptyDescription className="mt-2 text-muted-foreground">
+          {description}
+        </EmptyDescription>
       </EmptyHeader>
-      {action && <EmptyContent>{action}</EmptyContent>}
+      {action && <EmptyContent className="mt-6">{action}</EmptyContent>}
     </Empty>
   );
 }

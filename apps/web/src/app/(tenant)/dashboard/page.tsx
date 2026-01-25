@@ -118,19 +118,21 @@ export default function DashboardPage() {
       ) : (
         <>
           {/* Cards de Métricas Principais */}
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="transition-all duration-200 hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="font-medium text-sm">
                   Total de Usuários
                 </CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <div className="rounded-lg bg-primary/10 p-2">
+                  <Users className="h-4 w-4 text-primary" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="font-bold text-2xl">
+                <div className="font-bold text-3xl tracking-tight">
                   {stats?.totalUsers ?? tenant._count?.users ?? 0}
                 </div>
-                <p className="text-muted-foreground text-xs">
+                <p className="mt-1 text-muted-foreground text-xs">
                   {stats?.usersByRole &&
                     Object.entries(stats.usersByRole)
                       .map(([role, count]) => `${role}: ${count}`)
@@ -139,32 +141,36 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="transition-all duration-200 hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="font-medium text-sm">Filiais</CardTitle>
-                <Building2 className="h-4 w-4 text-muted-foreground" />
+                <div className="rounded-lg bg-primary/10 p-2">
+                  <Building2 className="h-4 w-4 text-primary" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="font-bold text-2xl">
+                <div className="font-bold text-3xl tracking-tight">
                   {stats?.totalBranches ?? 0}
                 </div>
-                <p className="text-muted-foreground text-xs">
+                <p className="mt-1 text-muted-foreground text-xs">
                   {stats?.activeBranches ?? 0} ativas
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="transition-all duration-200 hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="font-medium text-sm">Status</CardTitle>
-                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <div className="rounded-lg bg-primary/10 p-2">
+                  <MapPin className="h-4 w-4 text-primary" />
+                </div>
               </CardHeader>
               <CardContent>
                 <Badge
                   className={
                     tenant.active
-                      ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                      : "bg-red-500/10 text-red-600 dark:text-red-400"
+                      ? "border-green-500/20 bg-green-500/10 text-green-600 dark:text-green-400"
+                      : "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400"
                   }
                   variant="outline"
                 >
@@ -175,11 +181,15 @@ export default function DashboardPage() {
           </div>
 
           {/* Cards de Informações Detalhadas */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="transition-all duration-200 hover:shadow-md">
               <CardHeader>
-                <CardTitle>Informações do Cliente</CardTitle>
-                <CardDescription>Dados gerais</CardDescription>
+                <CardTitle className="text-base">
+                  Informações do Cliente
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Dados gerais
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex justify-between">

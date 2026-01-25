@@ -32,12 +32,12 @@ export function DataCards<T extends { id: string }>({
   }
 
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={`grid gap-3 sm:grid-cols-2 lg:grid-cols-3 ${className}`}>
       {data.map((item) => {
         const href = getHref?.(item);
         return (
           <Card
-            className={`rounded-md border border-border/60 transition-colors hover:border-primary/70 hover:bg-muted/30 ${href || onCardClick ? "cursor-pointer" : ""}`}
+            className={`group transition-all duration-200 hover:scale-[1.01] hover:shadow-md ${href || onCardClick ? "cursor-pointer" : ""}`}
             key={item.id}
             onClick={() => {
               if (href) {
