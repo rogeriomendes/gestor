@@ -47,6 +47,10 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
   if (pathname === "/settings") {
     return <>{children}</>;
   }
+  // Página de perfil é sempre acessível
+  if (pathname === "/profile") {
+    return <>{children}</>;
+  }
 
   // Loading state
   if (isTenantLoading || isSubscriptionLoading) {

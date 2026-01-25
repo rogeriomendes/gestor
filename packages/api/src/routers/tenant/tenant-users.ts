@@ -23,6 +23,39 @@ const roleLabels: Record<string, string> = {
 
 export const tenantUsersRouter = router({
   /**
+   * Obter códigos de backup do 2FA usando a API do Better Auth
+   * Não requer permissão especial - cada usuário pode ver seus próprios códigos
+   */
+  getMyBackupCodes: activeTenantProcedure.query(async ({ ctx }) => {
+    if (!ctx.session?.user?.id) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Usuário não autenticado",
+      });
+    }
+
+    try {
+      // Usar a API do Better Auth para buscar os códigos
+      // Passar os headers da requisição para manter a sessão
+      const result = await auth.api.viewBackupCodes({
+        body: {
+          userId: ctx.session.user.id,
+        },
+        headers: ctx.req.headers,
+      });
+
+      return {
+        backupCodes: result.backupCodes || [],
+      };
+    } catch (error) {
+      console.error("Erro ao buscar códigos de backup:", error);
+      return {
+        backupCodes: [],
+      };
+    }
+  }),
+
+  /**
    * Obter informações do perfil do usuário logado
    * Não requer permissão especial - cada usuário pode ver seu próprio perfil
    */

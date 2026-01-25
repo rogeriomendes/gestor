@@ -1,5 +1,4 @@
 import { ActiveSessionsSection } from "./_components/active-sessions-section";
-import { BackupCodesSection } from "./_components/backup-codes-section";
 import { ChangePasswordSection } from "./_components/change-password-section";
 import { DeleteAccountSection } from "./_components/delete-account-section";
 import { EmailSection } from "./_components/email-section";
@@ -24,9 +23,6 @@ export function SecuritySettings() {
       </div>
       <div id="two-factor">
         <TwoFactorSection />
-      </div>
-      <div id="backup-codes">
-        <BackupCodesSection />
       </div>
 
       {/* Contas */}
