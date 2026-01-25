@@ -52,6 +52,11 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
     return <>{children}</>;
   }
 
+  // Página de suporte é sempre acessível
+  if (pathname === "/support") {
+    return <>{children}</>;
+  }
+
   // Loading state
   if (isTenantLoading || isSubscriptionLoading) {
     return (

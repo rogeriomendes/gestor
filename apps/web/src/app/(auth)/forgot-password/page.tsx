@@ -86,7 +86,7 @@ export default function ForgotPasswordPage() {
               <Button onClick={() => setIsSuccess(false)} variant="outline">
                 Tentar outro email
               </Button>
-              <Button render={<Link href="/" />} variant="ghost">
+              <Button render={<Link href="/login" />} variant="ghost">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Voltar para o login
               </Button>
@@ -142,7 +142,7 @@ export default function ForgotPasswordPage() {
             </Button>
             <Button
               className="w-full"
-              render={<Link href="/" />}
+              render={<Link href="/login" />}
               variant="ghost"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />

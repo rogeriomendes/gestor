@@ -134,8 +134,7 @@ function ResetPasswordContent() {
             </Button>
             <Button
               className="w-full"
-              // onClick={() => router.push("/")}
-              render={<Link href="/" />}
+              render={<Link href="/login" />}
               variant="ghost"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -163,7 +162,7 @@ function ResetPasswordContent() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" render={<Link href="/" />}>
+            <Button className="w-full" render={<Link href="/login" />}>
               Ir para o login
             </Button>
           </CardContent>
@@ -247,7 +246,7 @@ function ResetPasswordContent() {
             </Button>
             <Button
               className="w-full"
-              render={<Link href="/" />}
+              render={<Link href="/login" />}
               variant="ghost"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />

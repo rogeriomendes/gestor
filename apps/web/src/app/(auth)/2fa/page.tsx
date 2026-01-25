@@ -90,7 +90,7 @@ export default function TwoFactorPage() {
       setBackupError(
         "Sessão de 2FA expirada. Por favor, faça login novamente."
       );
-      setTimeout(() => router.push("/"), 2000);
+      setTimeout(() => router.push("/login"), 2000);
       return;
     }
 
@@ -142,7 +142,7 @@ export default function TwoFactorPage() {
 
   // Voltar para o login
   const handleBack = () => {
-    router.push("/");
+    router.push("/login");
   };
 
   if (sessionPending) {

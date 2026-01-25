@@ -9,16 +9,11 @@ import { EditUserDialog } from "@/app/(admin)/admin/users/_components/edit-user-
 import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { TenantUsersSkeleton } from "@/components/tenant-loading";
+import { AccessDeniedCard } from "@/components/ui/access-denied-card";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { useTenant } from "@/contexts/tenant-context";
-import { useCanManageUsers } from "@/lib/permissions";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { AddUserDialog } from "./_components/add-user-dialog";
 import { UsersList } from "./_components/users-list";
@@ -27,7 +22,6 @@ type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
 export default function UsersPage() {
   const { tenant, isLoading: tenantLoading } = useTenant();
-  const canManageUsers = useCanManageUsers();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
@@ -36,6 +30,7 @@ export default function UsersPage() {
     name: string;
     email: string;
   } | null>(null);
+  const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
   const {
     data: usersData,
@@ -47,7 +42,7 @@ export default function UsersPage() {
       limit: 20,
       ...(search && { search }),
     }),
-    enabled: canManageUsers && !!tenant,
+    enabled: !!tenant,
   });
 
   const removeUserMutation = useMutation({
@@ -96,29 +91,18 @@ export default function UsersPage() {
     return <TenantUsersSkeleton />;
   }
 
-  if (!canManageUsers) {
-    return (
-      <div className="space-y-6 p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Acesso Negado</CardTitle>
-            <CardDescription>
-              Você não tem permissão para gerenciar usuários.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-
   if (!tenant) {
     return null;
   }
 
-  const handleRemove = async (userId: string) => {
-    // eslint-disable-next-line no-alert
-    if (confirm("Tem certeza que deseja remover este usuário?")) {
-      await removeUserMutation.mutateAsync({ userId });
+  const handleRemove = (userId: string) => {
+    setRemovingUserId(userId);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (removingUserId) {
+      await removeUserMutation.mutateAsync({ userId: removingUserId });
+      setRemovingUserId(null);
     }
   };
 
@@ -147,64 +131,86 @@ export default function UsersPage() {
   }));
 
   return (
-    <PageLayout
-      actions={
-        <PermissionGuard action="CREATE" resource="USER">
-          <Button onClick={() => setAddUserDialogOpen(true)}>
-            <UserPlus className="mr-2 h-4 w-4" /> Adicionar Usuário
-          </Button>
-        </PermissionGuard>
+    <PermissionGuard
+      action="READ"
+      fallback={
+        <AccessDeniedCard description="Você não tem permissão para gerenciar usuários." />
       }
-      breadcrumbs={[
-        { label: tenant.name, href: "/dashboard" as Route },
-        { label: "Usuários" },
-      ]}
-      subtitle="Gerencie os usuários do seu cliente"
-      title="Usuários"
+      hide={false}
+      resource="USER"
     >
-      <div className="space-y-4">
-        <Input
-          className="max-w-sm"
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-          placeholder="Buscar usuários..."
-          value={search}
+      <PageLayout
+        actions={
+          <PermissionGuard action="CREATE" resource="USER">
+            <Button onClick={() => setAddUserDialogOpen(true)}>
+              <UserPlus className="mr-2 h-4 w-4" /> Adicionar Usuário
+            </Button>
+          </PermissionGuard>
+        }
+        breadcrumbs={[
+          { label: tenant.name, href: "/dashboard" as Route },
+          { label: "Usuários" },
+        ]}
+        subtitle="Gerencie os usuários do seu cliente"
+        title="Usuários"
+      >
+        <div className="space-y-4">
+          <Input
+            className="max-w-sm"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Buscar usuários..."
+            value={search}
+          />
+        </div>
+
+        <UsersList
+          isLoading={usersLoading}
+          onEdit={handleEdit}
+          onRemove={handleRemove}
+          onResendInvite={handleResendInvite}
+          onUpdateRole={handleUpdateRole}
+          users={users}
         />
-      </div>
 
-      <UsersList
-        isLoading={usersLoading}
-        onEdit={handleEdit}
-        onRemove={handleRemove}
-        onResendInvite={handleResendInvite}
-        onUpdateRole={handleUpdateRole}
-        users={users}
-      />
-
-      <AddUserDialog
-        onOpenChange={setAddUserDialogOpen}
-        onSuccess={refetch}
-        open={addUserDialogOpen}
-        tenantId={tenant.id}
-      />
-
-      {/* Edit User Dialog */}
-      {editingUser && (
-        <EditUserDialog
-          hideTenantSection={true}
-          onOpenChange={(open: boolean) => !open && setEditingUser(null)}
-          onSuccess={() => {
-            refetch();
-            setEditingUser(null);
-          }}
-          open={!!editingUser}
-          userEmail={editingUser.email}
-          userId={editingUser.id}
-          userName={editingUser.name}
+        <AddUserDialog
+          onOpenChange={setAddUserDialogOpen}
+          onSuccess={refetch}
+          open={addUserDialogOpen}
+          tenantId={tenant.id}
         />
-      )}
-    </PageLayout>
+
+        {/* Edit User Dialog */}
+        {editingUser && (
+          <EditUserDialog
+            hideTenantSection={true}
+            onOpenChange={(open: boolean) => !open && setEditingUser(null)}
+            onSuccess={() => {
+              refetch();
+              setEditingUser(null);
+            }}
+            open={!!editingUser}
+            userEmail={editingUser.email}
+            userId={editingUser.id}
+            userName={editingUser.name}
+          />
+        )}
+
+        {/* Confirm Remove Dialog */}
+        <ConfirmDialog
+          cancelText="Cancelar"
+          confirmText="Remover"
+          description="Tem certeza que deseja remover este usuário? Esta ação não pode ser desfeita."
+          isLoading={removeUserMutation.isPending}
+          onConfirm={handleConfirmRemove}
+          onOpenChange={(open) => !open && setRemovingUserId(null)}
+          open={!!removingUserId}
+          title="Remover Usuário"
+          variant="destructive"
+        />
+      </PageLayout>
+    </PermissionGuard>
   );
 }

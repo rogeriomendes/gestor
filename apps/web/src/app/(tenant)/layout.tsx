@@ -3,7 +3,7 @@
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { DatabaseConfigGuard } from "@/components/database-config";
 import { TenantSidebar } from "@/components/sidebars/tenant-sidebar";
-import { SubscriptionGuard } from "@/components/subscription";
+import { SubscriptionGuard } from "@/components/subscription/subscription-guard";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function TenantLayout({

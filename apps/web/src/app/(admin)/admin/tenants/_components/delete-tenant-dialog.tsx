@@ -1,14 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Credenza,
-  CredenzaContent,
-  CredenzaDescription,
-  CredenzaFooter,
-  CredenzaHeader,
-  CredenzaTitle,
-} from "@/components/ui/credenza";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface DeleteTenantDialogProps {
   open: boolean;
@@ -28,36 +20,25 @@ export function DeleteTenantDialog({
   onConfirm,
 }: DeleteTenantDialogProps) {
   return (
-    <Credenza onOpenChange={onOpenChange} open={open}>
-      <CredenzaContent>
-        <CredenzaHeader>
-          <CredenzaTitle>Deletar Cliente</CredenzaTitle>
-          <CredenzaDescription>
-            Tem certeza que deseja deletar{" "}
-            <strong>
-              {tenantName} ({tenantSlug})
-            </strong>
-            ? O cliente será movido para a lixeira e poderá ser restaurado
-            posteriormente.
-          </CredenzaDescription>
-        </CredenzaHeader>
-        <CredenzaFooter>
-          <Button
-            disabled={isPending}
-            onClick={() => onOpenChange(false)}
-            variant="outline"
-          >
-            Cancelar
-          </Button>
-          <Button
-            disabled={isPending}
-            onClick={onConfirm}
-            variant="destructive"
-          >
-            {isPending ? "Deletando..." : "Deletar"}
-          </Button>
-        </CredenzaFooter>
-      </CredenzaContent>
-    </Credenza>
+    <ConfirmDialog
+      cancelText="Cancelar"
+      confirmText="Deletar"
+      description={
+        <>
+          Tem certeza que deseja deletar{" "}
+          <strong>
+            {tenantName} ({tenantSlug})
+          </strong>
+          ? O cliente será movido para a lixeira e poderá ser restaurado
+          posteriormente.
+        </>
+      }
+      isLoading={isPending}
+      onConfirm={onConfirm}
+      onOpenChange={onOpenChange}
+      open={open}
+      title="Deletar Cliente"
+      variant="destructive"
+    />
   );
 }

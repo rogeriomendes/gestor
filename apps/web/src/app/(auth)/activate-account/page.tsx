@@ -134,7 +134,7 @@ function ActivateAccountContent() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" render={<Link href="/" />}>
+            <Button className="w-full" render={<Link href="/login" />}>
               Ir para o login
             </Button>
           </CardContent>
@@ -159,7 +159,7 @@ function ActivateAccountContent() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" render={<Link href="/" />}>
+            <Button className="w-full" render={<Link href="/login" />}>
               Fazer login
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

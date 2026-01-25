@@ -1,14 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Credenza,
-  CredenzaContent,
-  CredenzaDescription,
-  CredenzaFooter,
-  CredenzaHeader,
-  CredenzaTitle,
-} from "@/components/ui/credenza";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface RestoreTenantDialogProps {
   open: boolean;
@@ -28,29 +20,15 @@ export function RestoreTenantDialog({
   onConfirm,
 }: RestoreTenantDialogProps) {
   return (
-    <Credenza onOpenChange={onOpenChange} open={open}>
-      <CredenzaContent>
-        <CredenzaHeader>
-          <CredenzaTitle>Restaurar Cliente</CredenzaTitle>
-          <CredenzaDescription>
-            Tem certeza que deseja restaurar {tenantName} ({tenantSlug})? O
-            cliente será reativado e voltará a aparecer na lista de clientes
-            ativos.
-          </CredenzaDescription>
-        </CredenzaHeader>
-        <CredenzaFooter>
-          <Button
-            disabled={isPending}
-            onClick={() => onOpenChange(false)}
-            variant="outline"
-          >
-            Cancelar
-          </Button>
-          <Button disabled={isPending} onClick={onConfirm}>
-            {isPending ? "Restaurando..." : "Restaurar"}
-          </Button>
-        </CredenzaFooter>
-      </CredenzaContent>
-    </Credenza>
+    <ConfirmDialog
+      cancelText="Cancelar"
+      confirmText="Restaurar"
+      description={`Tem certeza que deseja restaurar ${tenantName} (${tenantSlug})? O cliente será reativado e voltará a aparecer na lista de clientes ativos.`}
+      isLoading={isPending}
+      onConfirm={onConfirm}
+      onOpenChange={onOpenChange}
+      open={open}
+      title="Restaurar Cliente"
+    />
   );
 }

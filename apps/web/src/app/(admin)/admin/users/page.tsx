@@ -9,14 +9,7 @@ import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { Button } from "@/components/ui/button";
-import {
-  Credenza,
-  CredenzaContent,
-  CredenzaDescription,
-  CredenzaFooter,
-  CredenzaHeader,
-  CredenzaTitle,
-} from "@/components/ui/credenza";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { CreateUserDialog } from "./_components/create-user-dialog";
 import { EditUserDialog } from "./_components/edit-user-dialog";
@@ -237,36 +230,21 @@ function AdminUsersPageContent() {
       />
 
       {/* Delete User Confirmation Dialog */}
-      <Credenza
+      <ConfirmDialog
+        cancelText="Cancelar"
+        confirmText="Deletar"
+        description="Tem certeza que deseja deletar este usuário? Esta ação pode ser revertida posteriormente."
+        isLoading={deleteUserMutation.isPending}
+        onConfirm={() => {
+          if (deletingUserId) {
+            handleDeleteUser(deletingUserId);
+          }
+        }}
         onOpenChange={(open: boolean) => !open && setDeletingUserId(null)}
         open={!!deletingUserId}
-      >
-        <CredenzaContent>
-          <CredenzaHeader>
-            <CredenzaTitle>Confirmar Exclusão</CredenzaTitle>
-            <CredenzaDescription>
-              Tem certeza que deseja deletar este usuário? Esta ação pode ser
-              revertida posteriormente.
-            </CredenzaDescription>
-          </CredenzaHeader>
-          <CredenzaFooter>
-            <Button
-              disabled={deleteUserMutation.isPending}
-              onClick={() => setDeletingUserId(null)}
-              variant="outline"
-            >
-              Cancelar
-            </Button>
-            <Button
-              disabled={deleteUserMutation.isPending}
-              onClick={() => deletingUserId && handleDeleteUser(deletingUserId)}
-              variant="destructive"
-            >
-              {deleteUserMutation.isPending ? "Deletando..." : "Deletar"}
-            </Button>
-          </CredenzaFooter>
-        </CredenzaContent>
-      </Credenza>
+        title="Confirmar Exclusão"
+        variant="destructive"
+      />
 
       {/* Edit User Dialog */}
       {editingUser && (
