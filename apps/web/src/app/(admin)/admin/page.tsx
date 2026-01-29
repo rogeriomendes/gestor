@@ -5,6 +5,7 @@ import { ArrowUpRight, Building2, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { ActionButton } from "@/components/ui/action-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,12 +22,10 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { ListSkeleton } from "@/components/ui/list-skeleton";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/utils/trpc";
 
 function AdminPageContent() {
-  const isMobile = useIsMobile();
   const { data: session } = authClient.useSession();
   const { data: stats, isLoading: statsLoading } = useQuery({
     ...trpc.admin.getStats.queryOptions(),
@@ -37,20 +36,13 @@ function AdminPageContent() {
   return (
     <PageLayout
       actions={
-        <Link href="/admin/tenants">
-          {isMobile ? (
-            <Button size="icon">
-              <Building2 className="h-4 w-4" />
-              <span className="sr-only">Gerenciar Clientes</span>
-            </Button>
-          ) : (
-            <Button className="flex items-center gap-2">
-              <Building2 className="h-4 w-4" /> Gerenciar Clientes
-            </Button>
-          )}
-        </Link>
+        <ActionButton
+          href="/admin/tenants"
+          icon={Building2}
+          label="Gerenciar Clientes"
+        />
       }
-      breadcrumbs={[{ label: "Dashboard" }]}
+      breadcrumbs={[{ label: "Dashboard" }, { label: "Home" }]}
       subtitle="Visão geral do sistema e métricas principais"
       title={`Seja bem-vindo, ${session?.user?.name.split(" ")[0] ?? "Administrador"}!`}
     >

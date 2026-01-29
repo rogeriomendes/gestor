@@ -10,13 +10,13 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { TenantUsersSkeleton } from "@/components/tenant-loading";
 import { AccessDeniedCard } from "@/components/ui/access-denied-card";
-import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { useTenant } from "@/contexts/tenant-context";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { AddUserDialog } from "./_components/add-user-dialog";
 import { UsersList } from "./_components/users-list";
+import { ActionButton } from "@/components/ui/action-button";
 
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
@@ -142,9 +142,11 @@ export default function UsersPage() {
       <PageLayout
         actions={
           <PermissionGuard action="CREATE" resource="USER">
-            <Button onClick={() => setAddUserDialogOpen(true)}>
-              <UserPlus className="mr-2 h-4 w-4" /> Adicionar Usuário
-            </Button>
+            <ActionButton
+              icon={UserPlus}
+              label="Adicionar Usuário"
+              onClick={() => setAddUserDialogOpen(true)}
+            />
           </PermissionGuard>
         }
         breadcrumbs={[

@@ -1,3 +1,4 @@
+import { Home } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import type React from "react";
@@ -40,6 +41,19 @@ function BreadcrumbLinkWrapper({
   return <BreadcrumbLink render={<Link href={href}>{children}</Link>} />;
 }
 
+// Componente para renderizar o label com ícone se for "Dashboard"
+function BreadcrumbLabel({ label }: { label: string }) {
+  if (label === "Dashboard") {
+    return (
+      <span className="flex items-center gap-1.5">
+        <Home className="h-4 w-4" />
+        <span className="sr-only">Dashboard</span>
+      </span>
+    );
+  }
+  return <>{label}</>;
+}
+
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   // Se houver 3 ou menos itens, renderizar todos normalmente
   if (items.length <= 3) {
@@ -56,10 +70,12 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 {index > 0 && <BreadcrumbSeparator />}
                 <BreadcrumbItem>
                   {isCurrent || !item.href ? (
-                    <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                    <BreadcrumbPage>
+                      <BreadcrumbLabel label={item.label} />
+                    </BreadcrumbPage>
                   ) : (
                     <BreadcrumbLinkWrapper href={item.href}>
-                      {item.label}
+                      <BreadcrumbLabel label={item.label} />
                     </BreadcrumbLinkWrapper>
                   )}
                 </BreadcrumbItem>
@@ -86,10 +102,12 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
           <BreadcrumbItem>
             {firstItem.href ? (
               <BreadcrumbLinkWrapper href={firstItem.href}>
-                {firstItem.label}
+                <BreadcrumbLabel label={firstItem.label} />
               </BreadcrumbLinkWrapper>
             ) : (
-              <BreadcrumbPage>{firstItem.label}</BreadcrumbPage>
+              <BreadcrumbPage>
+                <BreadcrumbLabel label={firstItem.label} />
+              </BreadcrumbPage>
             )}
           </BreadcrumbItem>
         </div>
@@ -108,10 +126,12 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 <DropdownMenuItem key={`${item.label}-${index}`}>
                   {item.href ? (
                     <BreadcrumbLinkWrapper href={item.href}>
-                      {item.label}
+                      <BreadcrumbLabel label={item.label} />
                     </BreadcrumbLinkWrapper>
                   ) : (
-                    <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                    <BreadcrumbPage>
+                      <BreadcrumbLabel label={item.label} />
+                    </BreadcrumbPage>
                   )}
                 </DropdownMenuItem>
               ))}
@@ -127,10 +147,12 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
           <BreadcrumbItem>
             {secondToLastItem?.href ? (
               <BreadcrumbLinkWrapper href={secondToLastItem.href}>
-                {secondToLastItem?.label}
+                <BreadcrumbLabel label={secondToLastItem?.label || ""} />
               </BreadcrumbLinkWrapper>
             ) : (
-              <BreadcrumbPage>{secondToLastItem?.label}</BreadcrumbPage>
+              <BreadcrumbPage>
+                <BreadcrumbLabel label={secondToLastItem?.label || ""} />
+              </BreadcrumbPage>
             )}
           </BreadcrumbItem>
         </div>
@@ -141,7 +163,9 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
         {/* Último item (página atual) */}
         <div className="flex items-center">
           <BreadcrumbItem>
-            <BreadcrumbPage>{lastItem?.label}</BreadcrumbPage>
+            <BreadcrumbPage>
+              <BreadcrumbLabel label={lastItem?.label || ""} />
+            </BreadcrumbPage>
           </BreadcrumbItem>
         </div>
       </BreadcrumbList>

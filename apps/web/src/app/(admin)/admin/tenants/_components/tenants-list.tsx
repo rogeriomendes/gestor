@@ -144,7 +144,7 @@ export function TenantsList({
       columns={columns}
       data={data}
       emptyMessage="Nenhum cliente encontrado."
-      onRowClick={(tenant) => router.push(`/admin/tenants/${tenant.id}`)}
+      // onRowClick={(tenant) => router.push(`/admin/tenants/${tenant.id}`)}
     />
   );
 

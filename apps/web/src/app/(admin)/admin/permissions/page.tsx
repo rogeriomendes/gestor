@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { ActionButton } from "@/components/ui/action-button";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -412,10 +413,12 @@ function PermissionsPageContent() {
   return (
     <PageLayout
       actions={
-        <Button onClick={() => setInitializeDialogOpen(true)} variant="outline">
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Inicializar Permissões
-        </Button>
+        <ActionButton
+          icon={RefreshCw}
+          label="Inicializar Permissões"
+          onClick={() => setInitializeDialogOpen(true)}
+          variant="outline"
+        />
       }
       breadcrumbs={breadcrumbs}
       subtitle="Configure as permissões de cada role do sistema"

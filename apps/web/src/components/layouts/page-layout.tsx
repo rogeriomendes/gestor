@@ -4,8 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import { type BreadcrumbItemType, Breadcrumbs } from "@/components/breadcrumbs";
-import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
+import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
 
 interface PageLayoutProps {
@@ -76,9 +76,10 @@ export function PageLayout({
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <header className="flex shrink-0 flex-row items-center justify-between gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-6 sm:py-4">
+      <header className="flex shrink-0 flex-row items-center justify-between gap-3 rounded-t-xl border-b bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-6 sm:py-4">
         <div className="flex items-center gap-2 md:gap-4">
           <SidebarTrigger className="md:hidden" />
+          <Separator className="mr-1 h-10 md:hidden" orientation="vertical" />
           {showBackButton && (
             <Button
               className="transition-all hover:bg-accent"
@@ -91,7 +92,7 @@ export function PageLayout({
             </Button>
           )}
           <div className="min-w-0 flex-1">
-            <h1 className="truncate whitespace-pre-line font-semibold text-base tracking-tight md:text-xl">
+            <h1 className="truncate whitespace-pre-line font-semibold text-lg tracking-tight md:text-2xl">
               {title}
             </h1>
             {subtitle && (
@@ -103,17 +104,17 @@ export function PageLayout({
         </div>
         <div className="flex shrink-0 items-center justify-end gap-2">
           {actions}
-          <ModeToggle />
+          {/* <ModeToggle /> */}
         </div>
       </header>
 
       {/* Breadcrumbs */}
-      <div className="border-b bg-muted/30 px-4 py-2 md:px-6 md:py-3">
+      <div className="border-b bg-sidebar/50 px-4 py-2 md:px-6 md:py-3">
         <Breadcrumbs items={finalBreadcrumbs} />
       </div>
 
       {/* Content */}
-      <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col space-y-6 p-4 duration-300 md:p-6 lg:p-8">
+      <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col space-y-6 p-4 duration-300 md:p-6">
         {children}
       </div>
     </div>

@@ -3,13 +3,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { PlusCircle } from "lucide-react";
 import type { Route } from "next";
-import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
-import { Button } from "@/components/ui/button";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { DeleteTenantDialog } from "./_components/delete-tenant-dialog";
 import { DeletedTenantsList } from "./_components/deleted-tenants-list";
@@ -17,6 +15,7 @@ import { PermanentDeleteTenantDialog } from "./_components/permanent-delete-tena
 import { RestoreTenantDialog } from "./_components/restore-tenant-dialog";
 import { TenantsFilters } from "./_components/tenants-filters";
 import { TenantsList } from "./_components/tenants-list";
+import { ActionButton } from "@/components/ui/action-button";
 
 function _AdminTenantsPageContent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -168,11 +167,11 @@ function _AdminTenantsPageContent() {
     <PageLayout
       actions={
         <PermissionGuard action="CREATE" resource="TENANT">
-          <Link href="/admin/tenants/new">
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" /> Criar Cliente
-            </Button>
-          </Link>
+          <ActionButton
+            href="/admin/tenants/new"
+            icon={PlusCircle}
+            label="Criar Cliente"
+          />
         </PermissionGuard>
       }
       breadcrumbs={breadcrumbs}

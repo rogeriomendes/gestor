@@ -3,7 +3,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { PlusCircle } from "lucide-react";
 import type { Route } from "next";
-import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
@@ -21,6 +20,7 @@ import {
 import { trpc, trpcClient } from "@/utils/trpc";
 import { PlansFilters } from "./_components/plans-filters";
 import { PlansList } from "./_components/plans-list";
+import { ActionButton } from "@/components/ui/action-button";
 
 interface Plan {
   id: string;
@@ -126,11 +126,11 @@ function AdminPlansPageContent() {
     <PageLayout
       actions={
         <PermissionGuard action="CREATE" resource="PLAN">
-          <Link href="/admin/plans/new">
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" /> Criar Plano
-            </Button>
-          </Link>
+          <ActionButton
+            href="/admin/plans/new"
+            icon={PlusCircle}
+            label="Criar Plano"
+          />
         </PermissionGuard>
       }
       breadcrumbs={breadcrumbs}

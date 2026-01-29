@@ -8,13 +8,13 @@ import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
-import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { CreateUserDialog } from "./_components/create-user-dialog";
 import { EditUserDialog } from "./_components/edit-user-dialog";
 import { UsersFilters } from "./_components/users-filters";
 import { UsersList } from "./_components/users-list";
+import { ActionButton } from "@/components/ui/action-button";
 
 function AdminUsersPageContent() {
   const [page, setPage] = useState(1);
@@ -135,10 +135,11 @@ function AdminUsersPageContent() {
     <PageLayout
       actions={
         <PermissionGuard action="CREATE" resource="USER">
-          <Button onClick={() => setCreateUserDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Criar Usuário
-          </Button>
+          <ActionButton
+            icon={Plus}
+            label="Criar Usuário"
+            onClick={() => setCreateUserDialogOpen(true)}
+          />
         </PermissionGuard>
       }
       breadcrumbs={breadcrumbs}

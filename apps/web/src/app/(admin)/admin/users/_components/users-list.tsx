@@ -44,12 +44,12 @@ interface UsersListProps {
   users: User[];
   isLoading: boolean;
   pagination:
-    | {
-        page: number;
-        totalPages: number;
-        total: number;
-      }
-    | undefined;
+  | {
+    page: number;
+    totalPages: number;
+    total: number;
+  }
+  | undefined;
   selectedRole: string;
   onPageChange: (page: number) => void;
   onEdit: (
@@ -111,12 +111,12 @@ export function UsersList({
                   <RoleBadge
                     role={
                       user.role as
-                        | "SUPER_ADMIN"
-                        | "TENANT_ADMIN"
-                        | "TENANT_OWNER"
-                        | "TENANT_USER_MANAGER"
-                        | "TENANT_USER"
-                        | null
+                      | "SUPER_ADMIN"
+                      | "TENANT_ADMIN"
+                      | "TENANT_OWNER"
+                      | "TENANT_USER_MANAGER"
+                      | "TENANT_USER"
+                      | null
                     }
                   />
                 )}
@@ -136,6 +136,7 @@ export function UsersList({
           <div className="text-sm">
             {tenant ? (
               <div className="space-y-1">
+                
                 <Badge variant="outline">{tenant.name}</Badge>
                 <div>
                   <Link
@@ -264,12 +265,12 @@ export function UsersList({
                   <RoleBadge
                     role={
                       user.role as
-                        | "SUPER_ADMIN"
-                        | "TENANT_ADMIN"
-                        | "TENANT_OWNER"
-                        | "TENANT_USER_MANAGER"
-                        | "TENANT_USER"
-                        | null
+                      | "SUPER_ADMIN"
+                      | "TENANT_ADMIN"
+                      | "TENANT_OWNER"
+                      | "TENANT_USER_MANAGER"
+                      | "TENANT_USER"
+                      | null
                     }
                   />
                 )}

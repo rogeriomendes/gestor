@@ -29,6 +29,7 @@ import { trpc, trpcClient } from "@/utils/trpc";
 import { SubscriptionsFilters } from "./_components/subscriptions-filters";
 import { SubscriptionsList } from "./_components/subscriptions-list";
 import { SubscriptionsStatsCards } from "./_components/subscriptions-stats-cards";
+import { ActionButton } from "@/components/ui/action-button";
 
 type SubscriptionStatus = "TRIAL" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 
@@ -166,9 +167,11 @@ function AdminSubscriptionsPageContent() {
       actions={
         tenantsWithoutSubscription.length > 0 && (
           <PermissionGuard action="CREATE" resource="SUBSCRIPTION">
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Criar Assinatura
-            </Button>
+            <ActionButton
+              icon={PlusCircle}
+              label="Criar Assinatura"
+              onClick={() => setCreateDialogOpen(true)}
+            />
           </PermissionGuard>
         )
       }
