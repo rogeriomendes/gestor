@@ -9,9 +9,6 @@ import {
   PowerOff,
   Star,
 } from "lucide-react";
-import type { Route } from "next";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { DataCards } from "@/components/lists/data-cards";
 import { DataTable } from "@/components/lists/data-table";
 import { ResponsiveList } from "@/components/lists/responsive-list";
@@ -51,18 +48,20 @@ function formatPrice(price: number | string): string {
 interface PlansListProps {
   plans: Plan[];
   isLoading?: boolean;
-  onDeactivate: (plan: Plan) => void;
   onActivate: (plan: Plan) => void;
+  onDeactivate: (plan: Plan) => void;
+  onEdit?: (plan: Plan) => void;
+  onCreate?: () => void;
 }
 
 export function PlansList({
   plans,
   isLoading = false,
-  onDeactivate,
   onActivate,
+  onDeactivate,
+  onEdit,
+  onCreate,
 }: PlansListProps) {
-  const router = useRouter();
-
   const columns: ColumnDef<Plan>[] = [
     {
       accessorKey: "name",
@@ -72,12 +71,17 @@ export function PlansList({
         return (
           <div>
             <div className="flex items-center gap-2">
-              <Link
-                className="font-medium hover:underline"
-                href={`/admin/plans/${plan.id}` as Route}
-              >
-                {plan.name}
-              </Link>
+              {onEdit ? (
+                <button
+                  className="font-medium hover:underline"
+                  onClick={() => onEdit(plan)}
+                  type="button"
+                >
+                  {plan.name}
+                </button>
+              ) : (
+                <span className="font-medium">{plan.name}</span>
+              )}
               {plan.isDefault && (
                 <Badge
                   className="text-yellow-700 ring-1 ring-yellow-600/20 ring-inset"
@@ -157,7 +161,8 @@ export function PlansList({
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>Ações</DropdownMenuLabel>
                   <DropdownMenuItem
-                    onClick={() => router.push(`/admin/plans/${plan.id}`)}
+                    disabled={!onEdit}
+                    onClick={() => onEdit?.(plan)}
                   >
                     <MoreHorizontal className="mr-2 h-4 w-4" /> Ver/Editar
                   </DropdownMenuItem>
@@ -198,7 +203,8 @@ export function PlansList({
     <DataCards
       data={data}
       emptyMessage="Nenhum plano encontrado."
-      getHref={(plan) => `/admin/plans/${plan.id}` as Route}
+      getHref={undefined}
+      onCardClick={onEdit ? (plan) => onEdit(plan) : undefined}
       renderCard={(plan) => (
         <div className="space-y-1">
           <div className="flex items-start justify-between gap-2">
@@ -258,9 +264,10 @@ export function PlansList({
                     <DropdownMenuGroup>
                       <DropdownMenuLabel>Ações</DropdownMenuLabel>
                       <DropdownMenuItem
+                        disabled={!onEdit}
                         onClick={(e) => {
                           e.stopPropagation();
-                          router.push(`/admin/plans/${plan.id}`);
+                          onEdit?.(plan);
                         }}
                       >
                         <MoreHorizontal className="mr-2 h-4 w-4" /> Ver/Editar
@@ -313,7 +320,7 @@ export function PlansList({
       <ResponsiveList
         data={plans}
         emptyAction={
-          <Button onClick={() => router.push("/admin/plans/new")}>
+          <Button disabled={!onCreate} onClick={() => onCreate?.()}>
             Criar Plano
           </Button>
         }

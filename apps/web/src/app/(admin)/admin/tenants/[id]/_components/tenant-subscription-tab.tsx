@@ -151,12 +151,7 @@ export function TenantSubscriptionTab({
             <div>
               <dt className="text-muted-foreground text-sm">Plano</dt>
               <dd className="mt-1 font-medium">
-                <Link
-                  className="hover:underline"
-                  href={`/admin/plans/${subscription.plan.id}`}
-                >
-                  {subscription.plan.name}
-                </Link>
+                <span>{subscription.plan.name}</span>
                 <span className="ml-2 text-muted-foreground text-sm">
                   ({formatPrice(subscription.plan.price as unknown as number)}
                   /mês)

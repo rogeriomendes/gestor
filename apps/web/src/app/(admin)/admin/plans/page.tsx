@@ -8,19 +8,21 @@ import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
-import { Button } from "@/components/ui/button";
+import { ActionButton } from "@/components/ui/action-button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Credenza,
+  CredenzaBody,
   CredenzaContent,
   CredenzaDescription,
-  CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
 } from "@/components/ui/credenza";
 import { trpc, trpcClient } from "@/utils/trpc";
+import { PlanEditForm } from "./_components/plan-edit-form";
+import { PlanForm } from "./_components/plan-form";
 import { PlansFilters } from "./_components/plans-filters";
 import { PlansList } from "./_components/plans-list";
-import { ActionButton } from "@/components/ui/action-button";
 
 interface Plan {
   id: string;
@@ -37,6 +39,8 @@ interface Plan {
 function AdminPlansPageContent() {
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
   const [activateDialogOpen, setActivateDialogOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<Plan | undefined>(undefined);
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
@@ -47,6 +51,13 @@ function AdminPlansPageContent() {
     refetch: refetchPlans,
   } = useQuery({
     ...trpc.admin.plans.list.queryOptions({ page: 1, limit: 100 }),
+  });
+
+  const { data: editingPlan, isLoading: isEditingPlanLoading } = useQuery({
+    ...trpc.admin.plans.get.queryOptions({
+      planId: editingPlanId ?? "",
+    }),
+    enabled: !!editingPlanId,
   });
 
   const deactivatePlanMutation = useMutation({
@@ -63,38 +74,28 @@ function AdminPlansPageContent() {
     if (!selectedPlan) {
       return;
     }
-    await deactivatePlanMutation.mutateAsync(
-      { planId: selectedPlan.id },
-      {
-        onSuccess: () => {
-          toast.success("Plano desativado com sucesso!");
-          refetchPlans();
-          setDeactivateDialogOpen(false);
-        },
-        onError: (error: Error) => {
-          toast.error(error.message);
-        },
-      }
-    );
+    try {
+      await deactivatePlanMutation.mutateAsync({ planId: selectedPlan.id });
+      toast.success("Plano desativado com sucesso!");
+      refetchPlans();
+    } catch (error) {
+      toast.error((error as Error).message);
+      throw error;
+    }
   };
 
   const handleActivatePlan = async () => {
     if (!selectedPlan) {
       return;
     }
-    await activatePlanMutation.mutateAsync(
-      { planId: selectedPlan.id },
-      {
-        onSuccess: () => {
-          toast.success("Plano ativado com sucesso!");
-          refetchPlans();
-          setActivateDialogOpen(false);
-        },
-        onError: (error: Error) => {
-          toast.error(error.message);
-        },
-      }
-    );
+    try {
+      await activatePlanMutation.mutateAsync({ planId: selectedPlan.id });
+      toast.success("Plano ativado com sucesso!");
+      refetchPlans();
+    } catch (error) {
+      toast.error((error as Error).message);
+      throw error;
+    }
   };
 
   const allPlans = plansData?.data || [];
@@ -127,9 +128,9 @@ function AdminPlansPageContent() {
       actions={
         <PermissionGuard action="CREATE" resource="PLAN">
           <ActionButton
-            href="/admin/plans/new"
             icon={PlusCircle}
             label="Criar Plano"
+            onClick={() => setCreateDialogOpen(true)}
           />
         </PermissionGuard>
       }
@@ -162,75 +163,111 @@ function AdminPlansPageContent() {
             setSelectedPlan(plan);
             setActivateDialogOpen(true);
           }}
+          onCreate={() => setCreateDialogOpen(true)}
           onDeactivate={(plan) => {
             setSelectedPlan(plan);
             setDeactivateDialogOpen(true);
           }}
+          onEdit={(plan) => setEditingPlanId(plan.id)}
           plans={plans}
         />
       </div>
 
       {/* Deactivate Dialog */}
-      <Credenza
+      <ConfirmDialog
+        cancelText="Cancelar"
+        confirmText="Desativar"
+        description={
+          <>
+            Tem certeza que deseja desativar o plano "{selectedPlan?.name}"?
+            <br />
+            <br />
+            Assinaturas existentes não serão afetadas, mas novos clientes não
+            poderão selecionar este plano.
+          </>
+        }
+        isLoading={deactivatePlanMutation.isPending}
+        onConfirm={handleDeactivatePlan}
         onOpenChange={setDeactivateDialogOpen}
         open={deactivateDialogOpen}
-      >
-        <CredenzaContent>
+        title="Desativar plano"
+        variant="destructive"
+      />
+
+      {/* Activate Dialog */}
+      <ConfirmDialog
+        cancelText="Cancelar"
+        confirmText="Ativar"
+        description={
+          <>
+            Tem certeza que deseja ativar o plano "{selectedPlan?.name}"?
+            <br />
+            <br />O plano estará disponível para novas assinaturas.
+          </>
+        }
+        isLoading={activatePlanMutation.isPending}
+        onConfirm={handleActivatePlan}
+        onOpenChange={setActivateDialogOpen}
+        open={activateDialogOpen}
+        title="Ativar plano"
+      />
+
+      {/* Create Plan Credenza */}
+      <Credenza onOpenChange={setCreateDialogOpen} open={createDialogOpen}>
+        <CredenzaContent className="max-w-2xl">
           <CredenzaHeader>
-            <CredenzaTitle>Desativar plano</CredenzaTitle>
+            <CredenzaTitle>Criar Novo Plano</CredenzaTitle>
             <CredenzaDescription>
-              Tem certeza que deseja desativar o plano "{selectedPlan?.name}"?
-              <br />
-              <br />
-              Assinaturas existentes não serão afetadas, mas novos clientes não
-              poderão selecionar este plano.
+              Defina os limites e funcionalidades do novo plano
             </CredenzaDescription>
           </CredenzaHeader>
-          <CredenzaFooter>
-            <Button
-              onClick={() => setDeactivateDialogOpen(false)}
-              variant="outline"
-            >
-              Cancelar
-            </Button>
-            <Button
-              disabled={deactivatePlanMutation.isPending}
-              onClick={handleDeactivatePlan}
-              variant="destructive"
-            >
-              {deactivatePlanMutation.isPending
-                ? "Desativando..."
-                : "Desativar"}
-            </Button>
-          </CredenzaFooter>
+          <CredenzaBody>
+            <PlanForm
+              onCancel={() => setCreateDialogOpen(false)}
+              onSuccess={() => {
+                refetchPlans();
+                setCreateDialogOpen(false);
+              }}
+            />
+          </CredenzaBody>
         </CredenzaContent>
       </Credenza>
 
-      {/* Activate Dialog */}
-      <Credenza onOpenChange={setActivateDialogOpen} open={activateDialogOpen}>
-        <CredenzaContent>
+      {/* Edit Plan Credenza */}
+      <Credenza
+        onOpenChange={(open) => !open && setEditingPlanId(null)}
+        open={!!editingPlanId}
+      >
+        <CredenzaContent className="max-w-2xl">
           <CredenzaHeader>
-            <CredenzaTitle>Ativar plano</CredenzaTitle>
+            <CredenzaTitle>
+              {editingPlan ? `Editar: ${editingPlan.name}` : "Editar Plano"}
+            </CredenzaTitle>
             <CredenzaDescription>
-              Tem certeza que deseja ativar o plano "{selectedPlan?.name}"?
-              <br />
-              <br />O plano estará disponível para novas assinaturas.
+              {editingPlan
+                ? "Altere as configurações do plano"
+                : "Carregando..."}
             </CredenzaDescription>
           </CredenzaHeader>
-          <CredenzaFooter>
-            <Button
-              onClick={() => setActivateDialogOpen(false)}
-              variant="outline"
-            >
-              Cancelar
-            </Button>
-            <Button
-              disabled={activatePlanMutation.isPending}
-              onClick={handleActivatePlan}
-            >
-              {activatePlanMutation.isPending ? "Ativando..." : "Ativar"}
-            </Button>
-          </CredenzaFooter>
+          <CredenzaBody>
+            {isEditingPlanLoading || !editingPlan ? (
+              <div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
+                Carregando...
+              </div>
+            ) : (
+              <PlanEditForm
+                onCancel={() => setEditingPlanId(null)}
+                onSuccess={() => {
+                  refetchPlans();
+                  setEditingPlanId(null);
+                }}
+                plan={{
+                  ...editingPlan,
+                  price: Number(editingPlan.price),
+                }}
+              />
+            )}
+          </CredenzaBody>
         </CredenzaContent>
       </Credenza>
     </PageLayout>

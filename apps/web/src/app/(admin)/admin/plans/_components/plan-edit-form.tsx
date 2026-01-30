@@ -1,8 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -21,11 +20,25 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { trpcClient } from "@/utils/trpc";
 
-const createPlanSchema = z.object({
+interface Plan {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  active: boolean;
+  isDefault: boolean;
+}
+
+interface PlanEditFormProps {
+  plan: Plan;
+  onCancel?: () => void;
+  onSuccess?: () => void;
+}
+
+const updatePlanSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string(),
   price: z.number().min(0, "Valor deve ser maior ou igual a zero"),
@@ -33,40 +46,43 @@ const createPlanSchema = z.object({
   isDefault: z.boolean(),
 });
 
-export function PlanForm() {
-  const router = useRouter();
+export function PlanEditForm({ plan, onCancel, onSuccess }: PlanEditFormProps) {
+  const queryClient = useQueryClient();
 
-  const createPlanMutation = useMutation({
+  const updatePlanMutation = useMutation({
     mutationFn: (input: {
-      name: string;
-      description?: string;
-      price: number;
-      active: boolean;
-      isDefault: boolean;
-    }) => trpcClient.admin.plans.create.mutate(input),
+      planId: string;
+      name?: string;
+      description?: string | null;
+      price?: number;
+      active?: boolean;
+      isDefault?: boolean;
+    }) => trpcClient.admin.plans.update.mutate(input),
   });
 
   const form = useForm({
     defaultValues: {
-      name: "",
-      description: "",
-      price: 0,
-      active: true,
-      isDefault: false,
+      name: plan.name,
+      description: plan.description || "",
+      price: plan.price || 0,
+      active: plan.active,
+      isDefault: plan.isDefault,
     },
     validators: {
-      onSubmit: createPlanSchema,
+      onSubmit: updatePlanSchema,
     },
     onSubmit: async ({ value }) => {
-      await createPlanMutation.mutateAsync(
+      await updatePlanMutation.mutateAsync(
         {
+          planId: plan.id,
           ...value,
-          description: value.description || undefined,
+          description: value.description || null,
         },
         {
-          onSuccess: (plan) => {
-            toast.success("Plano criado com sucesso!");
-            router.push(`/admin/plans/${plan.id}`);
+          onSuccess: () => {
+            toast.success("Plano atualizado com sucesso!");
+            queryClient.invalidateQueries({ queryKey: ["admin", "plans"] });
+            onSuccess?.();
           },
           onError: (error) => {
             toast.error(error.message);
@@ -89,7 +105,7 @@ export function PlanForm() {
       <Card>
         <CardHeader>
           <CardTitle>Informações Básicas</CardTitle>
-          <CardDescription>Defina o nome e descrição do plano</CardDescription>
+          <CardDescription>Edite o nome e descrição do plano</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <form.Field name="name">
@@ -121,7 +137,7 @@ export function PlanForm() {
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="Descreva os benefícios deste plano..."
                     rows={3}
-                    value={field.state.value}
+                    value={field.state.value || ""}
                   />
                 </FieldContent>
                 <FieldError>{field.state.meta.errors?.[0]?.message}</FieldError>
@@ -194,14 +210,14 @@ export function PlanForm() {
         </CardContent>
       </Card>
 
-      <Separator />
-
       <div className="flex justify-end gap-2">
-        <Button onClick={() => router.back()} type="button" variant="outline">
-          Cancelar
-        </Button>
-        <Button disabled={createPlanMutation.isPending} type="submit">
-          {createPlanMutation.isPending ? "Criando..." : "Criar Plano"}
+        {onCancel && (
+          <Button onClick={onCancel} type="button" variant="outline">
+            Cancelar
+          </Button>
+        )}
+        <Button disabled={updatePlanMutation.isPending} type="submit">
+          {updatePlanMutation.isPending ? "Salvando..." : "Salvar Alterações"}
         </Button>
       </div>
     </form>

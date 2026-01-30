@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
+import { ActionButton } from "@/components/ui/action-button";
 import { trpc, trpcClient } from "@/utils/trpc";
 import { DeleteTenantDialog } from "./_components/delete-tenant-dialog";
 import { DeletedTenantsList } from "./_components/deleted-tenants-list";
@@ -15,7 +16,6 @@ import { PermanentDeleteTenantDialog } from "./_components/permanent-delete-tena
 import { RestoreTenantDialog } from "./_components/restore-tenant-dialog";
 import { TenantsFilters } from "./_components/tenants-filters";
 import { TenantsList } from "./_components/tenants-list";
-import { ActionButton } from "@/components/ui/action-button";
 
 function _AdminTenantsPageContent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
