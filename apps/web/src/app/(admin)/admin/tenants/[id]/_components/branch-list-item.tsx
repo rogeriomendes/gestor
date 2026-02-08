@@ -91,7 +91,7 @@ export function BranchListItem({
   );
 
   return (
-    <Card className="transition-shadow hover:shadow-md">
+    <Card className="rounded-md transition-shadow hover:shadow-md">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">

@@ -6,6 +6,13 @@
     "sourceMap": true,
     "outDir": "dist",
     "composite": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "react": ["./node_modules/react"],
+      "react/*": ["./node_modules/react/*"]
+    }
   }
 }

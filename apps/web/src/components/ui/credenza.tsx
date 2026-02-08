@@ -105,7 +105,7 @@ const CredenzaContent = ({ className, children, ...props }: CredenzaProps) => {
   if (isMobile) {
     return (
       <DrawerContent className={cn("max-h-[98%]", className)} {...props}>
-        <ScrollArea className="mx-auto flex w-full max-w-md flex-col overflow-auto py-2">
+        <ScrollArea className="mx-auto flex w-full max-w-2xl flex-col overflow-auto py-2">
           {children}
         </ScrollArea>
       </DrawerContent>
@@ -113,7 +113,7 @@ const CredenzaContent = ({ className, children, ...props }: CredenzaProps) => {
   }
   return (
     <DialogContent
-      className={cn("max-h-[95%] overflow-auto md:max-w-xl", className)}
+      className={cn("max-h-[95%] overflow-auto md:max-w-2xl", className)}
       {...props}
     >
       {children}
@@ -130,7 +130,7 @@ const CredenzaDescription = ({
   const CredenzaDescription = isMobile ? DrawerDescription : DialogDescription;
 
   return (
-    <CredenzaDescription className={className} {...props}>
+    <CredenzaDescription className={className} {...props} render={<div />}>
       {children}
     </CredenzaDescription>
   );
@@ -179,12 +179,12 @@ const CredenzaFooter = ({ className, children, ...props }: CredenzaProps) => {
 
 export {
   Credenza,
-  CredenzaTrigger,
+  CredenzaBody,
   CredenzaClose,
   CredenzaContent,
   CredenzaDescription,
+  CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaBody,
-  CredenzaFooter,
+  CredenzaTrigger,
 };

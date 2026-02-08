@@ -41,7 +41,7 @@ export function ConnectionStats() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <p className="text-muted-foreground text-sm">Total de Conexões</p>
             <p className="font-bold text-2xl">{stats.total}</p>

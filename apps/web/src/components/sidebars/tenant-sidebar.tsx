@@ -1,11 +1,10 @@
 "use client";
 
 import { ChevronRightIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import FBILogo from "@/assets/FbiIcon.png";
+import { FbiIcon } from "@/assets/FbiIcon";
 import {
   Collapsible,
   CollapsibleContent,
@@ -30,6 +29,8 @@ import {
 } from "@/components/ui/sidebar";
 import isActive from "@/lib/is-active";
 import { useHasPermission } from "@/lib/permissions";
+import { CompanySelector } from "../company-selector";
+import { ShowTextSwitcher } from "../show-text-switcher";
 import UserCard from "../user-card";
 import { SubscriptionCard } from "./subscription-card";
 import { tenantMenuItens, tenantSettingsMenuItens } from "./tenant-menu-itens";
@@ -210,7 +211,7 @@ export function TenantSidebar() {
 
   return (
     <Sidebar className="print:hidden" collapsible="icon" variant="inset">
-      <SidebarHeader>
+      {/* <SidebarHeader>
         <div className="flex items-center justify-between gap-2">
           <Link className="flex items-center gap-2" href="/dashboard">
             <Image
@@ -222,6 +223,20 @@ export function TenantSidebar() {
             <span className="font-bold text-current text-xl">FBI</span>
           </Link>
           <div className="flex items-center gap-2" />
+        </div>
+      </SidebarHeader> */}
+      <SidebarHeader>
+        <div className="flex items-center justify-between gap-2">
+          <Link className="flex items-center gap-2" href="/dashboard">
+            <FbiIcon aria-label="FBI Logo" className="size-8" />
+            <span className="font-bold text-current text-xl">FBI</span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <ShowTextSwitcher />
+          </div>
+        </div>
+        <div className="pt-3">
+          <CompanySelector />
         </div>
       </SidebarHeader>
 

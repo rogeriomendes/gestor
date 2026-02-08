@@ -570,7 +570,11 @@ export const tenantsRouter = router({
       // Buscar informações do usuário que deletou para cada tenant
       const tenantsWithDeletedBy = await Promise.all(
         tenants.map(async (tenant) => {
-          let deletedByUser = null;
+          let deletedByUser: {
+            id: string;
+            name: string;
+            email: string;
+          } | null = null;
           if (tenant.deletedBy) {
             deletedByUser = await prisma.user.findUnique({
               where: { id: tenant.deletedBy },

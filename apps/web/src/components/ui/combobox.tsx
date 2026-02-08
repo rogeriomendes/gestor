@@ -40,6 +40,8 @@ interface ComboboxProps {
   searchPlaceholder?: string;
   emptyMessage?: string;
   className?: string;
+  /** Ícone exibido à esquerda do texto no trigger (ex.: GroupIcon, ScaleIcon) */
+  icon?: ReactNode;
 }
 
 export function Combobox({
@@ -50,6 +52,7 @@ export function Combobox({
   searchPlaceholder = "Buscar...",
   emptyMessage = "Nenhum resultado encontrado.",
   className,
+  icon,
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -63,10 +66,15 @@ export function Combobox({
 
   const triggerContent = (
     <>
-      <span className="truncate">
+      <span className="flex flex-1 items-center gap-2 truncate">
+        {icon ? (
+          <span className="flex size-4 shrink-0 items-center justify-center [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:opacity-70">
+            {icon}
+          </span>
+        ) : null}
         {selectedOption ? selectedOption.label : placeholder}
       </span>
-      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
     </>
   );
 

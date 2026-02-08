@@ -237,6 +237,15 @@ export function UsersList({
       columns={columns}
       data={data}
       emptyMessage="Nenhum usuário encontrado."
+      onRowClick={(user) => {
+        onEdit(
+          user.user.id,
+          user.user.name,
+          user.user.email,
+          user.tenant?.id || null,
+          user.role || null
+        );
+      }}
     />
   );
 
@@ -244,6 +253,15 @@ export function UsersList({
     <DataCards
       data={data}
       emptyMessage="Nenhum usuário encontrado."
+      onCardClick={(user) => {
+        onEdit(
+          user.user.id,
+          user.user.name,
+          user.user.email,
+          user.tenant?.id || null,
+          user.role || null
+        );
+      }}
       renderCard={(user) => (
         <div className="space-y-1">
           <div className="flex items-start justify-between gap-2">

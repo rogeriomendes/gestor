@@ -11,7 +11,7 @@ export function BranchListSkeleton({ count = 3 }: BranchListSkeletonProps) {
   return (
     <div className="space-y-4">
       {Array.from({ length: count }).map((_, i) => (
-        <Card key={`branch-skeleton-${i}`}>
+        <Card className="rounded-md" key={`branch-skeleton-${i}`}>
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1 space-y-2">

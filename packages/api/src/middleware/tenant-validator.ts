@@ -48,7 +48,7 @@ export function validateTenantAccess() {
  */
 export function withTenantFilter<T>(
   query: T,
-  tenantId: string | null,
+  _tenantId: string | null,
   isAdmin: boolean
 ): T {
   // Se for admin, não aplicar filtro

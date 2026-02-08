@@ -76,7 +76,7 @@ export function CardListSkeleton({ count = 3 }: CardListSkeletonProps) {
   return (
     <div className="space-y-4">
       {Array.from({ length: count }).map((_, i) => (
-        <Card key={`card-list-skeleton-${i}`}>
+        <Card className="rounded-md" key={`card-list-skeleton-${i}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-2">

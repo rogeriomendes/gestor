@@ -21,6 +21,7 @@
     "@gestor/db": "workspace:*",
     "@react-email/components": "^1.0.6",
     "better-auth": "catalog:",
+    "react": "catalog:",
     "dotenv": "catalog:",
     "nodemailer": "^7.0.12",
     "resend": "^6.8.0",

@@ -206,6 +206,9 @@ export function SubscriptionsList({
       columns={columns}
       data={data}
       emptyMessage="Nenhuma assinatura encontrada."
+      onRowClick={(subscription) =>
+        router.push(`/admin/subscriptions/${subscription.tenant.id}`)
+      }
     />
   );
 
@@ -213,6 +216,9 @@ export function SubscriptionsList({
     <DataCards
       data={data}
       emptyMessage="Nenhuma assinatura encontrada."
+      onCardClick={(subscription) =>
+        router.push(`/admin/subscriptions/${subscription.tenant.id}`)
+      }
       renderCard={(subscription) => {
         const expiresAt = subscription.expiresAt
           ? new Date(subscription.expiresAt)

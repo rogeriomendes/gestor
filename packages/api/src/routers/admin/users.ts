@@ -126,7 +126,7 @@ export const usersRouter = router({
           .optional(),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
       const where: any = {
@@ -261,11 +261,7 @@ export const usersRouter = router({
             name: input.name,
             email: normalizedEmail,
             password: tempPassword, // Senha temporária que será substituída
-            role: input.role
-              ? input.role === "SUPER_ADMIN" || input.role === "TENANT_ADMIN"
-                ? "admin"
-                : "user"
-              : undefined,
+            role: input.role,
             data: input.tenantId
               ? {
                   tenantId: input.tenantId,

@@ -1,0 +1,59 @@
+---
+description: Regras do projeto Gestor - SaaS multi-tenant (Better-T-Stack, tRPC, Next.js)
+globs: "**/*.{ts,tsx,prisma}"
+alwaysApply: true
+---
+
+# Projeto Gestor - Regras para Agents
+
+Este é um **SaaS multi-tenant** (gestão empresarial) criado com Better-T-Stack. Use estas regras ao editar código.
+
+## Estrutura do monorepo
+
+- **`apps/web/`** – App Next.js (App Router). Rotas em `src/app/`:
+  - **`(admin)/admin/`** – Área admin (tenants, usuários, planos, audit logs, permissões, support, etc.)
+  - **`(tenant)/`** – Área do tenant: `dashboard`, `settings`, `users`, `financial/`, `invoice/`, `products/`, `reports/`, `sales/`, etc.
+- **`packages/api/`** – API tRPC (routers admin + tenant)
+- **`packages/auth/`** – Better Auth (config, emails, permissions)
+- **`packages/db/`** – Schema Prisma central (auth, tenant, plan, audit-log, permission, support)
+- **`packages/db-dfe/`** – Banco por tenant (DFe)
+- **`packages/db-gestor/`** – Banco por tenant (dados do gestor: empresas, vendas, financeiro, etc.)
+
+## Banco de dados
+
+- **Schema principal**: `packages/db/prisma/schema/` (vários arquivos .prisma). Comandos de DB rodam no workspace **web**: `pnpm run db:push`, `pnpm run db:studio`, `pnpm run db:generate`, `pnpm run db:migrate`.
+- **Multi-tenant**: Cada tenant pode ter seu próprio banco (db-gestor, db-dfe). Conexão por tenant via `packages/api/src/utils/tenant-db-*`.
+- **Prisma**: O app web pode usar schema em `apps/web/prisma/schema.prisma` (verificar bts.jsonc e docs). Em monorepos BTS, o schema costuma ficar em `packages/db`.
+
+## API (tRPC)
+
+- **Routers**: `packages/api/src/routers/`
+  - **admin**: `audit`, `branch`, `plans`, `stats`, `status`, `subscriptions`, `support`, `tenants`, `users`, `permission`, etc.
+  - **tenant**: `tenant/index.ts` agrega: `account`, `client`, `companies`, `dashboard`, `financialBillsPay`, `financialBillsReceive`, `financialClosing`, `financialReceipt`, `group`, `invoice` (DFe), `invoiceEntry`, `products`, `productsSale`, `receiptType`, `reports`, `sales`, `salesBudget`, `seller`, `supplier`, `subscription`, `tenantDatabase`, `tenantInfo`, `tenantUsers`, `support`.
+- **Procedures**: `adminProcedure`, `tenantProcedure`, `superAdminProcedure`, `activeTenantProcedure` (middleware em `packages/api/src/middleware/`).
+- **Cliente tRPC**: `apps/web/src/utils/trpc.ts`.
+
+## Autenticação e permissões
+
+- **Auth**: Better Auth em `packages/auth/`. Cliente no app em `apps/web/src/lib/auth-client.ts`.
+- **RBAC**: Roles e permissões; helpers no front em `apps/web/src/lib/permissions.ts`, `permission-labels.ts`, `role-labels.ts`.
+- **Guards**: `admin-guard`, `tenant-guard`, `permission-guard`, `subscription-guard`, `database-config-guard` em `apps/web/src/components/admin/` e relacionados.
+
+## Frontend (Next.js + React)
+
+- **Contextos**: `tenant-context`, `company-context`, `text-show-context` em `apps/web/src/contexts/`.
+- **UI**: Componentes em `apps/web/src/components/ui/` (shadcn-style). Listas/tabelas em `components/lists/` (data-table, data-cards, etc.).
+- **Sidebars**: `admin-sidebar`, `tenant-sidebar` com itens em `admin-menu-itens`, `tenant-menu-itens`.
+- **Layouts**: `page-layout`, `tenant-header`, breadcrumbs. Rotas tenant usam layout em `(tenant)/layout.tsx`.
+
+## Convenções
+
+- **Idioma**: Interfaces e mensagens em **português brasileiro** quando for UX/negócio.
+- **Formatação**: Ultracite/Biome. Rodar `pnpm dlx ultracite fix` antes de commit (hook em `.cursor/hooks.json`).
+- **Tenant**: Sempre validar tenant no backend; usar procedures que já aplicam middleware de tenant.
+- **NFe/DFe**: Componentes e libs em `nfe-access-key`, `format-nfe-access-key`, `format-cnpj` quando for exibir dados fiscais.
+
+## Documentação de produto
+
+- **Plano de implementação**: `docs/implementation-plan.md` (fases do SaaS).
+- **Sugestões de features**: `docs/feature-suggestions.md` (audit log, 2FA, notificações, billing, etc.).

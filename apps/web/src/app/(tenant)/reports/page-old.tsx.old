@@ -1,0 +1,630 @@
+"use client"
+
+import { format, subDays } from "date-fns"
+import { ptBR } from "date-fns/locale"
+import { CalendarIcon, DollarSignIcon, DownloadIcon, PackageIcon, TrendingUpIcon, UsersIcon } from "lucide-react"
+import { useMemo, useState } from "react"
+import { PageLayout } from "@/components/layout/PageLayout"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { api } from "@/trpc/react"
+import { FinancialCharts } from "./_components/FinancialCharts"
+import { ProductsCharts } from "./_components/ProductsCharts"
+import { ReportExporter } from "./_components/ReportExporter"
+import {
+  ReportFilters,
+  type ReportFilters as ReportFiltersType,
+} from "./_components/ReportFilters"
+import { SalesCharts } from "./_components/SalesCharts"
+import { SellersCharts } from "./_components/SellersCharts"
+import { StockCharts } from "./_components/StockCharts"
+import { SummaryCards } from "./_components/SummaryCards"
+import { TypesCharts } from "./_components/TypesCharts"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ShowText } from "@/components/ShowText"
+import { formatAsCurrency } from "@/lib/utils"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Bar, BarChart, Line, LineChart, XAxis, YAxis } from "recharts"
+
+export default function Reports() {
+  const today = useMemo(() => new Date(), [])
+  const initialDate = useMemo(() => subDays(today, 30), [today])
+  const [selectedTab, setSelectedTab] = useState("sales")
+  const [filters, setFilters] = useState<ReportFiltersType>({
+    initialDate,
+    finalDate: today,
+  })
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false)
+
+  // Queries usando os filtros
+  const { data: salesPerDay } = api.reports.salesPerDay.useQuery({
+    initialDate: filters.initialDate,
+    finalDate: filters.finalDate,
+  })
+
+  const { data: salesPerSeller } = api.reports.salesPerSeller.useQuery({
+    initialDate: filters.initialDate,
+    finalDate: filters.finalDate,
+  })
+
+  const { data: topProducts } = api.reports.topProducts.useQuery({
+    initialDate: filters.initialDate,
+    finalDate: filters.finalDate,
+    limit: 10,
+  })
+
+  const { data: accountsReceivable } = api.reports.accountsReceivable.useQuery({
+    status: "all",
+    initialDate: filters.initialDate,
+    finalDate: filters.finalDate,
+  })
+
+  const { data: stockPosition } = api.reports.stockPosition.useQuery({
+    lowStock: false,
+  })
+
+  const { data: financialSummary } = api.reports.financialSummary.useQuery({
+    initialDate: filters.initialDate,
+    finalDate: filters.finalDate,
+  })
+
+  const { data: salesPerType } = api.reports.salesPerType.useQuery({
+    initialDate: filters.initialDate,
+    finalDate: filters.finalDate,
+  })
+
+  const handleFiltersChange = (newFilters: ReportFiltersType) => {
+    setFilters(newFilters)
+    setIsFilterModalOpen(false)
+  }
+
+  const getExportData = () => {
+    switch (selectedTab) {
+      case "sales":
+        return salesPerDay?.totalValuePerDay || []
+      case "financial":
+        return accountsReceivable?.accountsReceivable || []
+      case "stock":
+        return stockPosition?.stockPosition || []
+      case "products":
+        return topProducts?.topProducts || []
+      case "sellers":
+        return salesPerSeller?.salesPerSeller || []
+      case "types":
+        return salesPerType?.result || []
+      default:
+        return []
+    }
+  }
+
+  const getExportFilename = () => {
+    const period = `${format(filters.initialDate, "dd-MM-yyyy")}_${format(filters.finalDate, "dd-MM-yyyy")}`
+    switch (selectedTab) {
+      case "sales":
+        return `vendas_por_dia_${period}`
+      case "financial":
+        return `contas_receber_${period}`
+      case "stock":
+        return `posicao_estoque_${period}`
+      case "products":
+        return `produtos_mais_vendidos_${period}`
+      case "sellers":
+        return `vendas_por_vendedor_${period}`
+      case "types":
+        return `vendas_por_tipo_${period}`
+      default:
+        return `relatorio_${period}`
+    }
+  }
+
+  const handleExport = (format: string, data: any[]) => {
+    console.log(`Exportando ${data.length} registros em formato ${format}`)
+    setIsExportModalOpen(false)
+  }
+
+
+  return (
+    <PageLayout
+      title="Relatórios"
+      subtitle={`Período: ${format(filters.initialDate, "dd/MM/yyyy", { locale: ptBR })} até ${format(filters.finalDate, "dd/MM/yyyy", { locale: ptBR })} (${Math.ceil((filters.finalDate.getTime() - filters.initialDate.getTime()) / (1000 * 60 * 60 * 24))} dias)`}
+      actions={
+        <div className="flex space-x-2">
+          <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                Filtrar Período
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Filtros do Relatório</DialogTitle>
+                <DialogDescription>
+                  Configure os filtros para personalizar os dados exibidos nos
+                  relatórios.
+                </DialogDescription>
+              </DialogHeader>
+              <ReportFilters
+                onFiltersChange={handleFiltersChange}
+                initialFilters={filters}
+              />
+            </DialogContent>
+          </Dialog>
+          <Dialog open={isExportModalOpen} onOpenChange={setIsExportModalOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <DownloadIcon className="mr-2 h-4 w-4" />
+                Exportar Relatório
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Exportar Relatório</DialogTitle>
+                <DialogDescription>
+                  Exporte os dados do relatório atual em diferentes formatos.
+                </DialogDescription>
+              </DialogHeader>
+              <ReportExporter
+                data={getExportData()}
+                filename={getExportFilename()}
+                onExport={handleExport}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+      }
+    >
+      <div className="space-y-6">
+        {/* Cards de Resumo */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Vendas do Período
+              </CardTitle>
+              <DollarSignIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                <ShowText>
+                  {formatAsCurrency(financialSummary?.sales.total || 0)}
+                </ShowText>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {financialSummary?.sales.count || 0} vendas realizadas
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Recebimentos
+              </CardTitle>
+              <TrendingUpIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                <ShowText>
+                  {formatAsCurrency(financialSummary?.receipts.total || 0)}
+                </ShowText>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Valores recebidos no período
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">A Receber</CardTitle>
+              <UsersIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                <ShowText>
+                  {formatAsCurrency(
+                    financialSummary?.pendingReceivables.total || 0,
+                  )}
+                </ShowText>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Contas a receber pendentes
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Estoque</CardTitle>
+              <PackageIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stockPosition?.stockPosition.length || 0}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Produtos cadastrados
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabs de Relatórios */}
+        <Tabs
+          value={selectedTab}
+          onValueChange={setSelectedTab}
+          className="space-y-4"
+        >
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="sales">Vendas</TabsTrigger>
+            <TabsTrigger value="financial">Financeiro</TabsTrigger>
+            <TabsTrigger value="stock">Estoque</TabsTrigger>
+            <TabsTrigger value="management">Gerencial</TabsTrigger>
+          </TabsList>
+
+          {/* Relatórios de Vendas */}
+          <TabsContent value="sales" className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Vendas por Dia */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vendas por Dia</CardTitle>
+                  <CardDescription>
+                    Evolução das vendas nos últimos 30 dias
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer
+                    config={chartConfig}
+                    className="h-[300px] w-full"
+                  >
+                    <LineChart data={salesPerDay?.totalValuePerDay}>
+                      <XAxis
+                        dataKey="date"
+                        tickFormatter={(value) =>
+                          format(new Date(value), "dd/MM")
+                        }
+                      />
+                      <YAxis />
+                      <ChartTooltip
+                        content={
+                          <ChartTooltipContent
+                            formatter={(value) => [
+                              formatAsCurrency(Number(value)),
+                              "Total",
+                            ]}
+                            labelFormatter={(value) =>
+                              format(new Date(value), "dd/MM/yyyy")
+                            }
+                          />
+                        }
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="total"
+                        stroke="var(--color-total)"
+                        strokeWidth={2}
+                        dot={{ fill: "var(--color-total)" }}
+                      />
+                    </LineChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+
+              {/* Vendas por Vendedor */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vendas por Vendedor</CardTitle>
+                  <CardDescription>Performance dos vendedores</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer
+                    config={chartConfig}
+                    className="h-[300px] w-full"
+                  >
+                    <BarChart data={salesPerSeller?.salesPerSeller}>
+                      <XAxis
+                        dataKey="sellerName"
+                        tick={{ fontSize: 12 }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                      />
+                      <YAxis />
+                      <ChartTooltip
+                        content={
+                          <ChartTooltipContent
+                            formatter={(value) => [
+                              formatAsCurrency(Number(value)),
+                              "Total",
+                            ]}
+                          />
+                        }
+                      />
+                      <Bar dataKey="total" fill="var(--color-total)" />
+                    </BarChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Produtos Mais Vendidos */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Produtos Mais Vendidos</CardTitle>
+                <CardDescription>
+                  Top 10 produtos por valor de venda
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {topProducts?.topProducts.map((product, index) => (
+                    <div
+                      key={product.productId}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium">
+                          {index + 1}
+                        </div>
+                        <div>
+                          <p className="font-medium">{product.productName}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {product.quantity} unidades vendidas
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">
+                          <ShowText>
+                            {formatAsCurrency(product.totalValue)}
+                          </ShowText>
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          <ShowText>
+                            {formatAsCurrency(product.unitPrice)}/un
+                          </ShowText>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Relatórios Financeiros */}
+          <TabsContent value="financial" className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Contas a Receber */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contas a Receber</CardTitle>
+                  <CardDescription>
+                    Posição atual das contas a receber
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {accountsReceivable?.accountsReceivable
+                      .slice(0, 10)
+                      .map((account) => (
+                        <div
+                          key={account.id}
+                          className="flex items-center justify-between"
+                        >
+                          <div>
+                            <p className="font-medium">{account.clientName}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Vencimento:{" "}
+                              {account.dueDate
+                                ? format(
+                                    new Date(account.dueDate),
+                                    "dd/MM/yyyy",
+                                  )
+                                : "N/A"}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium">
+                              <ShowText>
+                                {formatAsCurrency(account.pending)}
+                              </ShowText>
+                            </p>
+                            {account.isOverdue && (
+                              <p className="text-sm text-red-500">Em atraso</p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Vendas por Forma de Pagamento */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vendas por Forma de Pagamento</CardTitle>
+                  <CardDescription>
+                    Distribuição dos recebimentos por tipo
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer
+                    config={chartConfig}
+                    className="h-[300px] w-full"
+                  >
+                    <BarChart data={salesPerType?.result}>
+                      <XAxis
+                        dataKey="date"
+                        tickFormatter={(value) =>
+                          format(new Date(value), "dd/MM")
+                        }
+                      />
+                      <YAxis />
+                      <ChartTooltip
+                        content={
+                          <ChartTooltipContent
+                            formatter={(value) => [
+                              formatAsCurrency(Number(value)),
+                              "Total",
+                            ]}
+                            labelFormatter={(value) =>
+                              format(new Date(value), "dd/MM/yyyy")
+                            }
+                          />
+                        }
+                      />
+                      {keys.map((key, index) => (
+                        <Bar
+                          key={key}
+                          dataKey={key}
+                          stackId="a"
+                          fill={colors[index % colors.length]}
+                        />
+                      ))}
+                    </BarChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Relatórios de Estoque */}
+          <TabsContent value="stock" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Posição de Estoque</CardTitle>
+                <CardDescription>
+                  Produtos com estoque baixo ou em falta
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {stockPosition?.stockPosition
+                    .filter((product) => product.isLowStock)
+                    .slice(0, 20)
+                    .map((product) => (
+                      <div
+                        key={product.id}
+                        className="flex items-center justify-between"
+                      >
+                        <div>
+                          <p className="font-medium">{product.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {product.code} - {product.category}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">
+                            {product.currentStock} / {product.minStock}
+                          </p>
+                          <p className="text-sm text-red-500">Estoque baixo</p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Relatórios Gerenciais */}
+          <TabsContent value="management" className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Resumo Financeiro</CardTitle>
+                  <CardDescription>Visão geral do período</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between">
+                    <span>Vendas:</span>
+                    <span className="font-medium">
+                      <ShowText>
+                        {formatAsCurrency(financialSummary?.sales.total || 0)}
+                      </ShowText>
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Recebimentos:</span>
+                    <span className="font-medium">
+                      <ShowText>
+                        {formatAsCurrency(
+                          financialSummary?.receipts.total || 0,
+                        )}
+                      </ShowText>
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Pagamentos:</span>
+                    <span className="font-medium">
+                      <ShowText>
+                        {formatAsCurrency(
+                          financialSummary?.payments.total || 0,
+                        )}
+                      </ShowText>
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-t pt-2">
+                    <span className="font-medium">Saldo Líquido:</span>
+                    <span className="font-bold">
+                      <ShowText>
+                        {formatAsCurrency(
+                          (financialSummary?.receipts.total || 0) -
+                            (financialSummary?.payments.total || 0),
+                        )}
+                      </ShowText>
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Indicadores</CardTitle>
+                  <CardDescription>Métricas de performance</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between">
+                    <span>Ticket Médio:</span>
+                    <span className="font-medium">
+                      <ShowText>
+                        {formatAsCurrency(
+                          (financialSummary?.sales.total || 0) /
+                            (financialSummary?.sales.count || 1),
+                        )}
+                      </ShowText>
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Produtos Cadastrados:</span>
+                    <span className="font-medium">
+                      {stockPosition?.stockPosition.length || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Produtos em Falta:</span>
+                    <span className="font-medium text-red-500">
+                      {stockPosition?.stockPosition.filter((p) => p.isLowStock)
+                        .length || 0}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </PageLayout>
+  )
+}

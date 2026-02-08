@@ -3,11 +3,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { AccessDeniedCard } from "@/components/access-denied-card";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { PermissionGuard } from "@/components/permissions/permission-guard";
 import { SubscriptionInfoCard } from "@/components/subscription/subscription-info-card";
 import { TenantDashboardSkeleton } from "@/components/tenant-loading";
-import { AccessDeniedCard } from "@/components/ui/access-denied-card";
 import { Button } from "@/components/ui/button";
 import {
   Card,

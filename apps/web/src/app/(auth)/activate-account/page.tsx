@@ -122,7 +122,7 @@ function ActivateAccountContent() {
   if (errorParam === "INVALID_TOKEN" || !token) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md rounded-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
               <XCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
@@ -147,7 +147,7 @@ function ActivateAccountContent() {
   if (isSuccess) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md rounded-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
               <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -172,7 +172,7 @@ function ActivateAccountContent() {
   // Formulário de ativação
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md rounded-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <UserPlus className="h-6 w-6 text-primary" />

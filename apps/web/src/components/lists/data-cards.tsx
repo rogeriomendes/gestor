@@ -10,7 +10,7 @@ interface DataCardsProps<T extends { id: string }> {
   getHref?: (item: T) => Route | string;
   emptyMessage?: string;
   className?: string;
-  onCardClick?: (item: T) => void;
+  onCardClick?: (item: T, href?: Route | string) => void;
 }
 
 export function DataCards<T extends { id: string }>({
@@ -39,11 +39,18 @@ export function DataCards<T extends { id: string }>({
           <Card
             className={`group transition-all duration-200 hover:scale-[1.01] hover:shadow-md ${href || onCardClick ? "cursor-pointer" : ""}`}
             key={item.id}
-            onClick={() => {
+            onClick={(e) => {
+              if (
+                (e.target as HTMLElement).closest(
+                  "button, a[href], [role=button], input[type=checkbox], [role=checkbox], [data-dropdown-menu-trigger], [data-no-row-click]"
+                )
+              ) {
+                return;
+              }
               if (href) {
                 router.push(href as Route);
               }
-              onCardClick?.(item);
+              onCardClick?.(item, href);
             }}
             size="sm"
           >

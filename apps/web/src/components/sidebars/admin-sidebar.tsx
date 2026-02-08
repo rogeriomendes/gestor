@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { RoleBadge } from "@/components/role-badge";
+import { FbiIcon } from "@/assets/FbiIcon";
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useTenant } from "@/contexts/tenant-context";
 import isActive from "@/lib/is-active";
 import { useHasPermission } from "@/lib/permissions";
 import UserCard from "../user-card";
@@ -29,9 +28,11 @@ function MenuItemWithPermission({
   pathname: string;
   searchParams: URLSearchParams;
 }) {
-  const hasPermission = item.permission
-    ? useHasPermission(item.permission.resource, item.permission.action)
-    : true;
+  const hasPermissionResult = useHasPermission(
+    item.permission?.resource ?? "DASHBOARD",
+    item.permission?.action ?? "READ"
+  );
+  const hasPermission = item.permission ? hasPermissionResult : true;
 
   if (!hasPermission) {
     return null;
@@ -52,7 +53,6 @@ function MenuItemWithPermission({
 }
 
 export function AdminSidebar() {
-  const { role } = useTenant();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -61,18 +61,24 @@ export function AdminSidebar() {
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-2">
           <div className="flex flex-col gap-1">
-            <h2 className="font-semibold text-lg leading-none">
+            <div className="flex flex-row items-center gap-2">
+              <FbiIcon aria-label="FBI Logo" className="size-8" />
+              <span className="font-bold text-current text-xl">FBI</span>
+            </div>
+            <p className="mt-2 text-muted-foreground text-sm leading-none">
               Área Administrativa
-            </h2>
-            <p className="text-muted-foreground text-xs leading-none">
-              Gestão do Sistema
             </p>
           </div>
         </div>
-        <div className="px-2">
-          <RoleBadge role={role} />
-        </div>
       </SidebarHeader>
+      {/* <SidebarHeader>
+        <div className="flex items-center justify-between gap-2">
+          <Link className="flex items-center gap-2" href="/dashboard">
+            <FbiIcon aria-label="FBI Logo" className="size-8" />
+            <span className="font-bold text-current text-xl">FBI</span>
+          </Link>
+        </div>
+      </SidebarHeader> */}
       <SidebarContent>
         <SidebarGroup>
           {/* <SidebarGroupLabel>Navegação</SidebarGroupLabel> */}

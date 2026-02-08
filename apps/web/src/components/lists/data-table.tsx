@@ -70,7 +70,16 @@ export function DataTable<TData>({
                 }
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
-                onClick={() => onRowClick?.(row.original)}
+                onClick={(e) => {
+                  if (
+                    (e.target as HTMLElement).closest(
+                      "button, a[href], [role=button], input[type=checkbox], [role=checkbox], [data-dropdown-menu-trigger], [data-no-row-click]"
+                    )
+                  ) {
+                    return;
+                  }
+                  onRowClick?.(row.original);
+                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell className="py-3" key={cell.id}>

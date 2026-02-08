@@ -61,7 +61,7 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
   if (isTenantLoading || isSubscriptionLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center p-6">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md rounded-md">
           <CardHeader>
             <Skeleton className="h-6 w-48" />
             <Skeleton className="h-4 w-64" />
@@ -152,7 +152,7 @@ function SubscriptionBlockedScreen({
 }: SubscriptionBlockedScreenProps) {
   return (
     <div className="flex min-h-[calc(100vh-200px)] items-center justify-center p-6">
-      <Card className="w-full max-w-md text-center">
+      <Card className="w-full max-w-md rounded-md text-center">
         <CardHeader>
           <div className="mb-4 flex justify-center">{icon}</div>
           <CardTitle>{title}</CardTitle>

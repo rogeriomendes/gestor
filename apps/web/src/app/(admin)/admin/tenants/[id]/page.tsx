@@ -127,9 +127,8 @@ function TenantPageContent({ tenantId }: TenantPageContentProps) {
 
     return (
       <PageLayout
-        backHref="/admin/tenants"
         breadcrumbs={breadcrumbs}
-        showBackButton={true}
+        showBackButton
         subtitle="Carregando..."
         title="Carregando..."
       >
@@ -197,9 +196,8 @@ function TenantPageContent({ tenantId }: TenantPageContentProps) {
 
     return (
       <PageLayout
-        backHref="/admin/tenants"
         breadcrumbs={breadcrumbs}
-        showBackButton={true}
+        showBackButton
         subtitle="Erro"
         title="Cliente não encontrado"
       >
@@ -240,9 +238,8 @@ function TenantPageContent({ tenantId }: TenantPageContentProps) {
 
   return (
     <PageLayout
-      backHref="/admin/tenants"
       breadcrumbs={breadcrumbs}
-      showBackButton={true}
+      showBackButton
       subtitle={`${tenant.slug} ${tenant.active ? "• Ativo" : "• Inativo"}`}
       title={tenant.name}
     >

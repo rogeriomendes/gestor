@@ -196,6 +196,7 @@ export function PlansList({
       columns={columns}
       data={data}
       emptyMessage="Nenhum plano encontrado."
+      onRowClick={onEdit ? (plan) => onEdit(plan) : undefined}
     />
   );
 

@@ -121,7 +121,7 @@ export default function AdminProfilePage() {
         <ProfileSidebar />
         <div className="flex-1 space-y-6">
           {/* Card de Perfil */}
-          <Card id="personal-info">
+          <Card className="rounded-md" id="personal-info">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />

@@ -1,244 +1,180 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Building2, MapPin, Users } from "lucide-react";
+import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { ArrowUpIcon } from "lucide-react";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useMemo } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
-import { TenantDashboardSkeleton } from "@/components/tenant-loading";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { MetricCard } from "@/components/metric-card";
+import { PercentDiffBadge } from "@/components/percent-diff-badge";
+import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
-import { getRedirectPath } from "@/lib/auth-redirect";
-import { useIsAdmin } from "@/lib/permissions";
 import { trpc } from "@/utils/trpc";
+import { BudgetCard } from "./_components/BudgetCard";
+import { SalesChartCard } from "./_components/SalesChartCard";
+
+type DayValue = { date?: string; total?: number };
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { tenant, role, isLoading } = useTenant();
-  const isAdmin = useIsAdmin();
+  const { tenant } = useTenant();
+  const { selectedCompanyId } = useCompany();
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    ...trpc.tenant.getTenantStats.queryOptions(),
-    enabled: !!tenant && !isAdmin,
+  const today = useMemo(() => new Date(), []);
+  const initialDate = useMemo(() => subDays(today, 30), [today]);
+
+  const companyId = selectedCompanyId !== 0 ? selectedCompanyId : undefined;
+  const enabled = !!tenant;
+
+  const { data: latest30DaysData, isLoading: latest30DaysLoading } = useQuery({
+    ...trpc.tenant.reports.salesPerDay.queryOptions({
+      initialDate,
+      finalDate: today,
+      companyId,
+    }),
+    enabled,
+  });
+  const { data: getCurrentMonthData, isLoading: getCurrentMonthLoading } =
+    useQuery({
+      ...trpc.tenant.dashboard.getCurrentMonth.queryOptions({ companyId }),
+      enabled,
+    });
+  const { data: getPreviousMonthData, isLoading: getPreviousMonthLoading } =
+    useQuery({
+      ...trpc.tenant.dashboard.getPreviousMonth.queryOptions({ companyId }),
+      enabled,
+    });
+
+  const twoMonthsAgoStart = startOfMonth(subMonths(today, 2));
+  const twoMonthsAgoEnd = endOfMonth(subMonths(today, 2));
+  const { data: twoMonthsAgoData, isLoading: twoMonthsAgoLoading } = useQuery({
+    ...trpc.tenant.reports.salesPerDay.queryOptions({
+      initialDate: twoMonthsAgoStart,
+      finalDate: twoMonthsAgoEnd,
+      companyId,
+    }),
+    enabled,
+  });
+  const {
+    data: totalBillsPayAmountData,
+    isLoading: totalBillsPayAmountLoading,
+  } = useQuery({
+    ...trpc.tenant.financialBillsPay.amount.queryOptions({
+      filter: "all",
+      company: companyId,
+    }),
+    enabled,
   });
 
-  // Se é admin, redirecionar para área admin
-  useEffect(() => {
-    if (role && !isLoading) {
-      const redirectPath = getRedirectPath(role);
-      if (redirectPath !== "/" && redirectPath !== "/dashboard") {
-        router.push(redirectPath as any);
-      }
+  const totalValuePerDay = latest30DaysData?.totalValuePerDay ?? [];
+  const lastDay: DayValue | null =
+    totalValuePerDay.length > 0
+      ? (totalValuePerDay[totalValuePerDay.length - 1] ?? null)
+      : null;
+  const lastDayValue = lastDay?.total ? Number(lastDay.total) : 0;
+
+  const currentDate = new Date();
+  const currentMonth = format(currentDate, "MMMM 'de' yyyy", { locale: ptBR });
+  const previousMonth = format(subMonths(currentDate, 1), "MMMM 'de' yyyy", {
+    locale: ptBR,
+  });
+  const twoMonthsAgoMonth = format(
+    subMonths(currentDate, 2),
+    "MMMM 'de' yyyy",
+    {
+      locale: ptBR,
     }
-  }, [role, isLoading, router]);
+  );
+  const currentDay = format(currentDate, "EEEE, 'dia' dd", { locale: ptBR });
+  const previousWeekSameDay = format(
+    subDays(currentDate, 7),
+    "EEEE, 'dia' dd",
+    { locale: ptBR }
+  );
 
-  // Se está carregando, mostrar skeleton
-  if (isLoading) {
-    return <TenantDashboardSkeleton />;
-  }
+  const previousWeekSameDayFormatted = format(
+    subDays(currentDate, 7),
+    "yyyy-MM-dd"
+  );
+  const previousWeekDayData = totalValuePerDay.find(
+    (day: DayValue) => day.date === previousWeekSameDayFormatted
+  );
+  const previousWeekDayValue = previousWeekDayData?.total
+    ? Number(previousWeekDayData.total)
+    : 0;
 
-  // Se não tem tenant e não é admin, mostrar mensagem
-  if (!(tenant || isAdmin)) {
-    return (
-      <div className="space-y-6 p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Bem-vindo!</CardTitle>
-            <CardDescription>
-              Você ainda não está associado a um cliente.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground text-sm">
-              Entre em contato com um administrador para ser adicionado a um
-              cliente.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const currentTotal = Number(getCurrentMonthData?.totalAmount ?? 0);
+  const previousTotal = Number(getPreviousMonthData?.totalAmount ?? 0);
+  const twoMonthsAgoTotal = (twoMonthsAgoData?.totalValuePerDay ?? []).reduce(
+    (sum: number, d: DayValue) => sum + Number(d.total ?? 0),
+    0
+  );
 
-  // Se é admin sem tenant, mostrar opção de ir para admin
-  if (isAdmin && !tenant) {
-    return (
-      <div className="space-y-6 p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Bem-vindo!</CardTitle>
-            <CardDescription>
-              Você ainda não está associado a um cliente.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="mb-2 text-muted-foreground text-sm">
-                Como administrador, você pode:
-              </p>
-              <ul className="list-inside list-disc space-y-1 text-muted-foreground text-sm">
-                <li>Acessar a área de administração</li>
-                <li>Criar novos clientes</li>
-                <li>Gerenciar todos os clientes do sistema</li>
-              </ul>
-              <div className="mt-4">
-                <a href="/admin">
-                  <button
-                    className="rounded-none bg-primary px-4 py-2 font-medium text-primary-foreground text-sm hover:bg-primary/80"
-                    type="button"
-                  >
-                    Ir para Área de Administração
-                  </button>
-                </a>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Se chegou aqui, tem tenant e pode mostrar o dashboard
-  if (!tenant) {
-    return null;
-  }
-
-  const isLoadingDashboard = isLoading || statsLoading;
+  const comparisonPreviousVsTwoMonths = `Comparação de ${previousMonth} vs ${twoMonthsAgoMonth}`;
+  const comparisonCurrentVsPrevious = `Comparação de ${currentMonth} vs ${previousMonth}`;
+  const comparisonDayVsPreviousWeek = `Comparação de ${currentDay} vs ${previousWeekSameDay}`;
 
   return (
     <PageLayout subtitle="Visão geral do seu cliente" title="Dashboard">
-      {isLoadingDashboard ? (
-        <TenantDashboardSkeleton />
-      ) : (
-        <>
-          {/* Cards de Métricas Principais */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card className="transition-all duration-200 hover:shadow-md">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-medium text-sm">
-                  Total de Usuários
-                </CardTitle>
-                <div className="rounded-lg bg-primary/10 p-2">
-                  <Users className="h-4 w-4 text-primary" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-3xl tracking-tight">
-                  {stats?.totalUsers ?? tenant._count?.users ?? 0}
-                </div>
-                <p className="mt-1 text-muted-foreground text-xs">
-                  {stats?.usersByRole &&
-                    Object.entries(stats.usersByRole)
-                      .map(([role, count]) => `${role}: ${count}`)
-                      .join(", ")}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="transition-all duration-200 hover:shadow-md">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-medium text-sm">Filiais</CardTitle>
-                <div className="rounded-lg bg-primary/10 p-2">
-                  <Building2 className="h-4 w-4 text-primary" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="font-bold text-3xl tracking-tight">
-                  {stats?.totalBranches ?? 0}
-                </div>
-                <p className="mt-1 text-muted-foreground text-xs">
-                  {stats?.activeBranches ?? 0} ativas
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="transition-all duration-200 hover:shadow-md">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="font-medium text-sm">Status</CardTitle>
-                <div className="rounded-lg bg-primary/10 p-2">
-                  <MapPin className="h-4 w-4 text-primary" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Badge
-                  className={
-                    tenant.active
-                      ? "border-green-500/20 bg-green-500/10 text-green-600 dark:text-green-400"
-                      : "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400"
-                  }
-                  variant="outline"
-                >
-                  {tenant.active ? "Ativo" : "Inativo"}
-                </Badge>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Cards de Informações Detalhadas */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="transition-all duration-200 hover:shadow-md">
-              <CardHeader>
-                <CardTitle className="text-base">
-                  Informações do Cliente
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Dados gerais
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground text-sm">Nome:</span>
-                  <span className="font-medium text-sm">{tenant.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground text-sm">Slug:</span>
-                  <span className="font-medium text-sm">{tenant.slug}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground text-sm">
-                    Criado em:
-                  </span>
-                  <span className="font-medium text-sm">
-                    {new Date(tenant.createdAt).toLocaleDateString("pt-BR")}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Distribuição de Usuários</CardTitle>
-                <CardDescription>Por função</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {stats?.usersByRole &&
-                Object.keys(stats.usersByRole).length > 0 ? (
-                  <div className="space-y-2">
-                    {Object.entries(stats.usersByRole).map(([role, count]) => (
-                      <div className="flex justify-between" key={role}>
-                        <span className="text-muted-foreground text-sm">
-                          {role}:
-                        </span>
-                        <span className="font-medium text-sm">{count}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground text-sm">
-                    Nenhum usuário encontrado
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </>
-      )}
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-4">
+        <MetricCard
+          badge={
+            <PercentDiffBadge
+              currentValue={previousTotal}
+              description={comparisonPreviousVsTwoMonths}
+              label={comparisonPreviousVsTwoMonths}
+              previousValue={twoMonthsAgoTotal}
+            />
+          }
+          isLoading={getPreviousMonthLoading || twoMonthsAgoLoading}
+          subtitle={previousMonth}
+          title="Vendas do Mês Anterior"
+          value={Number(getPreviousMonthData?.totalAmount)}
+        />
+        <MetricCard
+          badge={
+            <PercentDiffBadge
+              currentValue={currentTotal}
+              description={comparisonCurrentVsPrevious}
+              label={comparisonCurrentVsPrevious}
+              previousValue={previousTotal}
+            />
+          }
+          isLoading={getCurrentMonthLoading}
+          subtitle={currentMonth}
+          title="Vendas do Mês"
+          value={Number(getCurrentMonthData?.totalAmount)}
+        />
+        <MetricCard
+          badge={
+            <PercentDiffBadge
+              currentValue={lastDayValue}
+              description={comparisonDayVsPreviousWeek}
+              label={comparisonDayVsPreviousWeek}
+              previousValue={previousWeekDayValue}
+            />
+          }
+          isLoading={latest30DaysLoading}
+          subtitle={currentDay}
+          title="Vendas do Dia"
+          value={lastDayValue}
+        />
+        <MetricCard
+          icon={ArrowUpIcon}
+          iconClassName="size-5 text-red-500"
+          isLoading={totalBillsPayAmountLoading}
+          onClick={() => router.push("/financial/bills/pay" as Route)}
+          title="Total a Pagar"
+          value={Number(totalBillsPayAmountData?.totalAmount)}
+        />
+      </div>
+      <div className="grid gap-2 md:grid-cols-3 md:gap-4 lg:grid-cols-6">
+        <SalesChartCard />
+        <BudgetCard />
+      </div>
     </PageLayout>
   );
 }

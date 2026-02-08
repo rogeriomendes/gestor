@@ -2,7 +2,10 @@ packages:
   - apps/*
   - packages/*
 catalog:
+  date-fns: ^4.1.0
+  date-fns-tz: ^3.2.0
   dotenv: ^17.2.2
+  react: ^19.0.0
   zod: ^4.1.13
   typescript: ^5
   "@trpc/server": ^11.7.2

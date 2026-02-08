@@ -51,7 +51,11 @@ function SubscriptionDetailsPageContent() {
 
   if (!subscription) {
     return (
-      <PageLayout breadcrumbs={breadcrumbs} title="Assinatura não encontrada">
+      <PageLayout
+        breadcrumbs={breadcrumbs}
+        showBackButton
+        title="Assinatura não encontrada"
+      >
         <Card>
           <CardHeader>
             <CardTitle>Cliente sem assinatura</CardTitle>
@@ -94,6 +98,7 @@ function SubscriptionDetailsPageContent() {
         </div>
       }
       breadcrumbs={breadcrumbs}
+      showBackButton
       subtitle={`Assinatura do plano ${subscription.plan.name}`}
       title={subscription.tenant.name}
     >

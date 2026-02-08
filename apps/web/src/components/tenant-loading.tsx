@@ -11,7 +11,7 @@ export function TenantDashboardSkeleton() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
-          <Card key={i}>
+          <Card className="rounded-md" key={i}>
             <CardHeader>
               <Skeleton className="h-4 w-32" />
             </CardHeader>
@@ -33,7 +33,7 @@ export function TenantUsersSkeleton() {
         <Skeleton className="h-4 w-96" />
       </div>
 
-      <Card>
+      <Card className="rounded-md">
         <CardHeader>
           <Skeleton className="h-6 w-48" />
         </CardHeader>
@@ -69,7 +69,7 @@ export function TenantListSkeleton() {
 
       <div className="grid gap-4">
         {[1, 2, 3, 4, 5].map((i) => (
-          <Card key={i}>
+          <Card className="rounded-md" key={i}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-2">

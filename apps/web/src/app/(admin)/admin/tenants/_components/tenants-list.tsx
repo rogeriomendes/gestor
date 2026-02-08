@@ -144,7 +144,7 @@ export function TenantsList({
       columns={columns}
       data={data}
       emptyMessage="Nenhum cliente encontrado."
-      // onRowClick={(tenant) => router.push(`/admin/tenants/${tenant.id}`)}
+      onRowClick={(tenant) => router.push(`/admin/tenants/${tenant.id}`)}
     />
   );
 
@@ -153,7 +153,7 @@ export function TenantsList({
       data={data}
       emptyMessage="Nenhum cliente encontrado."
       getHref={(tenant) => `/admin/tenants/${tenant.id}` as Route}
-      // onCardClick={(tenant) => router.push(`/admin/tenants/${tenant.id}`)}
+      onCardClick={(tenant) => router.push(`/admin/tenants/${tenant.id}`)}
       renderCard={(tenant) => (
         <div className="space-y-1">
           <div className="flex items-start justify-between gap-2">

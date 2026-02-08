@@ -18,7 +18,7 @@ export function PlansStatsCards({
 }: PlansStatsCardsProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
+      <Card className="rounded-md">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Total de Planos</CardTitle>
           <Package className="h-4 w-4 text-muted-foreground" />
@@ -31,7 +31,7 @@ export function PlansStatsCards({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-md">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Planos Ativos</CardTitle>
           <PackageCheck className="h-4 w-4 text-green-600" />
@@ -46,7 +46,7 @@ export function PlansStatsCards({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-md">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Planos Inativos</CardTitle>
           <PackageX className="h-4 w-4 text-orange-600" />
@@ -61,7 +61,7 @@ export function PlansStatsCards({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-md">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">
             Total de Assinaturas

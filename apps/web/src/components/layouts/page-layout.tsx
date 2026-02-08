@@ -3,8 +3,10 @@
 import { ArrowLeft } from "lucide-react";
 import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
+import { FbiIcon } from "@/assets/FbiIcon";
 import { type BreadcrumbItemType, Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { ShowTextSwitcher } from "../show-text-switcher";
 import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
 
@@ -74,12 +76,23 @@ export function PageLayout({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col print:bg-white">
+      {/* Breadcrumbs */}
+      <div className="flex shrink-0 flex-row items-center gap-2 rounded-t-xl border-b bg-sidebar/50 px-5 py-2 md:px-6 md:py-3 print:hidden">
+        <SidebarTrigger className="cursor-pointer md:hidden" />
+        <Separator className="mr-1 h-8 md:hidden" orientation="vertical" />
+        <FbiIcon className="mr-2 size-6 md:hidden" />
+        <Breadcrumbs items={finalBreadcrumbs} />
+        {!pathname.startsWith("/admin") && (
+          <div className="ml-auto md:hidden">
+            <ShowTextSwitcher />
+          </div>
+        )}
+      </div>
+
       {/* Header */}
-      <header className="flex shrink-0 flex-row items-center justify-between gap-3 rounded-t-xl border-b bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-6 sm:py-4">
+      <header className="flex shrink-0 flex-row items-center justify-between gap-3 bg-background/95 px-4 py-2 backdrop-blur supports-backdrop-filter:bg-background/60 md:px-6 md:py-3 print:hidden">
         <div className="flex items-center gap-2 md:gap-4">
-          <SidebarTrigger className="md:hidden" />
-          <Separator className="mr-1 h-10 md:hidden" orientation="vertical" />
           {showBackButton && (
             <Button
               className="transition-all hover:bg-accent"
@@ -91,7 +104,7 @@ export function PageLayout({
               <span className="sr-only">Voltar</span>
             </Button>
           )}
-          <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-1 flex-row items-center gap-3">
             <h1 className="truncate whitespace-pre-line font-semibold text-lg tracking-tight md:text-2xl">
               {title}
             </h1>
@@ -108,13 +121,8 @@ export function PageLayout({
         </div>
       </header>
 
-      {/* Breadcrumbs */}
-      <div className="border-b bg-sidebar/50 px-4 py-2 md:px-6 md:py-3">
-        <Breadcrumbs items={finalBreadcrumbs} />
-      </div>
-
       {/* Content */}
-      <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col space-y-6 p-4 duration-300 md:p-6">
+      <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col space-y-2 p-4 pt-1 duration-300 md:space-y-4 md:p-6 md:pt-1">
         {children}
       </div>
     </div>

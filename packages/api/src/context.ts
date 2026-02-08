@@ -2,6 +2,10 @@ import { auth } from "@gestor/auth";
 import prisma from "@gestor/db";
 import { Role } from "@gestor/db/types";
 import type { NextRequest } from "next/server";
+import {
+  getActiveSubscription,
+  type SubscriptionWithPlan,
+} from "./utils/subscription";
 
 type TenantWithCredentials = {
   id: string;
@@ -19,6 +23,7 @@ export interface ContextReturn {
   session: { user: { id: string } } | null;
   db?: unknown;
   tenant: TenantWithCredentials;
+  subscription: SubscriptionWithPlan | null;
   role: Role | null;
   isSuperAdmin: boolean;
   permissions: Set<string>;
@@ -35,6 +40,7 @@ export async function createContext(req: NextRequest): Promise<ContextReturn> {
     return {
       session: null,
       tenant: null,
+      subscription: null,
       role: null,
       isSuperAdmin: false,
       permissions: new Set<string>(),
@@ -71,6 +77,7 @@ export async function createContext(req: NextRequest): Promise<ContextReturn> {
     return {
       session,
       tenant: null,
+      subscription: null,
       role: null,
       isSuperAdmin: false,
       permissions: new Set<string>(),
@@ -115,6 +122,7 @@ export async function createContext(req: NextRequest): Promise<ContextReturn> {
     return {
       session,
       tenant: null,
+      subscription: null,
       role: null,
       isSuperAdmin: false,
       permissions: new Set<string>(),
@@ -122,10 +130,13 @@ export async function createContext(req: NextRequest): Promise<ContextReturn> {
     };
   }
 
+  const subscription = tenant ? await getActiveSubscription(tenant.id) : null;
+
   return {
     session,
     db: prisma,
     tenant,
+    subscription,
     role,
     isSuperAdmin,
     permissions,

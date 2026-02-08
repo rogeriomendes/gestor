@@ -1,12 +1,16 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ExternalLink, Power, RefreshCw, Trash2, X } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+import { DatabaseIcon, Power, RefreshCw, Trash2, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { DataCards } from "@/components/lists/data-cards";
+import { DataTable } from "@/components/lists/data-table";
+import { ResponsiveList } from "@/components/lists/responsive-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,18 +28,23 @@ import {
   CredenzaHeader,
   CredenzaTitle,
 } from "@/components/ui/credenza";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import type { RouterOutputs } from "@/utils/trpc";
 import { trpc, trpcClient } from "@/utils/trpc";
 
+type ConnectionItem =
+  RouterOutputs["admin"]["status"]["listConnections"][number];
+
+type ConnectionWithId = ConnectionItem & { id: string };
+
+function formatTime(seconds: number) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
 export function ConnectionsTable() {
+  const router = useRouter();
   const [closeDialogOpen, setCloseDialogOpen] = useState(false);
   const [closeAllDialogOpen, setCloseAllDialogOpen] = useState(false);
   const [selectedConnectionId, setSelectedConnectionId] = useState<
@@ -90,15 +99,6 @@ export function ConnectionsTable() {
     },
   });
 
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
-
   const handleCloseConnection = (connectionId: string) => {
     setSelectedConnectionId(connectionId);
     setCloseDialogOpen(true);
@@ -108,11 +108,76 @@ export function ConnectionsTable() {
     setCloseAllDialogOpen(true);
   };
 
+  const connectionColumns: ColumnDef<ConnectionItem>[] = useMemo(
+    () => [
+      {
+        accessorKey: "tenantName",
+        header: "Cliente",
+        cell: ({ row }) => (
+          <span className="font-medium">{row.original.tenantName}</span>
+        ),
+      },
+      {
+        accessorKey: "database",
+        header: "Banco",
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {row.original.database === "gestor" ? "Gestor" : "DFE"}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Criada em",
+        cell: ({ row }) =>
+          formatDistanceToNow(new Date(row.original.createdAt), {
+            addSuffix: true,
+            locale: ptBR,
+          }),
+      },
+      {
+        accessorKey: "lastUsedAt",
+        header: "Última utilização",
+        cell: ({ row }) =>
+          formatDistanceToNow(new Date(row.original.lastUsedAt), {
+            addSuffix: true,
+            locale: ptBR,
+          }),
+      },
+      {
+        accessorKey: "timeActive",
+        header: "Tempo ativo",
+        cell: ({ row }) => formatTime(row.original.timeActive),
+      },
+      {
+        id: "status",
+        header: "Status",
+        cell: () => <Badge variant="default">Ativa</Badge>,
+      },
+      {
+        id: "actions",
+        header: () => <span className="text-right">Ações</span>,
+        cell: ({ row }) => (
+          <div className="flex justify-end">
+            <Button
+              onClick={() => handleCloseConnection(row.original.connectionId)}
+              size="sm"
+              variant="ghost"
+            >
+              <Power className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [handleCloseConnection]
+  );
+
   return (
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center md:gap-0">
             <div>
               <CardTitle>Conexões Ativas</CardTitle>
               <CardDescription>
@@ -146,83 +211,71 @@ export function ConnectionsTable() {
           </div>
         </CardHeader>
         <CardContent>
-          {isLoading && (
-            <div className="space-y-2">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          )}
-          {!isLoading && (!connections || connections.length === 0) && (
-            <div className="py-8 text-center text-muted-foreground">
-              Nenhuma conexão ativa
-            </div>
-          )}
-          {!isLoading && connections && connections.length > 0 && (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Banco</TableHead>
-                  <TableHead>Criada em</TableHead>
-                  <TableHead>Última utilização</TableHead>
-                  <TableHead>Tempo ativo</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {connections.map((conn) => (
-                  <TableRow key={conn.connectionId}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{conn.tenantName}</span>
-                        <Link
-                          className="text-muted-foreground hover:text-primary"
-                          href={`/admin/tenants/${conn.tenantId}`}
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                        </Link>
-                      </div>
-                      <div className="font-mono text-muted-foreground text-xs">
-                        {conn.tenantId}
-                      </div>
-                    </TableCell>
-                    <TableCell>
+          <ResponsiveList<ConnectionItem>
+            data={connections ?? []}
+            emptyDescription="Não há conexões de banco de dados ativas no momento."
+            emptyIcon={DatabaseIcon}
+            emptyTitle="Nenhuma conexão ativa"
+            isLoading={isLoading}
+            renderCards={(data: ConnectionItem[]) => (
+              <DataCards<ConnectionWithId>
+                data={data.map((c) => ({ ...c, id: c.connectionId }))}
+                emptyMessage="Nenhuma conexão ativa"
+                onCardClick={(conn: ConnectionWithId) =>
+                  router.push(`/admin/tenants/${conn.tenantId}`)
+                }
+                renderCard={(conn: ConnectionWithId) => (
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-medium">{conn.tenantName}</span>
                       <Badge variant="secondary">
                         {conn.database === "gestor" ? "Gestor" : "DFE"}
                       </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {formatDistanceToNow(new Date(conn.createdAt), {
-                        addSuffix: true,
-                        locale: ptBR,
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      {formatDistanceToNow(new Date(conn.lastUsedAt), {
-                        addSuffix: true,
-                        locale: ptBR,
-                      })}
-                    </TableCell>
-                    <TableCell>{formatTime(conn.timeActive)}</TableCell>
-                    <TableCell>
+                    </div>
+                    <div className="grid gap-1 text-muted-foreground text-sm">
+                      <p>
+                        Criada{" "}
+                        {formatDistanceToNow(new Date(conn.createdAt), {
+                          addSuffix: true,
+                          locale: ptBR,
+                        })}
+                      </p>
+                      <p>
+                        Última uso{" "}
+                        {formatDistanceToNow(new Date(conn.lastUsedAt), {
+                          addSuffix: true,
+                          locale: ptBR,
+                        })}
+                      </p>
+                      <p>Tempo ativo: {formatTime(conn.timeActive)}</p>
+                    </div>
+                    <div className="flex items-center justify-between border-t pt-3">
                       <Badge variant="default">Ativa</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
                       <Button
                         onClick={() => handleCloseConnection(conn.connectionId)}
                         size="sm"
                         variant="ghost"
                       >
-                        <Power className="h-4 w-4" />
+                        <Power className="mr-1 h-4 w-4" />
+                        Fechar
                       </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                    </div>
+                  </div>
+                )}
+              />
+            )}
+            renderTable={(data: ConnectionItem[]) => (
+              <DataTable<ConnectionItem>
+                columns={connectionColumns}
+                data={data}
+                emptyMessage="Nenhuma conexão ativa"
+                onRowClick={(conn: ConnectionItem) => {
+                  router.push(`/admin/tenants/${conn.tenantId}`);
+                }}
+              />
+            )}
+            skeletonColumnCount={7}
+          />
         </CardContent>
       </Card>
 

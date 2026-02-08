@@ -401,7 +401,7 @@ export const branchRouter = router({
       }
 
       // Soft delete
-      const deletedBranch = await prisma.tenantBranch.update({
+      await prisma.tenantBranch.update({
         where: { id: input.branchId },
         data: {
           deletedAt: new Date(),

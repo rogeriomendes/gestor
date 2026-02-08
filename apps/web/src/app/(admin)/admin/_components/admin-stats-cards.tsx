@@ -19,7 +19,7 @@ export function AdminStatsCards({
 }: AdminStatsCardsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <Card className="transition-all duration-200 hover:shadow-md">
+      <Card className="rounded-md transition-all duration-200 hover:shadow-md">
         <CardHeader>
           <CardTitle className="text-base">Total de Clientes</CardTitle>
           <CardDescription className="text-xs">
@@ -31,7 +31,7 @@ export function AdminStatsCards({
         </CardContent>
       </Card>
 
-      <Card className="transition-all duration-200 hover:shadow-md">
+      <Card className="rounded-md transition-all duration-200 hover:shadow-md">
         <CardHeader>
           <CardTitle className="text-base">Clientes Ativos</CardTitle>
           <CardDescription className="text-xs">

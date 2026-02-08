@@ -115,13 +115,12 @@ function TicketDetailsPageContent() {
   if (isLoading) {
     return (
       <PageLayout
-        backHref="/admin/support"
         breadcrumbs={[
           { label: "Dashboard", href: "/admin" as Route },
           { label: "Suporte", href: "/admin/support" as Route },
           { label: "Detalhes" },
         ]}
-        showBackButton={true}
+        showBackButton
         title="Carregando..."
       >
         <div className="space-y-6">
@@ -135,13 +134,12 @@ function TicketDetailsPageContent() {
   if (!ticket) {
     return (
       <PageLayout
-        backHref="/admin/support"
         breadcrumbs={[
           { label: "Dashboard", href: "/admin" as Route },
           { label: "Suporte", href: "/admin/support" as Route },
           { label: "Detalhes" },
         ]}
-        showBackButton={true}
+        showBackButton
         title="Ticket não encontrado"
       >
         <Card>
@@ -194,9 +192,8 @@ function TicketDetailsPageContent() {
 
   return (
     <PageLayout
-      backHref="/admin/support"
       breadcrumbs={breadcrumbs}
-      showBackButton={true}
+      showBackButton
       subtitle={`Cliente: ${ticket.tenant?.name || "N/A"} • Criado em ${new Date(ticket.createdAt).toLocaleString()}`}
       title={ticket.subject}
     >
