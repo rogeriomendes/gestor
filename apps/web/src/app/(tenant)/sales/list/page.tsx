@@ -1,6 +1,16 @@
 "use client";
 
-import { Button } from "react-day-picker";
+import { PageLayout } from "@/components/layouts/page-layout";
+import { DataTableInfinite } from "@/components/lists/data-table-infinite";
+import { SearchInput } from "@/components/search-input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -9,26 +19,19 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { DetailSales } from "./_components/DetailSales";
-
-er;
-";
-
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ptBR } from "date-fns/locale";
 import {
-  Badge,
   Calendar,
   CalendarIcon,
   ShoppingCartIcon,
   SquareUserIcon,
   XIcon,
-} from
-"lucid-eact
-
+} from "lucide-react";
 import type { Route } from "next";
-import { useEffect, useState } from "reactm/SalesGrid";
-import { SalesGrid } from "./_components";
+import { useEffect, useState } from "react";
+import { DetailSales } from "./_components/DetailSales";
+import { SalesGrid } from "./_components/SalesGrid";
 
 type SaleItem = RouterOutputs["tenant"]["sales"]["all"]["sales"][number];
 
@@ -133,18 +136,20 @@ export default function SalesList() {
                   "invisible size-5 cursor-pointer rounded-sm hover:bg-muted-foreground",
                   date && "visible"
                 )}
-                onClick={() => setDate(undefined)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setDate(undefined);
+                }}
               >
                 <XIcon className="size-5" />
               </div>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
-                captionLayout="dropdown"
-                disabled={{ after: new Date() }}
+                // disabled={{ after: new Date() }}
                 locale={ptBR}
                 mode="single"
-                onSelect={setDate}
+                onSelect={(date: Date | undefined) => setDate(date ?? undefined)}
                 selected={date}
               />
             </PopoverContent>
@@ -226,14 +231,18 @@ export default function SalesList() {
           pageItemKeys={["sales"]}
           renderRow={(sale: SaleItem) => {
             // Verificar se a venda existe
-            if (!sale) return null;
+            if (!sale) {
+              return null;
+            }
 
             // Aplicar filtro de busca
             if (search) {
               const matchesSearch =
                 sale.NUMERO_NFE?.includes(search) ||
                 sale.ID.toString().includes(search);
-              if (!matchesSearch) return null;
+              if (!matchesSearch) {
+                return null;
+              }
             }
 
             // Status da venda
@@ -251,6 +260,7 @@ export default function SalesList() {
               sale?.cliente?.pessoa?.NOME,
               <Badge
                 className={cn(statusInfo.color, "px-1.5 py-0.5 text-xs")}
+                key={sale.ID}
                 variant={statusInfo.variant}
               >
                 {statusInfo.label}

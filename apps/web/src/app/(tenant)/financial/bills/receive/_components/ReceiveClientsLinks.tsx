@@ -1,9 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { ChevronRightIcon, User } from "lucide-react";
-import type { Route } from "next";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { SearchInput } from "@/components/search-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompany } from "@/contexts/company-context";
@@ -12,6 +6,12 @@ import isActive from "@/lib/is-active";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronRightIcon, User } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 type ClientItem = RouterOutputs["tenant"]["client"]["all"]["client"][number];
 
@@ -57,7 +57,7 @@ export default function ReceiveClientsLinks() {
               "group/link flex flex-row items-center justify-between rounded-md p-3 text-xs transition-colors hover:bg-accent focus:bg-accent focus:outline-none active:bg-accent md:text-sm",
               searchParams.size === 0 ? "bg-accent" : ""
             )}
-            href={pathname}
+            href={pathname as unknown as Route}
           >
             TODOS
             <ChevronRightIcon

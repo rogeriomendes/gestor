@@ -1,12 +1,12 @@
 "use client";
 
-import { PackageIcon } from "lucide-react";
-import { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { RouterOutputs } from "@/utils/trpc";
+import { PackageIcon } from "lucide-react";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import { ProductCard } from "./ProductCard";
 
 type ProductData =
@@ -70,8 +70,10 @@ export function ProductGrid({
   function extractItemsFromPage(page: unknown): ProductData[] {
     if (Array.isArray(pageItemKeys) && pageItemKeys.length > 0) {
       for (const key of pageItemKeys) {
-        const maybe = page?.[key];
-        if (Array.isArray(maybe)) return maybe as ProductData[];
+        const maybe = page?.[key as keyof typeof page];
+        if (Array.isArray(maybe)) {
+          return maybe as ProductData[];
+        }
       }
     }
     return [];
@@ -85,7 +87,9 @@ export function ProductGrid({
       {/* Grid de produtos */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {allProducts.map((product, index) => {
-          if (!product) return null;
+          if (!product) {
+            return null;
+          }
 
           return (
             <ProductCard
@@ -101,7 +105,7 @@ export function ProductGrid({
       {isLoading && !isFetchingNextPage && (
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {Array.from({ length: 10 }).map((_, index) => (
-            <div className="space-y-2 rounded-md bg-card p-3" key={index}>
+            <div className="space-y-2 rounded-md bg-card p-3" key={`skeleton-${index}`}>
               <div className="mb-2 flex items-start justify-between">
                 <Skeleton className="mr-2 h-3 w-3/5" />
                 <Skeleton className="h-3 w-1/5" />

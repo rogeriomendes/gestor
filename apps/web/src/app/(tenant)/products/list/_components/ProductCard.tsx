@@ -1,7 +1,5 @@
 "use client";
 
-import type { Decimal } from "@prisma/client/runtime/library";
-import { DotIcon, SquarePercentIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/format-date";
@@ -12,6 +10,7 @@ import {
   formatAsCurrency,
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
+import { DotIcon, SquarePercentIcon } from "lucide-react";
 
 type ProductData =
   RouterOutputs["tenant"]["products"]["all"]["products"][number];
@@ -23,12 +22,12 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onClick }: ProductCardProps) {
   function custoFinal(
-    valuePurchase: Decimal | null,
-    ValueFreight: Decimal | null,
-    ValueIcmsSt: Decimal | null,
-    ValueIpi: Decimal | null,
-    ValueOtherTaxes: Decimal | null,
-    ValueOthersValues: Decimal | null
+    valuePurchase: unknown | null,
+    ValueFreight: unknown | null,
+    ValueIcmsSt: unknown | null,
+    ValueIpi: unknown | null,
+    ValueOtherTaxes: unknown | null,
+    ValueOthersValues: unknown | null
   ) {
     const valorCompra = Number(valuePurchase);
 
