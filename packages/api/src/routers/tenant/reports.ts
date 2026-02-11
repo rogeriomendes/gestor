@@ -37,18 +37,22 @@ export const reportsRouter = router({
           },
         });
 
-        const totalValuePerDay = salesPerDay.map(
-          ({ DATA_VENDA, _sum: { VALOR_TOTAL }, _count: { ID } }) => {
-            if (!DATA_VENDA) {
-              throw new Error("DATA_VENDA was null for a record");
-            }
-            return {
-              date: format(toZonedTime(DATA_VENDA, "UTC"), "yyyy-MM-dd"),
-              total: Number(VALOR_TOTAL || 0),
-              count: ID,
-            };
+        type SalesPerDayRow = (typeof salesPerDay)[number];
+        const totalValuePerDay = salesPerDay.map((row: SalesPerDayRow) => {
+          const {
+            DATA_VENDA,
+            _sum: { VALOR_TOTAL },
+            _count: { ID },
+          } = row;
+          if (!DATA_VENDA) {
+            throw new Error("DATA_VENDA was null for a record");
           }
-        );
+          return {
+            date: format(toZonedTime(DATA_VENDA, "UTC"), "yyyy-MM-dd"),
+            total: Number(VALOR_TOTAL ?? 0),
+            count: ID,
+          };
+        });
 
         return { totalValuePerDay };
       } catch (error) {
@@ -92,8 +96,10 @@ export const reportsRouter = router({
           },
         });
 
+        type SalesPerSellerRow = (typeof salesPerSeller)[number];
         const result = await Promise.all(
-          salesPerSeller.map(async ({ ID_VENDEDOR, _sum, _count }) => {
+          salesPerSeller.map(async (row: SalesPerSellerRow) => {
+            const { ID_VENDEDOR, _sum, _count } = row;
             const seller = await gestorPrisma.colaborador.findUnique({
               where: { ID: ID_VENDEDOR },
               select: {
@@ -105,8 +111,8 @@ export const reportsRouter = router({
 
             return {
               sellerId: ID_VENDEDOR,
-              sellerName: seller?.pessoa?.NOME || "Vendedor não encontrado",
-              total: Number(_sum.VALOR_TOTAL || 0),
+              sellerName: seller?.pessoa?.NOME ?? "Vendedor não encontrado",
+              total: Number(_sum.VALOR_TOTAL ?? 0),
               count: _count.ID,
             };
           })
@@ -205,7 +211,8 @@ export const reportsRouter = router({
           }
         >();
 
-        topProducts.forEach((item) => {
+        type TopProductRow = (typeof topProducts)[number];
+        topProducts.forEach((item: TopProductRow) => {
           const productId = item.ID_PRODUTO;
           const existing = productMap.get(productId);
 
@@ -304,37 +311,40 @@ export const reportsRouter = router({
             take: 100, // Limitar resultados para evitar sobrecarga
           });
 
-        const result = accountsReceivable.map((account) => {
-          try {
-            const pending = Number(account.VALOR || 0);
-            const dueDate = account.DATA_VENCIMENTO;
-            const isOverdue = dueDate ? dueDate < new Date() : false;
+        type AccountReceivableRow = (typeof accountsReceivable)[number];
+        const result = accountsReceivable.map(
+          (account: AccountReceivableRow) => {
+            try {
+              const pending = Number(account.VALOR ?? 0);
+              const dueDate = account.DATA_VENCIMENTO;
+              const isOverdue = dueDate ? dueDate < new Date() : false;
 
-            return {
-              id: account.ID,
-              clientName: `Cliente ${account.ID_FIN_LANCAMENTO_RECEBER}`,
-              dueDate,
-              amount: Number(account.VALOR || 0),
-              received: 0,
-              pending,
-              isOverdue,
-            };
-          } catch (itemError) {
-            console.error(
-              "Erro ao processar item de conta a receber:",
-              itemError
-            );
-            return {
-              id: account.ID,
-              clientName: "Erro ao carregar",
-              dueDate: null,
-              amount: 0,
-              received: 0,
-              pending: 0,
-              isOverdue: false,
-            };
+              return {
+                id: account.ID,
+                clientName: `Cliente ${account.ID_FIN_LANCAMENTO_RECEBER}`,
+                dueDate,
+                amount: Number(account.VALOR || 0),
+                received: 0,
+                pending,
+                isOverdue,
+              };
+            } catch (itemError) {
+              console.error(
+                "Erro ao processar item de conta a receber:",
+                itemError
+              );
+              return {
+                id: account.ID,
+                clientName: "Erro ao carregar",
+                dueDate: null,
+                amount: 0,
+                received: 0,
+                pending: 0,
+                isOverdue: false,
+              };
+            }
           }
-        });
+        );
 
         return { accountsReceivable: result };
       } catch (error) {
@@ -393,9 +403,10 @@ export const reportsRouter = router({
           },
         });
 
-        let result = stockPosition.map((product) => ({
+        type StockPositionRow = (typeof stockPosition)[number];
+        let result = stockPosition.map((product: StockPositionRow) => ({
           id: product.ID,
-          name: product.NOME || "Produto sem nome",
+          name: product.NOME ?? "Produto sem nome",
           code: product.CODIGO_INTERNO,
           currentStock: Number(product.QUANTIDADE_ESTOQUE || 0),
           minStock: Number(product.ESTOQUE_MINIMO || 0),
@@ -412,7 +423,7 @@ export const reportsRouter = router({
         }));
 
         if (lowStock) {
-          result = result.filter((r) => r.isLowStock);
+          result = result.filter((r: { isLowStock: boolean }) => r.isLowStock);
         }
 
         return { stockPosition: result };
@@ -597,7 +608,8 @@ export const reportsRouter = router({
           { date: string; total: number; [key: string]: number | string | null }
         >();
 
-        salesPerType.forEach((sale) => {
+        type SalesPerTypeRow = (typeof salesPerType)[number];
+        salesPerType.forEach((sale: SalesPerTypeRow) => {
           const { DATA_RECEBIMENTO, VALOR_RECEBIDO, fin_tipo_recebimento } =
             sale;
           const { DESCRICAO } = fin_tipo_recebimento;

@@ -124,15 +124,16 @@ export function SalesGrid({
       )}
 
       {/* Botão carregar mais */}
-      <LoadMoreButton
-        hasNextPage={hasNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        loadingMessage={loadingMessage}
-        loadMoreMessage={loadMoreMessage}
-        noMoreDataMessage={noMoreDataMessage}
-        onLoadMore={() => fetchNextPage()}
-        ref={ref}
-      />
+      <div ref={ref}>
+        <LoadMoreButton
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          loadingMessage={loadingMessage}
+          loadMoreMessage={loadMoreMessage}
+          noMoreDataMessage={noMoreDataMessage}
+          onLoadMore={() => fetchNextPage()}
+        />
+      </div>
     </div>
   );
 }

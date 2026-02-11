@@ -1,5 +1,6 @@
 "use client";
 
+import { DotIcon, SquarePercentIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/format-date";
@@ -10,7 +11,6 @@ import {
   formatAsCurrency,
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
-import { DotIcon, SquarePercentIcon } from "lucide-react";
 
 type ProductData =
   RouterOutputs["tenant"]["products"]["all"]["products"][number];

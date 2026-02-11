@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from "lucide-react";
+import type { Route } from "next";
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 
 interface NfButtonProps {
@@ -42,7 +42,7 @@ export function NfButton({
   };
 
   return (
-    <Link href={getUrl()} rel="noopener noreferrer" target="_blank">
+    <Link href={getUrl() as Route} rel="noopener noreferrer" target="_blank">
       <Button className={className} size={size} variant={variant}>
         <ExternalLinkIcon />
         <span className="text-muted-foreground text-xs">{getLabel()}</span>

@@ -135,9 +135,13 @@ export const financialReceiptRouter = router({
         });
 
         // Buscar os tipos de recebimento separadamente
+        type ReceiptRow = (typeof receipts)[number];
         const tipoRecebimentoIds = receipts
-          .map((r) => r.ID_FIN_TIPO_RECEBIMENTO)
-          .filter((id, index, self) => self.indexOf(id) === index); // Remove duplicatas
+          .map((r: ReceiptRow) => r.ID_FIN_TIPO_RECEBIMENTO)
+          .filter(
+            (id: number | null, index: number, self: (number | null)[]) =>
+              self.indexOf(id) === index
+          ); // Remove duplicatas
 
         const tiposRecebimento =
           await gestorPrisma.fin_tipo_recebimento.findMany({
@@ -158,18 +162,24 @@ export const financialReceiptRouter = router({
           });
 
         // Mapear os tipos de recebimento para os recebimentos
-        const receiptsWithTipo = receipts.map((receipt) => ({
+        type TipoRecebimentoRow = (typeof tiposRecebimento)[number];
+        const receiptsWithTipo = receipts.map((receipt: ReceiptRow) => ({
           ...receipt,
           fin_tipo_recebimento:
             tiposRecebimento.find(
-              (tipo) => tipo.ID === receipt.ID_FIN_TIPO_RECEBIMENTO
-            ) || null,
+              (tipo: TipoRecebimentoRow) =>
+                tipo.ID === receipt.ID_FIN_TIPO_RECEBIMENTO
+            ) ?? null,
         }));
 
         // Agrupar recebimentos por venda e calcular sequência das formas de pagamento
-        const vendaGroups = new Map<number, typeof receiptsWithTipo>();
+        const vendaGroups = new Map<
+          number,
+          (typeof receiptsWithTipo)[number][]
+        >();
 
-        receiptsWithTipo.forEach((receipt) => {
+        type ReceiptWithTipoRow = (typeof receiptsWithTipo)[number];
+        receiptsWithTipo.forEach((receipt: ReceiptWithTipoRow) => {
           const vendaId = receipt.ID_VENDA_CABECALHO;
           if (!vendaGroups.has(vendaId)) {
             vendaGroups.set(vendaId, []);
@@ -178,41 +188,47 @@ export const financialReceiptRouter = router({
         });
 
         // Ordenar recebimentos dentro de cada venda por DATA_VENDA e adicionar sequência
-        const receiptsWithSequencia = receiptsWithTipo.map((receipt) => {
-          const vendaReceipts = vendaGroups.get(receipt.ID_VENDA_CABECALHO)!;
-          const sortedReceipts = vendaReceipts.sort((a, b) => {
-            const dataA = a.venda_cabecalho?.DATA_VENDA;
-            const dataB = b.venda_cabecalho?.DATA_VENDA;
+        const receiptsWithSequencia = receiptsWithTipo.map(
+          (receipt: ReceiptWithTipoRow) => {
+            const vendaReceipts = vendaGroups.get(receipt.ID_VENDA_CABECALHO)!;
+            const sortedReceipts = vendaReceipts.sort(
+              (a: ReceiptWithTipoRow, b: ReceiptWithTipoRow) => {
+                const dataA = a.venda_cabecalho?.DATA_VENDA;
+                const dataB = b.venda_cabecalho?.DATA_VENDA;
 
-            if (!(dataA || dataB)) return 0;
-            if (!dataA) return 1;
-            if (!dataB) return -1;
+                if (!(dataA || dataB)) return 0;
+                if (!dataA) return 1;
+                if (!dataB) return -1;
 
-            // Primeiro critério: DATA_VENDA
-            const dataComparison =
-              new Date(dataA).getTime() - new Date(dataB).getTime();
-            if (dataComparison !== 0) return dataComparison;
+                // Primeiro critério: DATA_VENDA
+                const dataComparison =
+                  new Date(dataA).getTime() - new Date(dataB).getTime();
+                if (dataComparison !== 0) return dataComparison;
 
-            // Segundo critério: HORA_SAIDA
-            const horaA = a.venda_cabecalho?.HORA_SAIDA;
-            const horaB = b.venda_cabecalho?.HORA_SAIDA;
-            if (horaA && horaB) {
-              const horaComparison = horaA.localeCompare(horaB);
-              if (horaComparison !== 0) return horaComparison;
-            }
+                // Segundo critério: HORA_SAIDA
+                const horaA = a.venda_cabecalho?.HORA_SAIDA;
+                const horaB = b.venda_cabecalho?.HORA_SAIDA;
+                if (horaA && horaB) {
+                  const horaComparison = horaA.localeCompare(horaB);
+                  if (horaComparison !== 0) return horaComparison;
+                }
 
-            // Terceiro critério: ID do recebimento (para garantir ordem consistente)
-            return a.ID - b.ID;
-          });
-          const sequencia =
-            sortedReceipts.findIndex((r) => r.ID === receipt.ID) + 1;
+                // Terceiro critério: ID do recebimento (para garantir ordem consistente)
+                return a.ID - b.ID;
+              }
+            );
+            const sequencia =
+              sortedReceipts.findIndex(
+                (r: ReceiptWithTipoRow) => r.ID === receipt.ID
+              ) + 1;
 
-          return {
-            ...receipt,
-            SEQUENCIA_FORMA_PAGAMENTO: sequencia,
-            TOTAL_FORMAS_PAGAMENTO: sortedReceipts.length,
-          };
-        });
+            return {
+              ...receipt,
+              SEQUENCIA_FORMA_PAGAMENTO: sequencia,
+              TOTAL_FORMAS_PAGAMENTO: sortedReceipts.length,
+            };
+          }
+        );
 
         let nextCursor: typeof cursor | undefined;
         if (receiptsWithSequencia.length > limit) {

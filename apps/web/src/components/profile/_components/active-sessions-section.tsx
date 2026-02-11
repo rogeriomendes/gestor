@@ -177,7 +177,7 @@ export function ActiveSessionsSection() {
               <>
                 <div className="space-y-3">
                   {sessions.map((session) => {
-                    const DeviceIcon = getDeviceIcon(session.userAgent);
+                    const DeviceIcon = getDeviceIcon(session.userAgent ?? null);
                     const isCurrentSession =
                       session.token === currentSessionToken;
 
@@ -197,7 +197,7 @@ export function ActiveSessionsSection() {
                           <div>
                             <div className="flex items-center gap-2">
                               <p className="font-medium">
-                                {getDeviceName(session.userAgent)}
+                                {getDeviceName(session.userAgent ?? null)}
                               </p>
                               {isCurrentSession && (
                                 <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] text-primary-foreground">
@@ -206,8 +206,10 @@ export function ActiveSessionsSection() {
                               )}
                             </div>
                             <div className="flex flex-wrap gap-x-3 text-muted-foreground text-xs">
-                              {getBrowserInfo(session.userAgent) && (
-                                <span>{getBrowserInfo(session.userAgent)}</span>
+                              {getBrowserInfo(session.userAgent ?? null) && (
+                                <span>
+                                  {getBrowserInfo(session.userAgent ?? null)}
+                                </span>
                               )}
                               {session.ipAddress && (
                                 <span>IP: {session.ipAddress}</span>

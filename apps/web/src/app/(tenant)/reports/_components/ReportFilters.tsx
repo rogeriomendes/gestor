@@ -94,9 +94,11 @@ export function ReportFilters({
         {/* Período */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <label className="font-medium text-sm">Data Inicial</label>
+            <label className="font-medium text-sm" htmlFor="initial-date">
+              Data Inicial
+            </label>
             <Popover>
-              <PopoverTrigger asChild>
+              <PopoverTrigger>
                 <Button
                   className={cn(
                     "w-full justify-start text-left font-normal",
@@ -116,6 +118,7 @@ export function ReportFilters({
                 <Calendar
                   captionLayout="dropdown"
                   initialFocus
+                  locale={ptBR}
                   mode="single"
                   onSelect={(date) =>
                     date && handleFilterChange("initialDate", date)
@@ -127,9 +130,11 @@ export function ReportFilters({
           </div>
 
           <div className="space-y-2">
-            <label className="font-medium text-sm">Data Final</label>
+            <label className="font-medium text-sm" htmlFor="final-date">
+              Data Final
+            </label>
             <Popover>
-              <PopoverTrigger asChild>
+              <PopoverTrigger>
                 <Button
                   className={cn(
                     "w-full justify-start text-left font-normal",
@@ -162,18 +167,20 @@ export function ReportFilters({
         {/* Filtros Adicionais */}
         <div className="grid gap-4 md:grid-cols-3">
           <div className="space-y-2">
-            <label className="font-medium text-sm">Vendedor</label>
+            <label className="font-medium text-sm" htmlFor="seller-id">
+              Vendedor
+            </label>
             <Select
               onValueChange={(value) =>
                 handleFilterChange(
                   "sellerId",
-                  value === "all" ? undefined : Number.parseInt(value)
+                  !value || value === "all" ? undefined : Number.parseInt(value)
                 )
               }
               value={filters.sellerId?.toString() || "all"}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos os vendedores" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os vendedores</SelectItem>
@@ -183,18 +190,20 @@ export function ReportFilters({
           </div>
 
           <div className="space-y-2">
-            <label className="font-medium text-sm">Cliente</label>
+            <label className="font-medium text-sm" htmlFor="client-id">
+              Cliente
+            </label>
             <Select
               onValueChange={(value) =>
                 handleFilterChange(
                   "clientId",
-                  value === "all" ? undefined : Number.parseInt(value)
+                  !value || value === "all" ? undefined : Number.parseInt(value)
                 )
               }
               value={filters.clientId?.toString() || "all"}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos os clientes" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os clientes</SelectItem>
@@ -204,18 +213,20 @@ export function ReportFilters({
           </div>
 
           <div className="space-y-2">
-            <label className="font-medium text-sm">Categoria</label>
+            <label className="font-medium text-sm" htmlFor="category-id">
+              Categoria
+            </label>
             <Select
               onValueChange={(value) =>
                 handleFilterChange(
                   "categoryId",
-                  value === "all" ? undefined : Number.parseInt(value)
+                  !value || value === "all" ? undefined : Number.parseInt(value)
                 )
               }
               value={filters.categoryId?.toString() || "all"}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todas as categorias" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas as categorias</SelectItem>
@@ -227,13 +238,17 @@ export function ReportFilters({
 
         {/* Status */}
         <div className="space-y-2">
-          <label className="font-medium text-sm">Status</label>
+          <label className="font-medium text-sm" htmlFor="status">
+            Status
+          </label>
           <Select
-            onValueChange={(value) => handleFilterChange("status", value)}
+            onValueChange={(value) =>
+              handleFilterChange("status", value ?? "all")
+            }
             value={filters.status}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecionar status" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos</SelectItem>
@@ -257,7 +272,9 @@ export function ReportFilters({
         {reportId === "products" && (
           <div className="grid gap-4 border-t pt-4 md:grid-cols-3">
             <div className="space-y-2">
-              <label className="font-medium text-sm">Buscar Produto</label>
+              <label className="font-medium text-sm" htmlFor="search-term">
+                Buscar Produto
+              </label>
               <div className="relative">
                 <Search className="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -272,15 +289,20 @@ export function ReportFilters({
             </div>
 
             <div className="space-y-2">
-              <label className="font-medium text-sm">Exibir</label>
+              <label className="font-medium text-sm" htmlFor="limit">
+                Exibir
+              </label>
               <Select
                 onValueChange={(value) =>
-                  handleFilterChange("limit", Number.parseInt(value))
+                  handleFilterChange(
+                    "limit",
+                    value ? Number.parseInt(value) : 10
+                  )
                 }
                 value={filters.limit?.toString() || "10"}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Quantidade" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="10">Top 10</SelectItem>
@@ -292,13 +314,17 @@ export function ReportFilters({
             </div>
 
             <div className="space-y-2">
-              <label className="font-medium text-sm">Ordenar por</label>
+              <label className="font-medium text-sm" htmlFor="orderBy">
+                Ordenar por
+              </label>
               <Select
-                onValueChange={(value) => handleFilterChange("orderBy", value)}
+                onValueChange={(value) =>
+                  handleFilterChange("orderBy", value ?? "value")
+                }
                 value={filters.orderBy || "value"}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Ordenação" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="value">Valor Total</SelectItem>

@@ -61,7 +61,10 @@ export const productsRouter = router({
               },
             });
 
-          const activeHeaderIds = activePromotionHeaders.map((h) => h.ID);
+          type PromotionHeaderRow = (typeof activePromotionHeaders)[number];
+          const activeHeaderIds = activePromotionHeaders.map(
+            (h: PromotionHeaderRow) => h.ID
+          );
 
           if (activeHeaderIds.length > 0) {
             // Buscar detalhes de promoção ativos
@@ -81,7 +84,9 @@ export const productsRouter = router({
               await gestorPrisma.produto_preco_promocao.findMany({
                 where: {
                   ID_REAJUSTE_DETALHE: {
-                    in: activePromotionDetails.map((d) => d.ID),
+                    in: activePromotionDetails.map(
+                      (d: (typeof activePromotionDetails)[number]) => d.ID
+                    ),
                   },
                 },
                 select: {
@@ -90,7 +95,7 @@ export const productsRouter = router({
               });
 
             const productIdsWithPromotion = productsWithPromoPrice.map(
-              (p) => p.ID_PRODUTO
+              (p: (typeof productsWithPromoPrice)[number]) => p.ID_PRODUTO
             );
 
             if (promotion === "S") {
@@ -178,7 +183,8 @@ export const productsRouter = router({
         });
 
         // Buscar promoções ativas para os produtos
-        const productIds = products.map((p) => p.ID);
+        type ProductRow = (typeof products)[number];
+        const productIds = products.map((p: ProductRow) => p.ID);
         const activePromotions =
           await gestorPrisma.preco_reajuste_detalhe.findMany({
             where: {
@@ -196,8 +202,13 @@ export const productsRouter = router({
           });
 
         // Buscar informações dos cabeçalhos de promoção ativos
+        type ActivePromotionRow = (typeof activePromotions)[number];
         const promotionHeaderIds = [
-          ...new Set(activePromotions.map((p) => p.ID_REAJUSTE_CABECALHO)),
+          ...new Set(
+            activePromotions.map(
+              (p: ActivePromotionRow) => p.ID_REAJUSTE_CABECALHO
+            )
+          ),
         ];
         const activePromotionHeaders =
           await gestorPrisma.preco_reajuste_cabecalho.findMany({
@@ -221,13 +232,17 @@ export const productsRouter = router({
           });
 
         // Mapear cabeçalhos por ID
+        type PromotionHeaderRow2 = (typeof activePromotionHeaders)[number];
         const headersById = new Map(
-          activePromotionHeaders.map((h) => [h.ID, h])
+          activePromotionHeaders.map((h: PromotionHeaderRow2) => [h.ID, h])
         );
 
         // Mapear promoções por produto (apenas as que têm cabeçalho ativo)
-        const promotionsByProduct = new Map<number, any>();
-        activePromotions.forEach((promotion) => {
+        const promotionsByProduct = new Map<
+          number,
+          ActivePromotionRow & { header: PromotionHeaderRow2 }
+        >();
+        activePromotions.forEach((promotion: ActivePromotionRow) => {
           const header = headersById.get(promotion.ID_REAJUSTE_CABECALHO);
           if (header) {
             promotionsByProduct.set(promotion.ID_PRODUTO, {
@@ -238,9 +253,9 @@ export const productsRouter = router({
         });
 
         // Adicionar informações de promoção aos produtos
-        const productsWithPromotions = products.map((product) => ({
+        const productsWithPromotions = products.map((product: ProductRow) => ({
           ...product,
-          activePromotion: promotionsByProduct.get(product.ID) || null,
+          activePromotion: promotionsByProduct.get(product.ID) ?? null,
         }));
 
         const totalProducts = await gestorPrisma.produto.count();
@@ -344,7 +359,10 @@ export const productsRouter = router({
 
         // Buscar cabeçalhos ativos para todas as promoções
         if (allPromotions.length > 0) {
-          const headerIds = allPromotions.map((p) => p.ID_REAJUSTE_CABECALHO);
+          type AllPromotionRow = (typeof allPromotions)[number];
+          const headerIds = allPromotions.map(
+            (p: AllPromotionRow) => p.ID_REAJUSTE_CABECALHO
+          );
           const activeHeaders =
             await gestorPrisma.preco_reajuste_cabecalho.findMany({
               where: {
@@ -369,13 +387,17 @@ export const productsRouter = router({
             });
 
           // Encontrar a primeira promoção com cabeçalho ativo
-          const activePromotion = allPromotions.find((p) =>
-            activeHeaders.some((h) => h.ID === p.ID_REAJUSTE_CABECALHO)
+          type ActiveHeaderRow = (typeof activeHeaders)[number];
+          const activePromotion = allPromotions.find((p: AllPromotionRow) =>
+            activeHeaders.some(
+              (h: ActiveHeaderRow) => h.ID === p.ID_REAJUSTE_CABECALHO
+            )
           );
 
           if (activePromotion) {
             const header = activeHeaders.find(
-              (h) => h.ID === activePromotion.ID_REAJUSTE_CABECALHO
+              (h: ActiveHeaderRow) =>
+                h.ID === activePromotion.ID_REAJUSTE_CABECALHO
             );
             if (header) {
               promotionWithHeader = {

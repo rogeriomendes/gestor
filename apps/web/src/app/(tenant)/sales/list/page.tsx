@@ -1,10 +1,21 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { ptBR } from "date-fns/locale";
+import {
+  CalendarIcon,
+  ShoppingCartIcon,
+  SquareUserIcon,
+  XIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import {
   Popover,
@@ -19,17 +30,6 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
-import {
-  Calendar,
-  CalendarIcon,
-  ShoppingCartIcon,
-  SquareUserIcon,
-  XIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useEffect, useState } from "react";
 import { DetailSales } from "./_components/DetailSales";
 import { SalesGrid } from "./_components/SalesGrid";
 
@@ -149,7 +149,7 @@ export default function SalesList() {
                 // disabled={{ after: new Date() }}
                 locale={ptBR}
                 mode="single"
-                onSelect={(date: Date | undefined) => setDate(date ?? undefined)}
+                onSelect={(selectedDate) => setDate(selectedDate ?? undefined)}
                 selected={date}
               />
             </PopoverContent>

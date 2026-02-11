@@ -202,8 +202,9 @@ export const financialBillsPayRouter = router({
               })
             : [];
 
-        const parcelasCountMap = new Map(
-          parcelasCount.map((item) => [
+        type ParcelasCountRow = (typeof parcelasCount)[number];
+        const parcelasCountMap = new Map<number, number>(
+          parcelasCount.map((item: ParcelasCountRow) => [
             item.ID_FIN_LANCAMENTO_PAGAR,
             item._count.ID,
           ])
@@ -416,8 +417,8 @@ export const financialBillsPayRouter = router({
           },
         });
         const totalAmount = billsAmount.reduce(
-          (total, billsAmount) =>
-            total + Number.parseFloat(String(billsAmount.VALOR) || "0"),
+          (total: number, bill: { VALOR: unknown }) =>
+            total + Number.parseFloat(String(bill.VALOR) || "0"),
           0
         );
 

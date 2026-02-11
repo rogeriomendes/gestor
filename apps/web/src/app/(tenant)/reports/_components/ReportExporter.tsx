@@ -32,7 +32,9 @@ export function ReportExporter({
   const [exportFormat, setExportFormat] = useState("csv");
 
   const exportToCSV = (data: any[]) => {
-    if (!data || data.length === 0) return;
+    if (!data || data.length === 0) {
+      return;
+    }
 
     const headers = Object.keys(data[0]);
     const csvContent = [
@@ -114,10 +116,15 @@ export function ReportExporter({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <label className="font-medium text-sm">Formato de Exportação</label>
-          <Select onValueChange={setExportFormat} value={exportFormat}>
+          <label className="font-medium text-sm" htmlFor="export-format">
+            Formato de Exportação
+          </label>
+          <Select
+            onValueChange={(value) => setExportFormat(value ?? "csv")}
+            value={exportFormat}
+          >
             <SelectTrigger>
-              <SelectValue placeholder="Selecionar formato" />
+              <SelectValue>Selecione o formato de exportação</SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="csv">

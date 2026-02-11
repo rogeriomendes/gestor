@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import type { Route } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -22,7 +23,7 @@ export function ReportCard({ report, className }: ReportCardProps) {
   const Icon = report.icon;
 
   return (
-    <Link href={`/reports/${report.id}`}>
+    <Link href={`/reports/${report.id}` as Route}>
       <Card
         className={cn(
           "group h-full cursor-pointer transition-all duration-200 hover:shadow-lg",

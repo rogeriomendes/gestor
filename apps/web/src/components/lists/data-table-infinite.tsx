@@ -177,15 +177,16 @@ export function DataTableInfinite<T>({
         <EmptyState icon={emptyIcon} message={emptyMessage} />
       )}
 
-      <LoadMoreButton
-        hasNextPage={hasNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        loadingMessage={loadingMessage}
-        loadMoreMessage={loadMoreMessage}
-        noMoreDataMessage={noMoreDataMessage}
-        onLoadMore={() => void fetchNextPage()}
-        ref={ref}
-      />
+      <div ref={ref}>
+        <LoadMoreButton
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          loadingMessage={loadingMessage}
+          loadMoreMessage={loadMoreMessage}
+          noMoreDataMessage={noMoreDataMessage}
+          onLoadMore={() => void fetchNextPage()}
+        />
+      </div>
     </div>
   );
 }

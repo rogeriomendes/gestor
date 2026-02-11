@@ -84,7 +84,8 @@ export const invoiceDfeRouter = router({
         const empresaCnpjs = invoiceDfe
           .map((dfe: { CNPJ_EMPRESA: string | null }) => dfe.CNPJ_EMPRESA)
           .filter(
-            (cnpj): cnpj is string => cnpj !== null && cnpj !== undefined
+            (cnpj: string | null | undefined): cnpj is string =>
+              cnpj !== null && cnpj !== undefined
           );
 
         const empresas =
@@ -100,9 +101,13 @@ export const invoiceDfeRouter = router({
               })
             : [];
 
-        const empresaMap = new Map(empresas.map((e) => [e.CNPJ, e]));
+        type EmpresaRow = (typeof empresas)[number];
+        const empresaMap = new Map(
+          empresas.map((e: EmpresaRow) => [e.CNPJ, e])
+        );
 
-        const invoiceDfeWithEmpresa = invoiceDfe.map((dfe) => ({
+        type InvoiceDfeRow = (typeof invoiceDfe)[number];
+        const invoiceDfeWithEmpresa = invoiceDfe.map((dfe: InvoiceDfeRow) => ({
           ...dfe,
           empresa: dfe.CNPJ_EMPRESA
             ? (empresaMap.get(dfe.CNPJ_EMPRESA) ?? null)

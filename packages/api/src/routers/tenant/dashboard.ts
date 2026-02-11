@@ -1,6 +1,6 @@
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { toZonedTime } from "date-fns-tz";
+import { ptBR } from "date-fns/locale";
 import { z } from "zod";
 import { router, tenantProcedure } from "../..";
 import { getGestorPrismaClient } from "../../utils/tenant-db-clients";
@@ -27,19 +27,22 @@ export const dashboardRouter = router({
         },
       });
 
-      const totalValuePerDay = salesPerDay.map(
-        ({ DATA_VENDA, _sum: { VALOR_TOTAL } }) => {
-          if (!DATA_VENDA) {
-            throw new Error("DATA_VENDA is null");
-          }
-          return {
-            date: format(toZonedTime(DATA_VENDA, "UTC"), "EEEEEE, dd MMM.", {
-              locale: ptBR,
-            }),
-            total: Number(VALOR_TOTAL),
-          };
+      type SalesPerDayRow = (typeof salesPerDay)[number];
+      const totalValuePerDay = salesPerDay.map((row: SalesPerDayRow) => {
+        const {
+          DATA_VENDA,
+          _sum: { VALOR_TOTAL },
+        } = row;
+        if (!DATA_VENDA) {
+          throw new Error("DATA_VENDA is null");
         }
-      );
+        return {
+          date: format(toZonedTime(DATA_VENDA, "UTC"), "EEEEEE, dd MMM.", {
+            locale: ptBR,
+          }),
+          total: Number(VALOR_TOTAL),
+        };
+      });
 
       return { totalValuePerDay };
     } catch (error) {
@@ -76,7 +79,7 @@ export const dashboardRouter = router({
         });
 
         const totalAmount = sales.reduce(
-          (total, payment) =>
+          (total: number, payment: { VALOR_TOTAL: unknown }) =>
             total +
             (Number.parseFloat(String(payment.VALOR_TOTAL ?? "0")) || 0),
           0
@@ -126,7 +129,7 @@ export const dashboardRouter = router({
         });
 
         const totalAmount = sales.reduce(
-          (total, payment) =>
+          (total: number, payment: { VALOR_TOTAL: unknown }) =>
             total +
             (Number.parseFloat(String(payment.VALOR_TOTAL ?? "0")) || 0),
           0
@@ -177,7 +180,7 @@ export const dashboardRouter = router({
         });
 
         const totalAmount = sales.reduce(
-          (total, payment) =>
+          (total: number, payment: { VALOR_TOTAL: unknown }) =>
             total +
             (Number.parseFloat(String(payment.VALOR_TOTAL ?? "0")) || 0),
           0

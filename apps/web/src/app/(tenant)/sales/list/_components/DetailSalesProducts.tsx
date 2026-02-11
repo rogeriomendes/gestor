@@ -47,7 +47,7 @@ export function DetailSalesProducts({
     );
   }
 
-  return saleProductsData?.sale.map((products) => (
+  return saleProductsData?.sale.map((products: any) => (
     <div
       className="group rounded-md p-2 transition-colors hover:bg-muted/50"
       key={products?.ID}

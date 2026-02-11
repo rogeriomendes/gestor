@@ -3,8 +3,8 @@
 import { Info, SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
+import { SearchInput } from "@/components/search-input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReportCard } from "./_components/ReportCard";
 import {
@@ -62,11 +62,10 @@ export default function ReportsPage() {
         {/* Barra de busca e filtros */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="relative max-w-md flex-1">
-            <Input
-              clearable
-              iconStart={SearchIcon}
-              keyPress
-              onChange={(e) => setSearchQuery(e.target.value)}
+            <SearchInput
+              enableF9Shortcut
+              icon={<SearchIcon className="size-4" />}
+              onChange={setSearchQuery}
               placeholder="Buscar relatórios..."
               value={searchQuery}
             />

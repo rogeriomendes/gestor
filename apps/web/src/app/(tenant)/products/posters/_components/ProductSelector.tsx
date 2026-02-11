@@ -88,7 +88,7 @@ export function ProductSelector({
             </div>
           )}
 
-          {products.map((product) => {
+          {products.map((product: Product) => {
             const isSelected = selectedIds.includes(String(product.ID));
             const isKg = product.unidade_produto?.SIGLA === "KG";
             const displayCode =

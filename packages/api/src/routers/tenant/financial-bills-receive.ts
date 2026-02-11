@@ -1,3 +1,4 @@
+import type { Tenant } from "@gestor/db/types";
 import { z } from "zod";
 import { router, tenantProcedure } from "../..";
 import { getGestorPrismaClient } from "../../utils/tenant-db-clients";
@@ -306,8 +307,7 @@ export const financialBillsReceiveRouter = router({
       try {
         const { clientId, companyId } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const receiveAmount = await gestorPrisma.fin_parcela_receber.findMany({
           where: {
             PARCELA_CANCELADA: "N",
@@ -337,25 +337,29 @@ export const financialBillsReceiveRouter = router({
           },
         });
 
-        const totalAmount = receiveAmount.reduce((total, receive) => {
-          const valorAReceber = Number.parseFloat(
-            String(receive.fin_lancamento_receber.VALOR_A_RECEBER) || "0"
-          );
-
-          // Se o status é 3 (parcialmente pago), subtrair o valor já recebido
-          if (receive.ID_FIN_STATUS_PARCELA === 3) {
-            const valorRecebido = receive.fin_parcela_recebimento.reduce(
-              (sum: any, recebimento: any) =>
-                sum +
-                Number.parseFloat(String(recebimento.VALOR_RECEBIDO) || "0"),
-              0
+        type ReceiveRow = (typeof receiveAmount)[number];
+        const totalAmount = receiveAmount.reduce(
+          (total: number, receive: ReceiveRow) => {
+            const valorAReceber = Number.parseFloat(
+              String(receive.fin_lancamento_receber.VALOR_A_RECEBER) || "0"
             );
-            return total + (valorAReceber - valorRecebido);
-          }
 
-          // Para outros status (1 = em aberto, etc.), usar o valor total
-          return total + valorAReceber;
-        }, 0);
+            // Se o status é 3 (parcialmente pago), subtrair o valor já recebido
+            if (receive.ID_FIN_STATUS_PARCELA === 3) {
+              const valorRecebido = receive.fin_parcela_recebimento.reduce(
+                (sum: number, recebimento: { VALOR_RECEBIDO: unknown }) =>
+                  sum +
+                  Number.parseFloat(String(recebimento.VALOR_RECEBIDO) || "0"),
+                0
+              );
+              return total + (valorAReceber - valorRecebido);
+            }
+
+            // Para outros status (1 = em aberto, etc.), usar o valor total
+            return total + valorAReceber;
+          },
+          0
+        );
 
         return { totalAmount };
       } catch (error) {
@@ -378,8 +382,7 @@ export const financialBillsReceiveRouter = router({
       try {
         const { clientId, companyId } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const receive = await gestorPrisma.fin_parcela_receber.findMany({
           take: 1,
           where: {
@@ -433,9 +436,10 @@ export const financialBillsReceiveRouter = router({
           });
 
         // Buscar nomes dos colaboradores separadamente
+        type AmountLoweredRow = (typeof amountLowered)[number];
         const colaboradorIds = amountLowered
-          .map((item) => item.ID_COLABORADOR)
-          .filter((id): id is number => id !== null);
+          .map((item: AmountLoweredRow) => item.ID_COLABORADOR)
+          .filter((id: number | null): id is number => id !== null);
 
         const colaboradores = await gestorPrisma.colaborador.findMany({
           where: {
@@ -452,8 +456,12 @@ export const financialBillsReceiveRouter = router({
         });
 
         // Criar um mapa para facilitar a busca
+        type ColaboradorRow = (typeof colaboradores)[number];
         const colaboradorMap = new Map(
-          colaboradores.map((col) => [col.ID, col.pessoa?.NOME || null])
+          colaboradores.map((col: ColaboradorRow) => [
+            col.ID,
+            col.pessoa?.NOME ?? null,
+          ])
         );
 
         const groupedAmountLowered = amountLowered.reduce(
@@ -465,16 +473,16 @@ export const financialBillsReceiveRouter = router({
               DATA_RECEBIMENTO: Date | null;
               VALOR_RECEBIDO: number;
             }[],
-            amountLowered
+            row: AmountLoweredRow
           ) => {
-            const amountLoweredCollaboratorId = amountLowered.ID_COLABORADOR;
+            const amountLoweredCollaboratorId = row.ID_COLABORADOR;
             const existingAmountLowered = result.find(
               (item) => item.ID_COLABORADOR === amountLoweredCollaboratorId
             );
 
             if (existingAmountLowered) {
               existingAmountLowered.VALOR_RECEBIDO += Number.parseFloat(
-                String(amountLowered.VALOR_RECEBIDO) || "0"
+                String(row.VALOR_RECEBIDO) || "0"
               );
             } else {
               const raw = amountLoweredCollaboratorId
@@ -485,10 +493,10 @@ export const financialBillsReceiveRouter = router({
               result.push({
                 ID_COLABORADOR: amountLoweredCollaboratorId,
                 NOME_COLABORADOR: nomeColaborador,
-                DATA_RECEBIMENTO: amountLowered.DATA_RECEBIMENTO,
-                HORA_RECEBIMENTO: amountLowered.HORA_RECEBIMENTO,
+                DATA_RECEBIMENTO: row.DATA_RECEBIMENTO,
+                HORA_RECEBIMENTO: row.HORA_RECEBIMENTO,
                 VALOR_RECEBIDO: Number.parseFloat(
-                  String(amountLowered.VALOR_RECEBIDO) || "0"
+                  String(row.VALOR_RECEBIDO) || "0"
                 ),
               });
             }

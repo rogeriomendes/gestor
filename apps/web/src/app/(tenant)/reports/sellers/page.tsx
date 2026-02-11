@@ -58,7 +58,9 @@ export default function SellersReportPage() {
     enabled: !!tenant,
   });
 
-  if (!report) return null;
+  if (!report) {
+    return null;
+  }
 
   const handleFiltersChange = (newFilters: ReportFiltersType) => {
     setFilters(newFilters);
@@ -90,14 +92,14 @@ export default function SellersReportPage() {
     <PageLayout
       actions={
         <div className="flex flex-wrap gap-2">
-          <Button asChild size="sm" variant="outline">
+          <Button size="sm" variant="outline">
             <Link href="/reports">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Voltar
             </Link>
           </Button>
           <Dialog onOpenChange={setIsFilterModalOpen} open={isFilterModalOpen}>
-            <DialogTrigger asChild>
+            <DialogTrigger>
               <Button size="sm" variant="outline">
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 Filtrar Período
@@ -119,7 +121,7 @@ export default function SellersReportPage() {
             </DialogContent>
           </Dialog>
           <Dialog onOpenChange={setIsExportModalOpen} open={isExportModalOpen}>
-            <DialogTrigger asChild>
+            <DialogTrigger>
               <Button size="sm">
                 <DownloadIcon className="mr-2 h-4 w-4" />
                 Exportar

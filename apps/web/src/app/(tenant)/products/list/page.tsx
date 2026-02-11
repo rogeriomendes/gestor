@@ -1,6 +1,5 @@
 "use client";
 
-import type { Decimal } from "@prisma/client/runtime/library";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   type IDetectedBarcode,
@@ -121,12 +120,12 @@ export default function ProductsList() {
   }
 
   function custoFinal(
-    valuePurchase: Decimal | null,
-    ValueFreight: Decimal | null,
-    ValueIcmsSt: Decimal | null,
-    ValueIpi: Decimal | null,
-    ValueOtherTaxes: Decimal | null,
-    ValueOthersValues: Decimal | null
+    valuePurchase: number | null,
+    ValueFreight: number | null,
+    ValueIcmsSt: number | null,
+    ValueIpi: number | null,
+    ValueOtherTaxes: number | null,
+    ValueOthersValues: number | null
   ) {
     const valorCompra = Number(valuePurchase);
 

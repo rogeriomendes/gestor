@@ -385,20 +385,21 @@ export const financialClosingRouter = router({
             : null,
         }));
 
+        type PaymentAmountRow = (typeof paymentsAmount)[number];
         const paymentsDnAmount = paymentsAmount
           .filter(
-            (payment) =>
+            (payment: PaymentAmountRow) =>
               payment.ST_SUPRIMENTO === "N" &&
               payment.fin_tipo_recebimento?.TIPO === "DN"
           )
           .reduce(
-            (total, payment) =>
+            (total: number, payment: PaymentAmountRow) =>
               total + Number.parseFloat(String(payment.VALOR_RECEBIDO) || "0"),
             0
           );
 
         const groupedPaymentsAmount = paymentsAmount
-          .filter((payment) => payment.ST_SUPRIMENTO === "N")
+          .filter((payment: PaymentAmountRow) => payment.ST_SUPRIMENTO === "N")
           .reduce(
             (
               result: {
@@ -407,7 +408,7 @@ export const financialClosingRouter = router({
                 TIPO: string | null;
                 TOTAL: number;
               }[],
-              payment
+              payment: PaymentAmountRow
             ) => {
               const paymentId = payment.fin_tipo_recebimento.ID;
               const existingPayment = result.find(
@@ -430,31 +431,40 @@ export const financialClosingRouter = router({
             },
             []
           )
-          .map((payment) => ({
-            ...payment,
-            TOTAL: Number.parseFloat(String(payment.TOTAL)),
-          }));
+          .map(
+            (payment: {
+              ID: number;
+              DESCRICAO: string | null;
+              TIPO: string | null;
+              TOTAL: number;
+            }) => ({
+              ...payment,
+              TOTAL: Number.parseFloat(String(payment.TOTAL)),
+            })
+          );
 
         const groupedPaymentsTotalAmount = groupedPaymentsAmount.reduce(
-          (total, payment) => total + payment.TOTAL,
+          (total: number, payment: { ID: number; TOTAL: number }) =>
+            total + payment.TOTAL,
           0
         );
 
         const supply = paymentsAmount
-          .filter((payment) => payment.ST_SUPRIMENTO === "S")
-          .map((payment) => ({
+          .filter((payment: PaymentAmountRow) => payment.ST_SUPRIMENTO === "S")
+          .map((payment: PaymentAmountRow) => ({
             ID: payment.ID,
             VALOR_RECEBIDO: payment.VALOR_RECEBIDO,
             HISTORICO: payment.HISTORICO,
             HORA_RECEBIMENTO: payment.HORA_RECEBIMENTO,
           }));
 
+        type DevolutionRow = (typeof devolution)[number];
         const receiptTypeId = devolution
           .map(
-            (devolution) =>
-              devolution.venda_recebimento[0]?.ID_FIN_TIPO_RECEBIMENTO
+            (row: DevolutionRow) =>
+              row.venda_recebimento[0]?.ID_FIN_TIPO_RECEBIMENTO
           )
-          .filter((id): id is number => id !== undefined);
+          .filter((id: number | undefined): id is number => id !== undefined);
 
         const receiptType = await gestorPrisma.fin_tipo_recebimento.findMany({
           where: {
@@ -467,54 +477,67 @@ export const financialClosingRouter = router({
           },
         });
 
-        const devolutionDn = devolutionWithVendedor.filter((devolution) => {
-          const TypeId =
-            devolution.venda_recebimento[0]?.ID_FIN_TIPO_RECEBIMENTO;
-          return receiptType.some((type) => type.ID === TypeId);
-        });
+        type DevolutionWithVendedorRow =
+          (typeof devolutionWithVendedor)[number];
+        const devolutionDn = devolutionWithVendedor.filter(
+          (row: DevolutionWithVendedorRow) => {
+            const TypeId = row.venda_recebimento[0]?.ID_FIN_TIPO_RECEBIMENTO;
+            return receiptType.some(
+              (t: (typeof receiptType)[number]) => t.ID === TypeId
+            );
+          }
+        );
 
+        type AllDiscountRow = (typeof allDiscountWithVendedor)[number];
         const discount = allDiscountWithVendedor
-          .filter((item) => Number(item.VALOR_DESCONTO) > 0)
-          .sort((a, b) => Number(b.VALOR_DESCONTO) - Number(a.VALOR_DESCONTO));
+          .filter((item: AllDiscountRow) => Number(item.VALOR_DESCONTO) > 0)
+          .sort(
+            (a: AllDiscountRow, b: AllDiscountRow) =>
+              Number(b.VALOR_DESCONTO) - Number(a.VALOR_DESCONTO)
+          );
 
+        type SupplyRow = (typeof supply)[number];
         const supplyAmount = supply.reduce(
-          (total, payment) =>
+          (total: number, payment: SupplyRow) =>
             total + Number.parseFloat(String(payment.VALOR_RECEBIDO) || "0"),
           0
         );
 
+        type SangriaRow = (typeof sangria)[number];
         const sangriaAmount = sangria.reduce(
-          (total, payment) =>
+          (total: number, payment: SangriaRow) =>
             total + Number.parseFloat(String(payment.VALOR_PAGO) || "0"),
           0
         );
 
+        type InstallmentRow = (typeof installments)[number];
         const installmentsAmount = installments.reduce(
-          (total, installment) =>
+          (total: number, installment: InstallmentRow) =>
             total + Number.parseFloat(String(installment.VALOR_TOTAL) || "0"),
           0
         );
 
+        type BudgetWithVendedorRow = (typeof budgetWithVendedor)[number];
         const budgetAmount = budgetWithVendedor.reduce(
-          (total, budget) =>
+          (total: number, budget: BudgetWithVendedorRow) =>
             total + Number.parseFloat(String(budget.VALOR_TOTAL) || "0"),
           0
         );
 
         const devolutionDnAmount = devolutionDn.reduce(
-          (total, devolution) =>
+          (total: number, devolution: DevolutionWithVendedorRow) =>
             total + Number.parseFloat(String(devolution.VALOR_TOTAL) || "0"),
           0
         );
 
         const devolutionAmount = devolutionWithVendedor.reduce(
-          (total, devolution) =>
+          (total: number, devolution: DevolutionWithVendedorRow) =>
             total + Number.parseFloat(String(devolution.VALOR_TOTAL) || "0"),
           0
         );
 
         const discountAmount = allDiscountWithVendedor.reduce(
-          (total, discount) =>
+          (total: number, discount: AllDiscountRow) =>
             total + Number.parseFloat(String(discount.VALOR_DESCONTO) || "0"),
           0
         );

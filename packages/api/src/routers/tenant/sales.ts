@@ -124,9 +124,10 @@ export const salesRouter = router({
         });
 
         // Buscar dados das contas caixa para as vendas
+        type SaleRow = (typeof sales)[number];
         const contaCaixaIds = sales
-          .map((sale) => sale.ID_CONTA_CAIXA)
-          .filter((id): id is number => id !== null && id !== 0);
+          .map((sale: SaleRow) => sale.ID_CONTA_CAIXA)
+          .filter((id: number | null): id is number => id !== null && id !== 0);
 
         const contasCaixa =
           contaCaixaIds.length > 0
@@ -144,12 +145,13 @@ export const salesRouter = router({
             : [];
 
         // Criar um mapa para facilitar a busca
+        type ContaCaixaRow = (typeof contasCaixa)[number];
         const contaCaixaMap = new Map(
-          contasCaixa.map((conta) => [conta.ID, conta])
+          contasCaixa.map((conta: ContaCaixaRow) => [conta.ID, conta])
         );
 
         // Adicionar dados da conta caixa às vendas
-        const salesWithAccount = sales.map((sale) => ({
+        const salesWithAccount = sales.map((sale: SaleRow) => ({
           ...sale,
           conta_caixa: sale.ID_CONTA_CAIXA
             ? contaCaixaMap.get(sale.ID_CONTA_CAIXA) || null

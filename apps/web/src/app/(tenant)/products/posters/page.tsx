@@ -12,7 +12,7 @@ export default function PostersPage() {
         Mas como PageLayout provavelmente tem header/sidebar, precisamos garantir que isso suma na impressão.
         O PageLayout geralmente aceita className ou similar, ou precisaremos de um div wrapper.
       */}
-      <style global jsx>{`
+      <style>{`
         @page {
           size: auto;
           margin: 0mm;

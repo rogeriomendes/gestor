@@ -1,12 +1,12 @@
 "use client";
 
+import { PackageIcon } from "lucide-react";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { RouterOutputs } from "@/utils/trpc";
-import { PackageIcon } from "lucide-react";
-import { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
 import { ProductCard } from "./ProductCard";
 
 type ProductData =
@@ -105,7 +105,10 @@ export function ProductGrid({
       {isLoading && !isFetchingNextPage && (
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {Array.from({ length: 10 }).map((_, index) => (
-            <div className="space-y-2 rounded-md bg-card p-3" key={`skeleton-${index}`}>
+            <div
+              className="space-y-2 rounded-md bg-card p-3"
+              key={`skeleton-${index}`}
+            >
               <div className="mb-2 flex items-start justify-between">
                 <Skeleton className="mr-2 h-3 w-3/5" />
                 <Skeleton className="h-3 w-1/5" />
@@ -132,15 +135,16 @@ export function ProductGrid({
       )}
 
       {/* Botão carregar mais */}
-      <LoadMoreButton
-        hasNextPage={hasNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        loadingMessage={loadingMessage}
-        loadMoreMessage={loadMoreMessage}
-        noMoreDataMessage={noMoreDataMessage}
-        onLoadMore={() => fetchNextPage()}
-        ref={ref}
-      />
+      <div ref={ref}>
+        <LoadMoreButton
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          loadingMessage={loadingMessage}
+          loadMoreMessage={loadMoreMessage}
+          noMoreDataMessage={noMoreDataMessage}
+          onLoadMore={() => fetchNextPage()}
+        />
+      </div>
     </div>
   );
 }
