@@ -376,41 +376,53 @@ export const tenantsRouter = router({
 
       // Preparar dados para atualização (apenas campos que existem no Tenant)
       const updateFields: any = {};
-      if (updateData.name !== undefined) updateFields.name = updateData.name;
-      if (updateData.slug !== undefined) updateFields.slug = updateData.slug;
-      if (updateData.active !== undefined)
+      if (updateData.name !== undefined) {
+        updateFields.name = updateData.name;
+      }
+      if (updateData.slug !== undefined) {
+        updateFields.slug = updateData.slug;
+      }
+      if (updateData.active !== undefined) {
         updateFields.active = updateData.active;
-      if (updateData.email !== undefined)
+      }
+      if (updateData.email !== undefined) {
         updateFields.email =
           updateData.email && updateData.email.trim() !== ""
             ? updateData.email
             : null;
-      if (updateData.phone !== undefined)
+      }
+      if (updateData.phone !== undefined) {
         updateFields.phone = updateData.phone || null;
-      if (updateData.website !== undefined)
+      }
+      if (updateData.website !== undefined) {
         updateFields.website =
           updateData.website && updateData.website.trim() !== ""
             ? updateData.website
             : null;
-      if (updateData.notes !== undefined)
+      }
+      if (updateData.notes !== undefined) {
         updateFields.notes = updateData.notes || null;
+      }
 
       // Campos de credenciais
-      if (updateData.dbHost !== undefined)
+      if (updateData.dbHost !== undefined) {
         updateFields.dbHost =
           updateData.dbHost && updateData.dbHost.trim() !== ""
             ? updateData.dbHost.trim()
             : null;
-      if (updateData.dbPort !== undefined)
+      }
+      if (updateData.dbPort !== undefined) {
         updateFields.dbPort =
           updateData.dbPort && updateData.dbPort.trim() !== ""
             ? updateData.dbPort.trim()
             : null;
-      if (updateData.dbUsername !== undefined)
+      }
+      if (updateData.dbUsername !== undefined) {
         updateFields.dbUsername =
           updateData.dbUsername && updateData.dbUsername.trim() !== ""
             ? updateData.dbUsername.trim()
             : null;
+      }
       if (updateData.dbPassword !== undefined) {
         // Criptografar senha apenas se fornecida e não vazia
         updateFields.dbPassword =

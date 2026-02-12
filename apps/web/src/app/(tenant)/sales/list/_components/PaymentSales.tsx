@@ -6,12 +6,12 @@ import { trpc } from "@/utils/trpc";
 import type { Decimal } from "../../../../../../../../packages/db/prisma/generated/internal/prismaNamespace";
 
 // type paymentData = RouterOutputs["sales"]["byId"]["sales"]["venda_recebimento"];
-type paymentData = {
+interface paymentData {
   ID_FIN_TIPO_RECEBIMENTO: number;
   VALOR_RECEBIDO: Decimal | null;
   VALOR_DINHEIRO: Decimal | null;
   VALOR_TROCO: Decimal | null;
-};
+}
 
 export function PaymentSales({ paymentData }: { paymentData: paymentData }) {
   const { tenant } = useTenant();

@@ -38,7 +38,7 @@ const activateAccountSchema = z
   });
 
 function ActivateAccountContent() {
-  const router = useRouter();
+  const _router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const errorParam = searchParams.get("error");

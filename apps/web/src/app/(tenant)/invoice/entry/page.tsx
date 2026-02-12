@@ -183,7 +183,9 @@ export default function InvoiceEntryList() {
           onRowClick={handleRowClick}
           pageItemKeys={["invoiceEntry"]}
           renderRow={(entry: EntryItem) => {
-            if (!entry) return null;
+            if (!entry) {
+              return null;
+            }
             return [
               "",
               entry.ID_EMPRESA,

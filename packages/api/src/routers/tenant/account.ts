@@ -16,7 +16,6 @@ export const accountRouter = router({
         const whereCompany =
           companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
         const accounts = await gestorPrisma.conta_caixa.findMany({
@@ -55,7 +54,6 @@ export const accountRouter = router({
         const whereCompany =
           companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
         const account = await gestorPrisma.conta_caixa.findUnique({

@@ -174,7 +174,9 @@ export function ReportFilters({
               onValueChange={(value) =>
                 handleFilterChange(
                   "sellerId",
-                  !value || value === "all" ? undefined : Number.parseInt(value)
+                  !value || value === "all"
+                    ? undefined
+                    : Number.parseInt(value, 10)
                 )
               }
               value={filters.sellerId?.toString() || "all"}
@@ -197,7 +199,9 @@ export function ReportFilters({
               onValueChange={(value) =>
                 handleFilterChange(
                   "clientId",
-                  !value || value === "all" ? undefined : Number.parseInt(value)
+                  !value || value === "all"
+                    ? undefined
+                    : Number.parseInt(value, 10)
                 )
               }
               value={filters.clientId?.toString() || "all"}
@@ -220,7 +224,9 @@ export function ReportFilters({
               onValueChange={(value) =>
                 handleFilterChange(
                   "categoryId",
-                  !value || value === "all" ? undefined : Number.parseInt(value)
+                  !value || value === "all"
+                    ? undefined
+                    : Number.parseInt(value, 10)
                 )
               }
               value={filters.categoryId?.toString() || "all"}
@@ -296,7 +302,7 @@ export function ReportFilters({
                 onValueChange={(value) =>
                   handleFilterChange(
                     "limit",
-                    value ? Number.parseInt(value) : 10
+                    value ? Number.parseInt(value, 10) : 10
                   )
                 }
                 value={filters.limit?.toString() || "10"}

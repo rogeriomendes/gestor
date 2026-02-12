@@ -16,7 +16,10 @@ import { trpc } from "@/utils/trpc";
 import { BudgetCard } from "./_components/BudgetCard";
 import { SalesChartCard } from "./_components/SalesChartCard";
 
-type DayValue = { date?: string; total?: number };
+interface DayValue {
+  date?: string;
+  total?: number;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -71,9 +74,7 @@ export default function DashboardPage() {
 
   const totalValuePerDay = latest30DaysData?.totalValuePerDay ?? [];
   const lastDay: DayValue | null =
-    totalValuePerDay.length > 0
-      ? (totalValuePerDay[totalValuePerDay.length - 1] ?? null)
-      : null;
+    totalValuePerDay.length > 0 ? (totalValuePerDay.at(-1) ?? null) : null;
   const lastDayValue = lastDay?.total ? Number(lastDay.total) : 0;
 
   const currentDate = new Date();

@@ -48,42 +48,40 @@ export function DetailEntryProducts({ entryID }: { entryID: number }) {
               ))}
             </div>
           ) : (
-            <>
-              {invoiceEntryProductsQuery.data?.invoiceEntry.map(
-                (entry: EntryProductItem) => (
-                  <div
-                    className="group rounded-md p-2 transition-colors hover:bg-muted/50"
-                    key={entry.ID}
-                  >
-                    <div className="flex items-center">
-                      <div className="space-y-1">
-                        <p className="text-xs leading-none md:text-sm">
-                          {entry.NOME_PRODUTO}
-                        </p>
-                        <div className="flex gap-2 text-muted-foreground text-xs md:text-sm">
-                          <div className="flex items-center">
-                            {Number(entry.QUANTIDADE_COMERCIAL)}{" "}
-                            {entry.UNIDADE_COMERCIAL}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="ml-auto space-y-1">
-                        <div className="flex flex-col items-center text-xs md:text-sm">
-                          {formatAsCurrency(Number(entry.VALOR_TOTAL))}
-                        </div>
-                        <div className="flex flex-col items-center text-muted-foreground text-xs md:text-sm">
-                          {formatAsCurrency(
-                            Number(entry.VALOR_TOTAL) /
-                              Number(entry.QUANTIDADE_COMERCIAL)
-                          )}{" "}
+            invoiceEntryProductsQuery.data?.invoiceEntry.map(
+              (entry: EntryProductItem) => (
+                <div
+                  className="group rounded-md p-2 transition-colors hover:bg-muted/50"
+                  key={entry.ID}
+                >
+                  <div className="flex items-center">
+                    <div className="space-y-1">
+                      <p className="text-xs leading-none md:text-sm">
+                        {entry.NOME_PRODUTO}
+                      </p>
+                      <div className="flex gap-2 text-muted-foreground text-xs md:text-sm">
+                        <div className="flex items-center">
+                          {Number(entry.QUANTIDADE_COMERCIAL)}{" "}
                           {entry.UNIDADE_COMERCIAL}
                         </div>
                       </div>
                     </div>
+                    <div className="ml-auto space-y-1">
+                      <div className="flex flex-col items-center text-xs md:text-sm">
+                        {formatAsCurrency(Number(entry.VALOR_TOTAL))}
+                      </div>
+                      <div className="flex flex-col items-center text-muted-foreground text-xs md:text-sm">
+                        {formatAsCurrency(
+                          Number(entry.VALOR_TOTAL) /
+                            Number(entry.QUANTIDADE_COMERCIAL)
+                        )}{" "}
+                        {entry.UNIDADE_COMERCIAL}
+                      </div>
+                    </div>
                   </div>
-                )
-              )}
-            </>
+                </div>
+              )
+            )
           )}
         </CardContent>
       </Card>

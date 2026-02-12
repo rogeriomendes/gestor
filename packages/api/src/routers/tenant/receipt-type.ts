@@ -9,7 +9,6 @@ export const receiptTypeRouter = router({
       try {
         const { id } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
         const receiptType = await gestorPrisma.fin_tipo_recebimento.findUnique({

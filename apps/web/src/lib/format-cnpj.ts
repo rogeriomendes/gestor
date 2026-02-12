@@ -1,9 +1,13 @@
 export function formatCNPJ(cnpj: string | null) {
-  if (!cnpj) return "";
+  if (!cnpj) {
+    return "";
+  }
 
   const cleaned = cnpj.replace(/\D/g, "");
 
-  if (cleaned.length !== 14) return cnpj;
+  if (cleaned.length !== 14) {
+    return cnpj;
+  }
 
   return cleaned.replace(
     /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,

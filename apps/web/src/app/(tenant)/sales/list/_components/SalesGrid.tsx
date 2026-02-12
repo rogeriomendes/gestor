@@ -10,7 +10,7 @@ import { SaleCard } from "./SaleCard";
 
 interface SalesGridProps {
   // Dados da query infinita
-  data?: Array<any>;
+  data?: any[];
   pageItemKeys: string[];
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
@@ -67,7 +67,9 @@ export function SalesGrid({
     if (Array.isArray(pageItemKeys) && pageItemKeys.length > 0) {
       for (const key of pageItemKeys) {
         const maybe = page?.[key];
-        if (Array.isArray(maybe)) return maybe;
+        if (Array.isArray(maybe)) {
+          return maybe;
+        }
       }
     }
     return [];
@@ -81,7 +83,9 @@ export function SalesGrid({
       {/* Grid de vendas */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {allSales.map((sale, index) => {
-          if (!sale) return null;
+          if (!sale) {
+            return null;
+          }
 
           return (
             <SaleCard

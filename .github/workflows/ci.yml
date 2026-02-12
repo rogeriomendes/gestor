@@ -60,6 +60,9 @@ jobs:
           pnpm --filter @gestor/db db:generate
           pnpm --filter @gestor/db-gestor db:generate
           pnpm --filter @gestor/db-dfe db:generate
+        env:
+          # prisma generate only needs the var to be set when loading config (no real connection)
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
 
       - name: Build application
         run: pnpm build

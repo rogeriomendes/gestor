@@ -46,10 +46,10 @@ type GroupedPayments = Record<
   }
 >;
 
-type PaymentType = {
+interface PaymentType {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
-};
+}
 
 const typeNames: Record<string, PaymentType> = {
   CA: { name: "CARTÃO", icon: CreditCardIcon },

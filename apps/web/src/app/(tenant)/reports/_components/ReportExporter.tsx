@@ -174,7 +174,7 @@ export function ReportExporter({
 export function useReportExporter() {
   const [isExporting, setIsExporting] = useState(false);
 
-  const exportData = async (format: string, data: any[], filename: string) => {
+  const exportData = async (format: string, data: any[], _filename: string) => {
     setIsExporting(true);
     try {
       // Simular delay de processamento

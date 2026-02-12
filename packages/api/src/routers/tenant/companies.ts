@@ -21,7 +21,6 @@ export const companiesRouter = router({
   all: tenantProcedure.query(
     async ({ ctx }): Promise<{ company: EmpresaListItem[] }> => {
       try {
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const company = await gestorPrisma.empresa.findMany({
           select: empresaListSelect,
@@ -54,7 +53,6 @@ export const companiesRouter = router({
 
         const whereCondition = id ? { ID: id } : { CNPJ: cnpj };
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const company = await gestorPrisma.empresa.findMany({
           where: whereCondition,

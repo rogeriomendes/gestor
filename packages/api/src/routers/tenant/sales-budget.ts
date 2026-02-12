@@ -19,7 +19,6 @@ export const salesBudgetRouter = router({
         const limit = input.limit ?? 30;
         const { cursor, searchTerm, situation, seller, companyId } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
         const searchTermTrimmed = searchTerm?.trim();
@@ -137,7 +136,7 @@ export const salesBudgetRouter = router({
         let nextCursor: typeof cursor | undefined;
         if (budgetsWithVendedor.length > limit) {
           const nextSale = budgetsWithVendedor.pop();
-          nextCursor = String(nextSale!.ID);
+          nextCursor = String(nextSale?.ID);
         }
 
         return {
@@ -160,7 +159,6 @@ export const salesBudgetRouter = router({
       try {
         const { id } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const budget = await gestorPrisma.venda_orcamento_cabecalho.findUnique({
           where: {
@@ -266,7 +264,6 @@ export const salesBudgetRouter = router({
       try {
         const { id } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const budget = await gestorPrisma.venda_orcamento_detalhe.findMany({
           where: {

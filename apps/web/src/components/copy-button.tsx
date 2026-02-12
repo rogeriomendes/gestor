@@ -36,7 +36,7 @@ export function CopyButton({
     setTimeout(() => {
       setHasCopied(false);
     }, 2000);
-  }, [hasCopied]);
+  }, []);
 
   return (
     <Button

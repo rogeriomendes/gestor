@@ -27,7 +27,9 @@ export function parseClosingDataFromSearchParams(
   const dateClosed = searchParams.get("dateClosed");
   const hourClosed = searchParams.get("hourClosed");
 
-  if (!id) return undefined;
+  if (!id) {
+    return undefined;
+  }
 
   const dateOpenParsed =
     dateOpen != null && dateOpen !== "" ? new Date(dateOpen) : null;

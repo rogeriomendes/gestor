@@ -17,7 +17,6 @@ export const reportsRouter = router({
       try {
         const { initialDate, finalDate, companyId } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const whereCompany =
           companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
@@ -76,7 +75,6 @@ export const reportsRouter = router({
       try {
         const { initialDate, finalDate, companyId } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const whereCompany =
           companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
@@ -147,7 +145,6 @@ export const reportsRouter = router({
           orderBy,
         } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const whereCompany =
           companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
@@ -265,7 +262,6 @@ export const reportsRouter = router({
       try {
         const { status, initialDate, finalDate, companyId } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const whereCompany =
           companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
@@ -366,7 +362,6 @@ export const reportsRouter = router({
       try {
         const { lowStock, category } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         let whereClause: any = {};
 
@@ -446,7 +441,6 @@ export const reportsRouter = router({
       try {
         const { initialDate, finalDate, companyId } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const whereCompany =
           companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
@@ -566,7 +560,6 @@ export const reportsRouter = router({
       try {
         const { initialDate, finalDate, companyId } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
         const whereCompany =
@@ -638,7 +631,7 @@ export const reportsRouter = router({
                 dateEntry[DESCRICAO] = 0;
               }
 
-              dateEntry[DESCRICAO] = dateEntry[DESCRICAO] + valorRecebido;
+              dateEntry[DESCRICAO] += valorRecebido;
             }
           }
         });

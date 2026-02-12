@@ -10,7 +10,7 @@ import { FinancialClosingCard } from "./FinancialClosingCard";
 
 interface FinancialClosingGridProps {
   // Dados da query infinita
-  data?: Array<any>;
+  data?: any[];
   pageItemKeys: string[];
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
@@ -67,7 +67,9 @@ export function FinancialClosingGrid({
     if (Array.isArray(pageItemKeys) && pageItemKeys.length > 0) {
       for (const key of pageItemKeys) {
         const maybe = page?.[key];
-        if (Array.isArray(maybe)) return maybe;
+        if (Array.isArray(maybe)) {
+          return maybe;
+        }
       }
     }
     return [];
@@ -81,7 +83,9 @@ export function FinancialClosingGrid({
       {/* Grid de fechamentos */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {allItems.map((item, index) => {
-          if (!item) return null;
+          if (!item) {
+            return null;
+          }
 
           return (
             <FinancialClosingCard

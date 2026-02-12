@@ -301,37 +301,57 @@ export const branchRouter = router({
 
       // Preparar dados para atualização
       const data: any = {};
-      if (updateData.name !== undefined) data.name = updateData.name;
-      if (updateData.legalName !== undefined)
+      if (updateData.name !== undefined) {
+        data.name = updateData.name;
+      }
+      if (updateData.legalName !== undefined) {
         data.legalName = updateData.legalName || null;
-      if (cnpj !== undefined)
+      }
+      if (cnpj !== undefined) {
         data.cnpj = cnpj && cnpj.trim() !== "" ? cnpj : null;
-      if (updateData.email !== undefined)
+      }
+      if (updateData.email !== undefined) {
         data.email =
           updateData.email && updateData.email.trim() !== ""
             ? updateData.email
             : null;
-      if (updateData.phone !== undefined) data.phone = updateData.phone || null;
-      if (updateData.addressStreet !== undefined)
+      }
+      if (updateData.phone !== undefined) {
+        data.phone = updateData.phone || null;
+      }
+      if (updateData.addressStreet !== undefined) {
         data.addressStreet = updateData.addressStreet || null;
-      if (updateData.addressNumber !== undefined)
+      }
+      if (updateData.addressNumber !== undefined) {
         data.addressNumber = updateData.addressNumber || null;
-      if (updateData.addressComplement !== undefined)
+      }
+      if (updateData.addressComplement !== undefined) {
         data.addressComplement = updateData.addressComplement || null;
-      if (updateData.addressDistrict !== undefined)
+      }
+      if (updateData.addressDistrict !== undefined) {
         data.addressDistrict = updateData.addressDistrict || null;
-      if (updateData.addressCity !== undefined)
+      }
+      if (updateData.addressCity !== undefined) {
         data.addressCity = updateData.addressCity || null;
-      if (updateData.addressState !== undefined)
+      }
+      if (updateData.addressState !== undefined) {
         data.addressState = updateData.addressState || null;
-      if (updateData.addressZipCode !== undefined)
+      }
+      if (updateData.addressZipCode !== undefined) {
         data.addressZipCode =
           updateData.addressZipCode && updateData.addressZipCode.trim() !== ""
             ? updateData.addressZipCode
             : null;
-      if (updateData.notes !== undefined) data.notes = updateData.notes || null;
-      if (updateData.active !== undefined) data.active = updateData.active;
-      if (isMain !== undefined) data.isMain = isMain;
+      }
+      if (updateData.notes !== undefined) {
+        data.notes = updateData.notes || null;
+      }
+      if (updateData.active !== undefined) {
+        data.active = updateData.active;
+      }
+      if (isMain !== undefined) {
+        data.isMain = isMain;
+      }
 
       const branch = await prisma.tenantBranch.update({
         where: { id: branchId },

@@ -80,7 +80,7 @@ export const financialClosingRouter = router({
         let nextCursor: typeof cursor | undefined;
         if (financialClosing.length > limit) {
           const nextSale = financialClosing.pop();
-          nextCursor = String(nextSale!.ID);
+          nextCursor = String(nextSale?.ID);
         }
 
         return {
@@ -414,11 +414,11 @@ export const financialClosingRouter = router({
               const existingPayment = result.find(
                 (item) => item.ID === paymentId
               );
-              if (existingPayment)
+              if (existingPayment) {
                 existingPayment.TOTAL += Number.parseFloat(
                   String(payment.VALOR_RECEBIDO) || "0"
                 );
-              else
+              } else {
                 result.push({
                   ID: paymentId,
                   DESCRICAO: payment.fin_tipo_recebimento.DESCRICAO,
@@ -427,6 +427,7 @@ export const financialClosingRouter = router({
                     String(payment.VALOR_RECEBIDO) || "0"
                   ),
                 });
+              }
               return result;
             },
             []

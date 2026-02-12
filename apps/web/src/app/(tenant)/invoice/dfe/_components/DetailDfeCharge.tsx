@@ -14,7 +14,9 @@ import type { Duplicata, NFeInfo } from "./DetailDfe";
 
 export function DetailDfeCharge({ xml }: { xml: NFeInfo }) {
   const duplicatas: Duplicata[] = (() => {
-    if (!xml.cobr?.dup) return [];
+    if (!xml.cobr?.dup) {
+      return [];
+    }
     return Array.isArray(xml.cobr.dup) ? xml.cobr.dup : [xml.cobr.dup];
   })();
 

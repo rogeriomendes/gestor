@@ -82,7 +82,9 @@ export function PayGrid({
     if (Array.isArray(pageItemKeys) && pageItemKeys.length > 0) {
       for (const key of pageItemKeys) {
         const maybe = page?.[key as keyof typeof page];
-        if (Array.isArray(maybe)) return maybe as BillsPayItem[];
+        if (Array.isArray(maybe)) {
+          return maybe as BillsPayItem[];
+        }
       }
     }
     return [];
@@ -119,7 +121,9 @@ export function PayGrid({
       {/* Grid de contas a pagar */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {allBills.map((bills, index) => {
-          if (!bills) return null;
+          if (!bills) {
+            return null;
+          }
 
           const isSelected = !!selectedBills[bills.ID];
 

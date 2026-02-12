@@ -16,7 +16,7 @@ export const TRIAL_DURATION_DAYS = 14;
 /**
  * Obtém a assinatura ativa de um tenant
  */
-export async function getActiveSubscription(tenantId: string) {
+export function getActiveSubscription(tenantId: string) {
   return prisma.subscription.findUnique({
     where: { tenantId },
     include: { plan: true },
@@ -29,7 +29,9 @@ export async function getActiveSubscription(tenantId: string) {
 export function isSubscriptionActive(
   subscription: { status: SubscriptionStatus; expiresAt: Date | null } | null
 ): boolean {
-  if (!subscription) return false;
+  if (!subscription) {
+    return false;
+  }
 
   // Status cancelado ou expirado = não ativa
   if (
@@ -56,7 +58,9 @@ export function isInTrial(
     trialEndsAt: Date | null;
   } | null
 ): boolean {
-  if (!subscription) return false;
+  if (!subscription) {
+    return false;
+  }
 
   if (subscription.status !== SubscriptionStatus.TRIAL) {
     return false;
@@ -78,7 +82,9 @@ export async function getOrCreateDefaultPlan() {
     where: { isDefault: true, active: true },
   });
 
-  if (defaultPlan) return defaultPlan;
+  if (defaultPlan) {
+    return defaultPlan;
+  }
 
   // Se não existe, buscar qualquer plano ativo
   defaultPlan = await prisma.plan.findFirst({
@@ -86,7 +92,9 @@ export async function getOrCreateDefaultPlan() {
     orderBy: { createdAt: "asc" },
   });
 
-  if (defaultPlan) return defaultPlan;
+  if (defaultPlan) {
+    return defaultPlan;
+  }
 
   // Se não existe nenhum plano, criar o plano padrão
   defaultPlan = await prisma.plan.create({
@@ -135,7 +143,9 @@ export async function updateSubscriptionStatusIfNeeded(
     trialEndsAt: Date | null;
   } | null
 ) {
-  if (!subscription) return null;
+  if (!subscription) {
+    return null;
+  }
 
   const now = new Date();
 

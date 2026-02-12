@@ -36,7 +36,7 @@ export function ReceiveFilters({
     { value: "3", label: "PARCIAL" },
   ];
 
-  const hasActiveFilters =
+  const _hasActiveFilters =
     (status && status !== "0") || dateRange?.from || dateRange?.to;
 
   return (

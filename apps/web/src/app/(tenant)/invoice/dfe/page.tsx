@@ -152,7 +152,9 @@ export default function InvoiceDfeList() {
           onRowClick={handleRowClick}
           pageItemKeys={["invoiceDfe"]}
           renderRow={(dfe: DfeItem) => {
-            if (!dfe) return null;
+            if (!dfe) {
+              return null;
+            }
 
             const statusInfo = getXmlStatusInfo(
               dfe.DOCXML && decodeDocXml(dfe.DOCXML)

@@ -3,9 +3,11 @@ import { createDfePrismaClient } from "@gestor/db-dfe";
 import { createGestorPrismaClient } from "@gestor/db-gestor";
 import { LRUCache } from "lru-cache";
 
-// Tipo genérico para PrismaClient (pode ser de qualquer package)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type PrismaClient = any;
+// Tipo genérico para PrismaClient (pode ser de qualquer package: db, db-gestor, db-dfe)
+interface PrismaClientLike {
+  $disconnect: () => Promise<void>;
+}
+type PrismaClient = PrismaClientLike;
 
 import { decryptPassword } from "./encryption";
 import { hasCompleteDatabaseCredentials } from "./tenant-db-credentials";
@@ -32,7 +34,7 @@ const connectionCache = new LRUCache<string, ConnectionMetadata>({
   dispose: (value) => {
     // Fechar conexão quando removida do cache
     if (value?.prismaClient) {
-      value.prismaClient.$disconnect().catch((error: any) => {
+      value.prismaClient.$disconnect().catch((error: unknown) => {
         console.error("Erro ao desconectar Prisma Client:", error);
       });
     }
@@ -178,7 +180,7 @@ export function closeConnection(connectionId: string): boolean {
   }
 
   // Desconectar Prisma Client
-  connection.prismaClient.$disconnect().catch((error: any) => {
+  connection.prismaClient.$disconnect().catch((error: unknown) => {
     console.error("Erro ao desconectar Prisma Client:", error);
   });
 
@@ -193,7 +195,7 @@ export function closeConnection(connectionId: string): boolean {
 export function closeAllConnections(): number {
   const count = connectionCache.size;
   for (const [, value] of connectionCache.entries()) {
-    value.prismaClient.$disconnect().catch((error: any) => {
+    value.prismaClient.$disconnect().catch((error: unknown) => {
       console.error("Erro ao desconectar Prisma Client:", error);
     });
   }
@@ -212,7 +214,7 @@ export function closeTenantConnections(tenantId: string): number {
   );
 
   for (const conn of tenantConnections) {
-    conn.prismaClient.$disconnect().catch((error: any) => {
+    conn.prismaClient.$disconnect().catch((error: unknown) => {
       console.error("Erro ao desconectar Prisma Client:", error);
     });
     connectionCache.delete(conn.connectionId);

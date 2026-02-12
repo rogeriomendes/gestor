@@ -47,7 +47,7 @@ export function calculePercentage(num: number, num2: number) {
 
 export function removeLeadingZero(num: string) {
   if (num.startsWith("0")) {
-    return Number.parseInt(num.slice(1));
+    return Number.parseInt(num.slice(1), 10);
   }
   return num;
 }

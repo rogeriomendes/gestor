@@ -147,10 +147,12 @@ export function DetailDfe({
   // Resetar nfe quando entryID mudar
   useEffect(() => {
     setNfe(null);
-  }, [entryID]);
+  }, []);
 
   useEffect(() => {
-    if (!xml) return;
+    if (!xml) {
+      return;
+    }
 
     const parser = new xml2js.Parser({ explicitArray: false });
 
@@ -193,7 +195,7 @@ export function DetailDfe({
                         <PopoverTrigger className="flex items-center text-left uppercase">
                           <GitCompareArrowsIcon className="mr-2 size-4 shrink-0" />
                           {nfe?.ide.natOp.length > 50
-                            ? nfe?.ide.natOp.slice(0, 47) + "..."
+                            ? `${nfe?.ide.natOp.slice(0, 47)}...`
                             : nfe?.ide.natOp}
                         </PopoverTrigger>
                         <PopoverContent className="w-full p-2 text-xs">

@@ -348,7 +348,9 @@ export const permissionRouter = router({
 
       // Aplicar permissões padrão
       for (const [role, permissionKeys] of Object.entries(defaultPermissions)) {
-        if (role === "SUPER_ADMIN") continue; // SUPER_ADMIN não precisa de permissões explícitas
+        if (role === "SUPER_ADMIN") {
+          continue; // SUPER_ADMIN não precisa de permissões explícitas
+        }
 
         // Buscar IDs das permissões
         const permissions = await Promise.all(
@@ -401,7 +403,9 @@ export const permissionRouter = router({
       > = {};
 
       for (const [role, permissionKeys] of Object.entries(defaultPermissions)) {
-        if (role === "SUPER_ADMIN") continue;
+        if (role === "SUPER_ADMIN") {
+          continue;
+        }
 
         const rolePerms = permissionKeys
           .map((key) => {

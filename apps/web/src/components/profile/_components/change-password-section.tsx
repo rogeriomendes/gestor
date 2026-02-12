@@ -137,8 +137,11 @@ export function ChangePasswordSection() {
 
       <Credenza
         onOpenChange={(open) => {
-          if (open) setShowDialog(true);
-          else handleCloseDialog();
+          if (open) {
+            setShowDialog(true);
+          } else {
+            handleCloseDialog();
+          }
         }}
         open={showDialog}
       >

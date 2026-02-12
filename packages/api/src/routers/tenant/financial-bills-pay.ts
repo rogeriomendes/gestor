@@ -230,7 +230,7 @@ export const financialBillsPayRouter = router({
         let nextCursor: typeof cursor | undefined;
         if (financialBillsWithEmpresa.length > limit) {
           const nextSale = financialBillsWithEmpresa.pop();
-          nextCursor = String(nextSale!.ID);
+          nextCursor = String(nextSale?.ID);
         }
 
         return {

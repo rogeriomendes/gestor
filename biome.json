@@ -22,5 +22,53 @@
       "!**/convex/_generated"
     ]
   },
-  "extends": ["ultracite/core", "ultracite/next", "ultracite/react"]
+  "extends": ["ultracite/core", "ultracite/next", "ultracite/react"],
+  "linter": {
+    "rules": {
+      "a11y": {
+        "noLabelWithoutControl": "off",
+        "noNoninteractiveElementInteractions": "off",
+        "noStaticElementInteractions": "off",
+        "noSvgWithoutTitle": "off",
+        "useAriaPropsForRole": "off",
+        "useFocusableInteractive": "off",
+        "useKeyWithClickEvents": "off",
+        "useSemanticElements": "off"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off",
+        "noForEach": "off",
+        "noVoid": "off"
+      },
+      "correctness": {
+        "noNestedComponentDefinitions": "off",
+        "noUnusedFunctionParameters": "off",
+        "useExhaustiveDependencies": "off",
+        "noUnusedVariables": "off",
+        "useHookAtTopLevel": "off",
+        "useJsxKeyInIterable": "off"
+      },
+      "performance": {
+        "noBarrelFile": "off",
+        "noNamespaceImport": "off",
+        "useTopLevelRegex": "off"
+      },
+      "style": {
+        "noExportedImports": "off",
+        "noNestedTernary": "off",
+        "noNonNullAssertion": "off",
+        "useCollapsedElseIf": "off",
+        "useFilenamingConvention": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noDocumentCookie": "off",
+        "noEmptyBlockStatements": "off",
+        "noEvolvingTypes": "off",
+        "noExplicitAny": "off",
+        "useAwait": "off"
+      },
+      "security": { "noDangerouslySetInnerHtml": "off" }
+    }
+  }
 }

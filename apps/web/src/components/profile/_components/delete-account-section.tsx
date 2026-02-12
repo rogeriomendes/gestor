@@ -80,7 +80,7 @@ export function DeleteAccountSection() {
       await navigator.clipboard.writeText(expectedConfirmText);
       setConfirmText(expectedConfirmText);
       toast.success("Texto copiado e colado no campo!");
-    } catch (error) {
+    } catch (_error) {
       // Fallback: apenas colar no input se clipboard falhar
       setConfirmText(expectedConfirmText);
       toast.success("Texto colado no campo!");

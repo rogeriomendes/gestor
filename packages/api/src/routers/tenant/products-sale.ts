@@ -18,7 +18,6 @@ export const productsSaleRouter = router({
         const limit = input.limit ?? 30;
         const { cursor, company, status, inactive } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const whereCompany = company &&
           company !== 0 && {
@@ -98,7 +97,7 @@ export const productsSaleRouter = router({
         let nextCursor: typeof cursor | undefined;
         if (productsSaleWithEmpresa.length > limit) {
           const nextSale = productsSaleWithEmpresa.pop();
-          nextCursor = String(nextSale!.ID);
+          nextCursor = String(nextSale?.ID);
         }
 
         return { productsSale: productsSaleWithEmpresa, nextCursor };
@@ -118,7 +117,6 @@ export const productsSaleRouter = router({
       try {
         const { id } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const productsSale = await gestorPrisma.preco_reajuste_detalhe.findMany(
           {

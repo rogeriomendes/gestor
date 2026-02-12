@@ -61,7 +61,6 @@ export const tenantDatabaseRouter = router({
         };
       }
 
-      // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
       const hasCredentials = hasCompleteDatabaseCredentials(ctx.tenant as any);
 
       return {

@@ -173,49 +173,46 @@ export function DetailSale({ saleData, open, onOpenChange }: DetailSaleProps) {
                   <Skeleton className="h-10 w-full" />
                 </div>
               ) : (
-                <>
-                  {saleProductsQuery.data?.productsSale.map((sale: any) => (
-                    <div
-                      className="group rounded-md p-3 transition-colors hover:bg-muted/50"
-                      key={sale.ID}
-                    >
-                      <div className="flex items-center">
-                        <div className="space-y-1">
-                          <p className="text-xs leading-none md:text-sm">
-                            {sale.produto?.NOME}
-                          </p>
-                          <div className="flex gap-2 text-muted-foreground text-xs md:text-sm">
-                            <div className="flex w-64 items-center justify-between">
-                              {sale.TIPO_PROMOCAO && (
-                                <div>{typeSale[sale.TIPO_PROMOCAO]}</div>
+                saleProductsQuery.data?.productsSale.map((sale: any) => (
+                  <div
+                    className="group rounded-md p-3 transition-colors hover:bg-muted/50"
+                    key={sale.ID}
+                  >
+                    <div className="flex items-center">
+                      <div className="space-y-1">
+                        <p className="text-xs leading-none md:text-sm">
+                          {sale.produto?.NOME}
+                        </p>
+                        <div className="flex gap-2 text-muted-foreground text-xs md:text-sm">
+                          <div className="flex w-64 items-center justify-between">
+                            {sale.TIPO_PROMOCAO && (
+                              <div>{typeSale[sale.TIPO_PROMOCAO]}</div>
+                            )}
+                            {sale.QTD_PROMOCAO &&
+                              Number(sale.QTD_PROMOCAO) !== 0 && (
+                                <div>
+                                  {Number(sale.QTD_PAGAR) !== 0
+                                    ? `Leve: ${Number(sale.QTD_PROMOCAO)}`
+                                    : `Qtd.: ${Number(sale.QTD_PROMOCAO)}`}
+                                </div>
                               )}
-                              {sale.QTD_PROMOCAO &&
-                                Number(sale.QTD_PROMOCAO) !== 0 && (
-                                  <div>
-                                    {Number(sale.QTD_PAGAR) !== 0
-                                      ? "Leve: " + Number(sale.QTD_PROMOCAO)
-                                      : "Qtd.: " + Number(sale.QTD_PROMOCAO)}
-                                  </div>
-                                )}
-                              {sale.QTD_PAGAR &&
-                                Number(sale.QTD_PAGAR) !== 0 && (
-                                  <div>Pague: {Number(sale.QTD_PAGAR)}</div>
-                                )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="ml-auto space-y-1">
-                          <div className="flex flex-col items-center text-muted-foreground text-xs md:text-sm">
-                            {formatAsCurrency(Number(sale.PRECO_ORIGINAL))}
-                          </div>
-                          <div className="flex flex-col items-center text-xs md:text-sm">
-                            {formatAsCurrency(Number(sale.PRECO_PROMOCAO))}
+                            {sale.QTD_PAGAR && Number(sale.QTD_PAGAR) !== 0 && (
+                              <div>Pague: {Number(sale.QTD_PAGAR)}</div>
+                            )}
                           </div>
                         </div>
                       </div>
+                      <div className="ml-auto space-y-1">
+                        <div className="flex flex-col items-center text-muted-foreground text-xs md:text-sm">
+                          {formatAsCurrency(Number(sale.PRECO_ORIGINAL))}
+                        </div>
+                        <div className="flex flex-col items-center text-xs md:text-sm">
+                          {formatAsCurrency(Number(sale.PRECO_PROMOCAO))}
+                        </div>
+                      </div>
                     </div>
-                  ))}
-                </>
+                  </div>
+                ))
               )}
             </CardContent>
           </Card>

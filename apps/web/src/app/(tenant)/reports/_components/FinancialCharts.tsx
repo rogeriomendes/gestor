@@ -69,7 +69,9 @@ export function FinancialCharts({
 
   // Verificação de segurança para evitar erros
   const chartData = React.useMemo(() => {
-    if (!safeAccountsReceivable?.accountsReceivable) return [];
+    if (!safeAccountsReceivable?.accountsReceivable) {
+      return [];
+    }
 
     try {
       return safeAccountsReceivable.accountsReceivable.map((account) => ({

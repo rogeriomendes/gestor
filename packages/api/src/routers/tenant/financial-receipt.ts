@@ -59,7 +59,6 @@ export const financialReceiptRouter = router({
               }
             : {};
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const where = {
           ...whereCompany,
@@ -90,7 +89,7 @@ export const financialReceiptRouter = router({
         const receipts = await gestorPrisma.venda_recebimento.findMany({
           where,
           take: limit + 1,
-          cursor: cursor ? { ID: Number.parseInt(cursor) } : undefined,
+          cursor: cursor ? { ID: Number.parseInt(cursor, 10) } : undefined,
           orderBy,
           select: {
             ID: true,
@@ -184,7 +183,7 @@ export const financialReceiptRouter = router({
           if (!vendaGroups.has(vendaId)) {
             vendaGroups.set(vendaId, []);
           }
-          vendaGroups.get(vendaId)!.push(receipt);
+          vendaGroups.get(vendaId)?.push(receipt);
         });
 
         // Ordenar recebimentos dentro de cada venda por DATA_VENDA e adicionar sequência
@@ -196,21 +195,31 @@ export const financialReceiptRouter = router({
                 const dataA = a.venda_cabecalho?.DATA_VENDA;
                 const dataB = b.venda_cabecalho?.DATA_VENDA;
 
-                if (!(dataA || dataB)) return 0;
-                if (!dataA) return 1;
-                if (!dataB) return -1;
+                if (!(dataA || dataB)) {
+                  return 0;
+                }
+                if (!dataA) {
+                  return 1;
+                }
+                if (!dataB) {
+                  return -1;
+                }
 
                 // Primeiro critério: DATA_VENDA
                 const dataComparison =
                   new Date(dataA).getTime() - new Date(dataB).getTime();
-                if (dataComparison !== 0) return dataComparison;
+                if (dataComparison !== 0) {
+                  return dataComparison;
+                }
 
                 // Segundo critério: HORA_SAIDA
                 const horaA = a.venda_cabecalho?.HORA_SAIDA;
                 const horaB = b.venda_cabecalho?.HORA_SAIDA;
                 if (horaA && horaB) {
                   const horaComparison = horaA.localeCompare(horaB);
-                  if (horaComparison !== 0) return horaComparison;
+                  if (horaComparison !== 0) {
+                    return horaComparison;
+                  }
                 }
 
                 // Terceiro critério: ID do recebimento (para garantir ordem consistente)

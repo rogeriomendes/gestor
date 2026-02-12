@@ -58,10 +58,14 @@ export interface DataTableInfiniteProps<T> {
 }
 
 function extractItemsFromPage<T>(page: unknown, pageItemKeys: string[]): T[] {
-  if (!pageItemKeys.length) return [];
+  if (!pageItemKeys.length) {
+    return [];
+  }
   for (const key of pageItemKeys) {
     const maybe = (page as Record<string, unknown>)?.[key];
-    if (Array.isArray(maybe)) return maybe as T[];
+    if (Array.isArray(maybe)) {
+      return maybe as T[];
+    }
   }
   return [];
 }
@@ -105,7 +109,9 @@ export function DataTableInfinite<T>({
   const hasData = allItems.length > 0;
 
   const selectedRowsSet = useMemo(() => {
-    if (!selectedRows) return new Set<number>();
+    if (!selectedRows) {
+      return new Set<number>();
+    }
     return Array.isArray(selectedRows) ? new Set(selectedRows) : selectedRows;
   }, [selectedRows]);
 
@@ -123,9 +129,13 @@ export function DataTableInfinite<T>({
         </TableHeader>
         <TableBody className="text-xs md:text-sm">
           {allItems.map((item, index) => {
-            if (item == null) return null;
+            if (item == null) {
+              return null;
+            }
             const rowData = renderRow(item, index);
-            if (rowData == null) return null;
+            if (rowData == null) {
+              return null;
+            }
 
             const customClassName = getRowClassName?.(item, index) ?? "";
             const isSelected = selectedRowsSet.has(index);

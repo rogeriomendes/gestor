@@ -87,7 +87,9 @@ export function FinancialReceiptGrid({
     if (Array.isArray(pageItemKeys) && pageItemKeys.length > 0) {
       for (const key of pageItemKeys) {
         const maybe = page?.[key as keyof typeof page];
-        if (Array.isArray(maybe)) return maybe as ReceiptItem[];
+        if (Array.isArray(maybe)) {
+          return maybe as ReceiptItem[];
+        }
       }
     }
     return [];
@@ -155,7 +157,9 @@ export function FinancialReceiptGrid({
       {/* Grid de recebimentos */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {allReceipts.map((receipt, index) => {
-          if (!receipt) return null;
+          if (!receipt) {
+            return null;
+          }
 
           return (
             <FinancialReceiptCard

@@ -5,7 +5,6 @@ import { getGestorPrismaClient } from "../../utils/tenant-db-clients";
 export const groupRouter = router({
   all: tenantProcedure.query(async ({ ctx }) => {
     try {
-      // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
       const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
       const group = await gestorPrisma.produto_sub_grupo.findMany({
@@ -27,7 +26,6 @@ export const groupRouter = router({
       try {
         const { id } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
         const group = await gestorPrisma.produto_sub_grupo.findUnique({

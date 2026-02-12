@@ -27,7 +27,6 @@ export const clientRouter = router({
               }
             : {};
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
         const client = await gestorPrisma.cliente.findMany({
@@ -62,7 +61,6 @@ export const clientRouter = router({
           return { client: null };
         }
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
         const client = await gestorPrisma.cliente.findUnique({

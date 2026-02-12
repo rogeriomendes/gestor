@@ -34,44 +34,70 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
 
 function getDeviceIcon(userAgent: string | null) {
-  if (!userAgent) return Monitor;
+  if (!userAgent) {
+    return Monitor;
+  }
 
   const ua = userAgent.toLowerCase();
-  if (ua.includes("mobile") || ua.includes("android") || ua.includes("iphone"))
+  if (
+    ua.includes("mobile") ||
+    ua.includes("android") ||
+    ua.includes("iphone")
+  ) {
     return Smartphone;
-  if (ua.includes("tablet") || ua.includes("ipad")) return Tablet;
-  if (ua.includes("mac") || ua.includes("windows") || ua.includes("linux"))
+  }
+  if (ua.includes("tablet") || ua.includes("ipad")) {
+    return Tablet;
+  }
+  if (ua.includes("mac") || ua.includes("windows") || ua.includes("linux")) {
     return Laptop;
+  }
 
   return Monitor;
 }
 
 function getDeviceName(userAgent: string | null): string {
-  if (!userAgent) return "Dispositivo desconhecido";
+  if (!userAgent) {
+    return "Dispositivo desconhecido";
+  }
 
   const ua = userAgent.toLowerCase();
 
   // Sistema operacional
   let os = "Desconhecido";
-  if (ua.includes("windows")) os = "Windows";
-  else if (ua.includes("mac")) os = "macOS";
-  else if (ua.includes("linux")) os = "Linux";
-  else if (ua.includes("android")) os = "Android";
-  else if (ua.includes("iphone") || ua.includes("ipad")) os = "iOS";
+  if (ua.includes("windows")) {
+    os = "Windows";
+  } else if (ua.includes("mac")) {
+    os = "macOS";
+  } else if (ua.includes("linux")) {
+    os = "Linux";
+  } else if (ua.includes("android")) {
+    os = "Android";
+  } else if (ua.includes("iphone") || ua.includes("ipad")) {
+    os = "iOS";
+  }
 
   // Navegador
   let browser = "";
-  if (ua.includes("chrome") && !ua.includes("edg")) browser = "Chrome";
-  else if (ua.includes("firefox")) browser = "Firefox";
-  else if (ua.includes("safari") && !ua.includes("chrome")) browser = "Safari";
-  else if (ua.includes("edg")) browser = "Edge";
-  else if (ua.includes("opera")) browser = "Opera";
+  if (ua.includes("chrome") && !ua.includes("edg")) {
+    browser = "Chrome";
+  } else if (ua.includes("firefox")) {
+    browser = "Firefox";
+  } else if (ua.includes("safari") && !ua.includes("chrome")) {
+    browser = "Safari";
+  } else if (ua.includes("edg")) {
+    browser = "Edge";
+  } else if (ua.includes("opera")) {
+    browser = "Opera";
+  }
 
   return browser ? `${browser} em ${os}` : os;
 }
 
 function getBrowserInfo(userAgent: string | null): string {
-  if (!userAgent) return "";
+  if (!userAgent) {
+    return "";
+  }
 
   const ua = userAgent.toLowerCase();
 
@@ -81,10 +107,18 @@ function getBrowserInfo(userAgent: string | null): string {
   const safariMatch = ua.match(/version\/(\d+)/);
   const edgeMatch = ua.match(/edg\/(\d+)/);
 
-  if (edgeMatch) return `Edge ${edgeMatch[1]}`;
-  if (chromeMatch) return `Chrome ${chromeMatch[1]}`;
-  if (firefoxMatch) return `Firefox ${firefoxMatch[1]}`;
-  if (safariMatch) return `Safari ${safariMatch[1]}`;
+  if (edgeMatch) {
+    return `Edge ${edgeMatch[1]}`;
+  }
+  if (chromeMatch) {
+    return `Chrome ${chromeMatch[1]}`;
+  }
+  if (firefoxMatch) {
+    return `Firefox ${firefoxMatch[1]}`;
+  }
+  if (safariMatch) {
+    return `Safari ${safariMatch[1]}`;
+  }
 
   return "";
 }

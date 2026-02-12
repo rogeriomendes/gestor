@@ -11,7 +11,7 @@ import { getRedirectPath } from "@/lib/auth-redirect";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [showSignIn, setShowSignIn] = useState(true);
+  const [_showSignIn, _setShowSignIn] = useState(true);
   const { data: session, isPending: sessionLoading } = authClient.useSession();
   const { role, isLoading: tenantLoading } = useTenant();
 

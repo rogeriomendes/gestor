@@ -201,7 +201,7 @@ export default function ProductsList() {
                   deviceId,
                 }}
                 formats={["ean_8", "ean_13"]}
-                onError={(error) => {
+                onError={(_error) => {
                   // console.log(`onError: ${error}'`);
                   toast.error("Erro ao ler codigo de barras");
                 }}
@@ -299,7 +299,9 @@ export default function ProductsList() {
           pageItemKeys={["products"]}
           renderRow={(product, _index) => {
             // Verificar se o produto existe
-            if (!product) return null;
+            if (!product) {
+              return null;
+            }
 
             // Aplicar filtro de busca
             if (search) {
@@ -307,7 +309,9 @@ export default function ProductsList() {
                 product.CODIGO_INTERNO?.toString().includes(search) ||
                 product.GTIN?.toString().includes(search) ||
                 product.NOME?.toString().includes(search.toUpperCase());
-              if (!matchesSearch) return null;
+              if (!matchesSearch) {
+                return null;
+              }
             }
 
             return [

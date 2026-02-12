@@ -7,12 +7,16 @@
  * - Uint8Array
  */
 export function decodeDocXml(blobObj: unknown): string | null {
-  if (blobObj == null) return null;
+  if (blobObj == null) {
+    return null;
+  }
 
   try {
     // Array de números
     if (Array.isArray(blobObj)) {
-      if (blobObj.length === 0) return null;
+      if (blobObj.length === 0) {
+        return null;
+      }
       return new TextDecoder("utf-8").decode(
         Uint8Array.from(blobObj as number[])
       );
@@ -20,7 +24,9 @@ export function decodeDocXml(blobObj: unknown): string | null {
 
     // Uint8Array
     if (blobObj instanceof Uint8Array) {
-      if (blobObj.length === 0) return null;
+      if (blobObj.length === 0) {
+        return null;
+      }
       return new TextDecoder("utf-8").decode(blobObj);
     }
 
@@ -31,7 +37,9 @@ export function decodeDocXml(blobObj: unknown): string | null {
       Array.isArray((blobObj as { data: number[] }).data)
     ) {
       const data = (blobObj as { type: string; data: number[] }).data;
-      if (data.length === 0) return null;
+      if (data.length === 0) {
+        return null;
+      }
       return new TextDecoder("utf-8").decode(Uint8Array.from(data));
     }
 
@@ -40,7 +48,9 @@ export function decodeDocXml(blobObj: unknown): string | null {
       const keys = Object.keys(blobObj)
         .map((k) => Number(k))
         .filter((n) => !Number.isNaN(n));
-      if (keys.length === 0) return null;
+      if (keys.length === 0) {
+        return null;
+      }
       const maxIndex = Math.max(...keys);
       const bytes = new Uint8Array(maxIndex + 1);
       const obj = blobObj as Record<number, number>;

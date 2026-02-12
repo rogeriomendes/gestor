@@ -87,7 +87,9 @@ export function EmailSection() {
   };
 
   const handleSendVerification = async () => {
-    if (!user?.email) return;
+    if (!user?.email) {
+      return;
+    }
 
     setIsSendingVerification(true);
     try {

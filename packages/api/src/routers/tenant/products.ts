@@ -20,7 +20,6 @@ export const productsRouter = router({
         const limit = input.limit ?? 30;
         const { cursor, searchTerm, group, scale, promotion } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const whereSearch = searchTerm && {
           OR: [
@@ -263,7 +262,7 @@ export const productsRouter = router({
         let nextCursor: typeof cursor | undefined;
         if (productsWithPromotions.length > limit) {
           const nextSale = productsWithPromotions.pop();
-          nextCursor = String(nextSale!.ID);
+          nextCursor = String(nextSale?.ID);
         }
 
         return { products: productsWithPromotions, nextCursor, totalProducts };
@@ -283,7 +282,6 @@ export const productsRouter = router({
       try {
         const { id } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const product = await gestorPrisma.produto.findUnique({
           where: {
@@ -432,7 +430,6 @@ export const productsRouter = router({
       try {
         const { id } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const stock = await gestorPrisma.estoque_rede.findFirst({
           where: {
@@ -463,7 +460,6 @@ export const productsRouter = router({
         const { id } = input;
         const limit = 30;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const sales = await gestorPrisma.venda_detalhe.findMany({
           take: limit + 1,
@@ -518,7 +514,6 @@ export const productsRouter = router({
         const { id } = input;
         const limit = 30;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const purchase = await gestorPrisma.nfe_detalhe.findMany({
           take: limit + 1,
@@ -607,7 +602,6 @@ export const productsRouter = router({
       try {
         const { cod } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const ncm = await gestorPrisma.ncm.findFirst({
           where: {
@@ -636,7 +630,6 @@ export const productsRouter = router({
       try {
         const { cod } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const cest = await gestorPrisma.ncm_cest.findFirst({
           where: {
@@ -666,7 +659,6 @@ export const productsRouter = router({
       try {
         const { id } = input;
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const compound = await gestorPrisma.produto_composto.findMany({
           where: {
@@ -699,7 +691,6 @@ export const productsRouter = router({
 
   allMobile: tenantProcedure.query(async ({ ctx }) => {
     try {
-      // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
       const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
       const products = await gestorPrisma.produto.findMany({
         select: {

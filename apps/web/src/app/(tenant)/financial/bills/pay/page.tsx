@@ -201,7 +201,7 @@ export default function FinancialBillsPayList() {
   // Resetar seleção quando a empresa mudar
   useEffect(() => {
     resetSelection();
-  }, [selectedCompanyId]);
+  }, [resetSelection]);
 
   useEffect(() => {
     const total = Object.values(selectedBills).reduce<number>((sum, value) => {
@@ -413,7 +413,9 @@ export default function FinancialBillsPayList() {
           onRowClick={handleRowClick}
           pageItemKeys={["financialBills"]}
           renderRow={(bills: BillsPayItem) => {
-            if (!bills) return null;
+            if (!bills) {
+              return null;
+            }
 
             const statusInfo =
               bills.fin_status_parcela?.SITUACAO === "2"

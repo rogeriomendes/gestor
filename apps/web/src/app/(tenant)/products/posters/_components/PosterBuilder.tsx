@@ -30,7 +30,7 @@ export function PosterBuilder() {
   const [format, setFormat] = useState<
     "a4-full" | "a4-grid-2x4" | "a4-grid-2x2" | "a3-full"
   >("a4-full");
-  const [showYellowBackground, setShowYellowBackground] = useState(false);
+  const [showYellowBackground, _setShowYellowBackground] = useState(false);
   const [editingProduct, setEditingProduct] = useState<PosterProduct | null>(
     null
   );
@@ -38,10 +38,9 @@ export function PosterBuilder() {
 
   const handleProductSelect = (product: any) => {
     // Map existing product type to PosterProduct
-    const price =
-      product.activePromotion && product.activePromotion.PRECO_PROMOCAO
-        ? Number(product.activePromotion.PRECO_PROMOCAO)
-        : Number(product.VALOR_VENDA);
+    const price = product.activePromotion?.PRECO_PROMOCAO
+      ? Number(product.activePromotion.PRECO_PROMOCAO)
+      : Number(product.VALOR_VENDA);
 
     const unit = product.unidade_produto?.SIGLA || "UN";
 

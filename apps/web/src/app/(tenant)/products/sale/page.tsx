@@ -154,7 +154,9 @@ export default function productsSale() {
           pageItemKeys={["productsSale"]}
           renderRow={(sale: ProductsSaleItem) => {
             // Verificar se a promoção existe
-            if (!sale) return null;
+            if (!sale) {
+              return null;
+            }
 
             // Status da promoção
             const statusInfo = getSaleStatusInfo(sale.STATUS);

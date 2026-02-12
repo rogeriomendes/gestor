@@ -1,6 +1,7 @@
+import type { Tenant } from "@gestor/db/types";
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
 import { ptBR } from "date-fns/locale";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import { router, tenantProcedure } from "../..";
 import { getGestorPrismaClient } from "../../utils/tenant-db-clients";
@@ -8,8 +9,7 @@ import { getGestorPrismaClient } from "../../utils/tenant-db-clients";
 export const dashboardRouter = router({
   getLatest30Days: tenantProcedure.query(async ({ ctx }) => {
     try {
-      // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
-      const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+      const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
 
       const today = new Date();
       const thirtyDaysAgo = new Date(subDays(today, 30));
@@ -63,8 +63,7 @@ export const dashboardRouter = router({
     )
     .query(async ({ ctx, input }) => {
       try {
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
 
         const sales = await gestorPrisma.venda_cabecalho.findMany({
           where: {
@@ -99,8 +98,7 @@ export const dashboardRouter = router({
     .input(z.object({ companyId: z.number().optional() }))
     .query(async ({ ctx, input }) => {
       try {
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
 
         const today = new Date();
         const firstDateOfMonth = new Date(
@@ -149,8 +147,7 @@ export const dashboardRouter = router({
     .input(z.object({ companyId: z.number().optional() }))
     .query(async ({ ctx, input }) => {
       try {
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
 
         const today = new Date();
         const previousMonth = subMonths(today, 1);

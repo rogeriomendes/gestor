@@ -217,7 +217,9 @@ export default function FinancialClosingSalesList({
           }}
           pageItemKeys={["receipts"]}
           renderRow={(receipt) => {
-            if (!receipt) return null;
+            if (!receipt) {
+              return null;
+            }
             const venda = receipt?.venda_cabecalho;
             const cliente =
               venda?.cliente?.pessoa?.NOME || "Cliente não informado";

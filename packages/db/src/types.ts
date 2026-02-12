@@ -1,4 +1,3 @@
-// biome-ignore lint/performance/noBarrelFile: centraliza tipos compartilhados do Prisma
 export {
   AuditAction,
   AuditResourceType,

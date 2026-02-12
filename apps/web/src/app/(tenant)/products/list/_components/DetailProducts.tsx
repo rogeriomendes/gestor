@@ -295,14 +295,14 @@ export function DetailProducts({
               <TabsContent value="sales">
                 {productQuery.data?.product && (
                   <DetailProductsSales
-                    productId={productQuery.data.product!.ID}
+                    productId={productQuery.data.product?.ID}
                   />
                 )}
               </TabsContent>
               <TabsContent value="purchase">
                 {productQuery.data?.product && (
                   <DetailProductsPurchase
-                    productId={productQuery.data.product!.ID}
+                    productId={productQuery.data.product?.ID}
                   />
                 )}
               </TabsContent>
@@ -310,7 +310,7 @@ export function DetailProducts({
                 <TabsContent value="compound">
                   {productQuery.data?.product && (
                     <DetailProductsCompound
-                      productId={productQuery.data.product!.ID}
+                      productId={productQuery.data.product?.ID}
                     />
                   )}
                 </TabsContent>

@@ -38,7 +38,7 @@ export default function StockReportPage() {
   const report = getReportById("stock");
   const { tenant } = useTenant();
   const { selectedCompanyId } = useCompany();
-  const companyId = selectedCompanyId !== 0 ? selectedCompanyId : undefined;
+  const _companyId = selectedCompanyId !== 0 ? selectedCompanyId : undefined;
 
   const today = useMemo(() => new Date(), []);
   const initialDate = useMemo(() => subDays(today, 30), [today]);

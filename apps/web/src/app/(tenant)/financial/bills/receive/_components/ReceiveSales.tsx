@@ -219,13 +219,17 @@ export default function ReceiveSalesList() {
           onRowClick={handleRowClick}
           pageItemKeys={["receive"]}
           renderRow={(receive: ReceiveItem) => {
-            if (!receive) return null;
+            if (!receive) {
+              return null;
+            }
 
             if (clientId) {
               const matchesClient =
                 receive.fin_lancamento_receber.ID_CLIENTE?.toString() ===
                 clientId;
-              if (!matchesClient) return null;
+              if (!matchesClient) {
+                return null;
+              }
             }
 
             const statusInfo = getReceiveStatusById(

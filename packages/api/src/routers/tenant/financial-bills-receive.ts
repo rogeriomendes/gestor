@@ -62,7 +62,6 @@ export const financialBillsReceiveRouter = router({
           }
         }
 
-        // biome-ignore lint/suspicious/noExplicitAny: tenant context type from procedure
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const receive = await gestorPrisma.fin_parcela_receber.findMany({
           take: limit + 1,
@@ -283,7 +282,7 @@ export const financialBillsReceiveRouter = router({
         let nextCursor: typeof cursor | undefined;
         if (receiveWithCalculatedValues.length > limit) {
           const nextSale = receiveWithCalculatedValues.pop();
-          nextCursor = String(nextSale!.ID);
+          nextCursor = String(nextSale?.ID);
         }
 
         return {
@@ -416,10 +415,11 @@ export const financialBillsReceiveRouter = router({
         });
         const recebimento = receive[0]?.fin_parcela_recebimento[0];
 
-        if (recebimento === undefined)
+        if (recebimento === undefined) {
           return {
             amountLowered: undefined,
           };
+        }
 
         const amountLowered =
           await gestorPrisma.fin_parcela_recebimento.findMany({

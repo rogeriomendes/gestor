@@ -47,7 +47,9 @@ export function SearchInput({
   };
 
   React.useEffect(() => {
-    if (!enableF9Shortcut) return;
+    if (!enableF9Shortcut) {
+      return;
+    }
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "F9") {
         const input = wrapperRef.current?.querySelector<HTMLInputElement>(

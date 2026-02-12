@@ -194,7 +194,9 @@ export default function FinancialClosingsList() {
   );
 
   const getRowKey = useCallback((item: ClosingListItem, index: number) => {
-    if (item.type === "open") return `open-${item.data.ID}`;
+    if (item.type === "open") {
+      return `open-${item.data.ID}`;
+    }
     return `closed-${item.data.ID_CONTA_CAIXA}-${index}`;
   }, []);
 
