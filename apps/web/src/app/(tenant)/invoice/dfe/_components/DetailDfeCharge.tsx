@@ -22,7 +22,7 @@ export function DetailDfeCharge({ xml }: { xml: NFeInfo }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-1 md:py-2">
+      <Card className="rounded-md py-1 md:py-2" size="sm">
         <CardContent className="px-0 md:px-0">
           {xml.cobr ? (
             <>

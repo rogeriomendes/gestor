@@ -18,7 +18,7 @@ export function RoleList({ selectedRole, onRoleSelect }: RoleListProps) {
   const roles = TENANT_ROLES;
 
   return (
-    <Card>
+    <Card size="sm">
       <CardHeader>
         <CardTitle>Roles</CardTitle>
         <CardDescription>Selecione uma role</CardDescription>

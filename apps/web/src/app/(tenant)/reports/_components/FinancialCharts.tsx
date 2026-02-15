@@ -94,7 +94,7 @@ export function FinancialCharts({
   if (!hasData) {
     return (
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Contas a Receber</CardTitle>
             <CardDescription>
@@ -107,7 +107,7 @@ export function FinancialCharts({
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Resumo Financeiro</CardTitle>
             <CardDescription>Visão geral do fluxo de caixa</CardDescription>
@@ -124,7 +124,7 @@ export function FinancialCharts({
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Contas a Receber</CardTitle>
           <CardDescription>
@@ -186,7 +186,7 @@ export function FinancialCharts({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Resumo Financeiro</CardTitle>
           <CardDescription>Visão geral do fluxo de caixa</CardDescription>

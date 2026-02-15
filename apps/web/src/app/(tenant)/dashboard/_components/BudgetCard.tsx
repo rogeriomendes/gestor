@@ -9,7 +9,10 @@ import { BudgetSales } from "./BudgetSales";
 
 export function BudgetCard() {
   return (
-    <Card className="col-span-4 rounded-md md:grid-cols-3 lg:col-span-2">
+    <Card
+      className="col-span-4 rounded-md md:grid-cols-3 lg:col-span-2"
+      size="sm"
+    >
       <CardHeader>
         <CardTitle>30 últimos orçamentos em digitação</CardTitle>
       </CardHeader>

@@ -1,12 +1,15 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Building2Icon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTenant } from "@/contexts/tenant-context";
 import type { RouterOutputs } from "@/utils/trpc";
+import { trpc } from "@/utils/trpc";
 import { DfeCard } from "./DfeCard";
 
 type DfeItem =
@@ -52,7 +55,17 @@ export function DfeGrid({
   rootMargin = "30%",
   className = "",
 }: DfeGridProps) {
+  const { tenant } = useTenant();
   const { ref, inView } = useInView({ rootMargin });
+
+  const companyQuery = useQuery({
+    ...trpc.tenant.companies.all.queryOptions(),
+    enabled: !!tenant?.id,
+  });
+  const companyNameByCnpj = useMemo(() => {
+    const list = companyQuery.data?.company ?? [];
+    return new Map(list.map((c) => [c.CNPJ ?? "", c.RAZAO_SOCIAL ?? null]));
+  }, [companyQuery.data?.company]);
 
   useEffect(() => {
     const fetchNextPageAndHandlePromise = async () => {
@@ -91,8 +104,13 @@ export function DfeGrid({
             return null;
           }
 
+          const companyName = dfe.CNPJ_EMPRESA
+            ? (companyNameByCnpj.get(dfe.CNPJ_EMPRESA) ?? null)
+            : null;
+
           return (
             <DfeCard
+              companyName={companyName}
               dfe={dfe}
               key={`${dfe.CHAVE_ACESSO}-${index}`}
               onClick={onDfeClick}

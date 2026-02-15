@@ -19,7 +19,7 @@ export function DetailEntryProducts({ entryID }: { entryID: number }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-1 md:py-2">
+      <Card className="rounded-md py-1 md:py-2" size="sm">
         <CardContent className="px-1 md:px-2">
           {invoiceEntryProductsQuery.isLoading ? (
             <div className="space-y-3">

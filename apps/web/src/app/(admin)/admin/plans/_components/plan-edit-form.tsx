@@ -102,7 +102,7 @@ export function PlanEditForm({ plan, onCancel, onSuccess }: PlanEditFormProps) {
       }}
     >
       {/* Informações Básicas */}
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Informações Básicas</CardTitle>
           <CardDescription>Edite o nome e descrição do plano</CardDescription>

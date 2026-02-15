@@ -129,43 +129,43 @@ export default function ReceiveSalesList() {
         <MetricCard
           icon={HandshakeIcon}
           isLoading={billsReceiveAmountLoweredQuery.isLoading}
-          subtitle={
-            billsReceiveAmountLoweredQuery.data?.amountLowered ? (
+          subtitle={(() => {
+            const data = billsReceiveAmountLoweredQuery.data as
+              | {
+                  amountLowered?: Array<{
+                    DATA_RECEBIMENTO?: string;
+                    HORA_RECEBIMENTO?: string;
+                    NOME_COLABORADOR?: string;
+                  }>;
+                }
+              | undefined;
+            return data?.amountLowered ? (
               <span className="flex flex-row text-muted-foreground text-xs">
-                {billsReceiveAmountLoweredQuery.data?.amountLowered[0]
-                  ?.DATA_RECEBIMENTO &&
+                {data.amountLowered[0]?.DATA_RECEBIMENTO &&
                   new Date(
-                    billsReceiveAmountLoweredQuery.data?.amountLowered[0]
-                      ?.DATA_RECEBIMENTO
+                    data.amountLowered[0]?.DATA_RECEBIMENTO ?? ""
                   ).toLocaleDateString("pt-BR", {
                     timeZone: "UTC",
                   })}{" "}
-                {
-                  billsReceiveAmountLoweredQuery.data?.amountLowered[0]
-                    ?.HORA_RECEBIMENTO
-                }{" "}
-                -{" "}
-                {
-                  billsReceiveAmountLoweredQuery.data?.amountLowered[0]
-                    ?.NOME_COLABORADOR
-                }
+                {data.amountLowered[0]?.HORA_RECEBIMENTO} -{" "}
+                {data.amountLowered[0]?.NOME_COLABORADOR}
               </span>
             ) : clientId ? (
               "Não foram feitas baixas para esse cliente"
             ) : (
               "Selecione um cliente"
-            )
-          }
+            );
+          })()}
           title="Ultima baixa"
           useShowText={!clientId}
-          value={
-            billsReceiveAmountLoweredQuery.data?.amountLowered
-              ? Number(
-                  billsReceiveAmountLoweredQuery.data?.amountLowered[0]
-                    ?.VALOR_RECEBIDO ?? 0
-                )
-              : 0
-          }
+          value={(() => {
+            const d = billsReceiveAmountLoweredQuery.data as
+              | { amountLowered?: Array<{ VALOR_RECEBIDO?: number }> }
+              | undefined;
+            return d?.amountLowered?.length
+              ? Number(d.amountLowered[0]?.VALOR_RECEBIDO ?? 0)
+              : 0;
+          })()}
         />
       </div>
 

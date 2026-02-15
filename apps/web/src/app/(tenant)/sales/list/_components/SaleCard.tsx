@@ -22,10 +22,12 @@ interface SaleCardProps {
     OBSERVACAO?: string;
     nfe_cabecalho?: Array<{ STATUS_NOTA: string }>;
   };
+  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
+  companyName?: string | null;
   onClick?: (sale: any) => void;
 }
 
-export function SaleCard({ sale, onClick }: SaleCardProps) {
+export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
   const statusInfo = getNfceStatusInfo({
     devolucao: sale.DEVOLUCAO,
     canceladoIdUsuario: sale.CANCELADO_ID_USUARIO,
@@ -41,6 +43,7 @@ export function SaleCard({ sale, onClick }: SaleCardProps) {
           "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
       )}
       onClick={() => onClick?.(sale)}
+      size="sm"
     >
       <CardContent>
         {/* Header com número da venda e status */}
@@ -62,7 +65,13 @@ export function SaleCard({ sale, onClick }: SaleCardProps) {
         </div>
 
         {/* Informações de identificação */}
-        <div className="mb-1.5 flex items-center text-muted-foreground text-xs">
+        <div className="mb-1.5 flex flex-wrap items-center gap-x-1 text-muted-foreground text-xs">
+          {companyName && (
+            <>
+              <span>Empresa: {companyName}</span>
+              <DotIcon />
+            </>
+          )}
           {sale.conta_caixa?.NOME && <>Conta: {sale.conta_caixa?.NOME}</>}
           {sale.conta_caixa?.NOME && sale.cliente?.pessoa?.NOME && <DotIcon />}
           {sale.cliente?.pessoa?.NOME && (

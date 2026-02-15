@@ -385,7 +385,7 @@ function PermissionsPageContent() {
         title="Gerenciar Permissões"
       >
         <div className="grid gap-6 lg:grid-cols-4">
-          <Card>
+          <Card size="sm">
             <CardHeader>
               <CardTitle>Roles</CardTitle>
               <CardDescription>Selecione uma role</CardDescription>
@@ -395,7 +395,7 @@ function PermissionsPageContent() {
             </CardContent>
           </Card>
           <div className="lg:col-span-3">
-            <Card>
+            <Card size="sm">
               <CardHeader>
                 <CardTitle>Permissões</CardTitle>
                 <CardDescription>Carregando permissões...</CardDescription>
@@ -425,7 +425,7 @@ function PermissionsPageContent() {
       title="Gerenciar Permissões"
     >
       {(!permissions || permissions.length === 0) && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Nenhuma Permissão Encontrada</CardTitle>
             <CardDescription>
@@ -440,7 +440,7 @@ function PermissionsPageContent() {
         </Card>
       )}
       {permissions && permissions.length > 0 && needsInitialization && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Atualização de Permissões Necessária</CardTitle>
             <CardDescription>

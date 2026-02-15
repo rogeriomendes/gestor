@@ -72,6 +72,7 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
         //   "border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20",
       )}
       onClick={() => onClick?.(product)}
+      size="sm"
     >
       <CardContent>
         {/* Header com nome e promoção */}
@@ -80,7 +81,7 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
             {product.activePromotion && (
               <SquarePercentIcon
                 aria-label="Promoção ativa"
-                className="size-3.5 flex-shrink-0 text-orange-700 dark:text-orange-300"
+                className="size-3.5 shrink-0 text-orange-700 dark:text-orange-300"
               />
             )}
             <h3 className="line-clamp-2 font-medium text-sm leading-tight">

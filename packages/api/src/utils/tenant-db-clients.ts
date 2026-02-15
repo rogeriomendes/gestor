@@ -1,6 +1,6 @@
-import type { Tenant } from "@gestor/db/types";
 import { createDfePrismaClient } from "@gestor/db-dfe";
 import { createGestorPrismaClient } from "@gestor/db-gestor";
+import type { Tenant } from "@gestor/db/types";
 import { LRUCache } from "lru-cache";
 
 // Tipo genérico para PrismaClient (pode ser de qualquer package: db, db-gestor, db-dfe)
@@ -8,6 +8,12 @@ interface PrismaClientLike {
   $disconnect: () => Promise<void>;
 }
 type PrismaClient = PrismaClientLike;
+
+/** Tipo do cliente Prisma do banco gestor (com modelos conta_caixa, etc.) */
+export type GestorPrismaClient = ReturnType<typeof createGestorPrismaClient>;
+
+/** Tipo do cliente Prisma do banco DFE (com modelo dfe) */
+export type DfePrismaClient = ReturnType<typeof createDfePrismaClient>;
 
 import { decryptPassword } from "./encryption";
 import { hasCompleteDatabaseCredentials } from "./tenant-db-credentials";
@@ -51,7 +57,7 @@ function getCacheKey(tenantId: string, database: "gestor" | "dfe"): string {
 /**
  * Obtém ou cria um Prisma Client para o banco gestor (bussolla_db)
  */
-export function getGestorPrismaClient(tenant: Tenant): PrismaClient {
+export function getGestorPrismaClient(tenant: Tenant): GestorPrismaClient {
   if (!hasCompleteDatabaseCredentials(tenant)) {
     throw new Error(
       "Tenant não possui credenciais completas de banco de dados"
@@ -64,7 +70,7 @@ export function getGestorPrismaClient(tenant: Tenant): PrismaClient {
   if (cached) {
     // Atualizar lastUsedAt
     cached.lastUsedAt = new Date();
-    return cached.prismaClient;
+    return cached.prismaClient as GestorPrismaClient;
   }
 
   // Descriptografar senha
@@ -102,7 +108,7 @@ export function getGestorPrismaClient(tenant: Tenant): PrismaClient {
 /**
  * Obtém ou cria um Prisma Client para o banco DFE (opytex_db_dfe)
  */
-export function getDfePrismaClient(tenant: Tenant): PrismaClient {
+export function getDfePrismaClient(tenant: Tenant): DfePrismaClient {
   if (!hasCompleteDatabaseCredentials(tenant)) {
     throw new Error(
       "Tenant não possui credenciais completas de banco de dados"
@@ -115,7 +121,7 @@ export function getDfePrismaClient(tenant: Tenant): PrismaClient {
   if (cached) {
     // Atualizar lastUsedAt
     cached.lastUsedAt = new Date();
-    return cached.prismaClient;
+    return cached.prismaClient as DfePrismaClient;
   }
 
   // Descriptografar senha

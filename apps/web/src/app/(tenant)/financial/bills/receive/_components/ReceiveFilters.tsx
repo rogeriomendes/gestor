@@ -44,11 +44,12 @@ export function ReceiveFilters({
       {/* Status da Parcela */}
       <div className="flex flex-row gap-2 md:gap-3">
         <Combobox
-          className="w-full md:w-48"
+          className="flex-1 md:w-48"
           icon={<Settings2Icon className="size-4" />}
           onValueChange={onStatusChange}
           options={statusOptions}
           placeholder="Status"
+          searchPlaceholder="Buscar status..."
           value={status}
         />
 
@@ -58,14 +59,14 @@ export function ReceiveFilters({
             render={
               <Button
                 className={cn(
-                  "w-full justify-start text-left font-normal md:w-60",
+                  "flex-1 justify-start text-left font-normal md:w-60",
                   !dateRange && "text-muted-foreground"
                 )}
                 variant="outline"
               />
             }
           >
-            <CalendarIcon className="h-4 w-4" />
+            <CalendarIcon className="size-4" />
             {dateRange?.from ? (
               dateRange.to ? (
                 <>
@@ -82,6 +83,7 @@ export function ReceiveFilters({
           <PopoverContent align="start" className="w-auto p-0">
             <Calendar
               captionLayout="dropdown"
+              disabled={{ after: new Date() }}
               locale={ptBR}
               mode="range"
               onSelect={onDateRangeChange}

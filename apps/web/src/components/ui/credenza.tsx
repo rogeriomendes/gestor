@@ -152,7 +152,7 @@ const CredenzaTitle = ({ className, children, ...props }: CredenzaProps) => {
   const CredenzaTitle = isMobile ? DrawerTitle : DialogTitle;
 
   return (
-    <CredenzaTitle className={className} {...props}>
+    <CredenzaTitle className={className} {...props} render={<div />}>
       {children}
     </CredenzaTitle>
   );

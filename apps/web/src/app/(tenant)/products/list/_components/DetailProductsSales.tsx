@@ -32,7 +32,7 @@ export function DetailProductsSales({ productId }: { productId: number }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-0 md:py-0">
+      <Card className="rounded-md py-0 md:py-0" size="sm">
         <CardContent className="px-0 md:px-0">
           {productsSalesQuery.isLoading ? (
             <Table className="bg-card">

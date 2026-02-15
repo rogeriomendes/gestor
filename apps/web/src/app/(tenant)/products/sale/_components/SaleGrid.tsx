@@ -1,11 +1,14 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { SquarePercentIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTenant } from "@/contexts/tenant-context";
+import { trpc } from "@/utils/trpc";
 import { SaleCard } from "./SaleCard";
 
 interface SaleGridProps {
@@ -48,7 +51,17 @@ export function SaleGrid({
   rootMargin = "30%",
   className = "",
 }: SaleGridProps) {
+  const { tenant } = useTenant();
   const { ref, inView } = useInView({ rootMargin });
+
+  const companyQuery = useQuery({
+    ...trpc.tenant.companies.all.queryOptions(),
+    enabled: !!tenant?.id,
+  });
+  const companyNameById = useMemo(() => {
+    const list = companyQuery.data?.company ?? [];
+    return new Map(list.map((c) => [c.ID, c.RAZAO_SOCIAL ?? null]));
+  }, [companyQuery.data?.company]);
 
   useEffect(() => {
     const fetchNextPageAndHandlePromise = async () => {
@@ -89,6 +102,11 @@ export function SaleGrid({
 
           return (
             <SaleCard
+              companyName={
+                sale.ID_EMPRESA
+                  ? (companyNameById.get(sale.ID_EMPRESA) ?? null)
+                  : null
+              }
               key={`${sale.ID}-${index}`}
               onClick={onSaleClick}
               sale={sale}

@@ -51,7 +51,7 @@ export function TypesCharts({ salesPerType }: TypesChartsProps) {
 
   return (
     <div className="grid gap-4">
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Vendas por Tipo de Recebimento</CardTitle>
           <CardDescription>

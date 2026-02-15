@@ -106,7 +106,7 @@ export function Combobox({
           render={
             <Button
               aria-expanded={open}
-              className={cn("w-full justify-between font-normal", className)}
+              className={cn("justify-between font-normal", className)}
               role="combobox"
               variant="outline"
             />
@@ -126,7 +126,7 @@ export function Combobox({
       <DrawerTrigger asChild>
         <Button
           aria-expanded={open}
-          className={cn("w-full justify-between font-normal", className)}
+          className={cn("justify-between font-normal", className)}
           onClick={() => setOpen(true)}
           role="combobox"
           variant="outline"

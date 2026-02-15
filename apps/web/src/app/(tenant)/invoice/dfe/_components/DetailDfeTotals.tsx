@@ -5,7 +5,7 @@ import type { ICMSTot } from "./DetailDfe";
 export function DetailDfeTotals({ xml }: { xml: ICMSTot }) {
   return (
     <div className="space-y-3">
-      <Card className="rounded-md rounded-md py-1 md:py-2">
+      <Card className="rounded-md rounded-md py-1 md:py-2" size="sm">
         <CardContent className="grid grid-cols-2 gap-1 px-1 text-xs md:gap-2 md:px-2 md:text-sm">
           <div className="relative flex flex-row rounded bg-muted/50 p-1.5">
             <div className="mr-2 w-24">ICMS:</div>

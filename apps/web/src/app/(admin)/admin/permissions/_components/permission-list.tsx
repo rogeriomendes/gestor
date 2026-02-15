@@ -57,7 +57,7 @@ export function PermissionList({
 }: PermissionListProps) {
   if (!selectedRole) {
     return (
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Selecione uma Role</CardTitle>
           <CardDescription>
@@ -83,7 +83,7 @@ export function PermissionList({
 
   if (isLoading) {
     return (
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Permissões - {ROLE_LABELS[selectedRole]}</CardTitle>
           <CardDescription>Gerencie as permissões desta role</CardDescription>
@@ -115,7 +115,7 @@ export function PermissionList({
   );
 
   return (
-    <Card>
+    <Card size="sm">
       <CardHeader>
         <CardTitle>Permissões - {ROLE_LABELS[selectedRole]}</CardTitle>
         <CardDescription>Gerencie as permissões desta role</CardDescription>

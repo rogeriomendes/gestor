@@ -163,7 +163,7 @@ export function DetailSale({ saleData, open, onOpenChange }: DetailSaleProps) {
               <AlertDescription>{saleData.OBSERVACAO}</AlertDescription>
             </Alert>
           )}
-          <Card className="rounded-md py-1 md:py-2">
+          <Card className="rounded-md py-1 md:py-2" size="sm">
             <CardContent className="px-1 md:px-2">
               {saleProductsQuery.isLoading ? (
                 <div className="m-2 space-y-2">

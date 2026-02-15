@@ -40,6 +40,7 @@ export function MetricCard({
     <Card
       className={`${onClick ? "hover:cursor-pointer" : ""} ${className}`}
       onClick={onClick}
+      size="sm"
     >
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="truncate font-medium text-xs md:text-sm">

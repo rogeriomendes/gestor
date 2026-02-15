@@ -8,6 +8,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
@@ -37,7 +38,7 @@ export function SearchInput({
   ...inputProps
 }: SearchInputProps) {
   const wrapperRef = React.useRef<HTMLDivElement>(null);
-
+  const isMobile = useIsMobile();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
   };
@@ -105,7 +106,7 @@ export function SearchInput({
         </Tooltip>
       </InputGroupAddon>
     );
-  } else if (value.length === 0 && enableF9Shortcut) {
+  } else if (value.length === 0 && enableF9Shortcut && !isMobile) {
     endAddon = (
       <InputGroupAddon align="inline-end">
         <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium text-muted-foreground text-xs opacity-100">
@@ -116,20 +117,18 @@ export function SearchInput({
   }
 
   return (
-    <div ref={wrapperRef}>
-      <InputGroup className={cn("w-full md:w-64 lg:w-96", className)}>
-        <InputGroupAddon align="inline-start">
-          {icon ?? <SearchIcon className="size-4" />}
-        </InputGroupAddon>
-        <InputGroupInput
-          onChange={handleChange}
-          placeholder={placeholder}
-          type="text"
-          value={value}
-          {...inputProps}
-        />
-        {endAddon}
-      </InputGroup>
-    </div>
+    <InputGroup className={cn("w-full md:w-64", className)} ref={wrapperRef}>
+      <InputGroupAddon align="inline-start">
+        {icon ?? <SearchIcon className="size-4" />}
+      </InputGroupAddon>
+      <InputGroupInput
+        onChange={handleChange}
+        placeholder={placeholder}
+        type="text"
+        value={value}
+        {...inputProps}
+      />
+      {endAddon}
+    </InputGroup>
   );
 }

@@ -27,7 +27,7 @@ export function DetailProductsCompound({ productId }: { productId: number }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md leading-none">
+      <Card className="rounded-md leading-none" size="sm">
         <CardContent className="p-0">
           {productsCompoundQuery.isLoading ? (
             <div className="m-2 space-y-2">

@@ -75,7 +75,7 @@ export default function FinancialClosingDetailPage() {
         subtitle="Selecione um fechamento na listagem para ver os detalhes"
         title="Fechamento"
       >
-        <Card className="rounded-md">
+        <Card className="rounded-md" size="sm">
           <CardContent className="flex flex-col items-center justify-center gap-4 py-12">
             <p className="text-center text-muted-foreground">
               Nenhum fechamento selecionado. Acesse a listagem e clique em um
@@ -106,7 +106,7 @@ export default function FinancialClosingDetailPage() {
         subtitle="Dados de abertura incompletos para exibir o fechamento"
         title="Fechamento"
       >
-        <Card className="rounded-md">
+        <Card className="rounded-md" size="sm">
           <CardContent className="flex flex-col items-center justify-center gap-4 py-12">
             <p className="text-center text-muted-foreground">
               Faltam data ou hora de abertura. Volte à listagem e abra um
@@ -163,13 +163,13 @@ export default function FinancialClosingDetailPage() {
           {closingData ? (
             <>
               <Badge
-                className="w-[80%] text-base md:w-[150px] md:text-lg"
+                className="flex-1 py-3.5 text-base md:w-56 md:text-lg"
                 variant="secondary"
               >
                 ABERTURA
               </Badge>
               <Badge
-                className="w-full text-base md:w-60 md:text-lg"
+                className="flex-1 py-3.5 text-base md:w-56 md:text-lg"
                 variant="secondary"
               >
                 {closingData.dateOpen && formatDate(closingData.dateOpen)} -{" "}
@@ -178,8 +178,8 @@ export default function FinancialClosingDetailPage() {
             </>
           ) : (
             <>
-              <Skeleton className="h-8 w-[80%] md:w-[150px]" />
-              <Skeleton className="h-8 w-full md:w-60" />
+              <Skeleton className="h-8 flex-1 md:w-56" />
+              <Skeleton className="h-8 flex-1 md:w-56" />
             </>
           )}
         </div>
@@ -187,14 +187,14 @@ export default function FinancialClosingDetailPage() {
           closingData.hourClosed && (
             <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
               <Badge
-                className="w-[80%] text-base md:w-[150px] md:text-lg"
+                className="flex-1 py-3.5 text-base md:w-56 md:text-lg"
                 variant="secondary"
               >
                 FECHAMENTO
               </Badge>
 
               <Badge
-                className="w-full text-base md:w-60 md:text-lg"
+                className="flex-1 py-3.5 text-base md:w-56 md:text-lg"
                 variant="secondary"
               >
                 {closingData.dateClosed && formatDate(closingData.dateClosed)} -{" "}
@@ -204,13 +204,16 @@ export default function FinancialClosingDetailPage() {
           )
         ) : (
           <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
-            <Skeleton className="h-8 w-[80%] md:w-[150px]" />
-            <Skeleton className="h-8 w-full md:w-60" />
+            <Skeleton className="h-8 flex-1 md:w-56" />
+            <Skeleton className="h-8 flex-1 md:w-56" />
           </div>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 md:flex-row md:gap-4">
-        <Card className="w-full rounded-md md:sticky md:top-7 md:h-[calc(100vh-1.75rem)] md:w-1/3 md:max-w-[500px]">
+        <Card
+          className="w-full rounded-md md:sticky md:top-7 md:h-[calc(100vh-1.75rem)] md:w-1/3 md:max-w-[500px]"
+          size="sm"
+        >
           <CardHeader>
             <CardTitle className="text-sm md:text-base">
               Tipo de Recebimento / Pagamento

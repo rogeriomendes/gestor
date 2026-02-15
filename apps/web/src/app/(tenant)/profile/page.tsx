@@ -95,7 +95,7 @@ export default function ProfilePage() {
         title="Meu Perfil"
       >
         <div className="space-y-6">
-          <Card>
+          <Card size="sm">
             <CardHeader>
               <Skeleton className="h-6 w-48" />
               <Skeleton className="h-4 w-64" />
@@ -130,7 +130,7 @@ export default function ProfilePage() {
         <ProfileSidebar />
         <div className="flex-1 space-y-6">
           {/* Card de Perfil */}
-          <Card className="rounded-md" id="personal-info">
+          <Card className="rounded-md" id="personal-info" size="sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />

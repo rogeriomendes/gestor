@@ -158,8 +158,9 @@ export default function ProductsList() {
       title="Produtos"
     >
       <div className="flex flex-col md:flex-row md:items-center">
-        <div className="flex flex-row gap-2 md:gap-3">
+        <div className="flex flex-row gap-2">
           <SearchInput
+            className="w-full flex-1 md:w-96"
             enableF9Shortcut
             onChange={(v: string) => void setSearch(v)}
             placeholder="Pesquisar por produtos"
@@ -215,29 +216,32 @@ export default function ProductsList() {
         </div>
         <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
           <Combobox
-            className="w-full sm:w-60"
+            className="flex-1 md:w-48"
             icon={<GroupIcon />}
             onValueChange={setGroup}
             options={groupOptions}
             placeholder="Grupos"
+            searchPlaceholder="Buscar grupos..."
             value={group}
           />
         </div>
         <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
           <Combobox
-            className="w-full sm:w-60"
+            className="flex-1 md:w-48"
             icon={<ScaleIcon />}
             onValueChange={setScale}
             options={scaleOptions}
             placeholder="Balança"
+            searchPlaceholder="Buscar balança..."
             value={scale}
           />
           <Combobox
-            className="w-full sm:w-60"
+            className="flex-1 md:w-48"
             icon={<SquarePercentIcon />}
             onValueChange={setPromotion}
             options={promotionOptions}
             placeholder="Promoção"
+            searchPlaceholder="Buscar promoção..."
             value={promotion}
           />
         </div>
@@ -330,22 +334,34 @@ export default function ProductsList() {
               product.unidade_produto.SIGLA,
               formatAsCurrency(
                 custoFinal(
-                  product.VALOR_COMPRA,
-                  product.FRETE,
-                  product.ICMS_ST,
-                  product.IPI,
-                  product.OUTROSVALORES,
-                  product.OUTROSIMPOSTOS
+                  product.VALOR_COMPRA != null
+                    ? Number(product.VALOR_COMPRA)
+                    : null,
+                  product.FRETE != null ? Number(product.FRETE) : null,
+                  product.ICMS_ST != null ? Number(product.ICMS_ST) : null,
+                  product.IPI != null ? Number(product.IPI) : null,
+                  product.OUTROSVALORES != null
+                    ? Number(product.OUTROSVALORES)
+                    : null,
+                  product.OUTROSIMPOSTOS != null
+                    ? Number(product.OUTROSIMPOSTOS)
+                    : null
                 )
               ),
               calculePercentageBetweenValues(
                 custoFinal(
-                  product.VALOR_COMPRA,
-                  product.FRETE,
-                  product.ICMS_ST,
-                  product.IPI,
-                  product.OUTROSVALORES,
-                  product.OUTROSIMPOSTOS
+                  product.VALOR_COMPRA != null
+                    ? Number(product.VALOR_COMPRA)
+                    : null,
+                  product.FRETE != null ? Number(product.FRETE) : null,
+                  product.ICMS_ST != null ? Number(product.ICMS_ST) : null,
+                  product.IPI != null ? Number(product.IPI) : null,
+                  product.OUTROSVALORES != null
+                    ? Number(product.OUTROSVALORES)
+                    : null,
+                  product.OUTROSIMPOSTOS != null
+                    ? Number(product.OUTROSIMPOSTOS)
+                    : null
                 ),
                 Number(product.VALOR_VENDA),
                 true

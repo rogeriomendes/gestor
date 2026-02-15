@@ -39,7 +39,7 @@ export function DetailEntryCharge({
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-1 md:py-2">
+      <Card className="rounded-md py-1 md:py-2" size="sm">
         <CardContent className="px-0 md:px-0">
           <div className="mx-2 mb-2 grid grid-cols-2 gap-1 text-xs md:gap-2 md:text-sm">
             <div className="relative flex flex-row rounded bg-muted/50 p-1.5">
@@ -116,12 +116,15 @@ export function DetailEntryCharge({
                       </TableCell>
                       <TableCell>
                         {charge.DATA_VENCIMENTO &&
-                          formatDate(charge.DATA_VENCIMENTO)}
+                          formatDate(new Date(charge.DATA_VENCIMENTO))}
                       </TableCell>
                       <TableCell>
                         {charge.fin_parcela_pagamento[0]?.DATA_PAGAMENTO &&
                           formatDate(
-                            charge.fin_parcela_pagamento[0]?.DATA_PAGAMENTO
+                            new Date(
+                              charge.fin_parcela_pagamento[0]?.DATA_PAGAMENTO ??
+                                ""
+                            )
                           )}
                       </TableCell>
                     </TableRow>

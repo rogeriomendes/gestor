@@ -11,11 +11,14 @@ interface FinancialClosingCardProps {
     type: "open" | "closed";
     data: any;
   };
+  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
+  companyName?: string | null;
   onClick?: (item: any) => void;
 }
 
 export function FinancialClosingCard({
   item,
+  companyName,
   onClick,
 }: FinancialClosingCardProps) {
   const { type, data } = item;
@@ -26,6 +29,7 @@ export function FinancialClosingCard({
       <Card
         className="h-full cursor-pointer rounded-md border-primary/20 bg-primary/5 transition-all"
         onClick={() => onClick?.(item)}
+        size="sm"
       >
         <CardContent>
           {/* Header com status e empresa */}
@@ -39,10 +43,11 @@ export function FinancialClosingCard({
             </Badge>
           </div>
 
-          {/* Empresa */}
-          {/* <div className="flex items-center text-xs text-muted-foreground mb-3">
-            <span>Empresa: {data.ID_EMPRESA}</span>
-          </div> */}
+          {companyName && (
+            <div className="mb-2 text-muted-foreground text-xs">
+              Empresa: {companyName}
+            </div>
+          )}
 
           {/* Informações principais em grid compacto */}
           <div className="grid grid-cols-2 gap-2 text-xs">
@@ -76,6 +81,7 @@ export function FinancialClosingCard({
     <Card
       className="h-full cursor-pointer rounded-md transition-all"
       onClick={() => onClick?.(item)}
+      size="sm"
     >
       <CardContent>
         {/* Header com nome e status */}
@@ -91,10 +97,11 @@ export function FinancialClosingCard({
           </Badge>
         </div>
 
-        {/* Empresa */}
-        {/* <div className="flex items-center text-xs text-muted-foreground mb-3">
-            <span>Empresa: {data.conta_caixa?.ID_EMPRESA}</span>
-          </div> */}
+        {companyName && (
+          <div className="mb-2 text-muted-foreground text-xs">
+            Empresa: {companyName}
+          </div>
+        )}
 
         {/* Informações principais em grid compacto */}
         <div className="grid grid-cols-2 gap-2 text-xs">

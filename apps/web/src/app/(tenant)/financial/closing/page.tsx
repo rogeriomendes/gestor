@@ -165,7 +165,7 @@ export default function FinancialClosingsList() {
             {statusInfo.label}
           </Badge>,
           d.DATA_ULTIMA_ABERTURA
-            ? `${formatDate(d.DATA_ULTIMA_ABERTURA)} ${d.HORA_ULTIMA_ABERTURA ?? ""}`
+            ? `${formatDate(new Date(d.DATA_ULTIMA_ABERTURA))} ${d.HORA_ULTIMA_ABERTURA ?? ""}`
             : "",
           "",
         ];
@@ -183,10 +183,10 @@ export default function FinancialClosingsList() {
           {statusInfo.label}
         </Badge>,
         d.DATA_ABERTURA
-          ? `${formatDate(d.DATA_ABERTURA)} ${d.HORA_ABERTURA ?? ""}`
+          ? `${formatDate(new Date(d.DATA_ABERTURA))} ${d.HORA_ABERTURA ?? ""}`
           : "",
         d.DATA_FECHAMENTO
-          ? `${formatDate(d.DATA_FECHAMENTO)} ${d.HORA_FECHAMENTO ?? ""}`
+          ? `${formatDate(new Date(d.DATA_FECHAMENTO))} ${d.HORA_FECHAMENTO ?? ""}`
           : "",
       ];
     },
@@ -205,18 +205,19 @@ export default function FinancialClosingsList() {
       breadcrumbs={[
         { label: "Dashboard", href: "/dashboard" as Route },
         { label: "Financeiro", href: "/financial" as Route },
-        { label: "Fechamentos de Caixa", isCurrent: true },
+        { label: "Fechamentos", isCurrent: true },
       ]}
       subtitle="Consulte as aberturas e fechamentos de caixa"
       title="Movimento do caixa"
     >
       <div className="mt-2 flex flex-row gap-2 md:mt-0 md:gap-3">
         <Combobox
-          className="w-full md:w-48"
+          className="flex-1 md:w-48"
           icon={<SquareUserIcon className="size-4" />}
           onValueChange={setAccount}
           options={accountsOptions}
           placeholder="Conta caixa"
+          searchPlaceholder="Buscar conta caixa..."
           value={account}
         />
         <Popover>
@@ -224,7 +225,7 @@ export default function FinancialClosingsList() {
             render={
               <Button
                 className={cn(
-                  "w-60 justify-between px-3 text-left font-normal",
+                  "flex-1 justify-between px-3 text-left font-normal md:w-60",
                   !date && "text-muted-foreground"
                 )}
                 variant="outline"

@@ -17,10 +17,12 @@ interface BudgetCardProps {
     ALTERACAO_DATA_HORA?: string;
     OBSERVACAO?: string;
   };
+  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
+  companyName?: string | null;
   onClick?: (budget: any) => void;
 }
 
-export function BudgetCard({ budget, onClick }: BudgetCardProps) {
+export function BudgetCard({ budget, companyName, onClick }: BudgetCardProps) {
   const situationInfo = getBudgetSituationInfo(budget.SITUACAO);
   const isInProgress = budget.SITUACAO === "D";
 
@@ -32,6 +34,7 @@ export function BudgetCard({ budget, onClick }: BudgetCardProps) {
           "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20"
       )}
       onClick={() => onClick?.(budget)}
+      size="sm"
     >
       <CardContent>
         {/* Header com ID e situação */}
@@ -47,10 +50,18 @@ export function BudgetCard({ budget, onClick }: BudgetCardProps) {
           </Badge>
         </div>
 
-        {/* Cliente e observação */}
-        <div className="mb-3 flex items-center gap-2 text-muted-foreground text-xs">
-          Cliente:
-          <span className="truncate">{budget.cliente.pessoa.NOME}</span>
+        {/* Empresa e cliente */}
+        <div className="mb-3 flex flex-wrap items-center gap-x-2 text-muted-foreground text-xs">
+          {companyName && (
+            <>
+              <span>Empresa: {companyName}</span>
+              <span>·</span>
+            </>
+          )}
+          <span>
+            Cliente:{" "}
+            <span className="truncate">{budget.cliente.pessoa.NOME}</span>
+          </span>
         </div>
 
         {/* Informações principais em grid compacto */}

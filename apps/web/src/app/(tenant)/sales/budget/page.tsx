@@ -95,17 +95,21 @@ export default function BudgetList() {
         />
         <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
           <Combobox
+            className="flex-1 md:w-48"
             icon={<UserIcon />}
             onValueChange={setSeller}
             options={sellerOptions}
             placeholder="Vendedor"
+            searchPlaceholder="Buscar vendedor..."
             value={seller}
           />
           <Combobox
+            className="flex-1 md:w-48"
             icon={<Settings2Icon />}
             onValueChange={setSituation}
             options={situationOptions}
             placeholder="Situação"
+            searchPlaceholder="Buscar situação..."
             value={situation}
           />
         </div>

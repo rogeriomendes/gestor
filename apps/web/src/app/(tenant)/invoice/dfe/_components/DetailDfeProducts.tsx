@@ -9,7 +9,7 @@ export function DetailDfeProducts({ xml }: { xml: NFeInfo }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-1 md:py-2">
+      <Card className="rounded-md py-1 md:py-2" size="sm">
         <CardContent className="px-1 md:px-2">
           {products.map((item, index) => (
             <div

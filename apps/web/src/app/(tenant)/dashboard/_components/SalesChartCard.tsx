@@ -33,7 +33,7 @@ function SalesChartSkeleton() {
   }, []);
 
   return (
-    <Card className="col-span-4 rounded-md">
+    <Card className="col-span-4 rounded-md" size="sm">
       <CardHeader>
         <CardTitle className="flex flex-row items-center">
           Vendas dos últimos 30 dias
@@ -82,7 +82,7 @@ export function SalesChartCard() {
 
   if (latest30DaysError) {
     return (
-      <Card className="col-span-4 rounded-md">
+      <Card className="col-span-4 rounded-md" size="sm">
         <CardHeader className="px-3 md:px-5">
           <CardTitle>Vendas dos últimos 30 dias</CardTitle>
         </CardHeader>
@@ -97,7 +97,7 @@ export function SalesChartCard() {
 
   if (!latest30DaysData?.totalValuePerDay?.length) {
     return (
-      <Card className="col-span-4 rounded-md py-3 md:py-5">
+      <Card className="col-span-4 rounded-md py-3 md:py-5" size="sm">
         <CardHeader>
           <CardTitle>Vendas dos últimos 30 dias</CardTitle>
         </CardHeader>
@@ -111,7 +111,7 @@ export function SalesChartCard() {
   }
 
   return (
-    <Card className="col-span-4 rounded-md">
+    <Card className="col-span-4 rounded-md" size="sm">
       <CardHeader className="px-3 md:px-5">
         <CardTitle className="flex flex-row items-center">
           Vendas dos últimos 30 dias

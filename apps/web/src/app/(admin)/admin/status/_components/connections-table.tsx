@@ -177,7 +177,7 @@ export function ConnectionsTable() {
 
   return (
     <>
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center md:gap-0">
             <div>

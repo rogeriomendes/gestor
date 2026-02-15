@@ -80,17 +80,21 @@ export default function productsSale() {
       <div className="flex flex-col md:flex-row md:items-center">
         <div className="flex flex-row gap-2 md:gap-3">
           <Combobox
+            className="flex-1 md:w-48"
             icon={<CircleEllipsisIcon />}
             onValueChange={setStatus}
             options={statusOptions}
             placeholder="Status"
+            searchPlaceholder="Buscar status..."
             value={status}
           />
           <Combobox
+            className="flex-1 md:w-48"
             icon={<CircleHelpIcon />}
             onValueChange={setInactive}
             options={inactiveOptions}
             placeholder="Inativo"
+            searchPlaceholder="Buscar inativo..."
             value={inactive}
           />
         </div>

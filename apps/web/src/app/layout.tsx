@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import Providers from "@/components/providers";
@@ -34,6 +35,17 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          <NextTopLoader
+            color="hsl(142.1 76.2% 36.3%)"
+            crawl={true}
+            crawlSpeed={200}
+            easing="ease"
+            height={2}
+            initialPosition={0.08}
+            shadow="0 0 10px hsl(142.1 76.2% 36.3%), 0 0 5px hsl(142.1 76.2% 36.3%)"
+            showSpinner={false}
+            speed={200}
+          />
           <NuqsAdapter>{children}</NuqsAdapter>
         </Providers>
       </body>

@@ -19,10 +19,12 @@ interface SaleCardProps {
     OBSERVACAO: string | null;
     STATUS: string;
   };
+  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
+  companyName?: string | null;
   onClick?: (sale: any) => void;
 }
 
-export function SaleCard({ sale, onClick }: SaleCardProps) {
+export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
   const statusInfo = getSaleStatusInfo(sale.STATUS);
   const isActive = sale.STATUS === "E";
   const isAwaiting = sale.STATUS === "A";
@@ -36,6 +38,7 @@ export function SaleCard({ sale, onClick }: SaleCardProps) {
           "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20"
       )}
       onClick={() => onClick?.(sale)}
+      size="sm"
     >
       <CardContent>
         {/* Header com nome e status */}
@@ -51,10 +54,11 @@ export function SaleCard({ sale, onClick }: SaleCardProps) {
           </Badge>
         </div>
 
-        {/* Empresa */}
-        {/* <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-          <span>Empresa: {sale.ID_EMPRESA}</span>
-        </div> */}
+        {companyName && (
+          <div className="mb-2 text-muted-foreground text-xs">
+            Empresa: {companyName}
+          </div>
+        )}
 
         {/* Informações principais em grid compacto */}
         <div className="grid grid-cols-2 gap-2 text-xs">

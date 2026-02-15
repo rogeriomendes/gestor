@@ -35,6 +35,7 @@ export function ReceiveCard({ receive, onClick }: ReceiveCardProps) {
     <Card
       className="h-full cursor-pointer rounded-md transition-all"
       onClick={() => onClick?.(receive)}
+      size="sm"
     >
       <CardContent>
         {/* Header com data e status */}

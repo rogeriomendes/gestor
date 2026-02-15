@@ -185,7 +185,9 @@ export function DetailEntry({
                         <ClockIcon className="mr-2 size-4" />
                         {invoiceEntryQuery.data?.invoiceEntry?.DATA_EMISSAO &&
                           formatDate(
-                            invoiceEntryQuery.data?.invoiceEntry?.DATA_EMISSAO
+                            new Date(
+                              invoiceEntryQuery.data.invoiceEntry.DATA_EMISSAO
+                            )
                           )}
                       </PopoverTrigger>
                       <PopoverContent className="w-full p-2 text-xs">
@@ -199,8 +201,10 @@ export function DetailEntry({
                         {invoiceEntryQuery.data?.invoiceEntry
                           ?.DATA_ENTRADA_SAIDA &&
                           formatDate(
-                            invoiceEntryQuery.data?.invoiceEntry
-                              ?.DATA_ENTRADA_SAIDA
+                            new Date(
+                              invoiceEntryQuery.data?.invoiceEntry
+                                ?.DATA_ENTRADA_SAIDA ?? ""
+                            )
                           )}{" "}
                         {
                           invoiceEntryQuery.data?.invoiceEntry

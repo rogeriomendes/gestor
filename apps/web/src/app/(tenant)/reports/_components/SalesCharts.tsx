@@ -48,7 +48,7 @@ export function SalesCharts({ salesPerDay }: SalesChartsProps) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Vendas por Dia</CardTitle>
           <CardDescription>
@@ -101,7 +101,7 @@ export function SalesCharts({ salesPerDay }: SalesChartsProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Pedidos por Dia</CardTitle>
           <CardDescription>

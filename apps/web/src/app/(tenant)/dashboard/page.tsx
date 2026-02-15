@@ -119,7 +119,14 @@ export default function DashboardPage() {
   const comparisonDayVsPreviousWeek = `Comparação de ${currentDay} vs ${previousWeekSameDay}`;
 
   return (
-    <PageLayout subtitle="Visão geral do seu cliente" title="Dashboard">
+    <PageLayout
+      breadcrumbs={[
+        { label: "Dashboard", isCurrent: true },
+        { label: "Overview", isCurrent: true },
+      ]}
+      subtitle="Visão geral do seu cliente"
+      title="Dashboard"
+    >
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-4">
         <MetricCard
           badge={

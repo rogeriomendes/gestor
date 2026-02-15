@@ -1,9 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Building2Icon, EyeOffIcon } from "lucide-react";
-import type { Route } from "next";
-import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +14,10 @@ import { getXmlStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { Building2Icon, EyeOffIcon } from "lucide-react";
+import type { Route } from "next";
+import { useState } from "react";
 import { DetailDfe } from "./_components/DetailDfe";
 import { DfeGrid } from "./_components/DfeGrid";
 import { HideDfeDialog } from "./_components/HideDfeButton";
@@ -97,11 +97,12 @@ export default function InvoiceDfeList() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
         <div className="flex flex-row gap-2 md:gap-3">
           <Combobox
-            className="w-full md:w-64"
+            className="flex-1 md:w-64"
             icon={<Building2Icon />}
             onValueChange={setSupplier}
             options={supplierOptions}
             placeholder="Fornecedor"
+            searchPlaceholder="Buscar fornecedor..."
             value={supplier}
           />
         </div>

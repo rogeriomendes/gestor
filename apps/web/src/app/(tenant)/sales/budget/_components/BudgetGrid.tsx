@@ -1,11 +1,14 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { SheetIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTenant } from "@/contexts/tenant-context";
+import { trpc } from "@/utils/trpc";
 import { BudgetCard } from "./BudgetCard";
 
 interface BudgetGridProps {
@@ -48,7 +51,17 @@ export function BudgetGrid({
   rootMargin = "30%",
   className = "",
 }: BudgetGridProps) {
+  const { tenant } = useTenant();
   const { ref, inView } = useInView({ rootMargin });
+
+  const companyQuery = useQuery({
+    ...trpc.tenant.companies.all.queryOptions(),
+    enabled: !!tenant?.id,
+  });
+  const companyNameById = useMemo(() => {
+    const list = companyQuery.data?.company ?? [];
+    return new Map(list.map((c) => [c.ID, c.RAZAO_SOCIAL ?? null]));
+  }, [companyQuery.data?.company]);
 
   useEffect(() => {
     const fetchNextPageAndHandlePromise = async () => {
@@ -90,6 +103,11 @@ export function BudgetGrid({
           return (
             <BudgetCard
               budget={budget}
+              companyName={
+                budget.ID_EMPRESA
+                  ? (companyNameById.get(budget.ID_EMPRESA) ?? null)
+                  : null
+              }
               key={`${budget.ID}-${index}`}
               onClick={onBudgetClick}
             />

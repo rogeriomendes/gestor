@@ -53,6 +53,7 @@ export const auth = betterAuth({
   }),
   trustedOrigins: [
     process.env.CORS_ORIGIN || "http://localhost:3001",
+    "http://192.168.1.55:3001",
     "mybettertapp://",
     "exp://",
   ],

@@ -49,6 +49,7 @@ export function PayCard({
         isSelected && "border-primary/20 bg-primary/5"
       }`}
       onClick={() => onClick?.(bills)}
+      size="sm"
     >
       <CardContent>
         {/* Header com checkbox e status */}
@@ -71,6 +72,13 @@ export function PayCard({
             {statusInfo.label}
           </Badge>
         </div>
+
+        {/* Empresa - nome como no company-selector; API retorna empresa em fin_lancamento_pagar */}
+        {bills.fin_lancamento_pagar?.empresa?.RAZAO_SOCIAL && (
+          <div className="mb-2 text-muted-foreground text-xs">
+            Empresa: {bills.fin_lancamento_pagar.empresa.RAZAO_SOCIAL}
+          </div>
+        )}
 
         {/* Data de vencimento */}
         <div className="mb-3 text-muted-foreground text-xs">

@@ -16,7 +16,7 @@ export function ServerStatusCards() {
     return (
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <Card className="rounded-md" key={i}>
+          <Card className="rounded-md" key={i} size="sm">
             <CardHeader>
               <Skeleton className="h-6 w-32" />
             </CardHeader>
@@ -59,7 +59,7 @@ export function ServerStatusCards() {
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
       {/* Uso de Memória */}
-      <Card>
+      <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Uso de Memória</CardTitle>
           <HardDrive className="h-4 w-4 text-muted-foreground" />
@@ -84,7 +84,7 @@ export function ServerStatusCards() {
       </Card>
 
       {/* CPU */}
-      <Card>
+      <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">CPU</CardTitle>
           <Cpu className="h-4 w-4 text-muted-foreground" />
@@ -100,7 +100,7 @@ export function ServerStatusCards() {
       </Card>
 
       {/* Conexões de Banco */}
-      <Card>
+      <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Conexões Ativas</CardTitle>
           <Database className="h-4 w-4 text-muted-foreground" />
@@ -117,7 +117,7 @@ export function ServerStatusCards() {
       </Card>
 
       {/* Uptime */}
-      <Card>
+      <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Uptime</CardTitle>
           <Server className="h-4 w-4 text-muted-foreground" />

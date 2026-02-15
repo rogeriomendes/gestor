@@ -287,7 +287,11 @@ export function DetailProducts({
               <TabsContent value="default">
                 {productQuery.data?.product && (
                   <DetailProductsMain
-                    productData={productQuery.data.product!}
+                    productData={
+                      productQuery.data.product as Parameters<
+                        typeof DetailProductsMain
+                      >[0]["productData"]
+                    }
                   />
                 )}
               </TabsContent>
@@ -319,7 +323,11 @@ export function DetailProducts({
                 <TabsContent value="info">
                   {productQuery.data?.product && (
                     <DetailProductsInformation
-                      productData={productQuery.data.product!}
+                      productData={
+                        productQuery.data.product as Parameters<
+                          typeof DetailProductsInformation
+                        >[0]["productData"]
+                      }
                     />
                   )}
                 </TabsContent>

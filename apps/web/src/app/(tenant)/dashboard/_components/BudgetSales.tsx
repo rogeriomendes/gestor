@@ -72,7 +72,9 @@ export function BudgetSales() {
     );
   }
 
-  if (!budgetQuery.data?.budgets?.length) {
+  const budgets = (budgetQuery.data as { budgets?: unknown[] } | undefined)
+    ?.budgets;
+  if (!budgets?.length) {
     return (
       <div className="flex items-center justify-center p-4 text-muted-foreground text-sm">
         Nenhum orçamento em digitação
@@ -84,7 +86,7 @@ export function BudgetSales() {
     <div className="flex h-full flex-col">
       {/* Conteúdo principal com scroll */}
       <div className="flex-1 overflow-y-auto">
-        {budgetQuery.data?.budgets.map((budget: any) => (
+        {budgets.map((budget: any) => (
           <div
             className="group mb-2 cursor-pointer rounded-md p-2 transition-colors hover:bg-muted/50"
             key={budget.ID}

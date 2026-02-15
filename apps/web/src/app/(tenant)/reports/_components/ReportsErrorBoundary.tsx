@@ -43,7 +43,7 @@ export class ReportsErrorBoundary extends React.Component<
       }
 
       return (
-        <Card className="w-full rounded-md">
+        <Card className="w-full rounded-md" size="sm">
           <CardHeader>
             <CardTitle className="flex items-center text-destructive">
               <AlertTriangleIcon className="mr-2 h-5 w-5" />

@@ -84,7 +84,7 @@ export function ReceiveInfoModal({
         </CredenzaHeader>
         <CredenzaBody>
           {receive && (
-            <Card className="rounded-md py-1 md:py-2">
+            <Card className="rounded-md py-1 md:py-2" size="sm">
               <CardContent className="space-y-1.5 px-1 md:px-2">
                 <div className="grid grid-cols-2 gap-4">
                   <div>

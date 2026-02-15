@@ -1,11 +1,14 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { FileCheckIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTenant } from "@/contexts/tenant-context";
+import { trpc } from "@/utils/trpc";
 import { EntryCard } from "./EntryCard";
 
 interface EntryGridProps {
@@ -48,7 +51,17 @@ export function EntryGrid({
   rootMargin = "30%",
   className = "",
 }: EntryGridProps) {
+  const { tenant } = useTenant();
   const { ref, inView } = useInView({ rootMargin });
+
+  const companyQuery = useQuery({
+    ...trpc.tenant.companies.all.queryOptions(),
+    enabled: !!tenant?.id,
+  });
+  const companyNameById = useMemo(() => {
+    const list = companyQuery.data?.company ?? [];
+    return new Map(list.map((c) => [c.ID, c.RAZAO_SOCIAL ?? null]));
+  }, [companyQuery.data?.company]);
 
   useEffect(() => {
     const fetchNextPageAndHandlePromise = async () => {
@@ -89,6 +102,11 @@ export function EntryGrid({
 
           return (
             <EntryCard
+              companyName={
+                entry.ID_EMPRESA
+                  ? (companyNameById.get(entry.ID_EMPRESA) ?? null)
+                  : null
+              }
               entry={entry}
               key={`${entry.ID}-${index}`}
               onClick={onEntryClick}

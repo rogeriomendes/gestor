@@ -14,7 +14,7 @@ export function ConnectionStats() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <Skeleton className="h-6 w-48" />
         </CardHeader>
@@ -33,7 +33,7 @@ export function ConnectionStats() {
   }
 
   return (
-    <Card>
+    <Card size="sm">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Database className="h-5 w-5" />

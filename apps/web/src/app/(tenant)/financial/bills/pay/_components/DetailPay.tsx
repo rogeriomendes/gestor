@@ -202,14 +202,18 @@ export function DetailPay({
                                     </TableCell>
                                     <TableCell>
                                       {charge.DATA_VENCIMENTO &&
-                                        formatDate(charge.DATA_VENCIMENTO)}
+                                        formatDate(
+                                          new Date(charge.DATA_VENCIMENTO)
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                       {charge.fin_parcela_pagamento[0]
                                         ?.DATA_PAGAMENTO &&
                                         formatDate(
-                                          charge.fin_parcela_pagamento[0]
-                                            ?.DATA_PAGAMENTO
+                                          new Date(
+                                            charge.fin_parcela_pagamento[0]
+                                              ?.DATA_PAGAMENTO ?? ""
+                                          )
                                         )}
                                     </TableCell>
                                   </TableRow>

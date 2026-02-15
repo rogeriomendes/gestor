@@ -87,7 +87,7 @@ export function SummaryCards({
 
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-      <Card>
+      <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Total de Vendas</CardTitle>
           <DollarSignIcon className="h-4 w-4 text-muted-foreground" />
@@ -102,7 +102,7 @@ export function SummaryCards({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">
             Produtos Vendidos
@@ -115,7 +115,7 @@ export function SummaryCards({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">
             Vendedores Ativos
@@ -128,7 +128,7 @@ export function SummaryCards({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Fluxo de Caixa</CardTitle>
           <TrendingUpIcon className="h-4 w-4 text-muted-foreground" />

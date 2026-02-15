@@ -30,6 +30,7 @@ export function ReportCard({ report, className }: ReportCardProps) {
           "rounded-md hover:border-primary/50",
           className
         )}
+        size="sm"
       >
         <CardHeader>
           <CardTitle className="transition-colors group-hover:text-primary">

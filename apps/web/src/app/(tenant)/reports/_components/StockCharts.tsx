@@ -66,7 +66,7 @@ export function StockCharts({ stockPosition }: StockChartsProps) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Posição de Estoque</CardTitle>
           <CardDescription>
@@ -131,7 +131,7 @@ export function StockCharts({ stockPosition }: StockChartsProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Resumo do Estoque</CardTitle>
           <CardDescription>Informações gerais sobre o estoque</CardDescription>

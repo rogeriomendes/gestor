@@ -61,7 +61,8 @@ export default function InvoiceEntryList() {
     enabled,
   });
 
-  const supplierList = (supplierQuery.data?.supplier ?? []) as Array<{
+  const supplierList = (supplierQuery.data?.supplier ??
+    []) as unknown as Array<{
     ID: number;
     NOME: string | null;
   }>;
@@ -91,21 +92,22 @@ export default function InvoiceEntryList() {
       <div className="flex flex-col md:flex-row md:items-center">
         <div className="flex flex-row gap-2 md:gap-3">
           <Combobox
-            className="w-full md:w-64"
+            className="flex-1 md:w-64"
             icon={<Building2Icon />}
             onValueChange={setSupplier}
             options={supplierOptions}
             placeholder="Fornecedor"
+            searchPlaceholder="Buscar fornecedor..."
             value={supplier}
           />
-        </div>
-        <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
+          {/* </div>
+        <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3"> */}
           <Popover>
             <PopoverTrigger
               render={
                 <Button
                   className={cn(
-                    "w-full justify-start text-left font-normal md:w-60",
+                    "flex-1 justify-start text-left font-normal md:w-60",
                     !date && "text-muted-foreground"
                   )}
                   id="date"
@@ -126,10 +128,11 @@ export default function InvoiceEntryList() {
                 <span>Data de entrada</span>
               )}
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-auto p-0">
+            <PopoverContent align="start" className="w-auto p-0">
               <Calendar
                 captionLayout="dropdown"
                 defaultMonth={date?.from}
+                disabled={{ after: new Date() }}
                 locale={ptBR}
                 mode="range"
                 onSelect={setDate}

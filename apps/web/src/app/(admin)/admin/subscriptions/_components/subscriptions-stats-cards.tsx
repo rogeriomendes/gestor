@@ -20,7 +20,7 @@ export function SubscriptionsStatsCards({
 }: SubscriptionsStatsCardsProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
-      <Card className="rounded-md">
+      <Card className="rounded-md" size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">
             Total de Assinaturas
@@ -35,7 +35,7 @@ export function SubscriptionsStatsCards({
         </CardContent>
       </Card>
 
-      <Card className="rounded-md">
+      <Card className="rounded-md" size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">
             Assinaturas Ativas
@@ -52,7 +52,7 @@ export function SubscriptionsStatsCards({
         </CardContent>
       </Card>
 
-      <Card className="rounded-md">
+      <Card className="rounded-md" size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Em Trial</CardTitle>
           <Clock className="h-4 w-4 text-blue-600" />
@@ -63,7 +63,7 @@ export function SubscriptionsStatsCards({
         </CardContent>
       </Card>
 
-      <Card className="rounded-md">
+      <Card className="rounded-md" size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Expiradas</CardTitle>
           <XCircle className="h-4 w-4 text-red-600" />
@@ -74,7 +74,7 @@ export function SubscriptionsStatsCards({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card size="sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="font-medium text-sm">Canceladas</CardTitle>
           <XCircle className="h-4 w-4 text-orange-600" />

@@ -1,11 +1,14 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { PackageIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTenant } from "@/contexts/tenant-context";
+import { trpc } from "@/utils/trpc";
 import { FinancialClosingCard } from "./FinancialClosingCard";
 
 interface FinancialClosingGridProps {
@@ -48,7 +51,17 @@ export function FinancialClosingGrid({
   rootMargin = "30%",
   className = "",
 }: FinancialClosingGridProps) {
+  const { tenant } = useTenant();
   const { ref, inView } = useInView({ rootMargin });
+
+  const companyQuery = useQuery({
+    ...trpc.tenant.companies.all.queryOptions(),
+    enabled: !!tenant?.id,
+  });
+  const companyNameById = useMemo(() => {
+    const list = companyQuery.data?.company ?? [];
+    return new Map(list.map((c) => [c.ID, c.RAZAO_SOCIAL ?? null]));
+  }, [companyQuery.data?.company]);
 
   useEffect(() => {
     const fetchNextPageAndHandlePromise = async () => {
@@ -86,9 +99,17 @@ export function FinancialClosingGrid({
           if (!item) {
             return null;
           }
+          const companyId =
+            item.type === "open"
+              ? item.data?.ID_EMPRESA
+              : item.data?.conta_caixa?.ID_EMPRESA;
+          const companyName = companyId
+            ? (companyNameById.get(companyId) ?? null)
+            : null;
 
           return (
             <FinancialClosingCard
+              companyName={companyName}
               item={item}
               key={`${item.type}-${item.data?.ID || item.data?.ID_CONTA_CAIXA}-${index}`}
               onClick={onItemClick}

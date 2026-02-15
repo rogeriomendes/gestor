@@ -45,6 +45,7 @@ export function FinancialReceiptCard({
           "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
       )}
       onClick={() => onClick?.(receipt)}
+      size="sm"
     >
       <CardContent>
         {/* Header com valor e status */}

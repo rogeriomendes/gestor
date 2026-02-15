@@ -109,10 +109,12 @@ export default function SalesList() {
         />
         <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
           <Combobox
+            className="flex-1 md:w-48"
             icon={<SquareUserIcon />}
             onValueChange={setAccount}
             options={accountsOptions}
             placeholder="Conta caixa"
+            searchPlaceholder="Buscar conta caixa..."
             value={account}
           />
           <Popover>
@@ -120,7 +122,7 @@ export default function SalesList() {
               render={
                 <Button
                   className={cn(
-                    "w-60 justify-between px-3 text-left font-normal",
+                    "w-60 flex-1 justify-between px-3 text-left font-normal",
                     !date && "text-muted-foreground"
                   )}
                   variant="outline"
@@ -146,7 +148,8 @@ export default function SalesList() {
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
-                // disabled={{ after: new Date() }}
+                captionLayout="dropdown"
+                disabled={{ after: new Date() }}
                 locale={ptBR}
                 mode="single"
                 onSelect={(selectedDate) => setDate(selectedDate ?? undefined)}
@@ -245,11 +248,16 @@ export default function SalesList() {
               }
             }
 
-            // Status da venda
+            // Relações que podem vir da API mas não estão no tipo da listagem
+            const saleWithRelations = sale as SaleItem & {
+              nfe_cabecalho?: Array<{ STATUS_NOTA?: string | null }>;
+              cliente?: { pessoa?: { NOME?: string | null } };
+            };
             const statusInfo = getNfceStatusInfo({
               devolucao: sale.DEVOLUCAO,
               canceladoIdUsuario: sale.CANCELADO_ID_USUARIO,
-              nfeStatus: sale.nfe_cabecalho?.[0]?.STATUS_NOTA ?? null,
+              nfeStatus:
+                saleWithRelations.nfe_cabecalho?.[0]?.STATUS_NOTA ?? null,
             });
 
             return [
@@ -257,7 +265,7 @@ export default function SalesList() {
               sale.ID_EMPRESA,
               sale.ID,
               sale.conta_caixa?.NOME,
-              sale?.cliente?.pessoa?.NOME,
+              saleWithRelations.cliente?.pessoa?.NOME,
               <Badge
                 className={cn(statusInfo.color, "px-1.5 py-0.5 text-xs")}
                 key={sale.ID}

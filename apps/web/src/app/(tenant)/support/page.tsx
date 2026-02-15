@@ -196,7 +196,7 @@ export default function TenantSupportPage() {
           </Button>
         </div>
 
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Meus tickets</CardTitle>
             <CardDescription>

@@ -83,7 +83,7 @@ export function ReportFilters({
   };
 
   return (
-    <Card>
+    <Card size="sm">
       <CardHeader>
         <CardTitle className="flex items-center">
           <FilterIcon className="mr-2 h-5 w-5" />

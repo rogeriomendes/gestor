@@ -50,7 +50,7 @@ export function SellersCharts({ salesPerSeller }: SellersChartsProps) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Vendas por Vendedor (Valor)</CardTitle>
           <CardDescription>Faturamento por vendedor no período</CardDescription>
@@ -101,7 +101,7 @@ export function SellersCharts({ salesPerSeller }: SellersChartsProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Vendas por Vendedor (Pedidos)</CardTitle>
           <CardDescription>

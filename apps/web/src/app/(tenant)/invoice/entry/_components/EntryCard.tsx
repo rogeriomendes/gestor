@@ -15,10 +15,12 @@ interface EntryCardProps {
     NUMERO?: string;
     fornecedor?: { pessoa: { NOME: string } };
   };
+  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
+  companyName?: string | null;
   onClick?: (entry: any) => void;
 }
 
-export function EntryCard({ entry, onClick }: EntryCardProps) {
+export function EntryCard({ entry, companyName, onClick }: EntryCardProps) {
   const fornecedor =
     entry.fornecedor?.pessoa?.NOME || "Fornecedor não informado";
   const numeroNfe = entry.NUMERO;
@@ -30,6 +32,7 @@ export function EntryCard({ entry, onClick }: EntryCardProps) {
     <Card
       className="h-full cursor-pointer rounded-md transition-all"
       onClick={() => onClick?.(entry)}
+      size="sm"
     >
       <CardContent>
         {/* Header com fornecedor e status */}
@@ -38,6 +41,12 @@ export function EntryCard({ entry, onClick }: EntryCardProps) {
             {fornecedor}
           </h3>
         </div>
+
+        {companyName && (
+          <div className="mb-2 text-muted-foreground text-xs">
+            Empresa: {companyName}
+          </div>
+        )}
 
         {/* Data de entrada */}
         <div className="mb-3 text-muted-foreground text-xs">

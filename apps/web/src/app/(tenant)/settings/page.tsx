@@ -81,7 +81,7 @@ export default function SettingsPage() {
         subtitle="Gerencie as configurações do seu cliente"
         title="Configurações"
       >
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Informações Básicas</CardTitle>
             <CardDescription>

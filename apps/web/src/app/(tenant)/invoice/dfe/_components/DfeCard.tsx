@@ -14,11 +14,13 @@ type DfeItem =
 
 interface DfeCardProps {
   dfe: DfeItem;
+  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
+  companyName?: string | null;
   onClick?: (dfe: DfeItem) => void;
   onHide?: (dfe: DfeItem) => void;
 }
 
-export function DfeCard({ dfe, onClick, onHide }: DfeCardProps) {
+export function DfeCard({ dfe, companyName, onClick, onHide }: DfeCardProps) {
   const razaoSocial = dfe.RAZAO_SOCIAL || "Fornecedor não informado";
   const numeroNfe = dfe.NUMERO;
   const dataEmissao = dfe.EMISSAO;
@@ -41,6 +43,7 @@ export function DfeCard({ dfe, onClick, onHide }: DfeCardProps) {
         }
         onClick?.(dfe);
       }}
+      size="sm"
     >
       <CardContent>
         {/* Header com fornecedor e botão de ocultar */}
@@ -55,6 +58,13 @@ export function DfeCard({ dfe, onClick, onHide }: DfeCardProps) {
             {statusInfo.label}
           </Badge>
         </div>
+
+        {/* Empresa (destinatária) - nome como no company-selector */}
+        {companyName && (
+          <div className="mb-2 text-muted-foreground text-xs">
+            Empresa: {companyName}
+          </div>
+        )}
 
         {/* Data de emissão */}
         <div className="mb-3 text-muted-foreground text-xs">

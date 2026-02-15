@@ -179,7 +179,20 @@ export default function FinancialReportPage() {
           </Alert>
         ) : (
           <FinancialCharts
-            accountsReceivable={accountsReceivableQuery.data}
+            accountsReceivable={
+              accountsReceivableQuery.data
+                ? {
+                    accountsReceivable:
+                      accountsReceivableQuery.data.accountsReceivable.map(
+                        (a) => ({
+                          ...a,
+                          dueDate:
+                            a.dueDate != null ? new Date(a.dueDate) : null,
+                        })
+                      ),
+                  }
+                : undefined
+            }
             financialSummary={financialSummaryQuery.data}
           />
         )}

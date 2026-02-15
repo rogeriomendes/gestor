@@ -87,7 +87,7 @@ export function PlanForm({ onCancel, onSuccess }: PlanFormProps) {
       }}
     >
       {/* Informações Básicas */}
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Informações Básicas</CardTitle>
           <CardDescription>Defina o nome e descrição do plano</CardDescription>

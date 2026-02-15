@@ -345,7 +345,7 @@ export function DetailSales({
                     </AlertDescription>
                   </Alert>
                 )}
-              <Card className="rounded-md py-1 md:py-2">
+              <Card className="rounded-md py-1 md:py-2" size="sm">
                 <CardContent className="px-1 md:px-2">
                   <DetailSalesProducts saleId={saleId} />
                   <Separator className="mt-1 mb-4 md:mt-2" />
@@ -388,16 +388,16 @@ export function DetailSales({
                       </div>
                     </div>
                     <div className="mt-2 mb-2 ml-auto space-y-1">
-                      {saleData?.sales?.venda_recebimento.map(
-                        (
-                          payment: Parameters<
-                            typeof PaymentSales
-                          >[0]["paymentData"],
-                          i: number
-                        ) => (
-                          <PaymentSales key={i} paymentData={payment} />
-                        )
-                      )}
+                      {saleData?.sales?.venda_recebimento.map((payment, i) => (
+                        <PaymentSales
+                          key={i}
+                          paymentData={
+                            payment as Parameters<
+                              typeof PaymentSales
+                            >[0]["paymentData"]
+                          }
+                        />
+                      ))}
                     </div>
                   </div>
                 </CardContent>

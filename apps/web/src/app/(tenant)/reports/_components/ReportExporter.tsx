@@ -104,7 +104,7 @@ export function ReportExporter({
   };
 
   return (
-    <Card>
+    <Card size="sm">
       <CardHeader>
         <CardTitle className="flex items-center">
           <DownloadIcon className="mr-2 h-5 w-5" />

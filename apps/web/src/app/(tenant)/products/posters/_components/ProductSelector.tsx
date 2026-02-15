@@ -1,8 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { PlusIcon, TagIcon } from "lucide-react";
-import { useState } from "react";
 import { SearchInput } from "@/components/search-input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,6 +7,9 @@ import { useTenant } from "@/contexts/tenant-context";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { PlusIcon, TagIcon } from "lucide-react";
+import { useState } from "react";
 
 type Product = RouterOutputs["tenant"]["products"]["all"]["products"][number];
 
@@ -34,7 +34,8 @@ export function ProductSelector({
     enabled: !!tenant,
   });
 
-  const products = data?.products ?? [];
+  const products: Product[] =
+    (data as { products?: Product[] } | undefined)?.products ?? [];
 
   const formatPromoType = (type?: number) => {
     switch (String(type)) {
@@ -88,7 +89,7 @@ export function ProductSelector({
             </div>
           )}
 
-          {products.map((product: Product) => {
+          {products.map((product) => {
             const isSelected = selectedIds.includes(String(product.ID));
             const isKg = product.unidade_produto?.SIGLA === "KG";
             const displayCode =
@@ -100,7 +101,7 @@ export function ProductSelector({
             const promoType = product.activePromotion?.TIPO_PROMOCAO;
             const originalPrice = Number(product.VALOR_VENDA);
             const promoPrice = hasPromo
-              ? Number(product.activePromotion.PRECO_PROMOCAO)
+              ? Number(product.activePromotion?.PRECO_PROMOCAO)
               : null;
 
             return (
@@ -122,7 +123,7 @@ export function ProductSelector({
                     {hasPromo && promoPrice !== null ? (
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-semibold text-[11px] text-green-600">
-                          {formatPromoType(promoType)}:{" "}
+                          {formatPromoType(promoType ?? undefined)}:{" "}
                           {formatAsCurrency(promoPrice)}{" "}
                           {product.unidade_produto?.SIGLA}
                         </span>

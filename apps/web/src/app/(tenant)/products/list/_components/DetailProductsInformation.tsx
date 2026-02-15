@@ -11,7 +11,7 @@ export function DetailProductsInformation({
 }) {
   return (
     <div className="space-y-3">
-      <Card className="rounded-md leading-none">
+      <Card className="rounded-md leading-none" size="sm">
         <CardDescription className="px-2 pt-2">Informações</CardDescription>
         <CardContent className="p-2">
           <div className="text-wrap text-xs leading-relaxed md:text-sm">

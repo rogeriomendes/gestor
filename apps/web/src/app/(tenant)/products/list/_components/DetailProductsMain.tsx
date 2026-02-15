@@ -60,7 +60,7 @@ export function DetailProductsMain({
 
   return (
     <div className="space-y-1.5 md:space-y-3">
-      <Card className="rounded-md py-2 md:py-3">
+      <Card className="rounded-md py-2 md:py-3" size="sm">
         <CardContent className="px-2 md:px-3">
           <div className="grid grid-cols-4 items-start gap-2">
             <div className="flex items-center">
@@ -109,7 +109,7 @@ export function DetailProductsMain({
           </div>
         </CardContent>
       </Card>
-      <Card className="rounded-md py-2 md:py-3">
+      <Card className="rounded-md py-2 md:py-3" size="sm">
         <CardContent className="px-2 md:px-3">
           <div className="grid grid-cols-4 items-start gap-2">
             <div className="flex items-center">
@@ -159,7 +159,7 @@ export function DetailProductsMain({
           </div>
         </CardContent>
       </Card>
-      <Card className="rounded-md py-2 md:py-3">
+      <Card className="rounded-md py-2 md:py-3" size="sm">
         <CardContent className="px-2 md:px-3">
           <div className="flex flex-col gap-2">
             <div className="flex flex-row items-center gap-2">
@@ -202,7 +202,7 @@ export function DetailProductsMain({
           </div>
         </CardContent>
       </Card>
-      <Card className="rounded-md py-2 md:py-3">
+      <Card className="rounded-md py-2 md:py-3" size="sm">
         <CardContent className="px-2 md:px-3">
           <div className="grid grid-cols-3 items-start gap-2">
             <div className="flex items-center">

@@ -39,7 +39,7 @@ export function ProductsList({ topProducts }: ProductsListProps) {
 
   if (products.length === 0) {
     return (
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Produtos Mais Vendidos</CardTitle>
           <CardDescription>
@@ -56,7 +56,7 @@ export function ProductsList({ topProducts }: ProductsListProps) {
   }
 
   return (
-    <Card>
+    <Card size="sm">
       <CardHeader>
         <CardTitle>Produtos Mais Vendidos</CardTitle>
         <CardDescription>

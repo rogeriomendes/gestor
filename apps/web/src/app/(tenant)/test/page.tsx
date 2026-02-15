@@ -37,7 +37,7 @@ export default function TestPage() {
     >
       <div className="space-y-6">
         {/* Card de Status */}
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -95,7 +95,7 @@ export default function TestPage() {
 
         {/* Tabela de Usuários */}
         {data?.success && data.users && data.users.length > 0 && (
-          <Card>
+          <Card size="sm">
             <CardHeader>
               <CardTitle>Usuários do Banco Gestor</CardTitle>
               <CardDescription>
@@ -135,7 +135,7 @@ export default function TestPage() {
 
         {/* Mensagem quando não há dados */}
         {data?.success && (!data.users || data.users.length === 0) && (
-          <Card>
+          <Card size="sm">
             <CardContent className="py-8 text-center text-muted-foreground">
               Nenhum usuário encontrado no banco de dados
             </CardContent>
