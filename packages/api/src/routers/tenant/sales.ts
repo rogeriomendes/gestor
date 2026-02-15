@@ -79,10 +79,15 @@ export const salesRouter = router({
           ...whereCompany,
         };
 
-        const orderBy = sortOrder
+        type OrderByItem =
+          | { VALOR_TOTAL: "asc" | "desc" }
+          | { ID: "asc" | "desc" };
+        const orderBy: OrderByItem[] = sortOrder
           ? [
               {
-                VALOR_TOTAL: sortOrder === "desc" ? "desc" : "asc",
+                VALOR_TOTAL: (sortOrder === "desc" ? "desc" : "asc") as
+                  | "asc"
+                  | "desc",
               },
             ]
           : [{ ID: "desc" }];

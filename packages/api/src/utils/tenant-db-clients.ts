@@ -2,6 +2,8 @@ import { createDfePrismaClient } from "@gestor/db-dfe";
 import { createGestorPrismaClient } from "@gestor/db-gestor";
 import type { Tenant } from "@gestor/db/types";
 import { LRUCache } from "lru-cache";
+import { decryptPassword } from "./encryption";
+import { hasCompleteDatabaseCredentials } from "./tenant-db-credentials";
 
 // Tipo genérico para PrismaClient (pode ser de qualquer package: db, db-gestor, db-dfe)
 interface PrismaClientLike {
@@ -14,9 +16,6 @@ export type GestorPrismaClient = ReturnType<typeof createGestorPrismaClient>;
 
 /** Tipo do cliente Prisma do banco DFE (com modelo dfe) */
 export type DfePrismaClient = ReturnType<typeof createDfePrismaClient>;
-
-import { decryptPassword } from "./encryption";
-import { hasCompleteDatabaseCredentials } from "./tenant-db-credentials";
 
 export interface ConnectionMetadata {
   connectionId: string;
