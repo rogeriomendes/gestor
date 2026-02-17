@@ -143,7 +143,7 @@ export function DataTableInfinite<T>({
               ? String(getRowKey(item, index))
               : `row-${index}`;
             const rowClassName = cn(
-              "h-9",
+              // "h-8",
               onRowClick && "cursor-pointer hover:bg-muted/50",
               customClassName
             );

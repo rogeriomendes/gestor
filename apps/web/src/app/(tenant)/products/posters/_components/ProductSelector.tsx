@@ -1,5 +1,8 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { PlusIcon, TagIcon } from "lucide-react";
+import { useState } from "react";
 import { SearchInput } from "@/components/search-input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,9 +10,6 @@ import { useTenant } from "@/contexts/tenant-context";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { PlusIcon, TagIcon } from "lucide-react";
-import { useState } from "react";
 
 type Product = RouterOutputs["tenant"]["products"]["all"]["products"][number];
 

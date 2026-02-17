@@ -40,7 +40,7 @@ interface ComboboxProps {
   searchPlaceholder?: string;
   emptyMessage?: string;
   className?: string;
-  /** Ícone exibido à esquerda do texto no trigger (ex.: GroupIcon, ScaleIcon) */
+  /** Ícone exibido à esquerda do texto no trigger */
   icon?: ReactNode;
 }
 
@@ -66,13 +66,21 @@ export function Combobox({
 
   const triggerContent = (
     <>
-      <span className="flex flex-1 items-center gap-2 truncate">
+      <span
+        className={cn(
+          "flex flex-1 items-center gap-2 truncate",
+          selectedOption ? "text-foreground" : "text-muted-foreground"
+        )}
+      >
         {icon ? (
           <span className="flex size-4 shrink-0 items-center justify-center [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:opacity-70">
             {icon}
           </span>
         ) : null}
-        {selectedOption ? selectedOption.label : placeholder}
+        {
+          // selectedOption ? selectedOption.label :
+          placeholder
+        }
       </span>
       <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
     </>
