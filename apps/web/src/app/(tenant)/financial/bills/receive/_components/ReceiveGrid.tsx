@@ -1,12 +1,12 @@
 "use client";
 
-import { ShoppingCartIcon } from "lucide-react";
-import { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { RouterOutputs } from "@/utils/trpc";
+import { ShoppingCartIcon } from "lucide-react";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import { ReceiveCard } from "./ReceiveCard";
 
 type ReceiveItem =
@@ -93,7 +93,7 @@ export function ReceiveGrid({
 
           return (
             <ReceiveCard
-              key={`${receive.fin_lancamento_receber?.ID}-${index}`}
+              key={`${(receive as { ID?: number }).ID ?? index}-${index}`}
               onClick={onReceiveClick}
               receive={receive}
             />

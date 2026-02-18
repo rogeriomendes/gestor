@@ -1,9 +1,9 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsAdmin } from "@/lib/permissions";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
 
 export default function DebugPage() {
   const { tenant, role, isSuperAdmin, isTenantAdmin, isLoading } = useTenant();

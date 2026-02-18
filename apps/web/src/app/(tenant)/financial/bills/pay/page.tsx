@@ -1,5 +1,20 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { ptBR } from "date-fns/locale";
+import {
+  Building2Icon,
+  CalendarDaysIcon,
+  CalendarRangeIcon,
+  CoinsIcon,
+  PackageIcon,
+  Settings2Icon,
+  SquareCheckIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useEffect, useMemo, useState } from "react";
+import type { DateRange } from "react-day-picker";
+import { useInView } from "react-intersection-observer";
 import { DetailEntry } from "@/app/(tenant)/invoice/entry/_components/DetailEntry";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
@@ -22,21 +37,6 @@ import { getPayStatusBySituation, getPayStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
-import {
-  Building2Icon,
-  CalendarDaysIcon,
-  CalendarRangeIcon,
-  CoinsIcon,
-  PackageIcon,
-  Settings2Icon,
-  SquareCheckIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useEffect, useMemo, useState } from "react";
-import type { DateRange } from "react-day-picker";
-import { useInView } from "react-intersection-observer";
 import { DetailPay } from "./_components/DetailPay";
 import { PayGrid } from "./_components/PayGrid";
 
@@ -71,9 +71,9 @@ export default function FinancialBillsPayList() {
       supplier: supplier !== "0" ? Number(supplier) : null,
       date: date
         ? {
-          from: date.from ?? new Date(),
-          to: date.to ?? null,
-        }
+            from: date.from ?? new Date(),
+            to: date.to ?? null,
+          }
         : null,
     }),
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -112,9 +112,9 @@ export default function FinancialBillsPayList() {
       supplier: supplier !== "0" ? Number(supplier) : null,
       date: date
         ? {
-          from: date.from ?? new Date(),
-          to: date.to ?? null,
-        }
+            from: date.from ?? new Date(),
+            to: date.to ?? null,
+          }
         : null,
     }),
     enabled: !!tenant,
@@ -122,9 +122,9 @@ export default function FinancialBillsPayList() {
 
   const supplierList = (supplierQuery.data?.supplier ??
     []) as unknown as Array<{
-      ID: number;
-      NOME: string | null;
-    }>;
+    ID: number;
+    NOME: string | null;
+  }>;
   const supplierOptions: ComboboxOption[] = useMemo(
     () => [
       { value: "0", label: "TODOS" },

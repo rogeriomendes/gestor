@@ -31,14 +31,14 @@ export function BudgetCard({ budget, companyName, onClick }: BudgetCardProps) {
       className={cn(
         "h-full cursor-pointer rounded-md transition-all",
         isInProgress &&
-        "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20"
+          "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20"
       )}
       onClick={() => onClick?.(budget)}
       size="sm"
     >
       <CardContent>
         {/* Header com ID e situação */}
-        <div className="flex items-center justify-between font-medium text-sm leading-tight mb-2">
+        <div className="mb-2 flex items-center justify-between font-medium text-sm leading-tight">
           <h3 className="flex flex-row items-center font-medium text-sm leading-tight">
             Orçamento #{budget.ID}
           </h3>
@@ -57,7 +57,8 @@ export function BudgetCard({ budget, companyName, onClick }: BudgetCardProps) {
           </div>
         )}
         <div className="mb-1 flex flex-wrap items-center gap-x-2 text-muted-foreground text-xs">
-          Cliente: <span className="truncate">{budget.cliente.pessoa.NOME}</span>
+          Cliente:{" "}
+          <span className="truncate">{budget.cliente.pessoa.NOME}</span>
         </div>
 
         {/* Informações principais em grid compacto */}

@@ -1,5 +1,9 @@
 "use client";
 
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useMemo } from "react";
+import { Line, LineChart, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -14,10 +18,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatAsCurrency } from "@/lib/utils";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { useMemo } from "react";
-import { Line, LineChart, XAxis, YAxis } from "recharts";
 
 interface SalesChartsProps {
   salesPerDay?: {

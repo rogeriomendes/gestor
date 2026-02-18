@@ -1,5 +1,13 @@
 "use client";
 
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  CircleEllipsisIcon,
+  CircleHelpIcon,
+  SquarePercentIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -10,15 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDate } from "@/lib/format-date";
 import { getSaleStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
-import { trpc, type RouterOutputs } from "@/utils/trpc";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  CircleEllipsisIcon,
-  CircleHelpIcon,
-  SquarePercentIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useState } from "react";
+import { type RouterOutputs, trpc } from "@/utils/trpc";
 import { DetailSale } from "./_components/DetailSale";
 import { SaleGrid } from "./_components/SaleGrid";
 

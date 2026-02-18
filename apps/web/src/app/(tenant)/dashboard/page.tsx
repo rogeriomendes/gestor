@@ -33,17 +33,29 @@ export default function DashboardPage() {
   const enabled = !!tenant;
 
   // Meses anteriores para comparação
-  const twoMonthsAgoStart = useMemo(() => startOfMonth(subMonths(today, 2)), [today]);
-  const twoMonthsAgoEnd = useMemo(() => endOfMonth(subMonths(today, 2)), [today]);
+  const twoMonthsAgoStart = useMemo(
+    () => startOfMonth(subMonths(today, 2)),
+    [today]
+  );
+  const twoMonthsAgoEnd = useMemo(
+    () => endOfMonth(subMonths(today, 2)),
+    [today]
+  );
 
   // Labels de data — calculados uma única vez (useMemo evita recálculo a cada render)
   const dateLabels = useMemo(() => {
     const now = new Date();
     const currentMonth = format(now, "MMMM 'de' yyyy", { locale: ptBR });
-    const previousMonth = format(subMonths(now, 1), "MMMM 'de' yyyy", { locale: ptBR });
-    const twoMonthsAgoMonth = format(subMonths(now, 2), "MMMM 'de' yyyy", { locale: ptBR });
+    const previousMonth = format(subMonths(now, 1), "MMMM 'de' yyyy", {
+      locale: ptBR,
+    });
+    const twoMonthsAgoMonth = format(subMonths(now, 2), "MMMM 'de' yyyy", {
+      locale: ptBR,
+    });
     const currentDay = format(now, "EEEE, 'dia' dd", { locale: ptBR });
-    const previousWeekSameDay = format(subDays(now, 7), "EEEE, 'dia' dd", { locale: ptBR });
+    const previousWeekSameDay = format(subDays(now, 7), "EEEE, 'dia' dd", {
+      locale: ptBR,
+    });
     const previousWeekSameDayFormatted = format(subDays(now, 7), "yyyy-MM-dd");
     return {
       currentMonth,

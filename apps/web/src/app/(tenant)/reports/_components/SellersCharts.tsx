@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -14,8 +16,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatAsCurrency } from "@/lib/utils";
-import { useMemo } from "react";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 interface SellersChartsProps {
   salesPerSeller?: {

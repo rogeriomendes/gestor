@@ -4,8 +4,8 @@ import { z } from "zod";
 
 import { adminProcedure, router } from "../../index";
 import {
-    clearPermissionCache,
-    requirePermission,
+  clearPermissionCache,
+  requirePermission,
 } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
 

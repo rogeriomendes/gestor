@@ -650,49 +650,49 @@ export const productsRouter = router({
       }
     }),
 
-//   allMobile: tenantProcedure
-//     .input(
-//       z.object({
-//         limit: z.number().min(1).max(500).default(100),
-//         cursor: z.string().optional(),
-//       })
-//     )
-//     .query(async ({ ctx, input }) => {
-//       try {
-//         const { limit, cursor } = input;
-//         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+  //   allMobile: tenantProcedure
+  //     .input(
+  //       z.object({
+  //         limit: z.number().min(1).max(500).default(100),
+  //         cursor: z.string().optional(),
+  //       })
+  //     )
+  //     .query(async ({ ctx, input }) => {
+  //       try {
+  //         const { limit, cursor } = input;
+  //         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
 
-//         const products = await gestorPrisma.produto.findMany({
-//           take: limit + 1,
-//           cursor: cursor ? { ID: Number(cursor) } : undefined,
-//           where: { INATIVO: "N" }, // Only active products
-//           select: {
-//             // Only essential fields for mobile
-//             ID: true,
-//             CODIGO_INTERNO: true,
-//             GTIN: true,
-//             NOME: true,
-//             VALOR_VENDA: true,
-//             QUANTIDADE_ESTOQUE: true,
-//             PRODUTO_PESADO: true,
-//             ESTOQUE_MINIMO: true,
-//             unidade_produto: {
-//               select: { SIGLA: true },
-//             },
-//           },
-//           orderBy: { NOME: "asc" },
-//         });
+  //         const products = await gestorPrisma.produto.findMany({
+  //           take: limit + 1,
+  //           cursor: cursor ? { ID: Number(cursor) } : undefined,
+  //           where: { INATIVO: "N" }, // Only active products
+  //           select: {
+  //             // Only essential fields for mobile
+  //             ID: true,
+  //             CODIGO_INTERNO: true,
+  //             GTIN: true,
+  //             NOME: true,
+  //             VALOR_VENDA: true,
+  //             QUANTIDADE_ESTOQUE: true,
+  //             PRODUTO_PESADO: true,
+  //             ESTOQUE_MINIMO: true,
+  //             unidade_produto: {
+  //               select: { SIGLA: true },
+  //             },
+  //           },
+  //           orderBy: { NOME: "asc" },
+  //         });
 
-//         let nextCursor: string | undefined;
-//         if (products.length > limit) {
-//           const nextProduct = products.pop();
-//           nextCursor = String(nextProduct?.ID);
-//         }
+  //         let nextCursor: string | undefined;
+  //         if (products.length > limit) {
+  //           const nextProduct = products.pop();
+  //           nextCursor = String(nextProduct?.ID);
+  //         }
 
-//         return { products, nextCursor };
-//       } catch (error) {
-//         console.error("An error occurred when returning products:", error);
-//         throw error;
-//       }
-//     }),
-   });
+  //         return { products, nextCursor };
+  //       } catch (error) {
+  //         console.error("An error occurred when returning products:", error);
+  //         throw error;
+  //       }
+  //     }),
+});

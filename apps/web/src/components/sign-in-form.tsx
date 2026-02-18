@@ -1,3 +1,6 @@
+import { useTenant } from "@/contexts/tenant-context";
+import { authClient } from "@/lib/auth-client";
+import { getRedirectPath } from "@/lib/auth-redirect";
 import { useForm } from "@tanstack/react-form";
 import { Fingerprint, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -5,9 +8,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
-import { useTenant } from "@/contexts/tenant-context";
-import { authClient } from "@/lib/auth-client";
-import { getRedirectPath } from "@/lib/auth-redirect";
 import Loader from "./loader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -43,6 +43,7 @@ export default function SignInForm() {
   const { role, isLoading: tenantLoading } = useTenant();
   const [isSigningInWithGoogle, setIsSigningInWithGoogle] = useState(false);
   const [isSigningInWithPasskey, setIsSigningInWithPasskey] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Redirecionar após login bem-sucedido
   useEffect(() => {
@@ -130,6 +131,7 @@ export default function SignInForm() {
       password: "",
     },
     onSubmit: async ({ value }) => {
+      setSubmitError(null);
       try {
         // O redirecionamento para 2FA é feito automaticamente pelo onTwoFactorRedirect
         // configurado no auth-client.ts
@@ -140,21 +142,34 @@ export default function SignInForm() {
           },
           {
             onSuccess(context) {
-              // Se twoFactorRedirect for true, o onTwoFactorRedirect do cliente
-              // já vai redirecionar para /2fa automaticamente
               if (!context.data.twoFactorRedirect) {
                 toast.success("Login realizado com sucesso");
               }
             },
             onError(context) {
-              toast.error(context.error.message || "Erro ao fazer login");
+              const raw =
+                context.error.message ||
+                "Email ou senha incorretos. Tente novamente.";
+              const msg =
+                raw.toLowerCase().includes("invalid email or password") ||
+                raw.toLowerCase().includes("invalid credentials")
+                  ? "Email ou senha incorretos. Tente novamente."
+                  : raw;
+              setSubmitError(msg);
             },
           }
         );
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Erro ao fazer login"
-        );
+        const raw =
+          error instanceof Error
+            ? error.message
+            : "Email ou senha incorretos. Tente novamente.";
+        const msg =
+          raw.toLowerCase().includes("invalid email or password") ||
+          raw.toLowerCase().includes("invalid credentials")
+            ? "Email ou senha incorretos. Tente novamente."
+            : raw;
+        setSubmitError(msg);
       }
     },
     validators: {
@@ -192,10 +207,16 @@ export default function SignInForm() {
               <div className="space-y-2">
                 <Label htmlFor={field.name}>Email</Label>
                 <Input
+                  aria-invalid={!!submitError}
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onChange={(e) => {
+                    field.handleChange(e.target.value);
+                    if (submitError) {
+                      setSubmitError(null);
+                    }
+                  }}
                   placeholder="seu@email.com"
                   type="email"
                   value={field.state.value}
@@ -224,10 +245,16 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <Input
+                  aria-invalid={!!submitError}
                   id={field.name}
                   name={field.name}
                   onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onChange={(e) => {
+                    field.handleChange(e.target.value);
+                    if (submitError) {
+                      setSubmitError(null);
+                    }
+                  }}
                   placeholder="••••••••"
                   type="password"
                   value={field.state.value}
@@ -237,6 +264,11 @@ export default function SignInForm() {
                     {error?.message}
                   </p>
                 ))}
+                {submitError && (
+                  <p className="text-destructive text-sm" role="alert">
+                    {submitError}
+                  </p>
+                )}
               </div>
             )}
           </form.Field>
@@ -268,25 +300,10 @@ export default function SignInForm() {
       </div>
 
       {/* Botões de login alternativo */}
-      <div className="grid gap-3">
-        {/* Login com Passkey */}
-        <Button
-          className="w-full"
-          disabled={isSigningInWithPasskey}
-          onClick={handlePasskeySignIn}
-          variant="outline"
-        >
-          {isSigningInWithPasskey ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Fingerprint className="mr-2 h-4 w-4" />
-          )}
-          Entrar com Passkey
-        </Button>
-
+      <div className="grid grid-cols-2 gap-3">
         {/* Login com Google */}
         <Button
-          className="w-full"
+          className="w-auto"
           disabled={isSigningInWithGoogle}
           onClick={handleGoogleSignIn}
           variant="outline"
@@ -297,6 +314,20 @@ export default function SignInForm() {
             <GoogleIcon className="mr-2 h-4 w-4" />
           )}
           Entrar com Google
+        </Button>
+        {/* Login com Passkey */}
+        <Button
+          className="w-auto"
+          disabled={isSigningInWithPasskey}
+          onClick={handlePasskeySignIn}
+          variant="outline"
+        >
+          {isSigningInWithPasskey ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Fingerprint className="mr-2 h-4 w-4" />
+          )}
+          Entrar com Passkey
         </Button>
       </div>
     </div>

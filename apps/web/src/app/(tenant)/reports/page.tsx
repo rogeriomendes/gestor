@@ -1,11 +1,11 @@
 "use client";
 
+import { Info, SearchIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { SearchInput } from "@/components/search-input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, SearchIcon } from "lucide-react";
-import { useMemo, useState } from "react";
 import { ReportCard } from "./_components/ReportCard";
 import {
   type ReportConfig,

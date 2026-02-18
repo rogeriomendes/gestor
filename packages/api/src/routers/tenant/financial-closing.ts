@@ -469,7 +469,9 @@ export const financialClosingRouter = router({
                 (row: DevolutionRow) =>
                   row.venda_recebimento[0]?.ID_FIN_TIPO_RECEBIMENTO
               )
-              .filter((id: number | undefined): id is number => id !== undefined)
+              .filter(
+                (id: number | undefined): id is number => id !== undefined
+              )
           ),
         ];
 

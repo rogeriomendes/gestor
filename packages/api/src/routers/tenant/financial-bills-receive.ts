@@ -237,11 +237,9 @@ export const financialBillsReceiveRouter = router({
                   parcela.fin_parcela_recebimento &&
                   Array.isArray(parcela.fin_parcela_recebimento)
                 ) {
-                  parcela.fin_parcela_recebimento.forEach(
-                    (recebimento) => {
-                      valorRecebido += Number(recebimento.VALOR_RECEBIDO || 0);
-                    }
-                  );
+                  parcela.fin_parcela_recebimento.forEach((recebimento) => {
+                    valorRecebido += Number(recebimento.VALOR_RECEBIDO || 0);
+                  });
                 }
               }
             );

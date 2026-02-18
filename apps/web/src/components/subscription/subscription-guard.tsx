@@ -1,5 +1,9 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { AlertTriangle, Ban, Clock, Settings } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,10 +16,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTenant } from "@/contexts/tenant-context";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Ban, Clock, Settings } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 type SubscriptionStatus = "TRIAL" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 

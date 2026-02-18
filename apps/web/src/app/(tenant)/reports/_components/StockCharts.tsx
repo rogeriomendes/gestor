@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import { ShowText } from "@/components/show-text";
 import {
   Card,
@@ -15,8 +17,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatAsCurrency } from "@/lib/utils";
-import { useMemo } from "react";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 interface StockChartsProps {
   stockPosition?: {

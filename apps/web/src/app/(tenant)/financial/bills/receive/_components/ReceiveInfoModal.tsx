@@ -1,6 +1,5 @@
 "use client";
 
-import { ClockIcon, DotIcon, InfoIcon, UserIcon, XIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,6 +22,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDate } from "@/lib/format-date";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
+import { ClockIcon, DotIcon, InfoIcon, UserIcon, XIcon } from "lucide-react";
 
 type ReceiveItem =
   RouterOutputs["tenant"]["financialBillsReceive"]["all"]["receive"][number];
@@ -56,7 +56,7 @@ export function ReceiveInfoModal({
                   <span className="flex items-center">
                     <UserIcon className="mr-2 size-4" />
                     {receive?.fin_lancamento_receber?.ID_CLIENTE
-                      ? receive.fin_lancamento_receber?.cliente.pessoa.NOME
+                      ? receive.fin_lancamento_receber?.cliente?.pessoa?.NOME
                       : "Cliente não informado"}
                   </span>
                 </PopoverTrigger>

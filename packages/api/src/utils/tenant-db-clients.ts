@@ -1,6 +1,6 @@
+import type { Tenant } from "@gestor/db/types";
 import { createDfePrismaClient } from "@gestor/db-dfe";
 import { createGestorPrismaClient } from "@gestor/db-gestor";
-import type { Tenant } from "@gestor/db/types";
 import { LRUCache } from "lru-cache";
 import { decryptPassword } from "./encryption";
 import { hasCompleteDatabaseCredentials } from "./tenant-db-credentials";

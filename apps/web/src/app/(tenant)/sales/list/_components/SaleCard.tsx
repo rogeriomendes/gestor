@@ -1,10 +1,10 @@
 "use client";
 
+import { DotIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
-import { DotIcon } from "lucide-react";
 
 interface SaleCardProps {
   sale: {
@@ -40,14 +40,14 @@ export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
       className={cn(
         "h-full cursor-pointer rounded-md transition-all",
         isCanceled &&
-        "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
+          "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
       )}
       onClick={() => onClick?.(sale)}
       size="sm"
     >
       <CardContent>
         {/* Header com número da venda e status */}
-        <div className="flex items-center justify-between font-medium text-sm leading-tight mb-2">
+        <div className="mb-2 flex items-center justify-between font-medium text-sm leading-tight">
           <h3 className="flex flex-row items-center font-medium text-sm leading-tight">
             {sale.ID}
             {sale.NUMERO_NFE && (

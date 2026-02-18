@@ -9,11 +9,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
  * Mantido separado do layout (Server Component) para não forçar toda a
  * subárvore a ser client-side desnecessariamente.
  */
-export function AdminLayoutClient({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard requiredRole="admin">
       <SidebarProvider

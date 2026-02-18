@@ -1,9 +1,9 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
-import { trpc } from "@/utils/trpc";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext } from "react";
+import { authClient } from "@/lib/auth-client";
+import { trpc } from "@/utils/trpc";
 
 // Import Role type - será gerado pelo Prisma
 type Role =
@@ -67,14 +67,14 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   const tenantData =
     profile?.tenant && !profile.tenant._isAdminWithoutTenant
       ? {
-        id: profile.tenant.id,
-        name: profile.tenant.name,
-        slug: profile.tenant.slug,
-        active: profile.tenant.active,
-        createdAt: profile.tenant.createdAt,
-        updatedAt: profile.tenant.updatedAt,
-        _count: profile.tenant._count,
-      }
+          id: profile.tenant.id,
+          name: profile.tenant.name,
+          slug: profile.tenant.slug,
+          active: profile.tenant.active,
+          createdAt: profile.tenant.createdAt,
+          updatedAt: profile.tenant.updatedAt,
+          _count: profile.tenant._count,
+        }
       : null;
 
   const value: TenantContextValue = {
