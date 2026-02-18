@@ -11,6 +11,9 @@ export const statsRouter = router({
   get: adminProcedure
     .use(requirePermission("DASHBOARD", "READ"))
     .query(async () => {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
       const [
         totalTenants,
         activeTenants,
@@ -18,6 +21,8 @@ export const statsRouter = router({
         totalUsers,
         recentTenants,
         recentUsers,
+        newTenantsLast30Days,
+        newUsersLast30Days,
       ] = await Promise.all([
         // Tenants
         prisma.tenant.count({ where: { deletedAt: null } }),
@@ -59,24 +64,20 @@ export const statsRouter = router({
             },
           },
         }),
+        // New tenants in last 30 days
+        prisma.tenant.count({
+          where: {
+            deletedAt: null,
+            createdAt: { gte: thirtyDaysAgo },
+          },
+        }),
+        // New users in last 30 days
+        prisma.user.count({
+          where: {
+            createdAt: { gte: thirtyDaysAgo },
+          },
+        }),
       ]);
-
-      // Calcular crescimento de tenants (últimos 30 dias)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const newTenantsLast30Days = await prisma.tenant.count({
-        where: {
-          deletedAt: null,
-          createdAt: { gte: thirtyDaysAgo },
-        },
-      });
-
-      // Calcular crescimento de usuários (últimos 30 dias)
-      const newUsersLast30Days = await prisma.user.count({
-        where: {
-          createdAt: { gte: thirtyDaysAgo },
-        },
-      });
 
       return {
         tenants: {

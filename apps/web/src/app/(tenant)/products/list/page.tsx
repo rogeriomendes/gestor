@@ -44,7 +44,7 @@ import {
 } from "lucide-react";
 import type { Route } from "next";
 import { useQueryState } from "nuqs";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DetailProducts } from "./_components/DetailProducts";
 import { ProductGrid } from "./_components/ProductGrid";
@@ -91,15 +91,18 @@ export default function ProductsList() {
     enabled,
   });
 
-  const groupOptions: ComboboxOption[] = [
-    { value: "0", label: "TODOS" },
-    ...(groupQuery.data?.group?.map(
-      (item: { ID: number; NOME: string | null }) => ({
-        value: String(item.ID),
-        label: item.NOME ?? "",
-      })
-    ) ?? []),
-  ];
+  const groupOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "0", label: "TODOS" },
+      ...(groupQuery.data?.group?.map(
+        (item: { ID: number; NOME: string | null }) => ({
+          value: String(item.ID),
+          label: item.NOME ?? "",
+        })
+      ) ?? []),
+    ],
+    [groupQuery.data?.group]
+  );
 
   const scaleOptions: ComboboxOption[] = [
     { value: "T", label: "TODOS" },
@@ -305,17 +308,6 @@ export default function ProductsList() {
             // Verificar se o produto existe
             if (!product) {
               return null;
-            }
-
-            // Aplicar filtro de busca
-            if (search) {
-              const matchesSearch =
-                product.CODIGO_INTERNO?.toString().includes(search) ||
-                product.GTIN?.toString().includes(search) ||
-                product.NOME?.toString().includes(search.toUpperCase());
-              if (!matchesSearch) {
-                return null;
-              }
             }
 
             return [

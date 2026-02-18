@@ -1,9 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Ban, Clock, Settings } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,6 +12,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTenant } from "@/contexts/tenant-context";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { AlertTriangle, Ban, Clock, Settings } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type SubscriptionStatus = "TRIAL" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 
@@ -36,6 +36,8 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
   const { data: subscription, isLoading: isSubscriptionLoading } = useQuery({
     ...trpc.tenant.subscription.getMySubscription.queryOptions(),
     enabled: !!tenant && !isSuperAdmin,
+    staleTime: 10 * 60 * 1000, // 10 minutos — subscription raramente muda
+    gcTime: 15 * 60 * 1000,
   });
 
   // Super Admins têm acesso irrestrito

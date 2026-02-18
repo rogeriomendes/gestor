@@ -1,6 +1,5 @@
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -15,6 +14,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatAsCurrency } from "@/lib/utils";
+import { useMemo } from "react";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 interface SellersChartsProps {
   salesPerSeller?: {
@@ -39,14 +40,17 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function SellersCharts({ salesPerSeller }: SellersChartsProps) {
-  const chartData =
-    salesPerSeller?.salesPerSeller.map((seller) => ({
-      ...seller,
-      sellerName:
-        seller.sellerName.length > 15
-          ? `${seller.sellerName.substring(0, 15)}...`
-          : seller.sellerName,
-    })) || [];
+  const chartData = useMemo(
+    () =>
+      salesPerSeller?.salesPerSeller.map((seller) => ({
+        ...seller,
+        sellerName:
+          seller.sellerName.length > 15
+            ? `${seller.sellerName.substring(0, 15)}...`
+            : seller.sellerName,
+      })) || [],
+    [salesPerSeller]
+  );
 
   return (
     <div className="grid gap-4 md:grid-cols-2">

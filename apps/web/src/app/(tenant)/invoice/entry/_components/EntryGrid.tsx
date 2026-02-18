@@ -1,14 +1,14 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { FileCheckIcon } from "lucide-react";
-import { useEffect, useMemo } from "react";
-import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTenant } from "@/contexts/tenant-context";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { FileCheckIcon } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { useInView } from "react-intersection-observer";
 import { EntryCard } from "./EntryCard";
 
 interface EntryGridProps {

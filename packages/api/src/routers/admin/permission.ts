@@ -4,8 +4,8 @@ import { z } from "zod";
 
 import { adminProcedure, router } from "../../index";
 import {
-  clearPermissionCache,
-  requirePermission,
+    clearPermissionCache,
+    requirePermission,
 } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
 
@@ -346,27 +346,24 @@ export const permissionRouter = router({
         ],
       };
 
+      // Fetch all permission IDs in a single query for efficient lookup
+      const allPermissionRecords = await prisma.permission.findMany({
+        select: { id: true, resource: true, action: true },
+      });
+      const permissionLookupMap = new Map(
+        allPermissionRecords.map((p) => [`${p.resource}:${p.action}`, p.id])
+      );
+
       // Aplicar permissões padrão
       for (const [role, permissionKeys] of Object.entries(defaultPermissions)) {
         if (role === "SUPER_ADMIN") {
           continue; // SUPER_ADMIN não precisa de permissões explícitas
         }
 
-        // Buscar IDs das permissões
-        const permissions = await Promise.all(
-          permissionKeys.map(async (key) => {
-            const [resource, action] = key.split(":");
-            const permission = await prisma.permission.findUnique({
-              where: {
-                resource_action: {
-                  resource: resource as any,
-                  action: action as any,
-                },
-              },
-            });
-            return permission?.id;
-          })
-        );
+        // Resolve permission IDs using the map (O(1) per lookup, no extra queries)
+        const validPermissionIds = permissionKeys
+          .map((key) => permissionLookupMap.get(key))
+          .filter((id): id is string => id !== undefined);
 
         // Remover permissões antigas da role
         await prisma.rolePermission.deleteMany({
@@ -376,10 +373,6 @@ export const permissionRouter = router({
         });
 
         // Criar novas permissões
-        const validPermissionIds = permissions.filter(
-          (id): id is string => id !== undefined
-        );
-
         if (validPermissionIds.length > 0) {
           await prisma.rolePermission.createMany({
             data: validPermissionIds.map((permissionId) => ({

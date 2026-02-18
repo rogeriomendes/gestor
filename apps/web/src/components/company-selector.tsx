@@ -1,7 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Building2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,12 +12,16 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatCNPJ } from "@/lib/format-cnpj";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { Building2, ChevronDown } from "lucide-react";
 
 export function CompanySelector() {
   const { tenant } = useTenant();
   const companyQuery = useQuery({
     ...trpc.tenant.companies.all.queryOptions(),
     enabled: !!tenant?.id,
+    staleTime: 5 * 60 * 1000, // 5 minutos — lista de empresas raramente muda
+    gcTime: 10 * 60 * 1000,
   });
   const { selectedCompanyId, setSelectedCompanyId, setSelectedCompany } =
     useCompany();

@@ -22,6 +22,7 @@ export const financialBillsReceiveRouter = router({
         const { cursor, clientId, companyId, status, dateFrom, dateTo } = input;
 
         // Construir filtros dinamicamente
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const whereClause: any = {
           PARCELA_CANCELADA: "N",
           fin_lancamento_receber: {
@@ -157,25 +158,25 @@ export const financialBillsReceiveRouter = router({
           },
         });
 
-        // Buscar dados das contas caixa para os recebimentos
-        const contaCaixaIds = receive
-          .map(
-            (item: any) =>
-              item.fin_lancamento_receber.venda_cabecalho?.ID_CONTA_CAIXA
-          )
-          .filter(
-            (id: any): id is number =>
-              id !== null && id !== undefined && id !== 0
-          );
+        // Batch load contas caixa (optimized with Set deduplication)
+        const contaCaixaIds = [
+          ...new Set(
+            receive
+              .map(
+                (item) =>
+                  item.fin_lancamento_receber.venda_cabecalho?.ID_CONTA_CAIXA
+              )
+              .filter(
+                (id): id is number =>
+                  id !== null && id !== undefined && id !== 0
+              )
+          ),
+        ];
 
         const contasCaixa =
           contaCaixaIds.length > 0
             ? await gestorPrisma.conta_caixa.findMany({
-                where: {
-                  ID: {
-                    in: contaCaixaIds,
-                  },
-                },
+                where: { ID: { in: contaCaixaIds } },
                 select: {
                   ID: true,
                   NOME: true,
@@ -183,22 +184,22 @@ export const financialBillsReceiveRouter = router({
               })
             : [];
 
-        // Buscar dados dos clientes para os recebimentos
-        const clienteIds = receive
-          .map((item: any) => item.fin_lancamento_receber.ID_CLIENTE)
-          .filter(
-            (id: any): id is number =>
-              id !== null && id !== undefined && id !== 0
-          );
+        // Batch load clientes (optimized with Set deduplication)
+        const clienteIds = [
+          ...new Set(
+            receive
+              .map((item) => item.fin_lancamento_receber.ID_CLIENTE)
+              .filter(
+                (id): id is number =>
+                  id !== null && id !== undefined && id !== 0
+              )
+          ),
+        ];
 
         const clientes =
           clienteIds.length > 0
             ? await gestorPrisma.cliente.findMany({
-                where: {
-                  ID: {
-                    in: clienteIds,
-                  },
-                },
+                where: { ID: { in: clienteIds } },
                 select: {
                   ID: true,
                   pessoa: {
@@ -212,14 +213,14 @@ export const financialBillsReceiveRouter = router({
 
         // Criar mapas para facilitar a busca
         const contaCaixaMap = new Map(
-          contasCaixa.map((conta: any) => [conta.ID, conta])
+          contasCaixa.map((conta) => [conta.ID, conta])
         );
         const clienteMap = new Map(
-          clientes.map((cliente: any) => [cliente.ID, cliente])
+          clientes.map((cliente) => [cliente.ID, cliente])
         );
 
         // Calcular valores para cada recebimento e adicionar dados da conta caixa e cliente
-        const receiveWithCalculatedValues = receive.map((item: any) => {
+        const receiveWithCalculatedValues = receive.map((item) => {
           const valorAReceber = Number(
             item.fin_lancamento_receber.VALOR_A_RECEBER || 0
           );
@@ -231,13 +232,13 @@ export const financialBillsReceiveRouter = router({
             Array.isArray(item.fin_lancamento_receber.fin_parcela_receber)
           ) {
             item.fin_lancamento_receber.fin_parcela_receber.forEach(
-              (parcela: any) => {
+              (parcela) => {
                 if (
                   parcela.fin_parcela_recebimento &&
                   Array.isArray(parcela.fin_parcela_recebimento)
                 ) {
                   parcela.fin_parcela_recebimento.forEach(
-                    (recebimento: any) => {
+                    (recebimento) => {
                       valorRecebido += Number(recebimento.VALOR_RECEBIDO || 0);
                     }
                   );

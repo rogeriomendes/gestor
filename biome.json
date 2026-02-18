@@ -36,17 +36,17 @@
         "useSemanticElements": "off"
       },
       "complexity": {
-        "noExcessiveCognitiveComplexity": "off",
+        "noExcessiveCognitiveComplexity": "warn",
         "noForEach": "off",
         "noVoid": "off"
       },
       "correctness": {
         "noNestedComponentDefinitions": "off",
         "noUnusedFunctionParameters": "off",
-        "useExhaustiveDependencies": "off",
-        "noUnusedVariables": "off",
+        "useExhaustiveDependencies": "warn",
+        "noUnusedVariables": "warn",
         "useHookAtTopLevel": "off",
-        "useJsxKeyInIterable": "off"
+        "useJsxKeyInIterable": "error"
       },
       "performance": {
         "noBarrelFile": "off",
@@ -65,8 +65,8 @@
         "noDocumentCookie": "off",
         "noEmptyBlockStatements": "off",
         "noEvolvingTypes": "off",
-        "noExplicitAny": "off",
-        "useAwait": "off"
+        "noExplicitAny": "warn",
+        "useAwait": "warn"
       },
       "security": { "noDangerouslySetInnerHtml": "off" }
     }

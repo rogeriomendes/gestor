@@ -1,9 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Settings2Icon, SheetIcon, UserIcon } from "lucide-react";
-import type { Route } from "next";
-import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -17,6 +13,10 @@ import { getBudgetSituationInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { Settings2Icon, SheetIcon, UserIcon } from "lucide-react";
+import type { Route } from "next";
+import { useMemo, useState } from "react";
 import { BudgetGrid } from "./_components/BudgetGrid";
 import { DetailBudget } from "./_components/DetailBudget";
 
@@ -32,11 +32,6 @@ export default function BudgetList() {
   const [situation, setSituation] = useState<string>("T");
   const [selectedBudgetId, setSelectedBudgetId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const enabled = !!tenant;
 
@@ -61,13 +56,16 @@ export default function BudgetList() {
     ID: number;
     colaborador?: { pessoa?: { NOME?: string | null } } | null;
   }>;
-  const sellerOptions: ComboboxOption[] = [
-    { value: "0", label: "TODOS" },
-    ...sellerList.map((item) => ({
-      value: String(item.ID),
-      label: item.colaborador?.pessoa?.NOME ?? "",
-    })),
-  ];
+  const sellerOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "0", label: "TODOS" },
+      ...sellerList.map((item) => ({
+        value: String(item.ID),
+        label: item.colaborador?.pessoa?.NOME ?? "",
+      })),
+    ],
+    [sellerList]
+  );
 
   const situationOptions: ComboboxOption[] = [
     { value: "T", label: "TODOS" },
@@ -174,14 +172,6 @@ export default function BudgetList() {
               return null;
             }
 
-            // Aplicar filtro de busca
-            if (search) {
-              const matchesSearch = budget.ID.toString().includes(search);
-              if (!matchesSearch) {
-                return null;
-              }
-            }
-
             // Status do orçamento
             const statusInfo = getBudgetSituationInfo(budget.SITUACAO);
 
@@ -200,7 +190,7 @@ export default function BudgetList() {
               </Badge>,
               formatAsCurrency(Number(budget.VALOR_TOTAL)),
               budget.ALTERACAO_DATA_HORA &&
-                formatDate(budget.ALTERACAO_DATA_HORA),
+              formatDate(budget.ALTERACAO_DATA_HORA),
               budget.OBSERVACAO,
             ];
           }}
@@ -208,7 +198,7 @@ export default function BudgetList() {
       )}
 
       {/* Modal de detalhes do orçamento */}
-      {isMounted && selectedBudgetId && (
+      {selectedBudgetId && (
         <DetailBudget
           budgetId={selectedBudgetId}
           onOpenChange={(open) => {

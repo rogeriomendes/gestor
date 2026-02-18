@@ -1,15 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
-import {
-  CalendarIcon,
-  ShoppingCartIcon,
-  SquareUserIcon,
-  XIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -30,6 +20,16 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { ptBR } from "date-fns/locale";
+import {
+  CalendarIcon,
+  ShoppingCartIcon,
+  SquareUserIcon,
+  XIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useState } from "react";
 import { DetailSales } from "./_components/DetailSales";
 import { SalesGrid } from "./_components/SalesGrid";
 
@@ -44,19 +44,16 @@ export default function SalesList() {
   const [date, setDate] = useState<Date>();
   const [selectedSaleId, setSelectedSaleId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // Lazy initial state — evita flash de conteúdo vazio sem useEffect
+  const [isMounted] = useState(true);
 
   const enabled = !!tenant;
 
   const dateFormatted =
     date instanceof Date
       ? new Date(
-          Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-        )
+        Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+      )
       : undefined;
 
   const salesQuery = useInfiniteQuery({
@@ -238,16 +235,7 @@ export default function SalesList() {
               return null;
             }
 
-            // Aplicar filtro de busca
-            if (search) {
-              const matchesSearch =
-                sale.NUMERO_NFE?.includes(search) ||
-                sale.ID.toString().includes(search);
-              if (!matchesSearch) {
-                return null;
-              }
-            }
-
+            // Nota: o filtro de busca é aplicado no servidor (searchTerm no input da query)
             // Relações que podem vir da API mas não estão no tipo da listagem
             const saleWithRelations = sale as SaleItem & {
               nfe_cabecalho?: Array<{ STATUS_NOTA?: string | null }>;
@@ -273,11 +261,10 @@ export default function SalesList() {
               >
                 {statusInfo.label}
               </Badge>,
-              `${
-                sale.DATA_VENDA &&
-                new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
-                  timeZone: "UTC",
-                })
+              `${sale.DATA_VENDA &&
+              new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
+                timeZone: "UTC",
+              })
               } ${sale.HORA_SAIDA}`,
               formatAsCurrency(Number(sale.VALOR_TOTAL)),
               sale.NUMERO_NFE && removeLeadingZero(String(sale.NUMERO_NFE)),

@@ -42,7 +42,7 @@ export const productsRouter = router({
         // Filtro por promoção - buscar IDs dos produtos com promoção ativa
         let wherePromotion = {};
         if (promotion && promotion !== "T") {
-          // Primeiro buscar cabeçalhos de promoção ativos
+          // Buscar cabeçalhos de promoção ativos
           const activePromotionHeaders =
             await gestorPrisma.preco_reajuste_cabecalho.findMany({
               where: {
@@ -66,36 +66,26 @@ export const productsRouter = router({
           );
 
           if (activeHeaderIds.length > 0) {
-            // Buscar detalhes de promoção ativos
+            // Query unificada: busca detalhes + preços promocionais em uma única chamada
+            // (elimina um round-trip ao banco vs. duas queries sequenciais)
             const activePromotionDetails =
               await gestorPrisma.preco_reajuste_detalhe.findMany({
                 where: {
                   ID_REAJUSTE_CABECALHO: { in: activeHeaderIds },
-                },
-                select: {
-                  ID: true,
-                  ID_PRODUTO: true,
-                },
-              });
-
-            // Buscar produtos com preço promocional ativo
-            const productsWithPromoPrice =
-              await gestorPrisma.produto_preco_promocao.findMany({
-                where: {
-                  ID_REAJUSTE_DETALHE: {
-                    in: activePromotionDetails.map(
-                      (d: (typeof activePromotionDetails)[number]) => d.ID
-                    ),
-                  },
+                  PRECO_PROMOCAO: { not: null }, // Só detalhes que têm preço promocional
                 },
                 select: {
                   ID_PRODUTO: true,
                 },
               });
 
-            const productIdsWithPromotion = productsWithPromoPrice.map(
-              (p: (typeof productsWithPromoPrice)[number]) => p.ID_PRODUTO
-            );
+            const productIdsWithPromotion = [
+              ...new Set(
+                activePromotionDetails.map(
+                  (d: (typeof activePromotionDetails)[number]) => d.ID_PRODUTO
+                )
+              ),
+            ];
 
             if (promotion === "S") {
               // Produtos COM promoção ativa
@@ -535,6 +525,16 @@ export const productsRouter = router({
                 ID_FORNECEDOR: true,
                 DATA_ENTRADA_SAIDA: true,
                 NUMERO: true,
+                fornecedor: {
+                  select: {
+                    ID: true,
+                    pessoa: {
+                      select: {
+                        NOME: true,
+                      },
+                    },
+                  },
+                },
               },
             },
           },
@@ -543,46 +543,7 @@ export const productsRouter = router({
           },
         });
 
-        // Buscar dados dos fornecedores
-        const fornecedorIds = purchase
-          .map((item: any) => item.nfe_cabecalho.ID_FORNECEDOR)
-          .filter((id: any): id is number => id !== null && id !== 0);
-
-        const fornecedores =
-          fornecedorIds.length > 0
-            ? await gestorPrisma.fornecedor.findMany({
-                where: {
-                  ID: {
-                    in: fornecedorIds,
-                  },
-                },
-                select: {
-                  ID: true,
-                  pessoa: {
-                    select: {
-                      NOME: true,
-                    },
-                  },
-                },
-              })
-            : [];
-
-        const fornecedorMap = new Map(
-          fornecedores.map((fornecedor: any) => [fornecedor.ID, fornecedor])
-        );
-
-        // Combinar dados das compras com dados dos fornecedores
-        const purchaseWithFornecedor = purchase.map((item: any) => ({
-          ...item,
-          nfe_cabecalho: {
-            ...item.nfe_cabecalho,
-            fornecedor: item.nfe_cabecalho.ID_FORNECEDOR
-              ? fornecedorMap.get(item.nfe_cabecalho.ID_FORNECEDOR) || null
-              : null,
-          },
-        }));
-
-        return { purchase: purchaseWithFornecedor };
+        return { purchase };
       } catch (error) {
         console.error(
           "An error occurred when returning product purchase:",
@@ -689,45 +650,49 @@ export const productsRouter = router({
       }
     }),
 
-  allMobile: tenantProcedure.query(async ({ ctx }) => {
-    try {
-      const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
-      const products = await gestorPrisma.produto.findMany({
-        select: {
-          ID: true,
-          CODIGO_INTERNO: true,
-          GTIN: true,
-          NOME: true,
-          unidade_produto: { select: { SIGLA: true, DESCRICAO: true } },
-          produto_sub_grupo: { select: { NOME: true, DESCRICAO: true } },
-          produto_familia: { select: { NOME: true, DESCRICAO: true } },
-          DESCRICAO: true,
-          VALOR_COMPRA: true,
-          MARKUP: true,
-          VALOR_VENDA: true,
-          DATA_CADASTRO: true,
-          DATA_ALTERACAO: true,
-          PRODUTO_PESADO: true,
-          DIA_VALIDADE: true,
-          ESTOQUE_MINIMO: true,
-          ESTOQUE_MAXIMO: true,
-          QUANTIDADE_ESTOQUE: true,
-          FRETE: true,
-          ICMS_ST: true,
-          IPI: true,
-          OUTROSIMPOSTOS: true,
-          OUTROSVALORES: true,
-          INATIVO: true,
-          COMPOSTO: true,
-          NCM: true,
-          CEST: true,
-        },
-        orderBy: { NOME: "asc" },
-      });
-      return products;
-    } catch (error) {
-      console.error("An error occurred when returning products:", error);
-      throw error;
-    }
-  }),
-});
+//   allMobile: tenantProcedure
+//     .input(
+//       z.object({
+//         limit: z.number().min(1).max(500).default(100),
+//         cursor: z.string().optional(),
+//       })
+//     )
+//     .query(async ({ ctx, input }) => {
+//       try {
+//         const { limit, cursor } = input;
+//         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+
+//         const products = await gestorPrisma.produto.findMany({
+//           take: limit + 1,
+//           cursor: cursor ? { ID: Number(cursor) } : undefined,
+//           where: { INATIVO: "N" }, // Only active products
+//           select: {
+//             // Only essential fields for mobile
+//             ID: true,
+//             CODIGO_INTERNO: true,
+//             GTIN: true,
+//             NOME: true,
+//             VALOR_VENDA: true,
+//             QUANTIDADE_ESTOQUE: true,
+//             PRODUTO_PESADO: true,
+//             ESTOQUE_MINIMO: true,
+//             unidade_produto: {
+//               select: { SIGLA: true },
+//             },
+//           },
+//           orderBy: { NOME: "asc" },
+//         });
+
+//         let nextCursor: string | undefined;
+//         if (products.length > limit) {
+//           const nextProduct = products.pop();
+//           nextCursor = String(nextProduct?.ID);
+//         }
+
+//         return { products, nextCursor };
+//       } catch (error) {
+//         console.error("An error occurred when returning products:", error);
+//         throw error;
+//       }
+//     }),
+   });

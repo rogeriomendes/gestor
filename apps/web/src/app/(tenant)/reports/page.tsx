@@ -1,11 +1,11 @@
 "use client";
 
-import { Info, SearchIcon } from "lucide-react";
-import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { SearchInput } from "@/components/search-input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Info, SearchIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 import { ReportCard } from "./_components/ReportCard";
 import {
   type ReportConfig,
@@ -17,32 +17,42 @@ export default function ReportsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  // Filtrar relatórios
-  const filteredReports = reportRegistry.filter((report) => {
-    const matchesSearch =
-      report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || report.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Filtrar relatórios — memoizado para evitar recalc a cada render
+  const filteredReports = useMemo(
+    () =>
+      reportRegistry.filter((report) => {
+        const matchesSearch =
+          report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          report.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory =
+          selectedCategory === "all" || report.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+      }),
+    [searchQuery, selectedCategory]
+  );
 
-  // Agrupar por categoria
-  const reportsByCategory = reportCategories.reduce(
-    (acc, category) => {
-      const reports = filteredReports.filter((r) => r.category === category.id);
-      if (reports.length > 0) {
-        acc[category.id] = {
-          ...category,
-          reports,
-        };
-      }
-      return acc;
-    },
-    {} as Record<
-      string,
-      { id: string; label: string; icon: any; reports: ReportConfig[] }
-    >
+  // Agrupar por categoria — memoizado, depónde de filteredReports
+  const reportsByCategory = useMemo(
+    () =>
+      reportCategories.reduce(
+        (acc, category) => {
+          const reports = filteredReports.filter(
+            (r) => r.category === category.id
+          );
+          if (reports.length > 0) {
+            acc[category.id] = {
+              ...category,
+              reports,
+            };
+          }
+          return acc;
+        },
+        {} as Record<
+          string,
+          { id: string; label: string; icon: any; reports: ReportConfig[] }
+        >
+      ),
+    [filteredReports]
   );
 
   return (

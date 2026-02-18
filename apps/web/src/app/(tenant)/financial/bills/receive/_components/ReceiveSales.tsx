@@ -1,16 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  HandshakeIcon,
-  ShoppingCartIcon,
-  UserIcon,
-  UsersIcon,
-} from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { DateRange } from "react-day-picker";
-import { useInView } from "react-intersection-observer";
 import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { MetricCard } from "@/components/metric-card";
@@ -23,6 +12,17 @@ import { getReceiveStatusById } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  HandshakeIcon,
+  ShoppingCartIcon,
+  UserIcon,
+  UsersIcon,
+} from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { DateRange } from "react-day-picker";
+import { useInView } from "react-intersection-observer";
 import { ReceiveFilters } from "./ReceiveFilters";
 import { ReceiveGrid } from "./ReceiveGrid";
 import { ReceiveInfoModal } from "./ReceiveInfoModal";
@@ -54,6 +54,8 @@ export default function ReceiveSalesList() {
       companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
     }),
     enabled: !!tenant,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const billsReceiveAmountLoweredQuery = useQuery({
@@ -62,6 +64,8 @@ export default function ReceiveSalesList() {
       companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
     }),
     enabled: !!tenant,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const billsReceiveQuery = useInfiniteQuery({
@@ -132,12 +136,12 @@ export default function ReceiveSalesList() {
           subtitle={(() => {
             const data = billsReceiveAmountLoweredQuery.data as
               | {
-                  amountLowered?: Array<{
-                    DATA_RECEBIMENTO?: string;
-                    HORA_RECEBIMENTO?: string;
-                    NOME_COLABORADOR?: string;
-                  }>;
-                }
+                amountLowered?: Array<{
+                  DATA_RECEBIMENTO?: string;
+                  HORA_RECEBIMENTO?: string;
+                  NOME_COLABORADOR?: string;
+                }>;
+              }
               | undefined;
             return data?.amountLowered ? (
               <span className="flex flex-row text-muted-foreground text-xs">
@@ -223,15 +227,6 @@ export default function ReceiveSalesList() {
               return null;
             }
 
-            if (clientId) {
-              const matchesClient =
-                receive.fin_lancamento_receber.ID_CLIENTE?.toString() ===
-                clientId;
-              if (!matchesClient) {
-                return null;
-              }
-            }
-
             const statusInfo = getReceiveStatusById(
               receive.ID_FIN_STATUS_PARCELA
             );
@@ -264,14 +259,13 @@ export default function ReceiveSalesList() {
 
             return [
               "",
-              `${
-                receive.fin_lancamento_receber.DATA_LANCAMENTO &&
-                formatDate(receive.fin_lancamento_receber.DATA_LANCAMENTO)
+              `${receive.fin_lancamento_receber.DATA_LANCAMENTO &&
+              formatDate(receive.fin_lancamento_receber.DATA_LANCAMENTO)
               } ${receive.fin_lancamento_receber.venda_cabecalho?.HORA_SAIDA ?? ""}`,
               receive.fin_lancamento_receber?.venda_cabecalho?.cliente?.pessoa
                 ?.NOME ??
-                receive.fin_lancamento_receber?.cliente?.pessoa?.NOME ??
-                "—",
+              receive.fin_lancamento_receber?.cliente?.pessoa?.NOME ??
+              "—",
               <Badge
                 className={cn("px-1.5 py-0.5 text-xs", statusInfo.color)}
                 key="status"

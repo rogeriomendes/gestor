@@ -1,13 +1,14 @@
 "use client";
 
-import { EyeOffIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { decodeDocXml } from "@/lib/decode-doc-xml";
 import { formatDate } from "@/lib/format-date";
 import { getXmlStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
+import { EyeOffIcon } from "lucide-react";
 
 type DfeItem =
   RouterOutputs["tenant"]["invoiceDfe"]["all"]["invoiceDfe"][number];
@@ -26,8 +27,12 @@ export function DfeCard({ dfe, companyName, onClick, onHide }: DfeCardProps) {
   const dataEmissao = dfe.EMISSAO;
 
   // Status do XML
+  // const statusInfo = getXmlStatusInfo(
+  //   dfe.DOCXML && new TextDecoder().decode(Uint8Array.from(dfe.DOCXML))
+  // );
+
   const statusInfo = getXmlStatusInfo(
-    dfe.DOCXML && new TextDecoder().decode(Uint8Array.from(dfe.DOCXML))
+    dfe.DOCXML && decodeDocXml(dfe.DOCXML)
   );
 
   return (

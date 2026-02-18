@@ -1,13 +1,5 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  CircleEllipsisIcon,
-  CircleHelpIcon,
-  SquarePercentIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -18,13 +10,32 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDate } from "@/lib/format-date";
 import { getSaleStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
-import type { RouterOutputs } from "@/utils/trpc";
-import { trpc } from "@/utils/trpc";
+import { trpc, type RouterOutputs } from "@/utils/trpc";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  CircleEllipsisIcon,
+  CircleHelpIcon,
+  SquarePercentIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useState } from "react";
 import { DetailSale } from "./_components/DetailSale";
 import { SaleGrid } from "./_components/SaleGrid";
 
 type ProductsSaleItem =
   RouterOutputs["tenant"]["productsSale"]["all"]["productsSale"][number];
+
+const statusOptions: ComboboxOption[] = [
+  { value: "T", label: "TODOS" },
+  { value: "E", label: "EXECUÇÃO" },
+  { value: "C", label: "CONCLUÍDO" },
+];
+
+const inactiveOptions: ComboboxOption[] = [
+  { value: "T", label: "TODOS" },
+  { value: "S", label: "SIM" },
+  { value: "N", label: "NÃO" },
+];
 
 export default function productsSale() {
   const { tenant } = useTenant();
@@ -36,11 +47,6 @@ export default function productsSale() {
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const enabled = !!tenant;
 
@@ -54,18 +60,6 @@ export default function productsSale() {
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled,
   });
-
-  const statusOptions: ComboboxOption[] = [
-    { value: "T", label: "TODOS" },
-    { value: "E", label: "EXECUÇÃO" },
-    { value: "C", label: "CONCLUÍDO" },
-  ];
-
-  const inactiveOptions: ComboboxOption[] = [
-    { value: "T", label: "TODOS" },
-    { value: "S", label: "SIM" },
-    { value: "N", label: "NÃO" },
-  ];
 
   return (
     <PageLayout
@@ -185,7 +179,7 @@ export default function productsSale() {
       )}
 
       {/* Modal de detalhes da promoção */}
-      {isMounted && selectedSale && (
+      {selectedSale && (
         <DetailSale
           onOpenChange={(open) => {
             setIsModalOpen(open);

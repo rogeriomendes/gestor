@@ -123,6 +123,65 @@ export const tenantInfoRouter = router({
   }),
 
   /**
+   * Endpoint unificado: retorna tenant + role + permissões em uma única chamada.
+   * Substitui as duas chamadas separadas (getMyTenant + debug.getMyContext)
+   * que o TenantContext fazia anteriormente.
+   */
+  getMyProfile: protectedProcedure.query(async ({ ctx }) => {
+    // Permissões já estão no contexto (calculadas em context.ts)
+    const permissions = Array.from(ctx.permissions);
+
+    // Se não tem role, retornar null
+    if (!ctx.role) {
+      return null;
+    }
+
+    // SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
+    if (ctx.isSuperAdmin || ctx.role === "TENANT_ADMIN") {
+      return {
+        tenant: {
+          id: "",
+          name: "",
+          slug: "",
+          active: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          _count: { users: 0 },
+          _isAdminWithoutTenant: true as const,
+        },
+        role: ctx.role,
+        isSuperAdmin: ctx.isSuperAdmin,
+        permissions,
+      };
+    }
+
+    // Outros roles precisam de tenant
+    if (!ctx.tenant) {
+      return null;
+    }
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: ctx.tenant.id },
+      include: {
+        _count: {
+          select: { users: true },
+        },
+      },
+    });
+
+    if (!tenant) {
+      return null;
+    }
+
+    return {
+      tenant: { ...tenant, _isAdminWithoutTenant: false as const },
+      role: ctx.role,
+      isSuperAdmin: ctx.isSuperAdmin,
+      permissions,
+    };
+  }),
+
+  /**
    * Atualizar configurações do tenant (requer permissão TENANT:UPDATE)
    */
   updateMyTenant: activeTenantProcedure

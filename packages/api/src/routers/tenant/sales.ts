@@ -127,34 +127,31 @@ export const salesRouter = router({
           orderBy: [...orderBy],
         });
 
-        // Buscar dados das contas caixa para as vendas
+        // Batch load conta_caixa (optimized - single query instead of N+1)
         type SaleRow = (typeof sales)[number];
-        const contaCaixaIds = sales
-          .map((sale: SaleRow) => sale.ID_CONTA_CAIXA)
-          .filter((id: number | null): id is number => id !== null && id !== 0);
+        const contaCaixaIds = [
+          ...new Set(
+            sales
+              .map((sale: SaleRow) => sale.ID_CONTA_CAIXA)
+              .filter((id): id is number => id !== null && id !== 0)
+          ),
+        ];
 
         const contasCaixa =
           contaCaixaIds.length > 0
             ? await gestorPrisma.conta_caixa.findMany({
-                where: {
-                  ID: {
-                    in: contaCaixaIds,
-                  },
-                },
-                select: {
-                  ID: true,
-                  NOME: true,
-                },
+                where: { ID: { in: contaCaixaIds } },
+                select: { ID: true, NOME: true },
               })
             : [];
 
-        // Criar um mapa para facilitar a busca
-        type ContaCaixaRow = (typeof contasCaixa)[number];
         const contaCaixaMap = new Map(
-          contasCaixa.map((conta: ContaCaixaRow) => [conta.ID, conta])
+          contasCaixa.map((conta: (typeof contasCaixa)[number]) => [
+            conta.ID,
+            conta,
+          ])
         );
 
-        // Adicionar dados da conta caixa às vendas
         const salesWithAccount = sales.map((sale: SaleRow) => ({
           ...sale,
           conta_caixa: sale.ID_CONTA_CAIXA

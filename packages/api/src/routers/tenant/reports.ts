@@ -94,27 +94,46 @@ export const reportsRouter = router({
           },
         });
 
+        // Batch load all sellers in a single query (eliminates N+1)
         type SalesPerSellerRow = (typeof salesPerSeller)[number];
-        const result = await Promise.all(
-          salesPerSeller.map(async (row: SalesPerSellerRow) => {
-            const { ID_VENDEDOR, _sum, _count } = row;
-            const seller = await gestorPrisma.colaborador.findUnique({
-              where: { ID: ID_VENDEDOR },
-              select: {
-                pessoa: {
-                  select: { NOME: true },
-                },
-              },
-            });
+        const sellerIds = [
+          ...new Set(
+            salesPerSeller
+              .map((row: SalesPerSellerRow) => row.ID_VENDEDOR)
+              .filter((id): id is number => id !== null)
+          ),
+        ];
 
-            return {
-              sellerId: ID_VENDEDOR,
-              sellerName: seller?.pessoa?.NOME ?? "Vendedor não encontrado",
-              total: Number(_sum.VALOR_TOTAL ?? 0),
-              count: _count.ID,
-            };
-          })
+        const sellers =
+          sellerIds.length > 0
+            ? await gestorPrisma.colaborador.findMany({
+                where: { ID: { in: sellerIds } },
+                select: {
+                  ID: true,
+                  pessoa: {
+                    select: { NOME: true },
+                  },
+                },
+              })
+            : [];
+
+        // Create map for O(1) lookup
+        type SellerRow = (typeof sellers)[number];
+        const sellerMap = new Map(
+          sellers.map((seller: SellerRow) => [
+            seller.ID,
+            seller.pessoa?.NOME ?? "Nome não disponível",
+          ])
         );
+
+        // Map results using the seller map
+        const result = salesPerSeller.map((row: SalesPerSellerRow) => ({
+          sellerId: row.ID_VENDEDOR,
+          sellerName:
+            sellerMap.get(row.ID_VENDEDOR) ?? "Vendedor não encontrado",
+          total: Number(row._sum.VALOR_TOTAL ?? 0),
+          count: row._count.ID,
+        }));
 
         return { salesPerSeller: result };
       } catch (error) {
@@ -363,18 +382,18 @@ export const reportsRouter = router({
         const { lowStock, category } = input;
 
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
-        let whereClause: any = {};
-
-        if (lowStock) {
-          whereClause = {
+        // Only active products, with optional low-stock and category filters
+        const whereClause: any = {
+          INATIVO: "N", // Only active products
+          ...(lowStock && {
+            // Quando lowStock=true, filtrar no banco apenas produtos com estoque e mínimo definidos
+            // A comparação QUANTIDADE_ESTOQUE <= ESTOQUE_MINIMO é feita por linha após o fetch
+            // (Prisma não suporta comparação coluna-a-coluna no WHERE)
             QUANTIDADE_ESTOQUE: { not: null },
             ESTOQUE_MINIMO: { not: null },
-          };
-        }
-
-        if (category) {
-          whereClause.ID_GRUPO = category;
-        }
+          }),
+          ...(category && { ID_GRUPO: category }),
+        };
 
         const stockPosition = await gestorPrisma.produto.findMany({
           where: whereClause,
@@ -396,6 +415,7 @@ export const reportsRouter = router({
           orderBy: {
             NOME: "asc",
           },
+          take: 1000, // Prevent unbounded queries on large catalogs
         });
 
         type StockPositionRow = (typeof stockPosition)[number];
@@ -445,76 +465,80 @@ export const reportsRouter = router({
         const whereCompany =
           companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
 
-        // Vendas do período
-        const sales = await gestorPrisma.venda_cabecalho.aggregate({
-          _sum: { VALOR_TOTAL: true },
-          _count: { ID: true },
-          where: {
-            DEVOLUCAO: "N",
-            CANCELADO_ID_USUARIO: { equals: null },
-            DATA_VENDA: {
-              gte: initialDate,
-              lte: finalDate,
-            },
-            ...whereCompany,
-          },
-        });
-
-        // Recebimentos do período
-        const receipts = await gestorPrisma.fin_parcela_recebimento.aggregate({
-          _sum: { VALOR_RECEBIDO: true },
-          where: {
-            DATA_RECEBIMENTO: {
-              gte: initialDate,
-              lte: finalDate,
-            },
-            ST_SUPRIMENTO: "N",
-            fin_parcela_receber: {
-              fin_lancamento_receber: {
-                venda_cabecalho: whereCompany,
+        // Todas as 5 queries são independentes — executar em paralelo com Promise.all
+        // (antes eram sequenciais, desperdiçando ~4x o tempo de round-trip)
+        const [sales, receipts, payments, pendingReceivables, pendingPayables] =
+          await Promise.all([
+            // Vendas do período
+            gestorPrisma.venda_cabecalho.aggregate({
+              _sum: { VALOR_TOTAL: true },
+              _count: { ID: true },
+              where: {
+                DEVOLUCAO: "N",
+                CANCELADO_ID_USUARIO: { equals: null },
+                DATA_VENDA: {
+                  gte: initialDate,
+                  lte: finalDate,
+                },
+                ...whereCompany,
               },
-            },
-          },
-        });
+            }),
 
-        // Pagamentos do período
-        const payments = await gestorPrisma.fin_parcela_pagamento.aggregate({
-          _sum: { VALOR_PAGO: true },
-          where: {
-            DATA_PAGAMENTO: {
-              gte: initialDate,
-              lte: finalDate,
-            },
-          },
-        });
-
-        // Contas a receber pendentes
-        const pendingReceivables =
-          await gestorPrisma.fin_parcela_receber.aggregate({
-            _sum: { VALOR: true },
-            where: {
-              fin_parcela_recebimento: {
-                none: {},
+            // Recebimentos do período
+            gestorPrisma.fin_parcela_recebimento.aggregate({
+              _sum: { VALOR_RECEBIDO: true },
+              where: {
+                DATA_RECEBIMENTO: {
+                  gte: initialDate,
+                  lte: finalDate,
+                },
+                ST_SUPRIMENTO: "N",
+                fin_parcela_receber: {
+                  fin_lancamento_receber: {
+                    venda_cabecalho: whereCompany,
+                  },
+                },
               },
-              fin_lancamento_receber: {
-                CANCELADO: "N",
-                venda_cabecalho: whereCompany,
-              },
-            },
-          });
+            }),
 
-        // Contas a pagar pendentes
-        const pendingPayables = await gestorPrisma.fin_parcela_pagar.aggregate({
-          _sum: { VALOR: true },
-          where: {
-            fin_parcela_pagamento: {
-              none: {},
-            },
-            fin_lancamento_pagar: {
-              CANCELADO: "N",
-            },
-          },
-        });
+            // Pagamentos do período
+            gestorPrisma.fin_parcela_pagamento.aggregate({
+              _sum: { VALOR_PAGO: true },
+              where: {
+                DATA_PAGAMENTO: {
+                  gte: initialDate,
+                  lte: finalDate,
+                },
+              },
+            }),
+
+            // Contas a receber pendentes
+            gestorPrisma.fin_parcela_receber.aggregate({
+              _sum: { VALOR: true },
+              where: {
+                fin_parcela_recebimento: {
+                  none: {},
+                },
+                fin_lancamento_receber: {
+                  CANCELADO: "N",
+                  venda_cabecalho: whereCompany,
+                },
+              },
+            }),
+
+            // Contas a pagar pendentes
+            gestorPrisma.fin_parcela_pagar.aggregate({
+              _sum: { VALOR: true },
+              where: {
+                fin_parcela_pagamento: {
+                  none: {},
+                },
+                fin_lancamento_pagar: {
+                  CANCELADO: "N",
+                },
+              },
+            }),
+          ]);
 
         return {
           sales: {

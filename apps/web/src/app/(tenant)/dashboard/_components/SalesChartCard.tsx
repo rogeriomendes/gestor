@@ -1,37 +1,25 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Loader2Icon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2Icon } from "lucide-react";
+import { useMemo } from "react";
 import { Overview } from "./Overview";
 
+// Alturas fixas e determinísticas — evita hydration mismatch (sem useEffect/useState)
+const SKELETON_BARS = [
+  "h-28", "h-48", "h-36", "h-64", "h-56", "h-72", "h-80",
+  "h-48", "h-36", "h-28", "h-56", "h-64", "h-72", "h-80",
+  "h-36", "h-48", "h-28", "h-64", "h-56", "h-72", "h-80",
+  "h-48", "h-36", "h-56", "h-28", "h-64", "h-72", "h-80",
+  "h-48", "h-36",
+] as const;
+
 function SalesChartSkeleton() {
-  const [bars, setBars] = useState<string[]>([]);
-
-  useEffect(() => {
-    const heights = [
-      "h-28",
-      "h-36",
-      "h-48",
-      "h-56",
-      "h-64",
-      "h-72",
-      "h-80",
-    ] as const;
-
-    setBars(
-      Array.from(
-        { length: 30 },
-        () => heights[Math.floor(Math.random() * heights.length)]!
-      )
-    );
-  }, []);
-
   return (
     <Card className="col-span-4 rounded-md" size="sm">
       <CardHeader>
@@ -41,7 +29,7 @@ function SalesChartSkeleton() {
       </CardHeader>
       <CardContent>
         <div className="flex h-[370px] w-full items-end gap-2">
-          {bars.map((h, i) => (
+          {SKELETON_BARS.map((h, i) => (
             <Skeleton className={`w-full animate-pulse ${h}`} key={i} />
           ))}
         </div>

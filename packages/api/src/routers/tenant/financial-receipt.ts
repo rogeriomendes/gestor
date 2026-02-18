@@ -133,14 +133,15 @@ export const financialReceiptRouter = router({
           },
         });
 
-        // Buscar os tipos de recebimento separadamente
+        // Batch load tipos de recebimento (optimized with Set deduplication)
         type ReceiptRow = (typeof receipts)[number];
-        const tipoRecebimentoIds = receipts
-          .map((r: ReceiptRow) => r.ID_FIN_TIPO_RECEBIMENTO)
-          .filter(
-            (id: number | null, index: number, self: (number | null)[]) =>
-              self.indexOf(id) === index
-          ); // Remove duplicatas
+        const tipoRecebimentoIds = [
+          ...new Set(
+            receipts
+              .map((r: ReceiptRow) => r.ID_FIN_TIPO_RECEBIMENTO)
+              .filter((id): id is number => id !== null)
+          ),
+        ];
 
         const tiposRecebimento =
           await gestorPrisma.fin_tipo_recebimento.findMany({

@@ -1,6 +1,5 @@
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import { ShowText } from "@/components/show-text";
 import {
   Card,
@@ -16,6 +15,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatAsCurrency } from "@/lib/utils";
+import { useMemo } from "react";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 interface StockChartsProps {
   stockPosition?: {
@@ -51,18 +52,21 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function StockCharts({ stockPosition }: StockChartsProps) {
-  const chartData =
-    stockPosition?.stockPosition.map((product) => ({
-      ...product,
-      productName:
-        product.name.length > 15
-          ? `${product.name.substring(0, 15)}...`
-          : product.name,
-      productCode: product.code,
-      minimumStock: product.minStock,
-      maximumStock: product.maxStock,
-      unitPrice: product.salePrice,
-    })) || [];
+  const chartData = useMemo(
+    () =>
+      stockPosition?.stockPosition.map((product) => ({
+        ...product,
+        productName:
+          product.name.length > 15
+            ? `${product.name.substring(0, 15)}...`
+            : product.name,
+        productCode: product.code,
+        minimumStock: product.minStock,
+        maximumStock: product.maxStock,
+        unitPrice: product.salePrice,
+      })) || [],
+    [stockPosition]
+  );
 
   return (
     <div className="grid gap-4 md:grid-cols-2">

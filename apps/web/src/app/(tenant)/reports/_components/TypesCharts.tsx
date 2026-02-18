@@ -1,8 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Bar, BarChart, Legend, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -17,6 +14,10 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatAsCurrency } from "@/lib/utils";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useMemo } from "react";
+import { Bar, BarChart, Legend, XAxis, YAxis } from "recharts";
 
 interface TypesChartsProps {
   salesPerType?: {
@@ -29,25 +30,36 @@ interface TypesChartsProps {
 }
 
 export function TypesCharts({ salesPerType }: TypesChartsProps) {
-  const chartData =
-    salesPerType?.result.map((item) => ({
-      ...item,
-      date: format(new Date(item.date), "dd/MM", { locale: ptBR }),
-    })) || [];
+  const chartData = useMemo(
+    () =>
+      salesPerType?.result.map((item) => ({
+        ...item,
+        date: format(new Date(item.date), "dd/MM", { locale: ptBR }),
+      })) || [],
+    [salesPerType]
+  );
 
   // Extrair todas as chaves de tipo de recebimento (excluindo 'date' e 'total')
-  const keys = Array.from(new Set(salesPerType?.result.flatMap(Object.keys)))
-    .filter((key) => key !== "date" && key !== "total")
-    .sort();
+  const keys = useMemo(
+    () =>
+      Array.from(new Set(salesPerType?.result.flatMap(Object.keys)))
+        .filter((key) => key !== "date" && key !== "total")
+        .sort(),
+    [salesPerType]
+  );
 
   // Criar configuração dinâmica para as cores
-  const chartConfig = keys.reduce((config, key, index) => {
-    config[key] = {
-      label: key,
-      color: `hsl(var(--chart-${(index % 5) + 1}))`,
-    };
-    return config;
-  }, {} as ChartConfig);
+  const chartConfig = useMemo(
+    () =>
+      keys.reduce((config, key, index) => {
+        config[key] = {
+          label: key,
+          color: `hsl(var(--chart-${(index % 5) + 1}))`,
+        };
+        return config;
+      }, {} as ChartConfig),
+    [keys]
+  );
 
   return (
     <div className="grid gap-4">

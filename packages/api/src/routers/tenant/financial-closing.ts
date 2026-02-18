@@ -329,11 +329,13 @@ export const financialClosingRouter = router({
           }),
         ]);
 
-        // Buscar dados dos vendedores
+        // Batch load vendedores (optimized with Set deduplication)
         const vendedorIds = [
-          ...budget.map((item: any) => item.ID_VENDEDOR),
-          ...devolution.map((item: any) => item.ID_VENDEDOR),
-          ...allDiscount.map((item: any) => item.ID_VENDEDOR),
+          ...new Set([
+            ...budget.map((item: any) => item.ID_VENDEDOR),
+            ...devolution.map((item: any) => item.ID_VENDEDOR),
+            ...allDiscount.map((item: any) => item.ID_VENDEDOR),
+          ]),
         ].filter((id: any): id is number => id !== null && id !== 0);
 
         const vendedores =
@@ -460,12 +462,16 @@ export const financialClosingRouter = router({
           }));
 
         type DevolutionRow = (typeof devolution)[number];
-        const receiptTypeId = devolution
-          .map(
-            (row: DevolutionRow) =>
-              row.venda_recebimento[0]?.ID_FIN_TIPO_RECEBIMENTO
-          )
-          .filter((id: number | undefined): id is number => id !== undefined);
+        const receiptTypeId = [
+          ...new Set(
+            devolution
+              .map(
+                (row: DevolutionRow) =>
+                  row.venda_recebimento[0]?.ID_FIN_TIPO_RECEBIMENTO
+              )
+              .filter((id: number | undefined): id is number => id !== undefined)
+          ),
+        ];
 
         const receiptType = await gestorPrisma.fin_tipo_recebimento.findMany({
           where: {

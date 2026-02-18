@@ -1,8 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Line, LineChart, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -17,6 +14,10 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatAsCurrency } from "@/lib/utils";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useMemo } from "react";
+import { Line, LineChart, XAxis, YAxis } from "recharts";
 
 interface SalesChartsProps {
   salesPerDay?: {
@@ -40,11 +41,14 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function SalesCharts({ salesPerDay }: SalesChartsProps) {
-  const chartData =
-    salesPerDay?.totalValuePerDay.map((item) => ({
-      ...item,
-      date: format(new Date(item.date), "dd/MM", { locale: ptBR }),
-    })) || [];
+  const chartData = useMemo(
+    () =>
+      salesPerDay?.totalValuePerDay.map((item) => ({
+        ...item,
+        date: format(new Date(item.date), "dd/MM", { locale: ptBR }),
+      })) || [],
+    [salesPerDay]
+  );
 
   return (
     <div className="grid gap-4 md:grid-cols-2">

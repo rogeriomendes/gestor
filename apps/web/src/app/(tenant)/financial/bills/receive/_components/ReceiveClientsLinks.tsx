@@ -1,9 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { ChevronRightIcon, User } from "lucide-react";
-import type { Route } from "next";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { SearchInput } from "@/components/search-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompany } from "@/contexts/company-context";
@@ -12,6 +6,12 @@ import isActive from "@/lib/is-active";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronRightIcon, User } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 type ClientItem = RouterOutputs["tenant"]["client"]["all"]["client"][number];
 
@@ -67,45 +67,36 @@ export default function ReceiveClientsLinks() {
               )}
             />
           </Link>
-          {clientsQuery.data?.client
-            .filter((client: ClientItem) => {
-              if (search) {
-                return client.pessoa.NOME?.toString()
-                  .toUpperCase()
-                  .includes(search.toUpperCase());
-              }
-              return true;
-            })
-            .map((client: ClientItem) => (
-              <Link
+          {clientsQuery.data?.client.map((client: ClientItem) => (
+            <Link
+              className={cn(
+                "group/link flex flex-row items-center justify-between rounded-md p-3 text-xs transition-colors hover:bg-accent focus:bg-accent focus:outline-none md:text-sm",
+                isActive(
+                  `${pathname}?clientId=${client.ID}`,
+                  pathname,
+                  searchParams
+                )
+                  ? "bg-accent"
+                  : ""
+              )}
+              href={`${pathname}?clientId=${client.ID}` as Route}
+              key={client.ID}
+            >
+              {client.pessoa.NOME}
+              <ChevronRightIcon
                 className={cn(
-                  "group/link flex flex-row items-center justify-between rounded-md p-3 text-xs transition-colors hover:bg-accent focus:bg-accent focus:outline-none md:text-sm",
+                  "group/icon size-4 text-muted-foreground group-hover/link:visible",
                   isActive(
                     `${pathname}?clientId=${client.ID}`,
                     pathname,
                     searchParams
                   )
-                    ? "bg-accent"
-                    : ""
+                    ? "visible"
+                    : "invisible"
                 )}
-                href={`${pathname}?clientId=${client.ID}` as Route}
-                key={client.ID}
-              >
-                {client.pessoa.NOME}
-                <ChevronRightIcon
-                  className={cn(
-                    "group/icon size-4 text-muted-foreground group-hover/link:visible",
-                    isActive(
-                      `${pathname}?clientId=${client.ID}`,
-                      pathname,
-                      searchParams
-                    )
-                      ? "visible"
-                      : "invisible"
-                  )}
-                />
-              </Link>
-            ))}
+              />
+            </Link>
+          ))}
         </div>
       )}
     </>

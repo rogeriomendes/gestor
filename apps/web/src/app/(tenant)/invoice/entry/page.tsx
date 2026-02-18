@@ -1,11 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
-import { Building2Icon, CalendarRangeIcon, FileCheckIcon } from "lucide-react";
-import type { Route } from "next";
-import { useState } from "react";
-import type { DateRange } from "react-day-picker";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Button } from "@/components/ui/button";
@@ -23,6 +17,12 @@ import { formatDate } from "@/lib/format-date";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { ptBR } from "date-fns/locale";
+import { Building2Icon, CalendarRangeIcon, FileCheckIcon } from "lucide-react";
+import type { Route } from "next";
+import { useMemo, useState } from "react";
+import type { DateRange } from "react-day-picker";
 import { DetailEntry } from "./_components/DetailEntry";
 import { EntryGrid } from "./_components/EntryGrid";
 
@@ -47,9 +47,9 @@ export default function InvoiceEntryList() {
       supplier: supplier !== "0" ? Number(supplier) : undefined,
       date: date
         ? {
-            from: date.from ?? new Date(),
-            to: date.to ?? undefined,
-          }
+          from: date.from ?? new Date(),
+          to: date.to ?? undefined,
+        }
         : undefined,
     }),
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -63,16 +63,19 @@ export default function InvoiceEntryList() {
 
   const supplierList = (supplierQuery.data?.supplier ??
     []) as unknown as Array<{
-    ID: number;
-    NOME: string | null;
-  }>;
-  const supplierOptions: ComboboxOption[] = [
-    { value: "0", label: "TODOS" },
-    ...supplierList.map((item) => ({
-      value: String(item.ID),
-      label: item.NOME ?? "",
-    })),
-  ];
+      ID: number;
+      NOME: string | null;
+    }>;
+  const supplierOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "0", label: "TODOS" },
+      ...supplierList.map((item) => ({
+        value: String(item.ID),
+        label: item.NOME ?? "",
+      })),
+    ],
+    [supplierList]
+  );
 
   const handleRowClick = (entry: EntryItem) => {
     setSelectedEntryId(entry.ID);
@@ -196,8 +199,7 @@ export default function InvoiceEntryList() {
                 {entry.fornecedor?.pessoa.NOME}
               </span>,
               formatAsCurrency(Number(entry.VALOR_TOTAL)),
-              `${
-                entry.DATA_ENTRADA_SAIDA && formatDate(entry.DATA_ENTRADA_SAIDA)
+              `${entry.DATA_ENTRADA_SAIDA && formatDate(entry.DATA_ENTRADA_SAIDA)
               } ${entry.HORA_ENTRADA_SAIDA ?? ""}`,
               entry.DATA_EMISSAO ? formatDate(entry.DATA_EMISSAO) : "",
               entry.NUMERO,

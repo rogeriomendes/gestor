@@ -1,39 +1,11 @@
-"use client";
+import { TenantLayoutClient } from "./tenant-layout-client";
 
-import { AuthGuard } from "@/components/auth/auth-guard";
-import { DatabaseConfigGuard } from "@/components/database-config";
-import { TenantSidebar } from "@/components/sidebars/tenant-sidebar";
-import { SubscriptionGuard } from "@/components/subscription/subscription-guard";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { CompanyProvider } from "@/contexts/company-context";
-import { TextShowProvider } from "@/contexts/text-show-context";
-
+// Server Component — sem "use client".
+// Toda a lógica client (guards, providers, sidebar) está em TenantLayoutClient.
 export default function TenantLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <AuthGuard requiredRole="tenant">
-      <CompanyProvider>
-        <TextShowProvider>
-          <SidebarProvider
-            style={
-              {
-                "--sidebar-width": "19rem",
-                "--sidebar-width-mobile": "18rem",
-              } as React.CSSProperties
-            }
-          >
-            <TenantSidebar />
-            <SidebarInset>
-              <SubscriptionGuard>
-                <DatabaseConfigGuard>{children}</DatabaseConfigGuard>
-              </SubscriptionGuard>
-            </SidebarInset>
-          </SidebarProvider>
-        </TextShowProvider>
-      </CompanyProvider>
-    </AuthGuard>
-  );
+  return <TenantLayoutClient>{children}</TenantLayoutClient>;
 }

@@ -93,19 +93,20 @@ export const salesBudgetRouter = router({
           },
         });
 
-        // Buscar dados dos vendedores
-        const vendedorIds = budgets
-          .map((budget: any) => budget.ID_VENDEDOR)
-          .filter((id: any): id is number => id !== null && id !== 0);
+        // Batch load vendedores (optimized - single query instead of N+1)
+        type BudgetRow = (typeof budgets)[number];
+        const vendedorIds = [
+          ...new Set(
+            budgets
+              .map((budget: BudgetRow) => budget.ID_VENDEDOR)
+              .filter((id): id is number => id !== null && id !== 0)
+          ),
+        ];
 
         const vendedores =
           vendedorIds.length > 0
             ? await gestorPrisma.vendedor.findMany({
-                where: {
-                  ID: {
-                    in: vendedorIds,
-                  },
-                },
+                where: { ID: { in: vendedorIds } },
                 select: {
                   ID: true,
                   colaborador: {
@@ -122,11 +123,13 @@ export const salesBudgetRouter = router({
             : [];
 
         const vendedorMap = new Map(
-          vendedores.map((vendedor: any) => [vendedor.ID, vendedor])
+          vendedores.map((vendedor: (typeof vendedores)[number]) => [
+            vendedor.ID,
+            vendedor,
+          ])
         );
 
-        // Combinar dados dos orçamentos com dados dos vendedores
-        const budgetsWithVendedor = budgets.map((budget: any) => ({
+        const budgetsWithVendedor = budgets.map((budget: BudgetRow) => ({
           ...budget,
           vendedor: budget.ID_VENDEDOR
             ? vendedorMap.get(budget.ID_VENDEDOR) || null
@@ -199,50 +202,39 @@ export const salesBudgetRouter = router({
           },
         });
 
-        // Buscar dados da empresa se existir
-        let empresa = null;
-        if (budget?.ID_EMPRESA) {
-          empresa = await gestorPrisma.empresa.findUnique({
-            where: {
-              ID: budget.ID_EMPRESA,
-            },
-            select: {
-              ID: true,
-              RAZAO_SOCIAL: true,
-              NOME_FANTASIA: true,
-            },
-          });
-        }
-
-        // Buscar dados do vendedor se existir
-        let vendedor = null;
-        if (budget?.ID_VENDEDOR) {
-          vendedor = await gestorPrisma.vendedor.findUnique({
-            where: {
-              ID: budget.ID_VENDEDOR,
-            },
-            select: {
-              ID: true,
-              colaborador: {
+        // Batch load empresa and vendedor in parallel (optimized)
+        const [empresa, vendedor] = await Promise.all([
+          budget?.ID_EMPRESA
+            ? gestorPrisma.empresa.findUnique({
+                where: { ID: budget.ID_EMPRESA },
                 select: {
-                  pessoa: {
+                  ID: true,
+                  RAZAO_SOCIAL: true,
+                  NOME_FANTASIA: true,
+                },
+              })
+            : Promise.resolve(null),
+          budget?.ID_VENDEDOR
+            ? gestorPrisma.vendedor.findUnique({
+                where: { ID: budget.ID_VENDEDOR },
+                select: {
+                  ID: true,
+                  colaborador: {
                     select: {
-                      NOME: true,
+                      pessoa: {
+                        select: {
+                          NOME: true,
+                        },
+                      },
                     },
                   },
                 },
-              },
-            },
-          });
-        }
+              })
+            : Promise.resolve(null),
+        ]);
 
-        // Combinar dados do orçamento com dados da empresa e vendedor
         const budgetWithEmpresa = budget
-          ? {
-              ...budget,
-              empresa,
-              vendedor,
-            }
+          ? { ...budget, empresa, vendedor }
           : null;
 
         return {

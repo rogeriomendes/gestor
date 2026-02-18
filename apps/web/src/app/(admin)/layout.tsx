@@ -1,27 +1,11 @@
-"use client";
+import { AdminLayoutClient } from "./admin-layout-client";
 
-import { AuthGuard } from "@/components/auth/auth-guard";
-import { AdminSidebar } from "@/components/sidebars/admin-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
+// Server Component — sem "use client".
+// Toda a lógica client (guard, sidebar) está em AdminLayoutClient.
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <AuthGuard requiredRole="admin">
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "19rem",
-            "--sidebar-width-mobile": "18rem",
-          } as React.CSSProperties
-        }
-      >
-        <AdminSidebar />
-        <SidebarInset>{children}</SidebarInset>
-      </SidebarProvider>
-    </AuthGuard>
-  );
+  return <AdminLayoutClient>{children}</AdminLayoutClient>;
 }

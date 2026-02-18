@@ -31,6 +31,7 @@ export const tenantRouter = router({
   // Rotas de informações do tenant
   getTenantStats: tenantInfoRouter.getTenantStats,
   getMyTenant: tenantInfoRouter.getMyTenant,
+  getMyProfile: tenantInfoRouter.getMyProfile,
   updateMyTenant: tenantInfoRouter.updateMyTenant,
 
   // Rotas de gerenciamento de usuários

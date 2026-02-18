@@ -375,7 +375,7 @@ export const tenantsRouter = router({
       }
 
       // Preparar dados para atualização (apenas campos que existem no Tenant)
-      const updateFields: any = {};
+      const updateFields: Record<string, unknown> = {};
       if (updateData.name !== undefined) {
         updateFields.name = updateData.name;
       }
@@ -445,12 +445,7 @@ export const tenantsRouter = router({
 
       // Se as credenciais foram alteradas, fechar conexões antigas do cache
       if (credentialsChanged) {
-        const closedCount = closeTenantConnections(tenantId);
-        if (closedCount > 0) {
-          console.log(
-            `Fechadas ${closedCount} conexão(ões) do tenant ${tenantId} devido à atualização de credenciais`
-          );
-        }
+        closeTenantConnections(tenantId);
       }
 
       // Registrar no audit log
@@ -516,12 +511,7 @@ export const tenantsRouter = router({
       });
 
       // Fechar todas as conexões do tenant deletado
-      const closedCount = closeTenantConnections(input.tenantId);
-      if (closedCount > 0) {
-        console.log(
-          `Fechadas ${closedCount} conexão(ões) do tenant ${input.tenantId} devido à exclusão`
-        );
-      }
+      closeTenantConnections(input.tenantId);
 
       // Registrar no audit log
       await createAuditLogFromContext(
@@ -698,12 +688,7 @@ export const tenantsRouter = router({
       // Por enquanto, apenas deletar
 
       // Fechar todas as conexões do tenant antes da exclusão permanente
-      const closedCount = closeTenantConnections(input.tenantId);
-      if (closedCount > 0) {
-        console.log(
-          `Fechadas ${closedCount} conexão(ões) do tenant ${input.tenantId} devido à exclusão permanente`
-        );
-      }
+      closeTenantConnections(input.tenantId);
 
       // Exclusão permanente (cascade vai deletar relacionamentos)
       await prisma.tenant.delete({

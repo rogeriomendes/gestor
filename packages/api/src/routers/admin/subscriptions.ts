@@ -132,10 +132,18 @@ export const subscriptionsRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Verificar se tenant existe
-      const tenant = await prisma.tenant.findUnique({
-        where: { id: input.tenantId },
-      });
+      // Fetch tenant, existing subscription, and plan in parallel
+      const [tenant, existingSubscription, plan] = await Promise.all([
+        prisma.tenant.findUnique({
+          where: { id: input.tenantId },
+        }),
+        prisma.subscription.findUnique({
+          where: { tenantId: input.tenantId },
+        }),
+        prisma.plan.findUnique({
+          where: { id: input.planId },
+        }),
+      ]);
 
       if (!tenant) {
         throw new TRPCError({
@@ -144,11 +152,6 @@ export const subscriptionsRouter = router({
         });
       }
 
-      // Verificar se já existe assinatura
-      const existingSubscription = await prisma.subscription.findUnique({
-        where: { tenantId: input.tenantId },
-      });
-
       if (existingSubscription) {
         throw new TRPCError({
           code: "CONFLICT",
@@ -156,11 +159,6 @@ export const subscriptionsRouter = router({
             "Cliente já possui uma assinatura. Use a opção de atualizar.",
         });
       }
-
-      // Verificar se plano existe e está ativo
-      const plan = await prisma.plan.findUnique({
-        where: { id: input.planId },
-      });
 
       if (!plan) {
         throw new TRPCError({

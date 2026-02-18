@@ -37,7 +37,7 @@ export const usersRouter = router({
     .query(async ({ input }) => {
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
-      const where: any = {
+      const where: Record<string, unknown> = {
         deletedAt: null, // Apenas usuários não deletados
         ...(input.tenantId && { tenantId: input.tenantId }),
         ...(input.search && {
@@ -50,7 +50,7 @@ export const usersRouter = router({
 
       const [users, total] = await Promise.all([
         prisma.user.findMany({
-          where: where as any,
+          where,
           skip,
           take,
           orderBy: { createdAt: "desc" },
@@ -80,14 +80,14 @@ export const usersRouter = router({
             },
           },
         }),
-        prisma.user.count({ where: where as any }),
+        prisma.user.count({ where }),
       ]);
 
       return {
         data: users.map((user: any) => {
           // Verificar se o usuário está pendente (não tem senha ou email não verificado)
           const hasPassword = user.accounts.some(
-            (account: any) => account.password !== null
+            (account: { password: string | null }) => account.password !== null
           );
           const isPending = !(hasPassword && user.emailVerified);
 
@@ -129,7 +129,7 @@ export const usersRouter = router({
     .query(async ({ input }) => {
       const { skip, take } = getPaginationParams(input.page, input.limit);
 
-      const where: any = {
+      const where: Record<string, unknown> = {
         tenantId: input.tenantId,
         ...(input.search && {
           OR: [
@@ -142,7 +142,7 @@ export const usersRouter = router({
 
       const [users, total] = await Promise.all([
         prisma.user.findMany({
-          where: where as any,
+          where,
           skip,
           take,
           orderBy: { createdAt: "desc" },
@@ -171,7 +171,7 @@ export const usersRouter = router({
         data: users.map((user: any) => {
           // Verificar se o usuário está pendente (não tem senha ou email não verificado)
           const hasPassword = user.accounts.some(
-            (account: any) => account.password !== null
+            (account: { password: string | null }) => account.password !== null
           );
           const isPending = !(hasPassword && user.emailVerified);
 
@@ -290,6 +290,16 @@ export const usersRouter = router({
           });
         }
 
+        // Fetch admin info once for both invite email and audit log
+        let adminName: string | undefined;
+        if (ctx.session?.user.id) {
+          const adminUser = await prisma.user.findUnique({
+            where: { id: ctx.session.user.id },
+            select: { name: true, email: true },
+          });
+          adminName = adminUser?.name || adminUser?.email || undefined;
+        }
+
         // Usar a API do Better Auth para gerar o token e enviar email de boas-vindas
         try {
           // Primeiro, deletar qualquer token existente para este email
@@ -298,16 +308,6 @@ export const usersRouter = router({
               identifier: normalizedEmail,
             },
           });
-
-          // Buscar informações do admin que está criando o usuário
-          let adminName: string | undefined;
-          if (ctx.session?.user.id) {
-            const adminUser = await prisma.user.findUnique({
-              where: { id: ctx.session.user.id },
-              select: { name: true, email: true },
-            });
-            adminName = adminUser?.name || adminUser?.email;
-          }
 
           const roleName = input.role ? roleLabels[input.role] : undefined;
 
@@ -338,16 +338,6 @@ export const usersRouter = router({
           // O admin pode reenviar depois
         }
 
-        // Buscar informações do admin para o audit log (se ainda não foi buscado)
-        let adminNameForAudit: string | null = null;
-        if (ctx.session?.user.id) {
-          const adminUser = await prisma.user.findUnique({
-            where: { id: ctx.session.user.id },
-            select: { name: true, email: true },
-          });
-          adminNameForAudit = adminUser?.name || adminUser?.email || null;
-        }
-
         // Registrar criação do usuário no audit log
         await createAuditLogFromContext(
           {
@@ -361,7 +351,7 @@ export const usersRouter = router({
               email: finalUser.email,
               role: finalUser.role,
               tenantId: input.tenantId || null,
-              invitedBy: adminNameForAudit,
+              invitedBy: adminName ?? null,
             },
           },
           ctx
@@ -530,7 +520,7 @@ export const usersRouter = router({
       }
 
       // Normalizar email se fornecido
-      const updateData: any = {};
+      const updateData: Record<string, unknown> = {};
       if (input.name) {
         updateData.name = input.name;
       }

@@ -70,29 +70,31 @@ export function ProductsList({ topProducts }: ProductsListProps) {
             Top 5 Produtos
           </h3>
           <div className="space-y-2">
-            {products.slice(0, 5).map((product) => {
+            {(() => {
               const maxVal = Math.max(...products.map((p) => p.totalValue));
-              const percentage = (product.totalValue / maxVal) * 100;
+              return products.slice(0, 5).map((product) => {
+                const percentage = (product.totalValue / maxVal) * 100;
 
-              return (
-                <div className="space-y-1" key={product.productId}>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="max-w-[200px] truncate font-medium">
-                      {product.productName}
-                    </span>
-                    <span className="text-muted-foreground">
-                      {formatAsCurrency(product.totalValue)}
-                    </span>
+                return (
+                  <div className="space-y-1" key={product.productId}>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="max-w-[200px] truncate font-medium">
+                        {product.productName}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {formatAsCurrency(product.totalValue)}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              });
+            })()}
           </div>
         </div>
 

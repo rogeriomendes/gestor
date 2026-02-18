@@ -1,9 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Building2Icon, EyeOffIcon } from "lucide-react";
-import type { Route } from "next";
-import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +14,10 @@ import { getXmlStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { Building2Icon, EyeOffIcon } from "lucide-react";
+import type { Route } from "next";
+import { useMemo, useState } from "react";
 import { DetailDfe } from "./_components/DetailDfe";
 import { DfeGrid } from "./_components/DfeGrid";
 import { HideDfeDialog } from "./_components/HideDfeButton";
@@ -58,13 +58,16 @@ export default function InvoiceDfeList() {
   const supplierList = (supplierQuery.data?.supplier ?? []) as Array<{
     NOME: string | null;
   }>;
-  const supplierOptions: ComboboxOption[] = [
-    { value: "0", label: "TODOS" },
-    ...supplierList.map((item) => ({
-      value: item.NOME ?? "",
-      label: item.NOME ?? "",
-    })),
-  ];
+  const supplierOptions: ComboboxOption[] = useMemo(
+    () => [
+      { value: "0", label: "TODOS" },
+      ...supplierList.map((item) => ({
+        value: item.NOME ?? "",
+        label: item.NOME ?? "",
+      })),
+    ],
+    [supplierList]
+  );
 
   const handleRowClick = (dfe: DfeItem) => {
     setSelectedDfeId(dfe.CHAVE_ACESSO);
@@ -112,7 +115,7 @@ export default function InvoiceDfeList() {
           data={[{ invoiceDfe: invoiceDfeQuery.data?.invoiceDfe || [] }]}
           emptyIcon={<Building2Icon className="mb-4 size-12" />}
           emptyMessage="Não foram encontradas notas fiscais."
-          fetchNextPage={async () => {}}
+          fetchNextPage={async () => { }}
           hasNextPage={false}
           isFetchingNextPage={false}
           isLoading={invoiceDfeQuery.isLoading}
@@ -128,7 +131,7 @@ export default function InvoiceDfeList() {
           data={[{ invoiceDfe: invoiceDfeQuery.data?.invoiceDfe || [] }]}
           emptyIcon={<Building2Icon className="mr-5 size-10 md:size-14" />}
           emptyMessage="Não foram encontradas notas fiscais."
-          fetchNextPage={async () => {}}
+          fetchNextPage={async () => { }}
           getRowKey={(dfe: DfeItem) => dfe.CHAVE_ACESSO}
           hasNextPage={false}
           headers={[

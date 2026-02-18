@@ -131,19 +131,19 @@ export const financialBillsPayRouter = router({
           orderBy: [...orderBy, { ID: "desc" }],
         });
 
-        // Buscar dados das empresas
-        const empresaIds = financialBills
-          .map((bill: any) => bill.fin_lancamento_pagar.ID_EMPRESA)
-          .filter((id: any): id is number => id !== null && id !== 0);
+        // Batch load empresas (optimized with Set deduplication)
+        const empresaIds = [
+          ...new Set(
+            financialBills
+              .map((bill: any) => bill.fin_lancamento_pagar.ID_EMPRESA)
+              .filter((id: any): id is number => id !== null && id !== 0)
+          ),
+        ];
 
         const empresas =
           empresaIds.length > 0
             ? await gestorPrisma.empresa.findMany({
-                where: {
-                  ID: {
-                    in: empresaIds,
-                  },
-                },
+                where: { ID: { in: empresaIds } },
                 select: {
                   ID: true,
                   RAZAO_SOCIAL: true,
@@ -156,19 +156,19 @@ export const financialBillsPayRouter = router({
           empresas.map((empresa: any) => [empresa.ID, empresa])
         );
 
-        // Buscar dados dos fornecedores
-        const fornecedorIds = financialBills
-          .map((bill: any) => bill.fin_lancamento_pagar.ID_FORNECEDOR)
-          .filter((id: any): id is number => id !== null && id !== 0);
+        // Batch load fornecedores (optimized with Set deduplication)
+        const fornecedorIds = [
+          ...new Set(
+            financialBills
+              .map((bill: any) => bill.fin_lancamento_pagar.ID_FORNECEDOR)
+              .filter((id: any): id is number => id !== null && id !== 0)
+          ),
+        ];
 
         const fornecedores =
           fornecedorIds.length > 0
             ? await gestorPrisma.fornecedor.findMany({
-                where: {
-                  ID: {
-                    in: fornecedorIds,
-                  },
-                },
+                where: { ID: { in: fornecedorIds } },
                 select: {
                   ID: true,
                   pessoa: {
@@ -184,10 +184,14 @@ export const financialBillsPayRouter = router({
           fornecedores.map((fornecedor: any) => [fornecedor.ID, fornecedor])
         );
 
-        // Buscar contagem de parcelas para cada ID_FIN_LANCAMENTO_PAGAR
-        const lancamentoIds = financialBills
-          .map((bill: any) => bill.ID_FIN_LANCAMENTO_PAGAR)
-          .filter((id: any): id is number => id !== null && id !== 0);
+        // Batch load parcelas count (optimized with Set deduplication)
+        const lancamentoIds = [
+          ...new Set(
+            financialBills
+              .map((bill: any) => bill.ID_FIN_LANCAMENTO_PAGAR)
+              .filter((id: any): id is number => id !== null && id !== 0)
+          ),
+        ];
 
         const parcelasCount =
           lancamentoIds.length > 0
@@ -410,17 +414,14 @@ export const financialBillsPayRouter = router({
         };
 
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
-        const billsAmount = await gestorPrisma.fin_parcela_pagar.findMany({
+        const result = await gestorPrisma.fin_parcela_pagar.aggregate({
           where,
-          select: {
+          _sum: {
             VALOR: true,
           },
         });
-        const totalAmount = billsAmount.reduce(
-          (total: number, bill: { VALOR: unknown }) =>
-            total + Number.parseFloat(String(bill.VALOR) || "0"),
-          0
-        );
+
+        const totalAmount = Number(result._sum.VALOR ?? 0);
 
         return { totalAmount };
       } catch (error) {

@@ -1,15 +1,15 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Building2Icon } from "lucide-react";
-import { useEffect, useMemo } from "react";
-import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTenant } from "@/contexts/tenant-context";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { Building2Icon } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { useInView } from "react-intersection-observer";
 import { DfeCard } from "./DfeCard";
 
 type DfeItem =

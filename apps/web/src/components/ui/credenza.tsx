@@ -1,6 +1,5 @@
 "use client";
 
-import { createContext, useContext } from "react";
 import {
   Dialog,
   DialogClose,
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { createContext, useContext } from "react";
 import { ScrollArea } from "./scroll-area";
 
 interface BaseProps {
@@ -130,7 +130,7 @@ const CredenzaDescription = ({
   const CredenzaDescription = isMobile ? DrawerDescription : DialogDescription;
 
   return (
-    <CredenzaDescription className={className} {...props} render={<div />}>
+    <CredenzaDescription className={cn("text-xs md:text-sm", className)} {...props} render={<div />}>
       {children}
     </CredenzaDescription>
   );
@@ -186,5 +186,6 @@ export {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaTrigger,
+  CredenzaTrigger
 };
+

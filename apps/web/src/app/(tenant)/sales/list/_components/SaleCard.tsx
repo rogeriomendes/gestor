@@ -1,10 +1,10 @@
 "use client";
 
-import { DotIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
+import { DotIcon } from "lucide-react";
 
 interface SaleCardProps {
   sale: {
@@ -40,14 +40,14 @@ export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
       className={cn(
         "h-full cursor-pointer rounded-md transition-all",
         isCanceled &&
-          "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
+        "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
       )}
       onClick={() => onClick?.(sale)}
       size="sm"
     >
       <CardContent>
         {/* Header com número da venda e status */}
-        <div className="flex items-center justify-between font-medium text-sm leading-tight">
+        <div className="flex items-center justify-between font-medium text-sm leading-tight mb-2">
           <h3 className="flex flex-row items-center font-medium text-sm leading-tight">
             {sale.ID}
             {sale.NUMERO_NFE && (
@@ -65,13 +65,12 @@ export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
         </div>
 
         {/* Informações de identificação */}
-        <div className="mb-1.5 flex flex-wrap items-center gap-x-1 text-muted-foreground text-xs">
-          {companyName && (
-            <>
-              <span>Empresa: {companyName}</span>
-              <DotIcon />
-            </>
-          )}
+        {companyName && (
+          <div className="mb-0.5 flex flex-wrap items-center text-muted-foreground text-xs">
+            <span>Empresa: {companyName}</span>
+          </div>
+        )}
+        <div className="mb-0.5 flex flex-wrap items-center gap-x-1 text-muted-foreground text-xs">
           {sale.conta_caixa?.NOME && <>Conta: {sale.conta_caixa?.NOME}</>}
           {sale.conta_caixa?.NOME && sale.cliente?.pessoa?.NOME && <DotIcon />}
           {sale.cliente?.pessoa?.NOME && (

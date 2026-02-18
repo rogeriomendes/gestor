@@ -1,7 +1,7 @@
 import type { Tenant } from "@gestor/db/types";
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { toZonedTime } from "date-fns-tz";
+import { ptBR } from "date-fns/locale";
 import { z } from "zod";
 import { router, tenantProcedure } from "../..";
 import { getGestorPrismaClient } from "../../utils/tenant-db-clients";
@@ -65,7 +65,7 @@ export const dashboardRouter = router({
       try {
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
 
-        const sales = await gestorPrisma.venda_cabecalho.findMany({
+        const result = await gestorPrisma.venda_cabecalho.aggregate({
           where: {
             DEVOLUCAO: "N",
             CANCELADO_ID_USUARIO: { equals: null },
@@ -74,15 +74,10 @@ export const dashboardRouter = router({
               lte: input.endDate,
             },
           },
-          select: { VALOR_TOTAL: true },
+          _sum: { VALOR_TOTAL: true },
         });
 
-        const totalAmount = sales.reduce(
-          (total: number, payment: { VALOR_TOTAL: unknown }) =>
-            total +
-            (Number.parseFloat(String(payment.VALOR_TOTAL ?? "0")) || 0),
-          0
-        );
+        const totalAmount = Number(result._sum.VALOR_TOTAL ?? 0);
 
         return { totalAmount };
       } catch (error) {
@@ -113,7 +108,7 @@ export const dashboardRouter = router({
             ? { ID_EMPRESA: input.companyId }
             : {};
 
-        const sales = await gestorPrisma.venda_cabecalho.findMany({
+        const result = await gestorPrisma.venda_cabecalho.aggregate({
           where: {
             DEVOLUCAO: "N",
             CANCELADO_ID_USUARIO: { equals: null },
@@ -123,15 +118,10 @@ export const dashboardRouter = router({
             },
             ...whereCompany,
           },
-          select: { VALOR_TOTAL: true },
+          _sum: { VALOR_TOTAL: true },
         });
 
-        const totalAmount = sales.reduce(
-          (total: number, payment: { VALOR_TOTAL: unknown }) =>
-            total +
-            (Number.parseFloat(String(payment.VALOR_TOTAL ?? "0")) || 0),
-          0
-        );
+        const totalAmount = Number(result._sum.VALOR_TOTAL ?? 0);
 
         return { totalAmount };
       } catch (error) {
@@ -163,7 +153,7 @@ export const dashboardRouter = router({
             ? { ID_EMPRESA: input.companyId }
             : {};
 
-        const sales = await gestorPrisma.venda_cabecalho.findMany({
+        const result = await gestorPrisma.venda_cabecalho.aggregate({
           where: {
             DEVOLUCAO: "N",
             CANCELADO_ID_USUARIO: { equals: null },
@@ -173,15 +163,10 @@ export const dashboardRouter = router({
             },
             ...whereCompany,
           },
-          select: { VALOR_TOTAL: true },
+          _sum: { VALOR_TOTAL: true },
         });
 
-        const totalAmount = sales.reduce(
-          (total: number, payment: { VALOR_TOTAL: unknown }) =>
-            total +
-            (Number.parseFloat(String(payment.VALOR_TOTAL ?? "0")) || 0),
-          0
-        );
+        const totalAmount = Number(result._sum.VALOR_TOTAL ?? 0);
 
         return { totalAmount };
       } catch (error) {

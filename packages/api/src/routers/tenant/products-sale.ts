@@ -61,19 +61,19 @@ export const productsSaleRouter = router({
             orderBy: [{ STATUS: "desc" }, { DATA_CADASTRO: "desc" }],
           });
 
-        // Buscar dados das empresas
-        const empresaIds = productsSale
-          .map((product: any) => product.ID_EMPRESA)
-          .filter((id: any): id is number => id !== null && id !== 0);
+        // Batch load empresas (optimized with Set deduplication)
+        const empresaIds = [
+          ...new Set(
+            productsSale
+              .map((product: any) => product.ID_EMPRESA)
+              .filter((id: any): id is number => id !== null && id !== 0)
+          ),
+        ];
 
         const empresas =
           empresaIds.length > 0
             ? await gestorPrisma.empresa.findMany({
-                where: {
-                  ID: {
-                    in: empresaIds,
-                  },
-                },
+                where: { ID: { in: empresaIds } },
                 select: {
                   ID: true,
                   RAZAO_SOCIAL: true,
@@ -136,19 +136,19 @@ export const productsSaleRouter = router({
           }
         );
 
-        // Buscar dados dos produtos
-        const produtoIds = productsSale
-          .map((product: any) => product.ID_PRODUTO)
-          .filter((id: any): id is number => id !== null && id !== 0);
+        // Batch load produtos (optimized with Set deduplication)
+        const produtoIds = [
+          ...new Set(
+            productsSale
+              .map((product: any) => product.ID_PRODUTO)
+              .filter((id: any): id is number => id !== null && id !== 0)
+          ),
+        ];
 
         const produtos =
           produtoIds.length > 0
             ? await gestorPrisma.produto.findMany({
-                where: {
-                  ID: {
-                    in: produtoIds,
-                  },
-                },
+                where: { ID: { in: produtoIds } },
                 select: {
                   ID: true,
                   NOME: true,
