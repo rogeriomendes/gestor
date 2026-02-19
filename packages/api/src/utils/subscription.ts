@@ -155,7 +155,7 @@ export async function updateSubscriptionStatusIfNeeded(
     subscription.trialEndsAt &&
     now > subscription.trialEndsAt
   ) {
-    return prisma.subscription.update({
+    return await prisma.subscription.update({
       where: { id: subscription.id },
       data: { status: SubscriptionStatus.EXPIRED },
       include: { plan: true },
@@ -168,7 +168,7 @@ export async function updateSubscriptionStatusIfNeeded(
     subscription.expiresAt &&
     now > subscription.expiresAt
   ) {
-    return prisma.subscription.update({
+    return await prisma.subscription.update({
       where: { id: subscription.id },
       data: { status: SubscriptionStatus.EXPIRED },
       include: { plan: true },

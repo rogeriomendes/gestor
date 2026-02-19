@@ -10,10 +10,34 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import type { RouterInputs } from "@/utils/trpc";
+import type { ReactNode } from "react";
+
+type BranchFormValues = RouterInputs["admin"]["branch"]["createBranch"];
+
+interface BranchFieldState<T> {
+  value: T;
+  meta: {
+    errors: Array<{ message?: string }>;
+  };
+}
+
+interface BranchFieldApi<T> {
+  name: string;
+  state: BranchFieldState<T>;
+  handleBlur: () => void;
+  handleChange: (value: T) => void;
+}
+
+interface BranchFormApi {
+  Field: <TName extends keyof BranchFormValues>(props: {
+    name: TName;
+    children: (field: BranchFieldApi<BranchFormValues[TName]>) => ReactNode;
+  }) => ReactNode;
+}
 
 interface BranchFormFieldsProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: any;
+  form: BranchFormApi;
 }
 
 export function BranchFormFields({ form }: BranchFormFieldsProps) {
@@ -24,7 +48,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
         <h3 className="font-semibold text-lg">Informações Básicas</h3>
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="name">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Nome da Filial *</FieldLabel>
                 <FieldContent>
@@ -41,7 +65,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
           </form.Field>
 
           <form.Field name="isMain">
-            {(field: any) => (
+            {(field) => (
               <Field orientation="horizontal">
                 <FieldLabel htmlFor={field.name}>Filial Principal</FieldLabel>
                 <FieldContent>
@@ -61,7 +85,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
         </div>
 
         <form.Field name="active">
-          {(field: any) => (
+          {(field) => (
             <Field orientation="horizontal">
               <FieldLabel htmlFor={field.name}>Ativa</FieldLabel>
               <FieldContent>
@@ -82,7 +106,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
         <h3 className="font-semibold text-lg">Dados da Empresa</h3>
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="legalName">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Razão Social</FieldLabel>
                 <FieldContent>
@@ -99,7 +123,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
           </form.Field>
 
           <form.Field name="cnpj">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>CNPJ (14 dígitos)</FieldLabel>
                 <FieldContent>
@@ -122,7 +146,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="email">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                 <FieldContent>
@@ -140,7 +164,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
           </form.Field>
 
           <form.Field name="phone">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Telefone</FieldLabel>
                 <FieldContent>
@@ -162,7 +186,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
       <div className="space-y-4">
         <h3 className="font-semibold text-lg">Endereço</h3>
         <form.Field name="addressStreet">
-          {(field: any) => (
+          {(field) => (
             <Field>
               <FieldLabel htmlFor={field.name}>Rua</FieldLabel>
               <FieldContent>
@@ -180,7 +204,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
 
         <div className="grid grid-cols-3 gap-4">
           <form.Field name="addressNumber">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Número</FieldLabel>
                 <FieldContent>
@@ -197,7 +221,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
           </form.Field>
 
           <form.Field name="addressComplement">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Complemento</FieldLabel>
                 <FieldContent>
@@ -214,7 +238,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
           </form.Field>
 
           <form.Field name="addressZipCode">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>CEP</FieldLabel>
                 <FieldContent>
@@ -237,7 +261,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
 
         <div className="grid grid-cols-3 gap-4">
           <form.Field name="addressDistrict">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Bairro</FieldLabel>
                 <FieldContent>
@@ -254,7 +278,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
           </form.Field>
 
           <form.Field name="addressCity">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Cidade</FieldLabel>
                 <FieldContent>
@@ -271,7 +295,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
           </form.Field>
 
           <form.Field name="addressState">
-            {(field: any) => (
+            {(field) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Estado (UF)</FieldLabel>
                 <FieldContent>
@@ -294,7 +318,7 @@ export function BranchFormFields({ form }: BranchFormFieldsProps) {
 
       {/* Notes */}
       <form.Field name="notes">
-        {(field: any) => (
+        {(field) => (
           <Field>
             <FieldLabel htmlFor={field.name}>Observações</FieldLabel>
             <FieldContent>

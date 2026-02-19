@@ -31,6 +31,7 @@ export function TenantBasicInfoSection({ form }: TenantBasicInfoSectionProps) {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="name">
+            {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
             {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Nome Fantasia *</FieldLabel>
@@ -48,6 +49,7 @@ export function TenantBasicInfoSection({ form }: TenantBasicInfoSectionProps) {
           </form.Field>
 
           <form.Field name="slug">
+            {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
             {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Slug *</FieldLabel>
@@ -66,6 +68,7 @@ export function TenantBasicInfoSection({ form }: TenantBasicInfoSectionProps) {
         </div>
 
         <form.Field name="active">
+          {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
           {(field: any) => (
             <Field orientation="horizontal">
               <FieldLabel htmlFor={field.name}>Ativo</FieldLabel>

@@ -27,7 +27,7 @@ export async function createAuditLog(
         resourceId: params.resourceId,
         userId: params.userId,
         tenantId: params.tenantId || null,
-        metadata: (params.metadata as any) || undefined,
+        metadata: params.metadata ? JSON.stringify(params.metadata) : undefined,
         ipAddress: params.ipAddress || null,
         userAgent: params.userAgent || null,
       },

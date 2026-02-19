@@ -1,9 +1,5 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { Eye, EyeOff, TestTube } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +17,10 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { trpcClient } from "@/utils/trpc";
+import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff, TestTube } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface TenantDatabaseConfigSectionProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,6 +58,7 @@ export function TenantDatabaseConfigSection({
       dbUsername?: string;
       dbPassword?: string;
     }) => trpcClient.admin.testDatabaseConnection.mutate(input),
+    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: mantém fluxo completo de teste + salvamento em um único handler
     onSuccess: async (data) => {
       setTestResult(data);
       if (data.success) {
@@ -137,7 +138,7 @@ export function TenantDatabaseConfigSection({
         {/* Campos de credenciais */}
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="dbHost">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
             {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Host *</FieldLabel>
@@ -156,7 +157,7 @@ export function TenantDatabaseConfigSection({
           </form.Field>
 
           <form.Field name="dbPort">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
             {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Porta *</FieldLabel>
@@ -178,7 +179,7 @@ export function TenantDatabaseConfigSection({
 
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="dbUsername">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
             {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Username *</FieldLabel>

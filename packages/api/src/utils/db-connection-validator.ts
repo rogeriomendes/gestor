@@ -43,6 +43,8 @@ const passwordSchema = z.string().min(1, "Password é obrigatório");
 
 /**
  * Valida os parâmetros de conexão (formato)
+ *
+ * biome-ignore lint/complexity/noExcessiveCognitiveComplexity: validação detalhada em um único ponto de entrada
  */
 export function validateConnectionParams(
   host: string | null | undefined,
@@ -98,6 +100,8 @@ export function validateConnectionParams(
 
 /**
  * Testa conexão real com os bancos MySQL
+ *
+ * biome-ignore lint/complexity/noExcessiveCognitiveComplexity: mantém toda a lógica de tratamento de erros de conexão em uma única função
  */
 export async function testDatabaseConnection(
   host: string,

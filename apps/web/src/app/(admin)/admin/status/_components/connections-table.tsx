@@ -1,13 +1,5 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
-import type { ColumnDef } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { DatabaseIcon, Power, RefreshCw, Trash2, X } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
 import { DataCards } from "@/components/lists/data-cards";
 import { DataTable } from "@/components/lists/data-table";
 import { ResponsiveList } from "@/components/lists/responsive-list";
@@ -30,6 +22,14 @@ import {
 } from "@/components/ui/credenza";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc, trpcClient } from "@/utils/trpc";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import type { ColumnDef } from "@tanstack/react-table";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { DatabaseIcon, Power, RefreshCw, Trash2, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 type ConnectionItem =
   RouterOutputs["admin"]["status"]["listConnections"][number];
@@ -101,10 +101,10 @@ export function ConnectionsTable() {
     },
   });
 
-  const handleCloseConnection = (connectionId: string) => {
+  const handleCloseConnection = useCallback((connectionId: string) => {
     setSelectedConnectionId(connectionId);
     setCloseDialogOpen(true);
-  };
+  }, []);
 
   const handleCloseAll = () => {
     setCloseAllDialogOpen(true);

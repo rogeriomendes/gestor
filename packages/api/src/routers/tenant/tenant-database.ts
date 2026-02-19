@@ -61,7 +61,9 @@ export const tenantDatabaseRouter = router({
         };
       }
 
-      const hasCredentials = hasCompleteDatabaseCredentials(ctx.tenant as any);
+      const hasCredentials = hasCompleteDatabaseCredentials(
+        ctx.tenant as Tenant
+      );
 
       return {
         hasCredentials,

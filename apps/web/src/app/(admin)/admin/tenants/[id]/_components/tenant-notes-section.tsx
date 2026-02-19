@@ -31,6 +31,7 @@ export function TenantNotesSection({ form }: TenantNotesSectionProps) {
       </CardHeader>
       <CardContent>
         <form.Field name="notes">
+          {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
           {(field: any) => (
             <Field>
               <FieldLabel htmlFor={field.name}>Observações</FieldLabel>

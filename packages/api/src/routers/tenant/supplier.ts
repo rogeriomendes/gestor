@@ -1,3 +1,4 @@
+import type { Tenant } from "@gestor/db/types";
 import { z } from "zod";
 import { router, tenantProcedure } from "../..";
 import { getGestorPrismaClient } from "../../utils/tenant-db-clients";
@@ -5,7 +6,7 @@ import { getGestorPrismaClient } from "../../utils/tenant-db-clients";
 export const supplierRouter = router({
   all: tenantProcedure.query(async ({ ctx }) => {
     try {
-      const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+      const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
 
       const supplier = await gestorPrisma.fornecedor.findMany({
         where: {
@@ -50,7 +51,7 @@ export const supplierRouter = router({
       try {
         const { id } = input;
 
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
 
         const supplier = await gestorPrisma.fornecedor.findUnique({
           where: { ID: Number(id) },

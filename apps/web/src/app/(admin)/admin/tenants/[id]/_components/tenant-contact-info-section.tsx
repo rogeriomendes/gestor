@@ -32,6 +32,7 @@ export function TenantContactInfoSection({
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="email">
+            {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
             {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Email</FieldLabel>
@@ -50,6 +51,7 @@ export function TenantContactInfoSection({
           </form.Field>
 
           <form.Field name="phone">
+            {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
             {(field: any) => (
               <Field>
                 <FieldLabel htmlFor={field.name}>Telefone</FieldLabel>
@@ -68,6 +70,7 @@ export function TenantContactInfoSection({
         </div>
 
         <form.Field name="website">
+          {/* biome-ignore lint/suspicious/noExplicitAny: tipagem genérica do tanstack form neste componente de apresentação */}
           {(field: any) => (
             <Field>
               <FieldLabel htmlFor={field.name}>Website</FieldLabel>
