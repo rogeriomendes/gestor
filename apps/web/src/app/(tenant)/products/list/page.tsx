@@ -1,22 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  type IDetectedBarcode,
-  Scanner,
-  useDevices,
-} from "@yudiel/react-qr-scanner";
-import {
-  GroupIcon,
-  PackageIcon,
-  ScaleIcon,
-  ScanBarcodeIcon,
-  SquarePercentIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useQueryState } from "nuqs";
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -46,6 +29,23 @@ import {
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  type IDetectedBarcode,
+  Scanner,
+  useDevices,
+} from "@yudiel/react-qr-scanner";
+import {
+  GroupIcon,
+  PackageIcon,
+  ScaleIcon,
+  ScanBarcodeIcon,
+  SquarePercentIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useQueryState } from "nuqs";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { DetailProducts } from "./_components/DetailProducts";
 import { ProductGrid } from "./_components/ProductGrid";
 
@@ -56,6 +56,7 @@ export default function ProductsList() {
   const { tenant } = useTenant();
   const isMobile = useIsMobile();
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [group, setGroup] = useQueryState("group", { defaultValue: "0" });
   const [scale, setScale] = useQueryState("scale", { defaultValue: "T" });
   const [promotion, setPromotion] = useQueryState("promotion", {
@@ -74,10 +75,20 @@ export default function ProductsList() {
 
   const enabled = !!tenant;
 
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 300);
+
+    return () => {
+      clearTimeout(id);
+    };
+  }, [search]);
+
   const productsQuery = useInfiniteQuery({
     ...trpc.tenant.products.all.infiniteQueryOptions({
       limit: 20,
-      searchTerm: search,
+      searchTerm: debouncedSearch || undefined,
       group: group !== "0" ? Number(group) : undefined,
       scale: scale !== "T" ? scale : undefined,
       promotion: promotion !== "T" ? promotion : undefined,
@@ -314,7 +325,10 @@ export default function ProductsList() {
               "",
               product.CODIGO_INTERNO,
               product.GTIN,
-              <div className="flex items-center gap-2">
+              <div
+                className="flex items-center gap-2"
+                key={`nome-${product.ID}`}
+              >
                 {product.activePromotion && (
                   <SquarePercentIcon
                     aria-label="Promoção ativa"
@@ -358,7 +372,7 @@ export default function ProductsList() {
                 Number(product.VALOR_VENDA),
                 true
               ),
-              <span className="text-primary">
+              <span className="text-primary" key={`venda-${product.ID}`}>
                 {formatAsCurrency(Number(product.VALOR_VENDA))}
               </span>,
               product.DATA_ALTERACAO && formatDate(product.DATA_ALTERACAO),

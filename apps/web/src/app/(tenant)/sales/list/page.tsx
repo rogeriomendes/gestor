@@ -1,15 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
-import {
-  CalendarIcon,
-  ShoppingCartIcon,
-  SquareUserIcon,
-  XIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -30,6 +20,16 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { ptBR } from "date-fns/locale";
+import {
+  CalendarIcon,
+  ShoppingCartIcon,
+  SquareUserIcon,
+  XIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useEffect, useState } from "react";
 import { DetailSales } from "./_components/DetailSales";
 import { SalesGrid } from "./_components/SalesGrid";
 
@@ -40,6 +40,7 @@ export default function SalesList() {
   const { selectedCompanyId } = useCompany();
   const isMobile = useIsMobile();
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [account, setAccount] = useState<string>("0");
   const [date, setDate] = useState<Date>();
   const [selectedSaleId, setSelectedSaleId] = useState<number | null>(null);
@@ -48,6 +49,16 @@ export default function SalesList() {
   const [isMounted] = useState(true);
 
   const enabled = !!tenant;
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 300);
+
+    return () => {
+      clearTimeout(id);
+    };
+  }, [search]);
 
   const dateFormatted =
     date instanceof Date
@@ -59,7 +70,7 @@ export default function SalesList() {
   const salesQuery = useInfiniteQuery({
     ...trpc.tenant.sales.all.infiniteQueryOptions({
       limit: 20,
-      searchTerm: search,
+      searchTerm: debouncedSearch || undefined,
       date: dateFormatted ?? undefined,
       account: account !== "0" ? Number(account) : undefined,
       companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
