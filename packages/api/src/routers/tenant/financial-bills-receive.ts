@@ -381,40 +381,41 @@ export const financialBillsReceiveRouter = router({
         const { clientId, companyId } = input;
 
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
-        const receive = await gestorPrisma.fin_parcela_receber.findMany({
-          take: 1,
-          where: {
-            PARCELA_CANCELADA: "N",
-            ID_FIN_STATUS_PARCELA: { in: [2, 3] },
-            fin_lancamento_receber: {
-              ID_CLIENTE: clientId,
-              CANCELADO: "N",
-              venda_cabecalho:
-                companyId && companyId !== 0
-                  ? { ID_EMPRESA: companyId }
-                  : undefined,
-            },
-          },
-          select: {
-            fin_parcela_recebimento: {
-              where: {
-                HISTORICO: {
-                  contains: "Baixa gerada a partir da baixa do titulo",
+        // Buscar o recebimento mais recente (por data/hora) entre parcelas status 2 ou 3,
+        const ultimoRecebimento =
+          await gestorPrisma.fin_parcela_recebimento.findFirst({
+            where: {
+              DATA_RECEBIMENTO: { not: null },
+              HISTORICO: {
+                contains: "Baixa gerada a partir da baixa do titulo",
+              },
+              fin_parcela_receber: {
+                PARCELA_CANCELADA: "N",
+                OR: [
+                  { ID_FIN_STATUS_PARCELA: 2 },
+                  { ID_FIN_STATUS_PARCELA: 3 },
+                ],
+                fin_lancamento_receber: {
+                  ID_CLIENTE: clientId,
+                  CANCELADO: "N",
+                  venda_cabecalho:
+                    companyId && companyId !== 0
+                      ? { ID_EMPRESA: companyId }
+                      : undefined,
                 },
               },
-              select: {
-                DATA_RECEBIMENTO: true,
-                HORA_RECEBIMENTO: true,
-              },
             },
-          },
-          orderBy: {
-            ID: "desc",
-          },
-        });
-        const recebimento = receive[0]?.fin_parcela_recebimento[0];
+            orderBy: [
+              { DATA_RECEBIMENTO: "desc" },
+              { HORA_RECEBIMENTO: "desc" },
+            ],
+            select: {
+              DATA_RECEBIMENTO: true,
+              HORA_RECEBIMENTO: true,
+            },
+          });
 
-        if (recebimento === undefined) {
+        if (ultimoRecebimento === null) {
           return {
             amountLowered: undefined,
           };
@@ -423,8 +424,8 @@ export const financialBillsReceiveRouter = router({
         const amountLowered =
           await gestorPrisma.fin_parcela_recebimento.findMany({
             where: {
-              DATA_RECEBIMENTO: recebimento?.DATA_RECEBIMENTO,
-              HORA_RECEBIMENTO: recebimento?.HORA_RECEBIMENTO,
+              DATA_RECEBIMENTO: ultimoRecebimento.DATA_RECEBIMENTO,
+              HORA_RECEBIMENTO: ultimoRecebimento.HORA_RECEBIMENTO,
             },
             select: {
               ID_COLABORADOR: true,
