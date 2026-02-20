@@ -1,6 +1,6 @@
 {
-  "name": "gestor",
-  "short_name": "gestor",
+  "name": "GestorWeb - Sistema ERP",
+  "short_name": "GestorWeb",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

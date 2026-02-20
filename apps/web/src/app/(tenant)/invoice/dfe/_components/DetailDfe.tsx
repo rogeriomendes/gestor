@@ -179,7 +179,7 @@ export function DetailDfe({
               </PopoverContent>
             </Popover>
           </CredenzaTitle>
-          <CredenzaDescription asChild>
+          <CredenzaDescription>
             <div className="flex flex-col space-y-1">
               {invoiceEntryQuery.isPending ? (
                 <>

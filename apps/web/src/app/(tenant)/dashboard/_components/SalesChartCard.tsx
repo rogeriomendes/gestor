@@ -1,13 +1,13 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { Loader2Icon } from "lucide-react";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { Loader2Icon } from "lucide-react";
-import { useMemo } from "react";
 import { Overview } from "./Overview";
 
 // Alturas fixas e determinísticas — evita hydration mismatch (sem useEffect/useState)

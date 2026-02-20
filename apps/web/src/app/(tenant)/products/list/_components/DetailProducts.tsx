@@ -1,14 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  ClockIcon,
-  DotIcon,
-  ScaleIcon,
-  SquarePercentIcon,
-  XIcon,
-} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,8 +23,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDate } from "@/lib/format-date";
-import { formatAsCurrency } from "@/lib/utils";
+import {
+  calculePercentage,
+  calculePercentageBetweenValues,
+  formatAsCurrency,
+} from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  ClockIcon,
+  DotIcon,
+  ScaleIcon,
+  SquarePercentIcon,
+  XIcon,
+} from "lucide-react";
 import { DetailProductsCompound } from "./DetailProductsCompound";
 import { DetailProductsInformation } from "./DetailProductsInformation";
 import { DetailProductsMain } from "./DetailProductsMain";
@@ -154,7 +158,7 @@ export function DetailProducts({
                         : "NÃO"}
                       {productQuery.data?.product?.PRODUTO_PESADO === "S" &&
                         typeof productQuery.data?.product?.DIA_VALIDADE ===
-                          "number" &&
+                        "number" &&
                         (productQuery.data.product.DIA_VALIDADE ||
                           productQuery.data.product.DIA_VALIDADE !== 0) &&
                         ` - ${productQuery.data.product.DIA_VALIDADE} Dias`}
@@ -203,53 +207,84 @@ export function DetailProducts({
         <CredenzaBody>
           {/* Seção de Promoção Ativa */}
           {!(productQuery.isLoading || productQuery.error) &&
-            productQuery.data?.product?.activePromotion &&
-            productQuery.data.product.activePromotion.header && (
-              <Alert className="mb-4" variant="warning">
-                <SquarePercentIcon className="size-4" />
-                <AlertTitle>
-                  Promoção:{" "}
-                  {productQuery.data.product.activePromotion.header
-                    .NOME_REAJUSTE || "Promoção Ativa"}
-                </AlertTitle>
-                <AlertDescription>
-                  <div className="text-xs">
-                    Preço promocional:{" "}
-                    {formatAsCurrency(
-                      Number(
-                        productQuery.data.product.activePromotion
-                          .PRECO_PROMOCAO || 0
-                      )
-                    )}
-                    {/* {productQuery.data.product.activePromotion
-                      .PRECO_ORIGINAL && (
-                      <span className="ml-2 line-through">
-                        {formatAsCurrency(
-                          Number(
-                            productQuery.data.product.activePromotion
-                              .PRECO_ORIGINAL,
-                          ),
-                        )}
-                      </span>
-                    )} */}
-                  </div>
-                  {productQuery.data.product.activePromotion.header
-                    .DATA_FIM && (
-                    <div className="text-xs">
-                      Válido até:{" "}
-                      {formatDate(
-                        productQuery.data.product.activePromotion.header
-                          .DATA_FIM
-                      )}{" "}
-                      {productQuery.data.product.activePromotion.header
-                        .HORA_FIM &&
-                        productQuery.data.product.activePromotion.header
-                          .HORA_FIM}
-                    </div>
-                  )}
-                </AlertDescription>
-              </Alert>
-            )}
+            productQuery.data?.product &&
+            (() => {
+              const p = productQuery.data.product;
+              const valorCompra = Number(p.VALOR_COMPRA ?? 0);
+              const frete = calculePercentage(
+                valorCompra,
+                Number(p.FRETE ?? 0)
+              );
+              const icmsST = calculePercentage(
+                valorCompra,
+                Number(p.ICMS_ST ?? 0)
+              );
+              const ipi = calculePercentage(valorCompra, Number(p.IPI ?? 0));
+              const outrosImpostos = calculePercentage(
+                valorCompra,
+                Number(p.OUTROSIMPOSTOS ?? 0)
+              );
+              const outrosValores = calculePercentage(
+                valorCompra,
+                Number(p.OUTROSVALORES ?? 0)
+              );
+              const custoFinal =
+                valorCompra +
+                frete +
+                icmsST +
+                ipi +
+                outrosImpostos +
+                outrosValores;
+              const hasPromo = p.activePromotion?.header;
+
+              return (
+                hasPromo &&
+                p.activePromotion && (
+                  <Alert className="mb-4" variant="warning">
+                    <SquarePercentIcon className="size-4" />
+                    <AlertTitle>
+                      Promoção: {hasPromo.NOME_REAJUSTE || "Promoção Ativa"}
+                    </AlertTitle>
+                    <AlertDescription>
+                      <div className="mt-2 grid grid-cols-3 items-start gap-2">
+                        <div className="flex flex-col">
+                          <div className="font-semibold text-muted-foreground text-xs leading-none tracking-tight md:text-sm">
+                            Válido até
+                          </div>
+                          <div className="text-foreground text-xs md:text-sm">
+                            {hasPromo.DATA_FIM
+                              ? `${formatDate(hasPromo.DATA_FIM)} ${hasPromo.HORA_FIM ?? ""}`.trim()
+                              : "—"}
+                          </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="font-semibold text-muted-foreground text-xs leading-none tracking-tight md:text-sm">
+                            Markup promoção
+                          </div>
+                          <div className="text-foreground text-xs md:text-sm">
+                            {calculePercentageBetweenValues(
+                              custoFinal,
+                              Number(p.activePromotion.PRECO_PROMOCAO ?? 0),
+                              true
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="font-semibold text-xs text-yellow-600 leading-none tracking-tight md:text-sm dark:text-yellow-400">
+                            Preço promocional
+                          </div>
+                          <div className="font-medium text-xs text-yellow-600 md:text-sm dark:text-yellow-400">
+                            {formatAsCurrency(
+                              Number(p.activePromotion.PRECO_PROMOCAO ?? 0)
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )
+              );
+            })()}
           {productQuery.isLoading ? (
             <div className="space-y-4">
               <div className="flex space-x-2">

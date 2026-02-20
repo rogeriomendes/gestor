@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
   Field,
   FieldContent,
@@ -11,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { RouterInputs } from "@/utils/trpc";
-import type { ReactNode } from "react";
 
 type BranchFormValues = RouterInputs["admin"]["branch"]["createBranch"];
 

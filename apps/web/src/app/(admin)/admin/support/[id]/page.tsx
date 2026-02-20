@@ -1,5 +1,11 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { MessageSquare, Send } from "lucide-react";
+import type { Route } from "next";
+import { useParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,12 +30,6 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc, trpcClient } from "@/utils/trpc";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { MessageSquare, Send } from "lucide-react";
-import type { Route } from "next";
-import { useParams } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 
 type TicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
 type TicketPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";

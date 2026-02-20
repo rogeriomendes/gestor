@@ -1,11 +1,5 @@
 "use client";
 
-import { PageLayout } from "@/components/layouts/page-layout";
-import { MetricCard } from "@/components/metric-card";
-import { PercentDiffBadge } from "@/components/percent-diff-badge";
-import { useCompany } from "@/contexts/company-context";
-import { useTenant } from "@/contexts/tenant-context";
-import { trpc } from "@/utils/trpc";
 import { useQuery } from "@tanstack/react-query";
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -13,6 +7,12 @@ import { ArrowUpIcon } from "lucide-react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { PageLayout } from "@/components/layouts/page-layout";
+import { MetricCard } from "@/components/metric-card";
+import { PercentDiffBadge } from "@/components/percent-diff-badge";
+import { useCompany } from "@/contexts/company-context";
+import { useTenant } from "@/contexts/tenant-context";
+import { trpc } from "@/utils/trpc";
 import { BudgetCard } from "./_components/BudgetCard";
 import { SalesChartCard } from "./_components/SalesChartCard";
 

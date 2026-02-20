@@ -39,6 +39,9 @@ catalogs:
     dotenv:
       specifier: ^17.2.2
       version: 17.2.3
+    prisma:
+      specifier: ^7.1.0
+      version: 7.2.0
     react:
       specifier: ^19.0.0
       version: 19.2.3
@@ -222,7 +225,7 @@ importers:
         version: 1.0.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@better-auth/passkey':
         specifier: 'catalog:'
-        version: 1.4.17(@better-auth/core@1.4.17(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-auth@1.4.17(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(mysql2@3.15.3)(next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(pg@8.16.3)(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(better-call@1.1.8(zod@4.2.1))(nanostores@1.1.0)
+        version: 1.4.17(@better-auth/core@1.4.17(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-auth@1.4.17(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(mysql2@3.15.3)(next@16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(pg@8.16.3)(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(better-call@1.1.8(zod@4.2.1))(nanostores@1.1.0)
       '@gestor/api':
         specifier: workspace:*
         version: link:../../packages/api
@@ -261,7 +264,7 @@ importers:
         version: 1.0.0
       better-auth:
         specifier: 'catalog:'
-        version: 1.4.17(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(mysql2@3.15.3)(next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(pg@8.16.3)(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 1.4.17(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(mysql2@3.15.3)(next@16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(pg@8.16.3)(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -291,16 +294,16 @@ importers:
         version: 0.546.0(react@19.2.3)
       next:
         specifier: ^16.1.0
-        version: 16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       nextjs-toploader:
         specifier: ^3.9.17
-        version: 3.9.17(next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 3.9.17(next@16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       nuqs:
         specifier: ^2.8.8
-        version: 2.8.8(next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+        version: 2.8.8(next@16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
       react:
         specifier: ^19.2.3
         version: 19.2.3
@@ -494,11 +497,11 @@ importers:
         specifier: ^8.15.6
         version: 8.16.0
       prisma:
-        specifier: ^7.1.0
+        specifier: 'catalog:'
         version: 7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       shadcn:
         specifier: ^3.6.2
-        version: 3.6.2(@types/node@24.10.4)(hono@4.10.6)(typescript@5.9.3)
+        version: 3.6.2(@types/node@22.19.3)(hono@4.10.6)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -522,7 +525,7 @@ importers:
         specifier: workspace:*
         version: link:../config
       prisma:
-        specifier: ^7.1.0
+        specifier: 'catalog:'
         version: 7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
@@ -547,7 +550,7 @@ importers:
         specifier: workspace:*
         version: link:../config
       prisma:
-        specifier: ^7.1.0
+        specifier: 'catalog:'
         version: 7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       typescript:
         specifier: 'catalog:'
@@ -7929,18 +7932,6 @@ snapshots:
       nanostores: 1.1.0
       zod: 4.3.6
 
-  '@better-auth/passkey@1.4.17(@better-auth/core@1.4.17(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-auth@1.4.17(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(mysql2@3.15.3)(next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(pg@8.16.3)(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(better-call@1.1.8(zod@4.2.1))(nanostores@1.1.0)':
-    dependencies:
-      '@better-auth/core': 1.4.17(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
-      '@better-auth/utils': 0.3.0
-      '@better-fetch/fetch': 1.1.21
-      '@simplewebauthn/browser': 13.2.2
-      '@simplewebauthn/server': 13.2.2
-      better-auth: 1.4.17(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(mysql2@3.15.3)(next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(pg@8.16.3)(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      better-call: 1.1.8(zod@4.2.1)
-      nanostores: 1.1.0
-      zod: 4.3.6
-
   '@better-auth/telemetry@1.4.17(@better-auth/core@1.4.17(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))':
     dependencies:
       '@better-auth/core': 1.4.17(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
@@ -8332,7 +8323,7 @@ snapshots:
       postcss: 8.4.49
       resolve-from: 5.0.0
     optionalDependencies:
-      expo: 54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(graphql@16.12.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.3))(react@19.2.3)
+      expo: 54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(graphql@16.12.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -8413,7 +8404,7 @@ snapshots:
       '@expo/json-file': 10.0.8
       '@react-native/normalize-colors': 0.81.5
       debug: 4.4.3
-      expo: 54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(graphql@16.12.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.3))(react@19.2.3)
+      expo: 54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(graphql@16.12.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       resolve-from: 5.0.0
       semver: 7.7.3
       xml2js: 0.6.0
@@ -8601,12 +8592,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.19.27
 
-  '@inquirer/confirm@5.1.21(@types/node@24.10.4)':
+  '@inquirer/confirm@5.1.21(@types/node@22.19.3)':
     dependencies:
-      '@inquirer/core': 10.3.2(@types/node@24.10.4)
-      '@inquirer/type': 3.0.10(@types/node@24.10.4)
+      '@inquirer/core': 10.3.2(@types/node@22.19.3)
+      '@inquirer/type': 3.0.10(@types/node@22.19.3)
     optionalDependencies:
-      '@types/node': 24.10.4
+      '@types/node': 22.19.3
 
   '@inquirer/core@10.3.2(@types/node@20.19.27)':
     dependencies:
@@ -8621,18 +8612,18 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.19.27
 
-  '@inquirer/core@10.3.2(@types/node@24.10.4)':
+  '@inquirer/core@10.3.2(@types/node@22.19.3)':
     dependencies:
       '@inquirer/ansi': 1.0.2
       '@inquirer/figures': 1.0.15
-      '@inquirer/type': 3.0.10(@types/node@24.10.4)
+      '@inquirer/type': 3.0.10(@types/node@22.19.3)
       cli-width: 4.1.0
       mute-stream: 2.0.0
       signal-exit: 4.1.0
       wrap-ansi: 6.2.0
       yoctocolors-cjs: 2.1.3
     optionalDependencies:
-      '@types/node': 24.10.4
+      '@types/node': 22.19.3
 
   '@inquirer/figures@1.0.15': {}
 
@@ -8640,9 +8631,9 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.19.27
 
-  '@inquirer/type@3.0.10(@types/node@24.10.4)':
+  '@inquirer/type@3.0.10(@types/node@22.19.3)':
     optionalDependencies:
-      '@types/node': 24.10.4
+      '@types/node': 22.19.3
 
   '@isaacs/balanced-match@4.0.1': {}
 
@@ -10754,7 +10745,7 @@ snapshots:
       resolve-from: 5.0.0
     optionalDependencies:
       '@babel/runtime': 7.28.4
-      expo: 54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(graphql@16.12.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.3))(react@19.2.3)
+      expo: 54.0.30(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.21)(graphql@16.12.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
     transitivePeerDependencies:
       - '@babel/core'
       - supports-color
@@ -10818,29 +10809,6 @@ snapshots:
       '@prisma/client': 7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
       mysql2: 3.15.3
       next: 16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      pg: 8.16.3
-      prisma: 7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
-
-  better-auth@1.4.17(@prisma/client@7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(mysql2@3.15.3)(next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(pg@8.16.3)(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
-    dependencies:
-      '@better-auth/core': 1.4.17(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
-      '@better-auth/telemetry': 1.4.17(@better-auth/core@1.4.17(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))
-      '@better-auth/utils': 0.3.0
-      '@better-fetch/fetch': 1.1.21
-      '@noble/ciphers': 2.1.1
-      '@noble/hashes': 2.0.1
-      better-call: 1.1.8(zod@4.3.6)
-      defu: 6.1.4
-      jose: 6.1.3
-      kysely: 0.28.9
-      nanostores: 1.1.0
-      zod: 4.3.6
-    optionalDependencies:
-      '@prisma/client': 7.2.0(prisma@7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
-      mysql2: 3.15.3
-      next: 16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       pg: 8.16.3
       prisma: 7.2.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       react: 19.2.3
@@ -12791,9 +12759,9 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  msw@2.12.4(@types/node@24.10.4)(typescript@5.9.3):
+  msw@2.12.4(@types/node@22.19.3)(typescript@5.9.3):
     dependencies:
-      '@inquirer/confirm': 5.1.21(@types/node@24.10.4)
+      '@inquirer/confirm': 5.1.21(@types/node@22.19.3)
       '@mswjs/interceptors': 0.40.0
       '@open-draft/deferred-promise': 2.2.0
       '@types/statuses': 2.0.6
@@ -12911,7 +12879,6 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
-    optional: true
 
   next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
@@ -12938,9 +12905,9 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nextjs-toploader@3.9.17(next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  nextjs-toploader@3.9.17(next@16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
-      next: 16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      next: 16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       nprogress: 0.2.0
       prop-types: 15.8.1
       react: 19.2.3
@@ -12994,12 +12961,12 @@ snapshots:
 
   nullthrows@1.1.1: {}
 
-  nuqs@2.8.8(next@16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3):
+  nuqs@2.8.8(next@16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3):
     dependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.2.3
     optionalDependencies:
-      next: 16.1.1(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      next: 16.1.1(@babel/core@7.28.5)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
 
   nypm@0.6.2:
     dependencies:
@@ -14074,7 +14041,7 @@ snapshots:
       - supports-color
       - typescript
 
-  shadcn@3.6.2(@types/node@24.10.4)(hono@4.10.6)(typescript@5.9.3):
+  shadcn@3.6.2(@types/node@22.19.3)(hono@4.10.6)(typescript@5.9.3):
     dependencies:
       '@antfu/ni': 25.0.0
       '@babel/core': 7.28.5
@@ -14095,7 +14062,7 @@ snapshots:
       fuzzysort: 3.1.0
       https-proxy-agent: 7.0.6
       kleur: 4.1.5
-      msw: 2.12.4(@types/node@24.10.4)(typescript@5.9.3)
+      msw: 2.12.4(@types/node@22.19.3)(typescript@5.9.3)
       node-fetch: 3.3.2
       open: 11.0.0
       ora: 8.2.0
@@ -14327,7 +14294,6 @@ snapshots:
       react: 19.2.3
     optionalDependencies:
       '@babel/core': 7.28.5
-    optional: true
 
   styled-jsx@5.1.6(react@19.2.3):
     dependencies:

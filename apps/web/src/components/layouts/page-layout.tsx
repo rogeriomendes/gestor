@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { FbiIcon } from "@/assets/FbiIcon";
 import { type BreadcrumbItemType, Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { getIconForPathname } from "@/lib/menu-icon";
 import { ShowTextSwitcher } from "../show-text-switcher";
 import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
@@ -75,6 +76,8 @@ export function PageLayout({
     }
   };
 
+  const TitleIcon = getIconForPathname(pathname);
+
   return (
     <div className="flex flex-col print:bg-white">
       {/* Breadcrumbs */}
@@ -105,7 +108,10 @@ export function PageLayout({
             </Button>
           )}
           <div className="flex min-w-0 flex-1 flex-col md:flex-row md:items-center md:gap-3">
-            <h1 className="truncate whitespace-pre-line font-semibold text-lg tracking-tight md:text-2xl">
+            <h1 className="flex items-center gap-2 truncate whitespace-pre-line font-semibold text-lg tracking-tight md:text-2xl">
+              {TitleIcon && (
+                <TitleIcon aria-hidden className="size-5 shrink-0 md:size-6" />
+              )}
               {title}
             </h1>
             {subtitle && (

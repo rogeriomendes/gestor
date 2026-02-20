@@ -1,20 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useTenant } from "@/contexts/tenant-context";
 import {
-  calculePercentage,
-  calculePercentageBetweenValues,
-  formatAsCurrency,
-  formatAsNumber,
+    calculePercentage,
+    calculePercentageBetweenValues,
+    formatAsCurrency,
+    formatAsNumber,
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
 
 type productData =
   RouterOutputs["tenant"]["products"]["all"]["products"][number];

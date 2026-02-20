@@ -76,7 +76,8 @@ export function ReceiveCard({ receive, onClick }: ReceiveCardProps) {
             <div
               className={cn(
                 "font-medium",
-                receive.ID_FIN_STATUS_PARCELA === 2 && "line-through"
+                receive.ID_FIN_STATUS_PARCELA === 2 ||
+                  (receive.ID_FIN_STATUS_PARCELA === 3 && "line-through")
               )}
             >
               {formatAsCurrency(valorAReceber)}

@@ -1,5 +1,9 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff, TestTube } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,10 +21,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { trpcClient } from "@/utils/trpc";
-import { useMutation } from "@tanstack/react-query";
-import { Eye, EyeOff, TestTube } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
 
 interface TenantDatabaseConfigSectionProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
