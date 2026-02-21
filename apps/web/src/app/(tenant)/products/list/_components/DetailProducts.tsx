@@ -158,7 +158,7 @@ export function DetailProducts({
                         : "NÃO"}
                       {productQuery.data?.product?.PRODUTO_PESADO === "S" &&
                         typeof productQuery.data?.product?.DIA_VALIDADE ===
-                        "number" &&
+                          "number" &&
                         (productQuery.data.product.DIA_VALIDADE ||
                           productQuery.data.product.DIA_VALIDADE !== 0) &&
                         ` - ${productQuery.data.product.DIA_VALIDADE} Dias`}
