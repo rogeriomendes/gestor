@@ -13,8 +13,8 @@ import {
 } from "@react-email/components";
 
 interface VerifyEmailProps {
-  verificationLink: string;
   userName?: string;
+  verificationLink: string;
 }
 
 export function VerifyEmailTemplate({

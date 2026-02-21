@@ -14,9 +14,9 @@ type DfeItem =
   RouterOutputs["tenant"]["invoiceDfe"]["all"]["invoiceDfe"][number];
 
 interface DfeCardProps {
-  dfe: DfeItem;
   /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
   companyName?: string | null;
+  dfe: DfeItem;
   onClick?: (dfe: DfeItem) => void;
   onHide?: (dfe: DfeItem) => void;
 }

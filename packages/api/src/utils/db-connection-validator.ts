@@ -3,8 +3,8 @@ import { createGestorPrismaClient } from "@gestor/db-gestor";
 import { z } from "zod";
 
 export interface ValidationResult {
-  valid: boolean;
   errors: string[];
+  valid: boolean;
 }
 
 const hostSchema = z

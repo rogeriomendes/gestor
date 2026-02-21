@@ -9,11 +9,11 @@ import { Input } from "@/components/ui/input";
 import { getPlanStatusLabel } from "@/lib/status-labels";
 
 interface PlansFiltersProps {
-  search: string;
-  selectedStatus: string;
+  onResetFilters: () => void;
   onSearchChange: (value: string) => void;
   onStatusChange: (value: string) => void;
-  onResetFilters: () => void;
+  search: string;
+  selectedStatus: string;
 }
 
 export function PlansFilters({

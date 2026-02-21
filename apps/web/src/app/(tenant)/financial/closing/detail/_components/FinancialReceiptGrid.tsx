@@ -19,31 +19,31 @@ type ReceiptItem =
   RouterOutputs["tenant"]["financialReceipt"]["all"]["receipts"][number];
 
 interface FinancialReceiptGridProps {
+  className?: string;
   data?: Array<{ receipts?: ReceiptItem[] }>;
-  pageItemKeys: string[];
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
-  isLoading?: boolean;
-  fetchNextPage: () => Promise<unknown>;
-
-  onReceiptClick?: (receipt: ReceiptItem) => void;
-
-  // Ordenação
-  sortOrder?: string;
-  sortField?: "valor" | "tipo_pagamento" | "serie_nfe" | "";
-  onSortToggle?: () => void;
-  onSortBy?: (field: "valor" | "tipo_pagamento" | "serie_nfe") => void;
+  emptyIcon?: React.ReactNode;
 
   // Estados vazios e loading
   emptyMessage?: string;
-  emptyIcon?: React.ReactNode;
+  fetchNextPage: () => Promise<unknown>;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  isLoading?: boolean;
   loadingMessage?: string;
   loadMoreMessage?: string;
   noMoreDataMessage?: string;
 
+  onReceiptClick?: (receipt: ReceiptItem) => void;
+  onSortBy?: (field: "valor" | "tipo_pagamento" | "serie_nfe") => void;
+  onSortToggle?: () => void;
+  pageItemKeys: string[];
+
   // Configurações opcionais
   rootMargin?: string;
-  className?: string;
+  sortField?: "valor" | "tipo_pagamento" | "serie_nfe" | "";
+
+  // Ordenação
+  sortOrder?: string;
 }
 
 export function FinancialReceiptGrid({

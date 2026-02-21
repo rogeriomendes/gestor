@@ -27,24 +27,24 @@ type Role =
   | "TENANT_USER";
 
 interface Permission {
+  action: string;
   id: string;
   name: string;
-  action: string;
   resource: string;
 }
 
 interface RolePermission {
-  permissionId: string;
   granted: boolean;
+  permissionId: string;
 }
 
 interface PermissionListProps {
-  selectedRole: Role | null;
-  permissions: Permission[] | undefined;
-  rolePermissions: RolePermission[] | undefined;
   isLoading: boolean;
   isPending: boolean;
   onTogglePermission: (permissionId: string, currentlyGranted: boolean) => void;
+  permissions: Permission[] | undefined;
+  rolePermissions: RolePermission[] | undefined;
+  selectedRole: Role | null;
 }
 
 export function PermissionList({

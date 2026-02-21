@@ -39,9 +39,9 @@ const fromEmail =
   process.env.EMAIL_FROM || smtpUser || "FBI Gestor <noreply@fbigestor.com>";
 
 interface SendEmailOptions {
-  to: string;
-  subject: string;
   html: string;
+  subject: string;
+  to: string;
 }
 
 async function sendEmail({ to, subject, html }: SendEmailOptions) {

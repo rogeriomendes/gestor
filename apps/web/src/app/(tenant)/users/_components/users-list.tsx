@@ -30,23 +30,23 @@ type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
 interface TenantUser {
   id: string;
-  userId: string;
-  role: Role | null;
   isPending?: boolean;
+  role: Role | null;
   user: {
     id: string;
     name: string;
     email: string;
   };
+  userId: string;
 }
 
 interface UsersListProps {
-  users: TenantUser[];
   isLoading: boolean;
-  onUpdateRole: (userId: string, role: Role) => void;
+  onEdit?: (userId: string, name: string, email: string) => void;
   onRemove: (userId: string) => void;
   onResendInvite?: (userId: string) => void;
-  onEdit?: (userId: string, name: string, email: string) => void;
+  onUpdateRole: (userId: string, role: Role) => void;
+  users: TenantUser[];
 }
 
 // Componente para ações da tabela

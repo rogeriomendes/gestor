@@ -1,11 +1,3 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  MoveDownIcon,
-  MoveUpIcon,
-  MoveVerticalIcon,
-  ShoppingCartIcon,
-} from "lucide-react";
-import { useState } from "react";
 import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +9,14 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  MoveDownIcon,
+  MoveUpIcon,
+  MoveVerticalIcon,
+  ShoppingCartIcon,
+} from "lucide-react";
+import { useState } from "react";
 import type { ClosingData } from "../types";
 import { FinancialReceiptGrid } from "./FinancialReceiptGrid";
 

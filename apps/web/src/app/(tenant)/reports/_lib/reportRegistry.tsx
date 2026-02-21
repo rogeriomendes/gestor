@@ -10,20 +10,20 @@ import {
 } from "lucide-react";
 
 export interface ReportConfig {
-  id: string;
-  title: string;
-  description: string;
-  icon: LucideIcon;
   category: "sales" | "financial" | "inventory" | "analytics";
   categoryName: "Vendas" | "Financeiro" | "Estoque" | "Analíticos";
+  color?: string;
   component: () => Promise<{
     default?: React.ComponentType<any>;
     [key: string]: any;
   }>;
+  description: string;
   getExportData: (data: any) => any[];
   getExportFilename: (filters: any) => string;
+  icon: LucideIcon;
+  id: string;
   queries: string[]; // Nomes das queries necessárias
-  color?: string;
+  title: string;
 }
 
 export const reportRegistry: ReportConfig[] = [

@@ -26,15 +26,15 @@ interface Plan {
 }
 
 interface SubscriptionsFiltersProps {
-  selectedStatus: string;
-  selectedTenant: string;
-  selectedPlan: string;
-  tenants: Tenant[];
-  plans: Plan[];
-  onStatusChange: (value: string) => void;
-  onTenantChange: (value: string) => void;
   onPlanChange: (value: string) => void;
   onResetFilters: () => void;
+  onStatusChange: (value: string) => void;
+  onTenantChange: (value: string) => void;
+  plans: Plan[];
+  selectedPlan: string;
+  selectedStatus: string;
+  selectedTenant: string;
+  tenants: Tenant[];
 }
 
 export function SubscriptionsFilters({

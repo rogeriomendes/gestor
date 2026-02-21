@@ -2,13 +2,13 @@ import { Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface LoadMoreButtonProps {
+  className?: string;
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
-  onLoadMore: () => void;
   loadingMessage?: string;
   loadMoreMessage?: string;
   noMoreDataMessage?: string;
-  className?: string;
+  onLoadMore: () => void;
 }
 
 export function LoadMoreButton({

@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/credenza";
 
 interface InitializePermissionsDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   isPending: boolean;
   onInitialize: () => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
 }
 
 export function InitializePermissionsDialog({

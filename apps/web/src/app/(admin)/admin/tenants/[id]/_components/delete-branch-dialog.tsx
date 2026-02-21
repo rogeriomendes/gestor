@@ -3,11 +3,11 @@
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface DeleteBranchDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   branchName: string;
   isPending: boolean;
   onConfirm: () => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
 }
 
 export function DeleteBranchDialog({

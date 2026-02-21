@@ -10,11 +10,11 @@ import { cn } from "@/lib/utils";
 
 export interface InfoPopoverProps {
   children: ReactNode;
-  label: string;
-  content?: ReactNode;
   className?: string;
-  triggerClassName?: string;
+  content?: ReactNode;
   contentClassName?: string;
+  label: string;
+  triggerClassName?: string;
 }
 
 export function InfoPopover({

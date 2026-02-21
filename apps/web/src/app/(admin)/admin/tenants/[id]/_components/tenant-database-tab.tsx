@@ -17,16 +17,16 @@ const updateTenantDatabaseSchema = z.object({
 });
 
 interface Tenant {
-  id: string;
   dbHost?: string | null;
+  dbPassword?: string | null;
   dbPort?: string | null;
   dbUsername?: string | null;
-  dbPassword?: string | null;
+  id: string;
 }
 
 interface TenantDatabaseTabProps {
-  tenant: Tenant;
   onSuccess: () => void;
+  tenant: Tenant;
 }
 
 export function TenantDatabaseTab({

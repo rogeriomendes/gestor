@@ -55,34 +55,34 @@ export interface NFeXML {
 }
 
 export interface NFeInfo {
-  ide: Ide;
-  det: ProdutoDetalhe | ProdutoDetalhe[];
-  total: Total;
   cobr?: Cobranca;
+  det: ProdutoDetalhe | ProdutoDetalhe[];
+  ide: Ide;
   infAdic?: InfAdic;
+  total: Total;
 }
 
 export interface Cobranca {
-  fat?: Fatura;
   dup?: Duplicata | Duplicata[];
+  fat?: Fatura;
 }
 
 export interface Fatura {
   nFat: string;
-  vOrig: string;
   vDesc?: string;
   vLiq: string;
+  vOrig: string;
 }
 
 export interface Duplicata {
-  nDup: string;
   dVenc: string;
+  nDup: string;
   vDup: string;
 }
 
 export interface Ide {
-  natOp: string;
   dhSaiEnt: Date;
+  natOp: string;
 }
 
 export interface ProdutoDetalhe {
@@ -90,12 +90,12 @@ export interface ProdutoDetalhe {
 }
 
 export interface Produto {
-  xProd: string;
   cProd: string;
   qCom: string;
   uCom: string;
-  vUnCom: string;
   vProd: string;
+  vUnCom: string;
+  xProd: string;
 }
 
 export interface Total {
@@ -103,20 +103,20 @@ export interface Total {
 }
 
 export interface ICMSTot {
-  vICMS: string;
-  vST: string;
+  vDesc: string;
   vFCP: string;
   vFCPST: string;
-  vIPI: string;
-  vDesc: string;
   vFrete: string;
-  vSeg: string;
+  vICMS: string;
+  vIPI: string;
   vOutro: string;
+  vSeg: string;
+  vST: string;
 }
 
 export interface InfAdic {
-  infCpl?: string;
   infAdFisco?: string;
+  infCpl?: string;
 }
 
 type InvoiceDfeByIdItem =

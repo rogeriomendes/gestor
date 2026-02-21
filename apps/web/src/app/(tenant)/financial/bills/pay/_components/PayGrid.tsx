@@ -14,31 +14,31 @@ type BillsPayItem =
   RouterOutputs["tenant"]["financialBillsPay"]["all"]["financialBills"][number];
 
 interface PayGridProps {
+  className?: string;
   data?: Array<{ financialBills?: BillsPayItem[] }>;
-  pageItemKeys: string[];
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
-  isLoading?: boolean;
-  fetchNextPage: () => Promise<unknown>;
-
-  onBillsClick?: (bills: BillsPayItem) => void;
+  emptyIcon?: React.ReactNode;
 
   // Estados vazios e loading
   emptyMessage?: string;
-  emptyIcon?: React.ReactNode;
+  fetchNextPage: () => Promise<unknown>;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  isLoading?: boolean;
   loadingMessage?: string;
   loadMoreMessage?: string;
   noMoreDataMessage?: string;
 
+  onBillsClick?: (bills: BillsPayItem) => void;
+  onBillsSelect?: (billsId: number, value: number, checked: boolean) => void;
+  onSelectAll?: (checked: boolean) => void;
+  pageItemKeys: string[];
+
   // Configurações opcionais
   rootMargin?: string;
-  className?: string;
+  selectAll?: boolean;
 
   // Seleção de contas
   selectedBills?: Record<string, number | boolean>;
-  onBillsSelect?: (billsId: number, value: number, checked: boolean) => void;
-  onSelectAll?: (checked: boolean) => void;
-  selectAll?: boolean;
 }
 
 export function PayGrid({

@@ -14,8 +14,8 @@ export type PaginationInput = z.infer<typeof paginationSchema>;
  * Tipo de retorno de paginação
  */
 export interface PaginationResult {
-  page: number;
   limit: number;
+  page: number;
   total: number;
   totalPages: number;
 }

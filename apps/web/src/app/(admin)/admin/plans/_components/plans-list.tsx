@@ -26,15 +26,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface Plan {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number | string;
-  active: boolean;
-  isDefault: boolean;
   _count: {
     subscriptions: number;
   };
+  active: boolean;
+  description: string | null;
+  id: string;
+  isDefault: boolean;
+  name: string;
+  price: number | string;
 }
 
 function formatPrice(price: number | string): string {
@@ -46,12 +46,12 @@ function formatPrice(price: number | string): string {
 }
 
 interface PlansListProps {
-  plans: Plan[];
   isLoading?: boolean;
   onActivate: (plan: Plan) => void;
+  onCreate?: () => void;
   onDeactivate: (plan: Plan) => void;
   onEdit?: (plan: Plan) => void;
-  onCreate?: () => void;
+  plans: Plan[];
 }
 
 export function PlansList({

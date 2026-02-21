@@ -4,10 +4,10 @@ import { getGestorPrismaClient } from "../../utils/tenant-db-clients";
 
 /** Tipo retornado pela listagem de empresas (select do banco gestor) */
 export interface EmpresaListItem {
-  ID: number;
-  RAZAO_SOCIAL: string | null;
-  NOME_FANTASIA: string | null;
   CNPJ: string | null;
+  ID: number;
+  NOME_FANTASIA: string | null;
+  RAZAO_SOCIAL: string | null;
 }
 
 const empresaListSelect = {

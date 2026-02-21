@@ -3,13 +3,13 @@ import type { AuditAction, AuditResourceType } from "@gestor/db/types";
 
 export interface CreateAuditLogParams {
   action: AuditAction;
-  resourceType: AuditResourceType;
-  resourceId: string;
-  userId: string;
-  tenantId?: string | null;
-  metadata?: Record<string, unknown>;
   ipAddress?: string | null;
+  metadata?: Record<string, unknown>;
+  resourceId: string;
+  resourceType: AuditResourceType;
+  tenantId?: string | null;
   userAgent?: string | null;
+  userId: string;
 }
 
 /**

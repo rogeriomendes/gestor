@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
 interface EmptyStateProps {
-  message?: string;
   icon?: ReactNode;
+  message?: string;
 }
 
 export function EmptyState({

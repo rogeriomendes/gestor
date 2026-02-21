@@ -9,9 +9,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ActionButtonProps
   extends Omit<ComponentProps<typeof Button>, "children"> {
+  href?: Route;
   icon: LucideIcon;
   label: string;
-  href?: Route;
   onClick?: () => void;
 }
 

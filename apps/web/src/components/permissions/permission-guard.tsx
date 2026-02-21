@@ -10,15 +10,15 @@ import {
 } from "@/lib/permissions";
 
 interface PermissionGuardProps {
-  children: ReactNode;
-  resource: PermissionResource;
   action: PermissionAction;
+  children: ReactNode;
   fallback?: ReactNode;
   /**
    * Se true, oculta completamente o elemento (não renderiza nada)
    * Se false, renderiza o fallback (padrão: null)
    */
   hide?: boolean;
+  resource: PermissionResource;
 }
 
 /**
@@ -42,12 +42,12 @@ export function PermissionGuard({
 
 interface PermissionAnyGuardProps {
   children: ReactNode;
+  fallback?: ReactNode;
+  hide?: boolean;
   permissions: Array<{
     resource: PermissionResource;
     action: PermissionAction;
   }>;
-  fallback?: ReactNode;
-  hide?: boolean;
 }
 
 /**
@@ -70,12 +70,12 @@ export function PermissionAnyGuard({
 
 interface PermissionAllGuardProps {
   children: ReactNode;
+  fallback?: ReactNode;
+  hide?: boolean;
   permissions: Array<{
     resource: PermissionResource;
     action: PermissionAction;
   }>;
-  fallback?: ReactNode;
-  hide?: boolean;
 }
 
 /**

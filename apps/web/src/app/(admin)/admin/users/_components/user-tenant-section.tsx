@@ -19,14 +19,14 @@ import { getRoleLabel, type Role } from "@/lib/role-labels";
 import { trpc, trpcClient } from "@/utils/trpc";
 
 interface UserTenantSectionProps {
-  userId: string;
-  currentTenantId: string | null;
   currentRole: string | null;
-  onSuccess: () => void;
+  currentTenantId: string | null;
   /**
    * Se true, oculta a seleção de tenant (usado na área do tenant)
    */
   hideTenantSelection?: boolean;
+  onSuccess: () => void;
+  userId: string;
 }
 
 export function UserTenantSection({

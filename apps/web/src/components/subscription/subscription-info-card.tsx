@@ -69,17 +69,17 @@ function formatPrice(price: number | string): string {
 }
 
 interface SubscriptionData {
-  status: string;
+  daysUntilExpiration: number | null;
+  daysUntilTrialEnds: number | null;
+  expiresAt: string | Date | null;
   plan: {
     name: string;
     price: unknown;
     description: string | null;
   };
   startDate: string | Date;
-  expiresAt: string | Date | null;
+  status: string;
   trialEndsAt: string | Date | null;
-  daysUntilExpiration: number | null;
-  daysUntilTrialEnds: number | null;
 }
 
 function SubscriptionContent({

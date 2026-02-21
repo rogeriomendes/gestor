@@ -28,20 +28,20 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 export interface ComboboxOption {
-  value: string;
   label: string;
+  value: string;
 }
 
 interface ComboboxProps {
-  options: ComboboxOption[];
-  value: string;
-  onValueChange: (value: string) => void;
-  placeholder?: string;
-  searchPlaceholder?: string;
-  emptyMessage?: string;
   className?: string;
+  emptyMessage?: string;
   /** Ícone exibido à esquerda do texto no trigger */
   icon?: ReactNode;
+  onValueChange: (value: string) => void;
+  options: ComboboxOption[];
+  placeholder?: string;
+  searchPlaceholder?: string;
+  value: string;
 }
 
 export function Combobox({

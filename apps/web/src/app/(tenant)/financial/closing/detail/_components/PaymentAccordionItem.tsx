@@ -7,13 +7,13 @@ import {
 } from "@/components/ui/accordion";
 
 interface PaymentAccordionItemProps {
-  value: string;
-  icon: React.ComponentType<{ className?: string }> | undefined;
-  title: string;
   amount: string | number;
-  color?: string;
   children: ReactNode;
   className?: string;
+  color?: string;
+  icon: React.ComponentType<{ className?: string }> | undefined;
+  title: string;
+  value: string;
 }
 
 export function PaymentAccordionItem({

@@ -25,15 +25,15 @@ import { PlansFilters } from "./_components/plans-filters";
 import { PlansList } from "./_components/plans-list";
 
 interface Plan {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number | string;
-  active: boolean;
-  isDefault: boolean;
   _count: {
     subscriptions: number;
   };
+  active: boolean;
+  description: string | null;
+  id: string;
+  isDefault: boolean;
+  name: string;
+  price: number | string;
 }
 
 function AdminPlansPageContent() {

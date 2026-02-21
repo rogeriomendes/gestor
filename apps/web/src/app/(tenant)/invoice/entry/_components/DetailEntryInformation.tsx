@@ -33,7 +33,7 @@ export function DetailEntryInformation({
       )}
       {entryData?.INFORMACOES_ADD_CONTRIBUINTE && (
         <Card
-          className="mt-2 break-all rounded-md rounded-md py-1 md:mt-3 md:py-2"
+          className="mt-2 break-all rounded-md py-1 md:mt-3 md:py-2"
           size="sm"
         >
           <CardDescription className="px-1 md:px-2">
@@ -51,10 +51,7 @@ export function DetailEntryInformation({
         entryData?.INFORMACOES_ADD_CONTRIBUINTE ||
         entryData?.INFORMACOES_ADD_FISCO
       ) && (
-        <Card
-          className="mt-2 rounded-md rounded-md py-1 md:mt-3 md:py-2"
-          size="sm"
-        >
+        <Card className="mt-2 rounded-md py-1 md:mt-3 md:py-2" size="sm">
           <CardContent className="px-1 md:px-2">
             <div className="text-wrap text-xs leading-relaxed md:text-sm">
               Sem informações adicionais para exibir

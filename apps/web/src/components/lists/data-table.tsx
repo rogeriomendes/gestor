@@ -16,10 +16,10 @@ import {
 } from "@/components/ui/table";
 
 interface DataTableProps<TData> {
-  data: TData[];
   columns: ColumnDef<TData>[];
-  onRowClick?: (row: TData) => void;
+  data: TData[];
   emptyMessage?: string;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData>({

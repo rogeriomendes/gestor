@@ -19,11 +19,11 @@ export type DfePrismaClient = ReturnType<typeof createDfePrismaClient>;
 
 export interface ConnectionMetadata {
   connectionId: string;
-  tenantId: string;
-  database: "gestor" | "dfe";
   createdAt: Date;
+  database: "gestor" | "dfe";
   lastUsedAt: Date;
   prismaClient: PrismaClient;
+  tenantId: string;
 }
 
 // Cache LRU para gerenciar conexões

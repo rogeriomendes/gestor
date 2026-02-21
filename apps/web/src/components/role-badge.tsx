@@ -3,8 +3,8 @@ import { ROLE_BADGE_CONFIG, type Role } from "@/lib/role-labels";
 import { cn } from "@/lib/utils";
 
 interface RoleBadgeProps {
-  role: Role | null;
   className?: string;
+  role: Role | null;
 }
 
 export function RoleBadge({ role, className }: RoleBadgeProps) {

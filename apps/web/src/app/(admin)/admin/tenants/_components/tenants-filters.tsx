@@ -11,13 +11,13 @@ import { Label } from "@/components/ui/label";
 import { getActivationStatusLabel } from "@/lib/status-labels";
 
 interface TenantsFiltersProps {
+  onResetFilters: () => void;
+  onSearchChange: (value: string) => void;
+  onShowDeletedChange: (value: boolean) => void;
+  onStatusChange: (value: string) => void;
   search: string;
   selectedStatus: string;
   showDeleted: boolean;
-  onSearchChange: (value: string) => void;
-  onStatusChange: (value: string) => void;
-  onShowDeletedChange: (value: boolean) => void;
-  onResetFilters: () => void;
 }
 
 export function TenantsFilters({

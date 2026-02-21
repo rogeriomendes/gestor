@@ -2,12 +2,12 @@ import { Maximize2Icon } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface PaymentLineItemProps {
-  label: string | null;
   amount: string | number;
+  children?: ReactNode;
+  label: string | null;
+  onClick?: () => void;
   prefix?: string;
   suffix?: string;
-  onClick?: () => void;
-  children?: ReactNode;
 }
 
 export function PaymentLineItem({

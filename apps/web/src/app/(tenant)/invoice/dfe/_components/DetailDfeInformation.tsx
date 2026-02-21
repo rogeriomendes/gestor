@@ -27,10 +27,7 @@ export function DetailDfeInformation({ xml }: { xml: NFeInfo }) {
         </Card>
       )}
       {!(xml.infAdic?.infCpl || xml.infAdic?.infAdFisco) && (
-        <Card
-          className="mt-2 rounded-md rounded-md py-1 md:mt-3 md:py-2"
-          size="sm"
-        >
+        <Card className="mt-2 rounded-md py-1 md:mt-3 md:py-2" size="sm">
           <CardContent className="px-1 md:px-2">
             <div className="text-wrap text-xs leading-relaxed md:text-sm">
               Sem informações adicionais para exibir

@@ -33,21 +33,21 @@ interface User {
 }
 
 interface AuditLogsFiltersProps {
+  endDate: Date | undefined;
+  onActionChange: (value: string) => void;
+  onEndDateChange: (value: Date | undefined) => void;
+  onResetFilters: () => void;
+  onResourceTypeChange: (value: string) => void;
+  onStartDateChange: (value: Date | undefined) => void;
+  onTenantChange: (value: string) => void;
+  onUserChange: (value: string) => void;
   selectedAction: string;
   selectedResourceType: string;
   selectedTenant: string;
   selectedUser: string;
   startDate: Date | undefined;
-  endDate: Date | undefined;
   tenants: Tenant[];
   users: User[];
-  onActionChange: (value: string) => void;
-  onResourceTypeChange: (value: string) => void;
-  onTenantChange: (value: string) => void;
-  onUserChange: (value: string) => void;
-  onStartDateChange: (value: Date | undefined) => void;
-  onEndDateChange: (value: Date | undefined) => void;
-  onResetFilters: () => void;
 }
 
 export function AuditLogsFilters({

@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 import type { ReportConfig } from "../_lib/reportRegistry";
 
 interface ReportCardProps {
-  report: ReportConfig;
   className?: string;
+  report: ReportConfig;
 }
 
 export function ReportCard({ report, className }: ReportCardProps) {

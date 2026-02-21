@@ -45,9 +45,9 @@ import { DetailProductsPurchase } from "./DetailProductsPurchase";
 import { DetailProductsSales } from "./DetailProductsSales";
 
 interface DetailProductsProps {
-  productId: number;
-  open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  open?: boolean;
+  productId: number;
 }
 
 export function DetailProducts({
@@ -158,7 +158,7 @@ export function DetailProducts({
                         : "NÃO"}
                       {productQuery.data?.product?.PRODUTO_PESADO === "S" &&
                         typeof productQuery.data?.product?.DIA_VALIDADE ===
-                          "number" &&
+                        "number" &&
                         (productQuery.data.product.DIA_VALIDADE ||
                           productQuery.data.product.DIA_VALIDADE !== 0) &&
                         ` - ${productQuery.data.product.DIA_VALIDADE} Dias`}
@@ -249,7 +249,7 @@ export function DetailProducts({
                       <div className="mt-2 grid grid-cols-3 items-start gap-2">
                         <div className="flex flex-col">
                           <div className="font-semibold text-muted-foreground text-xs leading-none tracking-tight md:text-sm">
-                            Válido até
+                            Promoção válida até
                           </div>
                           <div className="text-foreground text-xs md:text-sm">
                             {hasPromo.DATA_FIM
@@ -270,10 +270,10 @@ export function DetailProducts({
                           </div>
                         </div>
                         <div className="flex flex-col">
-                          <div className="font-semibold text-xs text-yellow-600 leading-none tracking-tight md:text-sm dark:text-yellow-400">
+                          <div className="text-xs text-yellow-600 leading-none tracking-tight md:text-sm dark:text-yellow-400">
                             Preço promocional
                           </div>
-                          <div className="font-medium text-xs text-yellow-600 md:text-sm dark:text-yellow-400">
+                          <div className="text-xs text-yellow-600 md:text-sm dark:text-yellow-400">
                             {formatAsCurrency(
                               Number(p.activePromotion.PRECO_PROMOCAO ?? 0)
                             )}

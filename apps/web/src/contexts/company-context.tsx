@@ -3,17 +3,17 @@
 import { createContext, useContext, useState } from "react";
 
 interface Company {
-  ID: number;
-  RAZAO_SOCIAL: string | null;
-  NOME_FANTASIA: string | null;
   CNPJ: string | null;
+  ID: number;
+  NOME_FANTASIA: string | null;
+  RAZAO_SOCIAL: string | null;
 }
 
 interface CompanyContextType {
-  selectedCompanyId: number;
-  setSelectedCompanyId: (id: number) => void;
   selectedCompany: Company | null;
+  selectedCompanyId: number;
   setSelectedCompany: (company: Company | null) => void;
+  setSelectedCompanyId: (id: number) => void;
 }
 
 const CompanyContext = createContext<CompanyContextType | undefined>(undefined);

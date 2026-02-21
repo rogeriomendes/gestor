@@ -17,13 +17,13 @@ import {
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
 interface UserListItemProps {
-  userId: string;
-  name: string;
   email: string;
-  role: Role;
-  onUpdateRole: (userId: string, role: Role) => void;
-  onRemove: (userId: string) => void;
+  name: string;
   onEdit?: (userId: string, name: string, email: string) => void;
+  onRemove: (userId: string) => void;
+  onUpdateRole: (userId: string, role: Role) => void;
+  role: Role;
+  userId: string;
 }
 
 export function UserListItem({

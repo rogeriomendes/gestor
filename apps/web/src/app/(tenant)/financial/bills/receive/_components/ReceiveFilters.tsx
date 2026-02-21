@@ -15,11 +15,11 @@ import {
 import { cn } from "@/lib/utils";
 
 interface ReceiveFiltersProps {
-  status?: string;
   dateRange?: DateRange;
-  onStatusChange: (value: string) => void;
-  onDateRangeChange: (dateRange: DateRange | undefined) => void;
   onClearFilters: () => void;
+  onDateRangeChange: (dateRange: DateRange | undefined) => void;
+  onStatusChange: (value: string) => void;
+  status?: string;
 }
 
 export function ReceiveFilters({

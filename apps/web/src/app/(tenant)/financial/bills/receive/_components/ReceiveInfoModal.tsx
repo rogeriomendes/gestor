@@ -28,9 +28,9 @@ type ReceiveItem =
   RouterOutputs["tenant"]["financialBillsReceive"]["all"]["receive"][number];
 
 interface ReceiveInfoModalProps {
-  receive: ReceiveItem | null;
-  open: boolean;
   onOpenChange: (open: boolean) => void;
+  open: boolean;
+  receive: ReceiveItem | null;
 }
 
 export function ReceiveInfoModal({

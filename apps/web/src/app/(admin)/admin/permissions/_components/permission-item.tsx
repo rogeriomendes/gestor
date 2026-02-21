@@ -4,12 +4,12 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { getPermissionActionLabel } from "@/lib/permission-labels";
 
 interface PermissionItemProps {
-  permissionId: string;
   action: string;
-  name: string;
   isGranted: boolean;
   isPending: boolean;
+  name: string;
   onToggle: (permissionId: string, currentlyGranted: boolean) => void;
+  permissionId: string;
 }
 
 export function PermissionItem({

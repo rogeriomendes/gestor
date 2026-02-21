@@ -5,12 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface ResetPasswordSectionProps {
-  newPassword: string;
   confirmPassword: string;
-  showPasswordFields: boolean;
-  onNewPasswordChange: (password: string) => void;
+  newPassword: string;
   onConfirmPasswordChange: (password: string) => void;
+  onNewPasswordChange: (password: string) => void;
   onTogglePasswordFields: () => void;
+  showPasswordFields: boolean;
 }
 
 export function ResetPasswordSection({

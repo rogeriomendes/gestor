@@ -7,6 +7,9 @@ import { getSaleStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 
 interface SaleCardProps {
+  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
+  companyName?: string | null;
+  onClick?: (sale: any) => void;
   sale: {
     ID: number;
     ID_EMPRESA: number;
@@ -19,9 +22,6 @@ interface SaleCardProps {
     OBSERVACAO: string | null;
     STATUS: string;
   };
-  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
-  companyName?: string | null;
-  onClick?: (sale: any) => void;
 }
 
 export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {

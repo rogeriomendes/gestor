@@ -44,9 +44,9 @@ const typeSale: Record<string, string> = {
 };
 
 interface DetailSaleProps {
-  saleData: saleData;
-  open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  open?: boolean;
+  saleData: saleData;
 }
 
 export function DetailSale({ saleData, open, onOpenChange }: DetailSaleProps) {

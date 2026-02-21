@@ -6,8 +6,8 @@ type ThemeName = "light" | "dark";
 
 interface AppThemeContextType {
   currentTheme: string;
-  isLight: boolean;
   isDark: boolean;
+  isLight: boolean;
   setTheme: (theme: ThemeName) => void;
   toggleTheme: () => void;
 }

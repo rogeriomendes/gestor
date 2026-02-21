@@ -11,22 +11,22 @@
   },
   "scripts": {},
   "devDependencies": {
-    "typescript": "catalog:",
-    "@gestor/config": "workspace:*"
+    "@gestor/config": "workspace:*",
+    "typescript": "catalog:"
   },
   "dependencies": {
-    "@trpc/server": "catalog:",
+    "@gestor/auth": "workspace:*",
+    "@gestor/db": "workspace:*",
+    "@gestor/db-dfe": "workspace:*",
+    "@gestor/db-gestor": "workspace:*",
     "@trpc/client": "catalog:",
-    "next": "^16.0.10",
+    "@trpc/server": "catalog:",
     "date-fns": "catalog:",
     "date-fns-tz": "catalog:",
     "dotenv": "catalog:",
+    "lru-cache": "^11.2.6",
+    "next": "^16.1.6",
     "react": "catalog:",
-    "zod": "catalog:",
-    "@gestor/auth": "workspace:*",
-    "@gestor/db": "workspace:*",
-    "@gestor/db-gestor": "workspace:*",
-    "@gestor/db-dfe": "workspace:*",
-    "lru-cache": "^11.2.4"
+    "zod": "catalog:"
   }
 }

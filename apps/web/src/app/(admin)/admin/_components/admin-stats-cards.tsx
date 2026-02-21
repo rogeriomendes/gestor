@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/card";
 
 interface AdminStatsCardsProps {
-  totalTenants: number;
   activeTenants: number;
+  totalTenants: number;
 }
 
 export function AdminStatsCards({

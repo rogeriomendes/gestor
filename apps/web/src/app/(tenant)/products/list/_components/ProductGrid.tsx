@@ -13,27 +13,27 @@ type ProductData =
   RouterOutputs["tenant"]["products"]["all"]["products"][number];
 
 interface ProductGridProps {
+  className?: string;
   // Dados da query infinita (páginas do useInfiniteQuery)
   data?: unknown[];
-  pageItemKeys: string[];
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
-  isLoading?: boolean;
-  fetchNextPage: () => Promise<unknown>;
-
-  // Callback para clique no produto
-  onProductClick?: (product: ProductData) => void;
+  emptyIcon?: React.ReactNode;
 
   // Estados vazios e loading
   emptyMessage?: string;
-  emptyIcon?: React.ReactNode;
+  fetchNextPage: () => Promise<unknown>;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  isLoading?: boolean;
   loadingMessage?: string;
   loadMoreMessage?: string;
   noMoreDataMessage?: string;
 
+  // Callback para clique no produto
+  onProductClick?: (product: ProductData) => void;
+  pageItemKeys: string[];
+
   // Configurações opcionais
   rootMargin?: string;
-  className?: string;
 }
 
 export function ProductGrid({

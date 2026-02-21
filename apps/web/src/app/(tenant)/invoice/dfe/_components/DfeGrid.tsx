@@ -16,26 +16,26 @@ type DfeItem =
   RouterOutputs["tenant"]["invoiceDfe"]["all"]["invoiceDfe"][number];
 
 interface DfeGridProps {
+  className?: string;
   data?: Array<{ invoiceDfe?: DfeItem[] }>;
-  pageItemKeys: string[];
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
-  isLoading?: boolean;
-  fetchNextPage: () => Promise<unknown>;
-
-  onDfeClick?: (dfe: DfeItem) => void;
-  onDfeHide?: (dfe: DfeItem) => void;
+  emptyIcon?: React.ReactNode;
 
   // Estados vazios e loading
   emptyMessage?: string;
-  emptyIcon?: React.ReactNode;
+  fetchNextPage: () => Promise<unknown>;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  isLoading?: boolean;
   loadingMessage?: string;
   loadMoreMessage?: string;
   noMoreDataMessage?: string;
 
+  onDfeClick?: (dfe: DfeItem) => void;
+  onDfeHide?: (dfe: DfeItem) => void;
+  pageItemKeys: string[];
+
   // Configurações opcionais
   rootMargin?: string;
-  className?: string;
 }
 
 export function DfeGrid({

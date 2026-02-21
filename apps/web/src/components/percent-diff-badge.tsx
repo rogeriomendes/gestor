@@ -7,9 +7,9 @@ import { useTextContext } from "@/contexts/text-show-context";
 
 interface PercentDiffBadgeProps {
   currentValue: number;
-  previousValue: number;
-  label?: string;
   description?: string;
+  label?: string;
+  previousValue: number;
 }
 
 /**

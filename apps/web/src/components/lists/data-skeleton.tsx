@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/table";
 
 interface DataSkeletonProps {
-  variant?: "table" | "cards";
+  columnCount?: number;
   count?: number;
   itemHeight?: string;
-  columnCount?: number;
+  variant?: "table" | "cards";
 }
 
 let skeletonIdCounter = 0;

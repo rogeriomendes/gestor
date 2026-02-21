@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface DataCardsProps<T extends { id: string }> {
-  data: T[];
-  renderCard: (item: T) => React.ReactNode;
-  getHref?: (item: T) => Route | string;
-  emptyMessage?: string;
   className?: string;
+  data: T[];
+  emptyMessage?: string;
+  getHref?: (item: T) => Route | string;
   onCardClick?: (item: T, href?: Route | string) => void;
+  renderCard: (item: T) => React.ReactNode;
 }
 
 export function DataCards<T extends { id: string }>({

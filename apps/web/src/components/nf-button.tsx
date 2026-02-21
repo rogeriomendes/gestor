@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 
 interface NfButtonProps {
   chaveAcesso: string;
-  tipo?: "nfe" | "nfce";
   className?: string;
   size?: "sm" | "default" | "lg";
+  tipo?: "nfe" | "nfce";
   variant?:
     | "default"
     | "destructive"

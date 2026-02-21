@@ -13,15 +13,15 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface ConfirmDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description: string | ReactNode;
-  confirmText?: string;
   cancelText?: string;
-  variant?: "default" | "destructive";
-  onConfirm: () => void | Promise<void>;
+  confirmText?: string;
+  description: string | ReactNode;
   isLoading?: boolean;
+  onConfirm: () => void | Promise<void>;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+  title: string;
+  variant?: "default" | "destructive";
 }
 
 export function ConfirmDialog({

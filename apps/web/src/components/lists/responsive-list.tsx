@@ -7,15 +7,15 @@ import { DataSkeleton } from "./data-skeleton";
 
 interface ResponsiveListProps<T> {
   data: T[];
-  isLoading?: boolean;
-  renderTable: (data: T[]) => React.ReactNode;
-  renderCards: (data: T[]) => React.ReactNode;
-  emptyTitle?: string;
+  emptyAction?: React.ReactNode;
   emptyDescription?: string;
   emptyIcon?: LucideIcon;
-  emptyAction?: React.ReactNode;
-  skeletonCount?: number;
+  emptyTitle?: string;
+  isLoading?: boolean;
+  renderCards: (data: T[]) => React.ReactNode;
+  renderTable: (data: T[]) => React.ReactNode;
   skeletonColumnCount?: number;
+  skeletonCount?: number;
 }
 
 export function ResponsiveList<T>({

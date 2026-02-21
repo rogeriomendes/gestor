@@ -30,13 +30,13 @@ interface BaseProps {
 }
 
 interface RootCredenzaProps extends BaseProps {
-  open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  open?: boolean;
 }
 
 interface CredenzaProps extends BaseProps {
-  className?: string;
   asChild?: true;
+  className?: string;
 }
 
 const CredenzaContext = createContext<{ isMobile: boolean }>({

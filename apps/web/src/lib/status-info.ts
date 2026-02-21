@@ -2,9 +2,9 @@ import { isBefore, isSameDay, startOfDay } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 
 export interface StatusInfo {
+  color?: string;
   label: string;
   variant: "default" | "secondary" | "outline" | "destructive";
-  color?: string;
 }
 
 // Vendas e recibos (NFCe): usa devolução/cancelado e STATUS_NOTA (5,7,9)

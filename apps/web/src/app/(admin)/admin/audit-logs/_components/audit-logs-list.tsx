@@ -13,22 +13,24 @@ import {
 import { formatDateTime } from "@/lib/date-utils";
 
 interface AuditLog {
-  id: string;
   action: string;
-  resourceType: string;
   createdAt: Date | string;
+  id: string;
+  resourceType: string;
+  tenant?: {
+    name: string;
+  } | null;
   user?: {
     name: string | null;
     email: string;
   } | null;
-  tenant?: {
-    name: string;
-  } | null;
 }
 
 interface AuditLogsListProps {
-  logs: AuditLog[];
   isLoading: boolean;
+  logs: AuditLog[];
+  onLogClick: (logId: string) => void;
+  onPageChange: (page: number) => void;
   pagination:
     | {
         page: number;
@@ -36,8 +38,6 @@ interface AuditLogsListProps {
         total: number;
       }
     | undefined;
-  onLogClick: (logId: string) => void;
-  onPageChange: (page: number) => void;
 }
 
 export function AuditLogsList({

@@ -22,19 +22,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface Tenant {
-  id: string;
-  name: string;
-  slug: string;
-  active: boolean;
   _count: {
     users: number;
   };
+  active: boolean;
+  id: string;
+  name: string;
+  slug: string;
 }
 
 interface TenantsListProps {
-  tenants: Tenant[];
   isLoading?: boolean;
   onDelete: (tenant: Tenant) => void;
+  tenants: Tenant[];
 }
 
 export function TenantsList({

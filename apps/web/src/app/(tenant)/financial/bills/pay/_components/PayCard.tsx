@@ -14,8 +14,8 @@ type BillsPayItem =
 interface PayCardProps {
   bills: BillsPayItem;
   isSelected?: boolean;
-  onSelect?: (billsId: number, value: number, checked: boolean) => void;
   onClick?: (bills: BillsPayItem) => void;
+  onSelect?: (billsId: number, value: number, checked: boolean) => void;
 }
 
 export function PayCard({

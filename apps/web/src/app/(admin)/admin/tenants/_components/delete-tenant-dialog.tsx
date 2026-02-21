@@ -3,12 +3,12 @@
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface DeleteTenantDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  tenantName: string | undefined;
-  tenantSlug: string | undefined;
   isPending: boolean;
   onConfirm: () => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+  tenantName: string | undefined;
+  tenantSlug: string | undefined;
 }
 
 export function DeleteTenantDialog({

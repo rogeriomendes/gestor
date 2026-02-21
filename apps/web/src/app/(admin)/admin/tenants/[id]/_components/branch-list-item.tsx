@@ -24,16 +24,16 @@ import { trpcClient } from "@/utils/trpc";
 import { DeleteBranchDialog } from "./delete-branch-dialog";
 
 interface Branch {
-  id: string;
-  name: string;
-  isMain: boolean;
-  legalName: string | null;
-  cnpj: string | null;
-  email: string | null;
-  phone: string | null;
+  active: boolean;
   addressCity: string | null;
   addressState: string | null;
-  active: boolean;
+  cnpj: string | null;
+  email: string | null;
+  id: string;
+  isMain: boolean;
+  legalName: string | null;
+  name: string;
+  phone: string | null;
 }
 
 interface BranchListItemProps {

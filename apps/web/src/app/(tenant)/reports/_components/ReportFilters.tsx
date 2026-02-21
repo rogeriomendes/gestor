@@ -23,21 +23,21 @@ import {
 import { cn } from "@/lib/utils";
 
 interface ReportFiltersProps {
-  onFiltersChange: (filters: ReportFilters) => void;
   initialFilters?: ReportFilters;
+  onFiltersChange: (filters: ReportFilters) => void;
   reportId?: string;
 }
 
 export interface ReportFilters {
-  initialDate: Date;
-  finalDate: Date;
-  sellerId?: number;
-  clientId?: number;
   categoryId?: number;
-  status?: string;
+  clientId?: number;
+  finalDate: Date;
+  initialDate: Date;
   limit?: number;
-  searchTerm?: string;
   orderBy?: "value" | "quantity";
+  searchTerm?: string;
+  sellerId?: number;
+  status?: string;
 }
 
 export function ReportFilters({

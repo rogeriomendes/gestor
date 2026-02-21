@@ -11,8 +11,8 @@ import type { PosterProduct } from "./types";
 export type { PosterProduct };
 
 interface PosterPreviewProps {
-  products: PosterProduct[];
   format: "a4-full" | "a4-grid-2x4" | "a4-grid-2x2" | "a3-full";
+  products: PosterProduct[];
   showYellowBackground: boolean;
 }
 

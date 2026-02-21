@@ -4,11 +4,11 @@ import { CheckCircle2, Clock, XCircle, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface SubscriptionsStatsCardsProps {
-  totalSubscriptions: number;
   activeSubscriptions: number;
-  trialSubscriptions: number;
-  expiredSubscriptions: number;
   cancelledSubscriptions: number;
+  expiredSubscriptions: number;
+  totalSubscriptions: number;
+  trialSubscriptions: number;
 }
 
 export function SubscriptionsStatsCards({

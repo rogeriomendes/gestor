@@ -11,6 +11,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatAsCurrency } from "@/lib/utils";
 
 interface SummaryCardsProps {
+  accountsReceivable?: {
+    accountsReceivable: Array<{
+      id: number;
+      clientName: string;
+      dueDate: Date | null;
+      amount: number;
+      received: number;
+      pending: number;
+      isOverdue: boolean | null;
+    }>;
+  };
+  financialSummary?: {
+    sales: { total: number; count: number };
+    receipts: { total: number };
+    payments: { total: number };
+    pendingReceivables: { total: number };
+    pendingPayables: { total: number };
+  };
   salesPerDay?: {
     totalValuePerDay: Array<{
       date: string;
@@ -24,27 +42,6 @@ interface SummaryCardsProps {
       sellerName: string;
       total: number;
       count: number;
-    }>;
-  };
-  topProducts?: {
-    topProducts: Array<{
-      productId: number;
-      productName: string;
-      productCode: string | null;
-      quantity: number;
-      totalValue: number;
-      unitPrice: number;
-    }>;
-  };
-  accountsReceivable?: {
-    accountsReceivable: Array<{
-      id: number;
-      clientName: string;
-      dueDate: Date | null;
-      amount: number;
-      received: number;
-      pending: number;
-      isOverdue: boolean | null;
     }>;
   };
   stockPosition?: {
@@ -62,12 +59,15 @@ interface SummaryCardsProps {
       isLowStock: boolean;
     }>;
   };
-  financialSummary?: {
-    sales: { total: number; count: number };
-    receipts: { total: number };
-    payments: { total: number };
-    pendingReceivables: { total: number };
-    pendingPayables: { total: number };
+  topProducts?: {
+    topProducts: Array<{
+      productId: number;
+      productName: string;
+      productCode: string | null;
+      quantity: number;
+      totalValue: number;
+      unitPrice: number;
+    }>;
   };
 }
 

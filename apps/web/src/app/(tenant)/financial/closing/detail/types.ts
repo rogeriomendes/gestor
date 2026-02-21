@@ -1,8 +1,8 @@
 export interface ClosingData {
+  dateClosed?: Date | null;
+  dateOpen: Date | null;
+  hourClosed?: string | null;
+  hourOpen: string | null;
   id: string | null;
   name: string | null;
-  dateOpen: Date | null;
-  hourOpen: string | null;
-  dateClosed?: Date | null;
-  hourClosed?: string | null;
 }

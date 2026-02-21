@@ -52,10 +52,10 @@ const branchSchema = z.object({
 });
 
 interface BranchFormDialogProps {
-  open: boolean;
-  onClose: () => void;
-  tenantId: string;
   branchId?: string | null;
+  onClose: () => void;
+  open: boolean;
+  tenantId: string;
 }
 
 export function BranchFormDialog({

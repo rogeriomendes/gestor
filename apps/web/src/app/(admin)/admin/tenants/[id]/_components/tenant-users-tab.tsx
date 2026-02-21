@@ -33,35 +33,35 @@ import { AddUserDialog } from "./add-user-dialog";
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
 interface User {
-  id: string;
-  name: string;
   email: string;
-  role: Role;
+  id: string;
   isPending?: boolean;
+  name: string;
+  role: Role;
 }
 
 interface AvailableUser {
   id: string;
-  user: {
-    name: string;
-    email: string;
-  };
   tenant?: {
     id: string;
     name: string;
   } | null;
+  user: {
+    name: string;
+    email: string;
+  };
 }
 
 interface TenantUsersTabProps {
-  tenantId: string;
-  users: User[];
-  isLoading: boolean;
   availableUsers: AvailableUser[];
   availableUsersLoading: boolean;
-  onUpdateRole: (userId: string, role: Role) => void;
+  isLoading: boolean;
+  onRefresh: () => void;
   onRemove: (userId: string) => void;
   onResendInvite?: (userId: string) => void;
-  onRefresh: () => void;
+  onUpdateRole: (userId: string, role: Role) => void;
+  tenantId: string;
+  users: User[];
 }
 
 // Componente para ações da tabela

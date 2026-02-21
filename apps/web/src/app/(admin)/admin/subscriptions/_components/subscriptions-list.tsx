@@ -32,29 +32,29 @@ import { SubscriptionStatusBadge } from "./subscription-status-badge";
 type SubscriptionStatus = "TRIAL" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 
 interface Subscription {
-  id: string;
-  status: SubscriptionStatus;
-  startDate: string;
   expiresAt: string | null;
-  trialEndsAt: string | null;
+  id: string;
+  plan: {
+    id: string;
+    name: string;
+    active: boolean;
+  };
+  startDate: string;
+  status: SubscriptionStatus;
   tenant: {
     id: string;
     name: string;
     slug: string;
     active: boolean;
   };
-  plan: {
-    id: string;
-    name: string;
-    active: boolean;
-  };
+  trialEndsAt: string | null;
 }
 
 interface SubscriptionsListProps {
-  subscriptions: Subscription[];
   isLoading?: boolean;
   onCancel: (subscription: Subscription) => void;
   onCreateSubscription?: () => void;
+  subscriptions: Subscription[];
 }
 
 export function SubscriptionsList({

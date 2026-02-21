@@ -14,6 +14,14 @@ type Role =
   | "TENANT_USER";
 
 interface TenantContextValue {
+  error: Error | null;
+  isError: boolean;
+  isLoading: boolean;
+  isSuperAdmin: boolean;
+  isTenantAdmin: boolean;
+  permissions: Set<string> | null;
+  refetch: () => void;
+  role: Role | null;
   tenant: {
     id: string;
     name: string;
@@ -25,14 +33,6 @@ interface TenantContextValue {
       users: number;
     };
   } | null;
-  role: Role | null;
-  isSuperAdmin: boolean;
-  isTenantAdmin: boolean;
-  permissions: Set<string> | null;
-  isLoading: boolean;
-  isError: boolean;
-  error: Error | null;
-  refetch: () => void;
 }
 
 const TenantContext = createContext<TenantContextValue | undefined>(undefined);

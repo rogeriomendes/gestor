@@ -17,15 +17,15 @@ import {
 import { ListSkeleton } from "@/components/ui/list-skeleton";
 
 interface Tenant {
+  active: boolean;
   id: string;
   name: string;
   slug: string;
-  active: boolean;
 }
 
 interface RecentTenantsListProps {
-  tenants: Tenant[];
   isLoading: boolean;
+  tenants: Tenant[];
 }
 
 export function RecentTenantsList({

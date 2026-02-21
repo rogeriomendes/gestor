@@ -17,16 +17,15 @@
   },
   "devDependencies": {
     "@gestor/config": "workspace:*",
-    "@types/pg": "^8.15.6",
+    "@types/pg": "catalog:",
     "prisma": "catalog:",
-    "shadcn": "^3.6.2",
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/adapter-pg": "catalog:",
     "@prisma/client": "catalog:",
     "dotenv": "catalog:",
-    "pg": "^8.16.3",
+    "pg": "catalog:",
     "zod": "catalog:"
   }
 }

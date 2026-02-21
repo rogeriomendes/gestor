@@ -5,6 +5,8 @@ import { formatDate } from "@/lib/format-date";
 import { formatAsCurrency } from "@/lib/utils";
 
 interface EntryCardProps {
+  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
+  companyName?: string | null;
   entry: {
     ID: number;
     ID_EMPRESA: number;
@@ -15,8 +17,6 @@ interface EntryCardProps {
     NUMERO?: string;
     fornecedor?: { pessoa: { NOME: string } };
   };
-  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
-  companyName?: string | null;
   onClick?: (entry: any) => void;
 }
 

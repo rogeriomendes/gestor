@@ -13,25 +13,25 @@ type ReceiveItem =
   RouterOutputs["tenant"]["financialBillsReceive"]["all"]["receive"][number];
 
 interface ReceiveGridProps {
+  className?: string;
   data?: Array<{ receive?: ReceiveItem[] }>;
-  pageItemKeys: string[];
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
-  isLoading?: boolean;
-  fetchNextPage: () => Promise<unknown>;
-
-  onReceiveClick?: (receive: ReceiveItem) => void;
+  emptyIcon?: React.ReactNode;
 
   // Estados vazios e loading
   emptyMessage?: string;
-  emptyIcon?: React.ReactNode;
+  fetchNextPage: () => Promise<unknown>;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  isLoading?: boolean;
   loadingMessage?: string;
   loadMoreMessage?: string;
   noMoreDataMessage?: string;
 
+  onReceiveClick?: (receive: ReceiveItem) => void;
+  pageItemKeys: string[];
+
   // Configurações opcionais
   rootMargin?: string;
-  className?: string;
 }
 
 export function ReceiveGrid({

@@ -12,13 +12,13 @@ import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
 
 interface PageLayoutProps {
-  title: string;
-  subtitle?: string;
+  actions?: React.ReactNode;
+  backHref?: Route;
   breadcrumbs?: BreadcrumbItemType[];
   children: React.ReactNode;
-  actions?: React.ReactNode;
   showBackButton?: boolean;
-  backHref?: Route;
+  subtitle?: string;
+  title: string;
 }
 
 function generateBreadcrumbsFromPathname(

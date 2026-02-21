@@ -142,9 +142,9 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
 }
 
 interface SubscriptionBlockedScreenProps {
+  description: string;
   icon: React.ReactNode;
   title: string;
-  description: string;
 }
 
 function SubscriptionBlockedScreen({

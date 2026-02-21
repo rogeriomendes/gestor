@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/empty";
 
 interface DataEmptyProps {
-  title?: string;
-  description?: string;
-  icon?: LucideIcon;
   action?: React.ReactNode;
   className?: string;
+  description?: string;
+  icon?: LucideIcon;
+  title?: string;
 }
 
 export function DataEmpty({

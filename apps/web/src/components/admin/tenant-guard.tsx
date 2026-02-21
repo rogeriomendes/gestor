@@ -11,25 +11,7 @@ import { TenantNotFound } from "./tenant-not-found";
 // Tipo do tenant retornado pela query getTenant
 // Usa string | Date porque os dados podem vir serializados do tRPC
 export interface TenantWithRelations {
-  id: string;
-  name: string;
-  slug: string;
   active: boolean;
-  email: string | null;
-  phone: string | null;
-  website: string | null;
-  notes: string | null;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-  deletedAt: string | Date | null;
-  deletedBy: string | null;
-  users: Array<{
-    id: string;
-    name: string;
-    email: string;
-    image: string | null;
-    role: string | null;
-  }>;
   branches: Array<{
     id: string;
     name: string;
@@ -53,16 +35,34 @@ export interface TenantWithRelations {
     deletedBy: string | null;
     tenantId: string;
   }>;
+  createdAt: string | Date;
+  deletedAt: string | Date | null;
+  deletedBy: string | null;
+  email: string | null;
+  id: string;
+  name: string;
+  notes: string | null;
+  phone: string | null;
+  slug: string;
+  updatedAt: string | Date;
+  users: Array<{
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+    role: string | null;
+  }>;
+  website: string | null;
 }
 
 interface TenantGuardProps {
-  tenantId: string;
   children: (props: { tenant: TenantWithRelations }) => ReactNode;
   fallback?: {
     accessDenied?: ReactNode;
     notFound?: ReactNode;
     loading?: ReactNode;
   };
+  tenantId: string;
 }
 
 /**

@@ -11,8 +11,8 @@ type ReceiveItem =
   RouterOutputs["tenant"]["financialBillsReceive"]["all"]["receive"][number];
 
 interface ReceiveCardProps {
-  receive: ReceiveItem;
   onClick?: (receive: ReceiveItem) => void;
+  receive: ReceiveItem;
 }
 
 export function ReceiveCard({ receive, onClick }: ReceiveCardProps) {

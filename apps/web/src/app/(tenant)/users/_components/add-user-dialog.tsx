@@ -28,10 +28,10 @@ import { trpcClient } from "@/utils/trpc";
 type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
 interface AddUserDialogProps {
-  open: boolean;
   onOpenChange: (open: boolean) => void;
-  tenantId: string;
   onSuccess: () => void;
+  open: boolean;
+  tenantId: string;
 }
 
 export function AddUserDialog({

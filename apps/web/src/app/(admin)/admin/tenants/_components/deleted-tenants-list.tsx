@@ -17,25 +17,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface DeletedTenant {
-  id: string;
-  name: string;
-  slug: string;
+  _count: {
+    users: number;
+  };
   active: boolean;
   deletedAt: Date | string | null;
   deletedByUser: {
     name: string | null;
     email: string;
   } | null;
-  _count: {
-    users: number;
-  };
+  id: string;
+  name: string;
+  slug: string;
 }
 
 interface DeletedTenantsListProps {
-  tenants: DeletedTenant[];
   isLoading: boolean;
-  onRestore: (tenant: DeletedTenant) => void;
   onPermanentDelete: (tenant: DeletedTenant) => void;
+  onRestore: (tenant: DeletedTenant) => void;
+  tenants: DeletedTenant[];
 }
 
 export function DeletedTenantsList({

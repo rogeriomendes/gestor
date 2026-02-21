@@ -12,7 +12,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@better-auth/expo": "^1.4.17",
+    "@better-auth/expo": "catalog:",
     "@expo/metro-runtime": "~6.1.2",
     "@expo/vector-icons": "^15.0.3",
     "@gestor/api": "workspace:*",
@@ -23,7 +23,7 @@
     "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",
     "@trpc/tanstack-react-query": "catalog:",
-    "better-auth": "^1.4.17",
+    "better-auth": "catalog:",
     "dotenv": "catalog:",
     "expo": "^54.0.23",
     "expo-constants": "~18.0.10",
@@ -55,7 +55,7 @@
   "devDependencies": {
     "@gestor/config": "workspace:*",
     "@types/node": "^24.10.0",
-    "@types/react": "~19.1.0",
+    "@types/react": "^19.2.14",
     "typescript": "catalog:"
   }
 }

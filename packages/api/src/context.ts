@@ -21,14 +21,14 @@ type TenantWithCredentials = {
 } | null;
 
 export interface ContextReturn {
-  session: { user: { id: string } } | null;
   db?: unknown;
-  tenant: TenantWithCredentials;
-  subscription: SubscriptionWithPlan | null;
-  role: Role | null;
   isSuperAdmin: boolean;
   permissions: Set<string>;
   req: NextRequest;
+  role: Role | null;
+  session: { user: { id: string } } | null;
+  subscription: SubscriptionWithPlan | null;
+  tenant: TenantWithCredentials;
 }
 
 export async function createContext(req: NextRequest): Promise<ContextReturn> {

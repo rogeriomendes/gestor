@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface UserBasicInfoSectionProps {
-  name: string;
   email: string;
+  name: string;
   onNameChange: (name: string) => void;
 }
 

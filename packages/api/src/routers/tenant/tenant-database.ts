@@ -18,8 +18,8 @@ export interface GestorUserSerialized {
 
 /** Resultado do teste de conexão e listagem de usuários do banco gestor */
 export interface TestGestorConnectionResult {
-  success: true;
   count: number;
+  success: true;
   users: GestorUserSerialized[];
 }
 

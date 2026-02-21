@@ -17,14 +17,14 @@ export interface SearchInputProps
     React.ComponentProps<"input">,
     "value" | "onChange" | "placeholder"
   > {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  clearable?: boolean;
-  icon?: React.ReactNode;
   className?: string;
+  clearable?: boolean;
   /** Quando true, F9 foca o input e exibe a dica do atalho quando vazio. Padrão: false */
   enableF9Shortcut?: boolean;
+  icon?: React.ReactNode;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  value: string;
 }
 
 export function SearchInput({

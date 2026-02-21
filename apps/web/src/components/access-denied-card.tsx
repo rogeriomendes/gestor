@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/card";
 
 interface AccessDeniedCardProps {
-  title?: string;
   description?: string;
+  title?: string;
 }
 
 export function AccessDeniedCard({

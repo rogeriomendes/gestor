@@ -29,23 +29,23 @@ type Role = "TENANT_OWNER" | "TENANT_USER_MANAGER" | "TENANT_USER";
 
 interface User {
   id: string;
-  user: {
-    name: string;
-    email: string;
-  };
   tenant?: {
     id: string;
     name: string;
   } | null;
+  user: {
+    name: string;
+    email: string;
+  };
 }
 
 interface AddUserDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  tenantId: string;
   availableUsers: User[];
   isLoading: boolean;
+  onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  open: boolean;
+  tenantId: string;
 }
 
 export function AddUserDialog({

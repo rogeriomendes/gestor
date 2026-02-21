@@ -12,16 +12,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatAsCurrency } from "@/lib/utils";
 
 interface MetricCardProps {
-  title: string | ReactNode;
-  value: number | string;
-  subtitle?: string | ReactNode;
+  badge?: ReactNode;
+  className?: string;
   icon?: LucideIcon;
+  iconClassName?: string;
   isLoading?: boolean;
   onClick?: () => void;
-  className?: string;
+  subtitle?: string | ReactNode;
+  title: string | ReactNode;
   useShowText?: boolean;
-  iconClassName?: string;
-  badge?: ReactNode;
+  value: number | string;
 }
 
 export function MetricCard({

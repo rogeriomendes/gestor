@@ -4,9 +4,9 @@ import { Package, PackageCheck, PackageX } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PlansStatsCardsProps {
-  totalPlans: number;
   activePlans: number;
   inactivePlans: number;
+  totalPlans: number;
   totalSubscriptions: number;
 }
 

@@ -4,11 +4,11 @@
  */
 
 interface InviteInfo {
-  userName: string;
   invitedBy?: string;
-  tenantName?: string;
   roleName?: string;
+  tenantName?: string;
   timestamp: number;
+  userName: string;
 }
 
 // Map para armazenar informações de convites pendentes

@@ -43,28 +43,28 @@ const updateTenantSchema = z.object({
 });
 
 interface Tenant {
-  id: string;
-  name: string;
-  slug: string;
   active: boolean;
-  email?: string | null;
-  phone?: string | null;
-  website?: string | null;
-  notes?: string | null;
-  dbHost?: string | null;
-  dbPort?: string | null;
-  dbUsername?: string | null;
-  dbPassword?: string | null;
   branches?: Array<{
     id: string;
     name: string;
     isMain: boolean;
   }>;
+  dbHost?: string | null;
+  dbPassword?: string | null;
+  dbPort?: string | null;
+  dbUsername?: string | null;
+  email?: string | null;
+  id: string;
+  name: string;
+  notes?: string | null;
+  phone?: string | null;
+  slug: string;
+  website?: string | null;
 }
 
 interface TenantDetailsFormProps {
-  tenant: Tenant;
   onSuccess: () => void;
+  tenant: Tenant;
 }
 
 export function TenantDetailsForm({

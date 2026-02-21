@@ -16,17 +16,17 @@ import type { RouterInputs } from "@/utils/trpc";
 type BranchFormValues = RouterInputs["admin"]["branch"]["createBranch"];
 
 interface BranchFieldState<T> {
-  value: T;
   meta: {
     errors: Array<{ message?: string }>;
   };
+  value: T;
 }
 
 interface BranchFieldApi<T> {
-  name: string;
-  state: BranchFieldState<T>;
   handleBlur: () => void;
   handleChange: (value: T) => void;
+  name: string;
+  state: BranchFieldState<T>;
 }
 
 interface BranchFormApi {

@@ -22,11 +22,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 interface DatePickerProps {
-  value: Date | undefined;
-  onChange: (date: Date | undefined) => void;
-  placeholder?: string;
   className?: string;
   disabled?: boolean;
+  onChange: (date: Date | undefined) => void;
+  placeholder?: string;
+  value: Date | undefined;
 }
 
 export function DatePicker({

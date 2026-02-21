@@ -8,8 +8,8 @@ import type { Decimal } from "../../../../../../../../packages/db/prisma/generat
 // type paymentData = RouterOutputs["sales"]["byId"]["sales"]["venda_recebimento"];
 interface paymentData {
   ID_FIN_TIPO_RECEBIMENTO: number;
-  VALOR_RECEBIDO: Decimal | null;
   VALOR_DINHEIRO: Decimal | null;
+  VALOR_RECEBIDO: Decimal | null;
   VALOR_TROCO: Decimal | null;
 }
 

@@ -19,9 +19,9 @@ type DfeItem =
 
 interface HideDfeDialogProps {
   dfe: DfeItem;
-  open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  open: boolean;
 }
 
 export function HideDfeDialog({

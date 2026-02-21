@@ -13,9 +13,9 @@ import {
 } from "@react-email/components";
 
 interface ChangeEmailProps {
-  verificationLink: string;
-  userName?: string;
   newEmail: string;
+  userName?: string;
+  verificationLink: string;
 }
 
 export function ChangeEmailTemplate({

@@ -16,8 +16,8 @@ type ProductData =
   RouterOutputs["tenant"]["products"]["all"]["products"][number];
 
 interface ProductCardProps {
-  product: ProductData;
   onClick?: (product: ProductData) => void;
+  product: ProductData;
 }
 
 export function ProductCard({ product, onClick }: ProductCardProps) {

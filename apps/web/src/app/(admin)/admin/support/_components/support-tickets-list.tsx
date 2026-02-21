@@ -44,13 +44,13 @@ const categoryLabels: Record<TicketCategory, string> = {
 };
 
 interface SupportTicket {
-  id: string;
-  subject: string;
-  message: string;
-  status: TicketStatus;
-  priority: TicketPriority;
   category: TicketCategory;
   createdAt: Date | string;
+  id: string;
+  message: string;
+  priority: TicketPriority;
+  status: TicketStatus;
+  subject: string;
   tenant?: {
     id: string;
     name: string;
@@ -64,8 +64,8 @@ interface SupportTicket {
 }
 
 interface SupportTicketsListProps {
-  tickets: SupportTicket[];
   isLoading?: boolean;
+  tickets: SupportTicket[];
 }
 
 export function SupportTicketsList({

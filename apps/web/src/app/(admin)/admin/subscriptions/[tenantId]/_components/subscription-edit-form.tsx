@@ -32,22 +32,22 @@ import { trpc, trpcClient } from "@/utils/trpc";
 type SubscriptionStatus = "TRIAL" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 
 interface Subscription {
-  id: string;
-  tenantId: string;
-  planId: string;
-  status: SubscriptionStatus;
-  startDate: string;
   expiresAt: string | null;
-  trialEndsAt: string | null;
+  id: string;
+  plan: {
+    id: string;
+    name: string;
+  };
+  planId: string;
+  startDate: string;
+  status: SubscriptionStatus;
   tenant: {
     id: string;
     name: string;
     slug: string;
   };
-  plan: {
-    id: string;
-    name: string;
-  };
+  tenantId: string;
+  trialEndsAt: string | null;
 }
 
 interface SubscriptionEditFormProps {

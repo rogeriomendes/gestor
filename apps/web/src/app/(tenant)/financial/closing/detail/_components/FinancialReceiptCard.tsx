@@ -10,8 +10,8 @@ type ReceiptItem =
   RouterOutputs["tenant"]["financialReceipt"]["all"]["receipts"][number];
 
 interface FinancialReceiptCardProps {
-  receipt: ReceiptItem;
   onClick?: (receipt: ReceiptItem) => void;
+  receipt: ReceiptItem;
 }
 
 export function FinancialReceiptCard({

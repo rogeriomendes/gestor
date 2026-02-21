@@ -26,23 +26,33 @@ import {
 
 interface User {
   id: string;
+  isPending?: boolean;
+  role: string | null;
+  tenant: {
+    id: string;
+    name: string;
+  } | null;
   user: {
     id: string;
     name: string;
     email: string;
     createdAt: Date;
   };
-  role: string | null;
-  isPending?: boolean;
-  tenant: {
-    id: string;
-    name: string;
-  } | null;
 }
 
 interface UsersListProps {
-  users: User[];
   isLoading: boolean;
+  onDelete?: (userId: string) => void;
+  onEdit: (
+    userId: string,
+    userName: string,
+    userEmail: string,
+    tenantId?: string | null,
+    role?: string | null
+  ) => void;
+  onPageChange: (page: number) => void;
+  onResendInvite?: (userId: string) => void;
+  onRestore?: (userId: string) => void;
   pagination:
     | {
         page: number;
@@ -51,17 +61,7 @@ interface UsersListProps {
       }
     | undefined;
   selectedRole: string;
-  onPageChange: (page: number) => void;
-  onEdit: (
-    userId: string,
-    userName: string,
-    userEmail: string,
-    tenantId?: string | null,
-    role?: string | null
-  ) => void;
-  onDelete?: (userId: string) => void;
-  onRestore?: (userId: string) => void;
-  onResendInvite?: (userId: string) => void;
+  users: User[];
 }
 
 export function UsersList({

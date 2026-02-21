@@ -7,12 +7,12 @@ import { getFinancialClosingStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 
 interface FinancialClosingCardProps {
+  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
+  companyName?: string | null;
   item: {
     type: "open" | "closed";
     data: any;
   };
-  /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
-  companyName?: string | null;
   onClick?: (item: any) => void;
 }
 

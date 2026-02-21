@@ -14,10 +14,10 @@ import {
 
 interface WelcomeInviteEmailProps {
   activationLink: string;
-  userName?: string;
   invitedBy?: string;
-  tenantName?: string;
   roleName?: string;
+  tenantName?: string;
+  userName?: string;
 }
 
 export function WelcomeInviteEmail({

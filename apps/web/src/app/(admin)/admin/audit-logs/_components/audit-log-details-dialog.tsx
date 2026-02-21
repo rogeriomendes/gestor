@@ -17,24 +17,24 @@ import { formatDateTime } from "@/lib/date-utils";
 
 interface AuditLogDetails {
   action: string;
-  resourceType: string;
   createdAt: Date | string;
+  ipAddress?: string | null;
+  metadata?: unknown;
+  resourceType: string;
+  tenant?: {
+    name: string;
+  } | null;
   user?: {
     name: string | null;
     email: string;
   } | null;
-  tenant?: {
-    name: string;
-  } | null;
-  ipAddress?: string | null;
-  metadata?: unknown;
 }
 
 interface AuditLogDetailsDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  logDetails: AuditLogDetails | undefined;
   isLoading?: boolean;
+  logDetails: AuditLogDetails | undefined;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
 }
 
 function LoadingSkeleton() {

@@ -21,18 +21,18 @@ import { UserBasicInfoSection } from "./user-basic-info-section";
 import { UserTenantSection } from "./user-tenant-section";
 
 interface EditUserDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  userId: string;
-  userName: string;
-  userEmail: string;
-  userTenantId?: string | null;
-  userRole?: string | null;
-  onSuccess: () => void;
   /**
    * Se true, oculta a seção de seleção de tenant (usado na área do tenant)
    */
   hideTenantSection?: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
+  open: boolean;
+  userEmail: string;
+  userId: string;
+  userName: string;
+  userRole?: string | null;
+  userTenantId?: string | null;
 }
 
 export function EditUserDialog({

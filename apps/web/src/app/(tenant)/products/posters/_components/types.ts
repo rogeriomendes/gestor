@@ -1,19 +1,18 @@
 export interface PosterProduct {
-  id: string;
-  name: string;
-  price: number;
-  unit: string;
-
-  internalId?: string;
-  originalPrice: number;
-  showOriginalPrice?: boolean;
-
-  // Promo fields
-  promoType?: number;
-  qtdPromocao?: number;
-  qtdPagar?: number;
-
   // Code info
   code?: string;
   ean?: string;
+  id: string;
+
+  internalId?: string;
+  name: string;
+  originalPrice: number;
+  price: number;
+
+  // Promo fields
+  promoType?: number;
+  qtdPagar?: number;
+  qtdPromocao?: number;
+  showOriginalPrice?: boolean;
+  unit: string;
 }

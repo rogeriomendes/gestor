@@ -27,9 +27,9 @@ import { getRoleLabel, type Role } from "@/lib/role-labels";
 import { trpcClient } from "@/utils/trpc";
 
 interface CreateUserDialogProps {
-  open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  open: boolean;
 }
 
 export function CreateUserDialog({

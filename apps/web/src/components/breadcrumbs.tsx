@@ -20,14 +20,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export interface BreadcrumbItemType {
-  label: string;
   href?: Route;
   isCurrent?: boolean;
+  label: string;
 }
 
 interface BreadcrumbsProps {
-  items: BreadcrumbItemType[];
   className?: string;
+  items: BreadcrumbItemType[];
 }
 
 // Wrapper component to use Next.js Link with BreadcrumbLink

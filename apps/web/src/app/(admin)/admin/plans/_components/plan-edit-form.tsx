@@ -24,18 +24,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { trpcClient } from "@/utils/trpc";
 
 interface Plan {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
   active: boolean;
+  description: string | null;
+  id: string;
   isDefault: boolean;
+  name: string;
+  price: number;
 }
 
 interface PlanEditFormProps {
-  plan: Plan;
   onCancel?: () => void;
   onSuccess?: () => void;
+  plan: Plan;
 }
 
 const updatePlanSchema = z.object({

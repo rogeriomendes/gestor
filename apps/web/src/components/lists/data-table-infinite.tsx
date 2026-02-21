@@ -17,43 +17,43 @@ import {
 import { cn } from "@/lib/utils";
 
 export interface DataTableInfiniteHeader {
+  className?: string;
   key: string;
   label: string | ReactNode;
-  className?: string;
 }
 
 export interface DataTableInfiniteProps<T> {
+  className?: string;
   /** Páginas retornadas por useInfiniteQuery (ex.: data?.pages) */
   data?: unknown[];
-  /** Chaves em cada página onde estão os itens (ex.: ["products"], ["financialBills"]) */
-  pageItemKeys: string[];
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
-  isLoading?: boolean;
+  emptyIcon?: ReactNode;
+
+  emptyMessage?: string;
   fetchNextPage: () => Promise<unknown>;
-
-  /** Cabeçalhos da tabela (key, label, className opcional) */
-  headers: DataTableInfiniteHeader[];
-
-  /** Renderiza uma linha; retorna array de células na ordem dos headers ou null para omitir */
-  renderRow: (item: T, index: number) => ReactNode[] | null;
-
-  onRowClick?: (item: T, index: number) => void;
   getRowClassName?: (item: T, index: number) => string;
 
   /** Chave estável por item (ex.: item => item.ID). Se não passar, usa index. */
   getRowKey?: (item: T, index: number) => string | number;
+  hasNextPage?: boolean;
 
-  selectedRows?: Set<number> | number[];
-
-  emptyMessage?: string;
-  emptyIcon?: ReactNode;
+  /** Cabeçalhos da tabela (key, label, className opcional) */
+  headers: DataTableInfiniteHeader[];
+  isFetchingNextPage?: boolean;
+  isLoading?: boolean;
   loadingMessage?: string;
   loadMoreMessage?: string;
   noMoreDataMessage?: string;
 
+  onRowClick?: (item: T, index: number) => void;
+  /** Chaves em cada página onde estão os itens (ex.: ["products"], ["financialBills"]) */
+  pageItemKeys: string[];
+
+  /** Renderiza uma linha; retorna array de células na ordem dos headers ou null para omitir */
+  renderRow: (item: T, index: number) => ReactNode[] | null;
+
   rootMargin?: string;
-  className?: string;
+
+  selectedRows?: Set<number> | number[];
   tableClassName?: string;
 }
 

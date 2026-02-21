@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface CopyButtonProps extends ComponentProps<"button"> {
-  value: string;
-  text?: string;
   className?: string;
+  text?: string;
+  value: string;
 }
 
 export function CopyButton({

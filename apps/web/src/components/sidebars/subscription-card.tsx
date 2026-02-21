@@ -33,10 +33,10 @@ function getExpirationMessage(daysUntilExpiration: number): string {
 }
 
 interface SubscriptionWarningCardProps {
-  icon: React.ReactNode;
-  message: string;
   bgColor: string;
   borderColor: string;
+  icon: React.ReactNode;
+  message: string;
   textColor: string;
 }
 

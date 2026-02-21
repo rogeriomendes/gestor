@@ -10,8 +10,8 @@ import {
 import { getRoleLabel, type Role, TENANT_ROLES } from "@/lib/role-labels";
 
 interface RoleListProps {
-  selectedRole: Role | null;
   onRoleSelect: (role: Role) => void;
+  selectedRole: Role | null;
 }
 
 export function RoleList({ selectedRole, onRoleSelect }: RoleListProps) {

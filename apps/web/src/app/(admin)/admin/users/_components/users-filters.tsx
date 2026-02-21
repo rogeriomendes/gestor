@@ -16,15 +16,15 @@ interface Tenant {
 }
 
 interface UsersFiltersProps {
+  onRoleChange: (value: string) => void;
+  onSearchChange: (value: string) => void;
+  onShowDeletedChange: (value: boolean) => void;
+  onTenantChange: (value: string) => void;
   search: string;
-  selectedTenant: string;
   selectedRole: string;
+  selectedTenant: string;
   showDeleted: boolean;
   tenants: Tenant[];
-  onSearchChange: (value: string) => void;
-  onTenantChange: (value: string) => void;
-  onRoleChange: (value: string) => void;
-  onShowDeletedChange: (value: boolean) => void;
 }
 
 export function UsersFilters({

@@ -12,27 +12,27 @@ import { trpc } from "@/utils/trpc";
 import { EntryCard } from "./EntryCard";
 
 interface EntryGridProps {
+  className?: string;
   // Dados da query infinita
   data?: any[];
-  pageItemKeys: string[];
-  hasNextPage?: boolean;
-  isFetchingNextPage?: boolean;
-  isLoading?: boolean;
-  fetchNextPage: () => Promise<unknown>;
-
-  // Callback para clique na entrada
-  onEntryClick?: (entry: any) => void;
+  emptyIcon?: React.ReactNode;
 
   // Estados vazios e loading
   emptyMessage?: string;
-  emptyIcon?: React.ReactNode;
+  fetchNextPage: () => Promise<unknown>;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  isLoading?: boolean;
   loadingMessage?: string;
   loadMoreMessage?: string;
   noMoreDataMessage?: string;
 
+  // Callback para clique na entrada
+  onEntryClick?: (entry: any) => void;
+  pageItemKeys: string[];
+
   // Configurações opcionais
   rootMargin?: string;
-  className?: string;
 }
 
 export function EntryGrid({
