@@ -1,13 +1,13 @@
 "use client";
 
-import { ChevronDownIcon } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { ChevronDownIcon } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import ReceiveClientsLinks from "./ReceiveClientsLinks";
 
 export default function ReceiveClientsMobile() {
@@ -28,7 +28,7 @@ export default function ReceiveClientsMobile() {
       onOpenChange={setOpen}
       open={open}
     >
-      <CollapsibleTrigger className="flex items-center rounded-md border bg-card p-3 text-base text-card-foreground shadow hover:bg-accent [&[data-state=open]>svg:last-of-type]:rotate-180 [&[data-state=open]]:bg-accent">
+      <CollapsibleTrigger className="flex items-center rounded-md border bg-card p-2 text-base text-card-foreground shadow hover:bg-accent data-[state=open]:bg-accent [&[data-state=open]>svg:last-of-type]:rotate-180">
         Clientes
         <ChevronDownIcon className="ml-auto size-5 text-muted-foreground transition duration-300" />
       </CollapsibleTrigger>

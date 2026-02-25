@@ -1,3 +1,18 @@
+import { useQuery } from "@tanstack/react-query";
+import {
+  BanknoteIcon,
+  CornerDownLeftIcon,
+  CreditCardIcon,
+  HandshakeIcon,
+  MinusIcon,
+  PanelBottomCloseIcon,
+  PanelBottomIcon,
+  PanelBottomOpenIcon,
+  SheetIcon,
+  TicketCheckIcon,
+  TicketIcon,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import { DetailBudget } from "@/app/(tenant)/sales/budget/_components/DetailBudget";
 import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
 import { PixIcon } from "@/assets/PixIcon";
@@ -15,21 +30,6 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import {
-  BanknoteIcon,
-  CornerDownLeftIcon,
-  CreditCardIcon,
-  HandshakeIcon,
-  MinusIcon,
-  PanelBottomCloseIcon,
-  PanelBottomIcon,
-  PanelBottomOpenIcon,
-  SheetIcon,
-  TicketCheckIcon,
-  TicketIcon,
-} from "lucide-react";
-import { useMemo, useState } from "react";
 import type { ClosingData } from "../types";
 import { PaymentAccordionItem } from "./PaymentAccordionItem";
 import { PaymentLineItem } from "./PaymentLineItem";
@@ -152,11 +152,11 @@ export default function FinancialClosingPayment({
               amount={
                 closingAmountQuery.data
                   ? formatAsCurrency(
-                    closingAmountQuery.data?.paymentsDnAmount +
-                    closingAmountQuery.data?.supplyAmount -
-                    closingAmountQuery.data?.sangriaAmount -
-                    closingAmountQuery.data?.devolutionDnAmount
-                  )
+                      closingAmountQuery.data?.paymentsDnAmount +
+                        closingAmountQuery.data?.supplyAmount -
+                        closingAmountQuery.data?.sangriaAmount -
+                        closingAmountQuery.data?.devolutionDnAmount
+                    )
                   : ""
               }
               icon={PanelBottomIcon}
@@ -462,7 +462,7 @@ export default function FinancialClosingPayment({
               <ShowText>
                 {formatAsCurrency(
                   Number(closingAmountQuery.data?.groupedPaymentsTotalAmount) +
-                  Number(closingAmountQuery.data?.installmentsAmount)
+                    Number(closingAmountQuery.data?.installmentsAmount)
                 )}
               </ShowText>
             </div>

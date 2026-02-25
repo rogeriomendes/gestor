@@ -1,5 +1,9 @@
 "use client";
 
+import type { Route } from "next";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,10 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/format-date";
-import type { Route } from "next";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { getFinancialClosingStatusInfo } from "@/lib/status-info";
+import { cn } from "@/lib/utils";
 import FinancialClosingPayment from "./_components/FinancialClosingPayment";
 import FinancialClosingSalesList from "./_components/FinancialClosingSales";
 import type { ClosingData } from "./types";
@@ -121,19 +123,23 @@ export default function FinancialClosingDetailPage() {
     );
   }
 
+  const closingStatusInfo = getFinancialClosingStatusInfo(
+    closingData.hourClosed ? "closed" : "open"
+  );
+
   return (
     <PageLayout
       actions={
         closingData ? (
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{closingData.name || "—"}</Badge>
+            <Badge className="px-2 py-3.5 text-base" variant="secondary">
+              {closingData.name || "—"}
+            </Badge>
             <Badge
-              className={
-                closingData.hourClosed ? "" : "bg-green-600 hover:bg-green-700"
-              }
-              variant={closingData.hourClosed ? "secondary" : "default"}
+              className={cn(closingStatusInfo.color, "px-2 py-3.5 text-base")}
+              variant={closingStatusInfo.variant}
             >
-              {closingData.hourClosed ? "FECHADO" : "ABERTO"}
+              {closingStatusInfo.label.toUpperCase()}
             </Badge>
           </div>
         ) : (
@@ -152,7 +158,6 @@ export default function FinancialClosingDetailPage() {
           isCurrent: true,
           href: `/financial/closing/detail?id=${closingData?.id}&name=${closingData?.name}` as Route,
         },
-        // { label: "Detalhes", isCurrent: true },
       ]}
       showBackButton
       subtitle="Detalhes do fechamento de caixa"

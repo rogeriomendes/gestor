@@ -1,11 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
-import { CalendarIcon, PackageIcon, SquareUserIcon } from "lucide-react";
-import type { Route } from "next";
-import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +19,12 @@ import { getFinancialClosingStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon, PackageIcon, SquareUserIcon } from "lucide-react";
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
 import { FinancialClosingGrid } from "./_components/FinancialClosingGrid";
 
 type AccountItem =
