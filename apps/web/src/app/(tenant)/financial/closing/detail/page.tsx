@@ -1,9 +1,5 @@
 "use client";
 
-import type { Route } from "next";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/format-date";
+import type { Route } from "next";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 import FinancialClosingPayment from "./_components/FinancialClosingPayment";
 import FinancialClosingSalesList from "./_components/FinancialClosingSales";
 import type { ClosingData } from "./types";
@@ -148,7 +148,7 @@ export default function FinancialClosingDetailPage() {
         { label: "Financeiro", href: "/financial" as Route },
         { label: "Fechamentos de Caixa", href: "/financial/closing" as Route },
         {
-          label: `${closingData?.name} ${closingData?.dateOpen && formatDate(closingData?.dateOpen)}`,
+          label: `${closingData?.name} - ${closingData?.dateOpen && formatDate(closingData?.dateOpen)}`,
           isCurrent: true,
           href: `/financial/closing/detail?id=${closingData?.id}&name=${closingData?.name}` as Route,
         },

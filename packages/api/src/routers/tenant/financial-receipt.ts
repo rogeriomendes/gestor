@@ -35,6 +35,7 @@ export const financialReceiptRouter = router({
           dataAbertura,
           horaAbertura,
           horaFechamento,
+          idClosing,
         } = input;
 
         const timeNow = new Date();
@@ -45,6 +46,12 @@ export const financialReceiptRouter = router({
         const whereCompany =
           companyId && companyId !== 0
             ? { venda_cabecalho: { ID_EMPRESA: companyId } }
+            : {};
+
+        // Filtro por conta/fechamento via venda_cabecalho (ID_CONTA_CAIXA fica na venda)
+        const whereClosing =
+          idClosing && idClosing !== 0
+            ? { venda_cabecalho: { ID_CONTA_CAIXA: idClosing } }
             : {};
 
         // Filtro por data e horário
@@ -62,6 +69,7 @@ export const financialReceiptRouter = router({
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const where = {
           ...whereCompany,
+          ...whereClosing,
           ...whereDate,
         };
 
@@ -85,11 +93,16 @@ export const financialReceiptRouter = router({
             { venda_cabecalho: { HORA_SAIDA: "desc" } }
           );
         }
+        // Desempate por ID para ordem estável
+        orderBy.push({ ID: "asc" });
+
+        // Paginação por offset: cursor representa o deslocamento (skip)
+        const offset = cursor ? Number.parseInt(cursor, 10) : 0;
 
         const receipts = await gestorPrisma.venda_recebimento.findMany({
           where,
+          skip: offset,
           take: limit + 1,
-          cursor: cursor ? { ID: Number.parseInt(cursor, 10) } : undefined,
           orderBy,
           select: {
             ID: true,
@@ -106,6 +119,7 @@ export const financialReceiptRouter = router({
             venda_cabecalho: {
               select: {
                 ID: true,
+                ID_CONTA_CAIXA: true,
                 NUMERO_NFE: true,
                 SERIE_NFE: true,
                 NFCE: true,
@@ -242,8 +256,8 @@ export const financialReceiptRouter = router({
 
         let nextCursor: typeof cursor | undefined;
         if (receiptsWithSequencia.length > limit) {
-          const nextItem = receiptsWithSequencia.pop();
-          nextCursor = nextItem?.ID.toString();
+          receiptsWithSequencia.pop();
+          nextCursor = (offset + limit).toString();
         }
 
         return {

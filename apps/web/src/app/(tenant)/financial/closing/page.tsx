@@ -2,7 +2,7 @@
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, PackageIcon, SquareUserIcon, XIcon } from "lucide-react";
+import { CalendarIcon, PackageIcon, SquareUserIcon } from "lucide-react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -210,55 +210,46 @@ export default function FinancialClosingsList() {
       subtitle="Consulte as aberturas e fechamentos de caixa"
       title="Movimento do caixa"
     >
-      <div className="mt-2 flex flex-row gap-2 md:mt-0 md:gap-3">
-        <Combobox
-          className="flex-1 md:w-48"
-          icon={<SquareUserIcon className="size-4" />}
-          onValueChange={setAccount}
-          options={accountsOptions}
-          placeholder="Conta caixa"
-          searchPlaceholder="Buscar conta caixa..."
-          value={account}
-        />
-        <Popover>
-          <PopoverTrigger
-            render={
-              <Button
-                className={cn(
-                  "flex-1 justify-between px-3 text-left font-normal md:w-60",
-                  !date && "text-muted-foreground"
-                )}
-                variant="outline"
+      <div className="flex flex-col md:flex-row md:items-center">
+        <div className="flex flex-row gap-2 md:gap-3">
+          <Combobox
+            className="flex-1 md:w-48"
+            icon={<SquareUserIcon className="size-4" />}
+            onValueChange={setAccount}
+            options={accountsOptions}
+            placeholder="Conta caixa"
+            searchPlaceholder="Buscar conta caixa..."
+            value={account}
+          />
+          <Popover>
+            <PopoverTrigger
+              render={
+                <Button
+                  className={cn(
+                    "flex-1 justify-between px-3 text-left font-normal md:w-60",
+                    !date && "text-muted-foreground"
+                  )}
+                  variant="outline"
+                />
+              }
+            >
+              <div className="flex flex-row items-center">
+                <CalendarIcon className="mr-2 size-4" />
+                {date ? formatDate(date, true) : <span>Data de abertura</span>}
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                captionLayout="dropdown"
+                disabled={{ after: new Date() }}
+                locale={ptBR}
+                mode="single"
+                onSelect={setDate}
+                selected={date}
               />
-            }
-          >
-            <div className="flex flex-row items-center">
-              <CalendarIcon className="mr-2 size-4" />
-              {date ? formatDate(date, true) : <span>Data de abertura</span>}
-            </div>
-            <XIcon
-              className={cn(
-                "invisible size-5 cursor-pointer rounded-md hover:bg-muted-foreground",
-                date && "visible"
-              )}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setDate(undefined);
-              }}
-            />
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              captionLayout="dropdown"
-              disabled={{ after: new Date() }}
-              locale={ptBR}
-              mode="single"
-              onSelect={setDate}
-              selected={date}
-            />
-          </PopoverContent>
-        </Popover>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
       {isMobile ? (
         <FinancialClosingGrid
