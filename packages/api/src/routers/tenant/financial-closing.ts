@@ -237,6 +237,7 @@ export const financialClosingRouter = router({
             },
             select: {
               ID: true,
+              ID_VENDEDOR: true,
               PDV_CLIENTE_NOME: true,
               HORA_SAIDA: true,
               VALOR_TOTAL: true,
@@ -250,6 +251,7 @@ export const financialClosingRouter = router({
             where: {
               SITUACAO: "D",
               DATA_CADASTRO: dataAbertura,
+              ...whereCompany,
             },
             select: {
               ID: true,
@@ -365,20 +367,20 @@ export const financialClosingRouter = router({
         ]);
 
         // Batch load vendedores (optimized with Set deduplication)
-        const vendedorIds = [
+        const closingVendedorIds = [
           ...new Set([
-            ...budget.map((item: any) => item.ID_VENDEDOR),
             ...devolution.map((item: any) => item.ID_VENDEDOR),
             ...allDiscount.map((item: any) => item.ID_VENDEDOR),
+            ...installments.map((item: any) => item.ID_VENDEDOR),
           ]),
         ].filter((id: any): id is number => id !== null && id !== 0);
 
         const vendedores =
-          vendedorIds.length > 0
+          closingVendedorIds.length > 0
             ? await gestorPrisma.vendedor.findMany({
                 where: {
                   ID: {
-                    in: vendedorIds,
+                    in: closingVendedorIds,
                   },
                 },
                 select: {
@@ -400,13 +402,21 @@ export const financialClosingRouter = router({
           vendedores.map((vendedor: any) => [vendedor.ID, vendedor])
         );
 
-        // Combinar dados com vendedores
-        const budgetWithVendedor = budget.map((item: any) => ({
-          ...item,
-          vendedor: item.ID_VENDEDOR
-            ? vendedorMap.get(item.ID_VENDEDOR) || null
-            : null,
-        }));
+        const closingVendedorIdSet = new Set<number>(closingVendedorIds);
+
+        // Combinar dados com vendedores e filtrar budgets pelo(s) vendedor(es) do fechamento
+        const budgetWithVendedor = budget
+          .filter((item: any) =>
+            closingVendedorIdSet.size === 0
+              ? true
+              : closingVendedorIdSet.has(item.ID_VENDEDOR)
+          )
+          .map((item: any) => ({
+            ...item,
+            vendedor: item.ID_VENDEDOR
+              ? vendedorMap.get(item.ID_VENDEDOR) || null
+              : null,
+          }));
 
         const devolutionWithVendedor = devolution.map((item: any) => ({
           ...item,

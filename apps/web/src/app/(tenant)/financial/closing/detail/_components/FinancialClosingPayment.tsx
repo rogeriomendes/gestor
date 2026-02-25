@@ -152,11 +152,11 @@ export default function FinancialClosingPayment({
               amount={
                 closingAmountQuery.data
                   ? formatAsCurrency(
-                      closingAmountQuery.data?.paymentsDnAmount +
-                        closingAmountQuery.data?.supplyAmount -
-                        closingAmountQuery.data?.sangriaAmount -
-                        closingAmountQuery.data?.devolutionDnAmount
-                    )
+                    closingAmountQuery.data?.paymentsDnAmount +
+                    closingAmountQuery.data?.supplyAmount -
+                    closingAmountQuery.data?.sangriaAmount -
+                    closingAmountQuery.data?.devolutionDnAmount
+                  )
                   : ""
               }
               icon={PanelBottomIcon}
@@ -366,9 +366,9 @@ export default function FinancialClosingPayment({
                 title="ORÇAMENTO / PEDIDO"
                 value="OP"
               >
-                <div className="mb-4 text-xs text-yellow-500">
+                {/* <div className="mb-4 text-xs text-yellow-500">
                   Serão listados apenas os pedidos em digitação do dia.
-                </div>
+                </div> */}
                 {closingAmountQuery.data?.budget?.map(
                   (budget: AmountByIdData["budget"][number]) => (
                     <PaymentLineItem
@@ -462,7 +462,7 @@ export default function FinancialClosingPayment({
               <ShowText>
                 {formatAsCurrency(
                   Number(closingAmountQuery.data?.groupedPaymentsTotalAmount) +
-                    Number(closingAmountQuery.data?.installmentsAmount)
+                  Number(closingAmountQuery.data?.installmentsAmount)
                 )}
               </ShowText>
             </div>
