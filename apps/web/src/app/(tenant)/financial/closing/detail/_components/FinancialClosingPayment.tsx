@@ -228,6 +228,38 @@ export default function FinancialClosingPayment({
                 </PaymentAccordionItem>
               );
             })}
+            {(closingAmountQuery.data?.valeSalesAmount ?? 0) > 0 && (
+              <PaymentAccordionItem
+                amount={formatAsCurrency(
+                  Number(closingAmountQuery.data?.valeSalesAmount)
+                )}
+                className="space-y-0"
+                icon={TicketIcon}
+                title="VALE"
+                value="VA"
+              >
+                {closingAmountQuery.data?.valeSales?.map((sale) => (
+                  <PaymentLineItem
+                    amount={formatAsCurrency(Number(sale.TOTAL_VALE))}
+                    key={sale.ID}
+                    label={sale.CLIENTE_NOME || ""}
+                    onClick={() => {
+                      setSelectedSaleId(sale.ID);
+                      setIsSalesModalOpen(true);
+                    }}
+                  >
+                    {sale.HORA_SAIDA && (
+                      <Badge
+                        className="mr-2 w-[70px] justify-center"
+                        variant="outline"
+                      >
+                        {sale.HORA_SAIDA}
+                      </Badge>
+                    )}
+                  </PaymentLineItem>
+                ))}
+              </PaymentAccordionItem>
+            )}
             {closingAmountQuery.data?.supplyAmount !== 0 && (
               <PaymentAccordionItem
                 amount={`+${formatAsCurrency(

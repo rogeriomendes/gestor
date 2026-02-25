@@ -252,7 +252,7 @@ export default function FinancialClosingSalesList({
               parcelaInfo,
               tipoPagamento,
               receipt?.venda_cabecalho?.NFCE === "S" &&
-              removeLeadingZero(String(receipt.venda_cabecalho?.NUMERO_NFE)),
+                removeLeadingZero(String(receipt.venda_cabecalho?.NUMERO_NFE)),
               receipt?.venda_cabecalho?.SERIE_NFE,
             ];
           }}

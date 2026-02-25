@@ -167,6 +167,7 @@ export const financialClosingRouter = router({
           budget,
           devolution,
           allDiscount,
+          valeSalesRaw,
         ] = await Promise.all([
           // paymentsAmount
           gestorPrisma.fin_parcela_recebimento.findMany({
@@ -327,6 +328,40 @@ export const financialClosingRouter = router({
               VALOR_DESCONTO: true,
             },
           }),
+          // valeSalesRaw - vendas no período/conta para identificar VA (vale)
+          gestorPrisma.venda_cabecalho.findMany({
+            where: {
+              ID_CONTA_CAIXA: Number(idClosing),
+              DATA_VENDA: dataAbertura,
+              HORA_SAIDA: {
+                gte: String(horaAbertura),
+                lte: String(closingTime),
+              },
+              DEVOLUCAO: "N",
+              ...whereCompany,
+            },
+            select: {
+              ID: true,
+              HORA_SAIDA: true,
+              VALOR_TOTAL: true,
+              PDV_CLIENTE_NOME: true,
+              cliente: {
+                select: {
+                  pessoa: {
+                    select: {
+                      NOME: true,
+                    },
+                  },
+                },
+              },
+              venda_recebimento: {
+                select: {
+                  ID_FIN_TIPO_RECEBIMENTO: true,
+                  VALOR_RECEBIDO: true,
+                },
+              },
+            },
+          }),
         ]);
 
         // Batch load vendedores (optimized with Set deduplication)
@@ -401,7 +436,11 @@ export const financialClosingRouter = router({
           );
 
         const groupedPaymentsAmount = paymentsAmount
-          .filter((payment: PaymentAmountRow) => payment.ST_SUPRIMENTO === "N")
+          .filter(
+            (payment: PaymentAmountRow) =>
+              payment.ST_SUPRIMENTO === "N" &&
+              payment.fin_tipo_recebimento?.TIPO !== "VA"
+          )
           .reduce(
             (
               result: {
@@ -505,6 +544,72 @@ export const financialClosingRouter = router({
               Number(b.VALOR_DESCONTO) - Number(a.VALOR_DESCONTO)
           );
 
+        // Vendas pagas com VA (vale)
+        type ValeSalesRawRow = (typeof valeSalesRaw)[number];
+
+        // IDs de tipos de recebimento usados nessas vendas
+        const valeReceiptTypeIds = [
+          ...new Set(
+            valeSalesRaw
+              .flatMap((row: ValeSalesRawRow) =>
+                row.venda_recebimento.map(
+                  (rec: { ID_FIN_TIPO_RECEBIMENTO: number }) =>
+                    rec.ID_FIN_TIPO_RECEBIMENTO
+                )
+              )
+              .filter(
+                (id: number | undefined): id is number => id !== undefined
+              )
+          ),
+        ];
+
+        // Tipos que são VA (vale)
+        const valeTypes =
+          valeReceiptTypeIds.length > 0
+            ? await gestorPrisma.fin_tipo_recebimento.findMany({
+                where: {
+                  ID: { in: valeReceiptTypeIds },
+                  TIPO: "VA",
+                },
+                select: { ID: true },
+              })
+            : [];
+
+        const valeTypeIdSet = new Set<number>(valeTypes.map((t) => t.ID));
+
+        const valeSales = valeSalesRaw
+          .filter((row: ValeSalesRawRow) =>
+            row.venda_recebimento.some((rec) =>
+              valeTypeIdSet.has(rec.ID_FIN_TIPO_RECEBIMENTO)
+            )
+          )
+          .map((row: ValeSalesRawRow) => {
+            const clienteNome =
+              row.PDV_CLIENTE_NOME ?? row.cliente?.pessoa?.NOME ?? null;
+
+            const totalVale = row.venda_recebimento
+              .filter((rec) => valeTypeIdSet.has(rec.ID_FIN_TIPO_RECEBIMENTO))
+              .reduce(
+                (total: number, rec: { VALOR_RECEBIDO: any }) =>
+                  total + Number.parseFloat(String(rec.VALOR_RECEBIDO) || "0"),
+                0
+              );
+
+            return {
+              ID: row.ID,
+              HORA_SAIDA: row.HORA_SAIDA,
+              VALOR_TOTAL: Number.parseFloat(String(row.VALOR_TOTAL) || "0"),
+              CLIENTE_NOME: clienteNome,
+              TOTAL_VALE: totalVale,
+            };
+          })
+          .sort((a, b) => b.ID - a.ID);
+
+        const valeSalesAmount = valeSales.reduce(
+          (total, sale) => total + sale.TOTAL_VALE,
+          0
+        );
+
         type SupplyRow = (typeof supply)[number];
         const supplyAmount = supply.reduce(
           (total: number, payment: SupplyRow) =>
@@ -568,6 +673,8 @@ export const financialClosingRouter = router({
           devolution: devolutionWithVendedor,
           discountAmount,
           discount,
+          valeSalesAmount,
+          valeSales,
         };
       } catch (error) {
         console.error(
