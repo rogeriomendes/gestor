@@ -1,7 +1,8 @@
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { ExternalLinkIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 interface NfButtonProps {
   chaveAcesso: string;
@@ -20,7 +21,7 @@ interface NfButtonProps {
 export function NfButton({
   chaveAcesso,
   tipo = "nfe",
-  className = "h-6 px-2 [&_svg]:size-3",
+  className,
   size = "sm",
   variant = "ghost",
 }: NfButtonProps) {
@@ -43,7 +44,11 @@ export function NfButton({
 
   return (
     <Link href={getUrl() as Route} rel="noopener noreferrer" target="_blank">
-      <Button className={className} size={size} variant={variant}>
+      <Button
+        className={cn("h-6 cursor-pointer px-2 [&_svg]:size-3", className)}
+        size={size}
+        variant={variant}
+      >
         <ExternalLinkIcon />
         <span className="text-muted-foreground text-xs">{getLabel()}</span>
       </Button>

@@ -18,10 +18,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | GestorWeb - Sistema ERP",
-    default: "GestorWeb - Sistema ERP",
+    template: "%s | Gestor Web - Sistema ERP",
+    default: "Gestor Web - Sistema ERP",
   },
-  description: "GestorWeb - Sistema ERP de automação comercial",
+  description: "Gestor Web - Sistema ERP de automação comercial",
 };
 
 export default function RootLayout({

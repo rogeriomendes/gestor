@@ -1,7 +1,6 @@
 "use client";
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
 import {
   Building2Icon,
   CalendarDaysIcon,
@@ -20,15 +19,9 @@ import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { MetricCard } from "@/components/metric-card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -325,45 +318,17 @@ export default function FinancialBillsPayList() {
             searchPlaceholder="Buscar situação..."
             value={situation}
           />
-          <Popover>
-            <PopoverTrigger
-              render={
-                <Button
-                  className={cn(
-                    "w-60 justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                  variant="outline"
-                />
-              }
-            >
-              <CalendarRangeIcon className="h-4 w-4" />
-              {date?.from ? (
-                date.to ? (
-                  <>
-                    {formatDate(date.from, true)} - {formatDate(date.to, true)}
-                  </>
-                ) : (
-                  formatDate(date.from, true)
-                )
-              ) : (
-                <span>Data de vencimento</span>
-              )}
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-auto p-0">
-              <Calendar
-                captionLayout="dropdown"
-                defaultMonth={date?.from}
-                locale={ptBR}
-                mode="range"
-                onSelect={(date) => {
-                  setDate(date);
-                  resetSelection();
-                }}
-                selected={date}
-              />
-            </PopoverContent>
-          </Popover>
+          <DatePicker
+            calendarCaptionLayout="dropdown"
+            className="flex-1 md:w-64"
+            mode="range"
+            onChange={(range) => {
+              setDate(range);
+              resetSelection();
+            }}
+            placeholder="Data de vencimento"
+            value={date}
+          />
         </div>
       </div>
       {isMobile ? (

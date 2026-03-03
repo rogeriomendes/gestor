@@ -1,3 +1,7 @@
+import { FbiIcon } from "@/assets/FbiIcon";
+import { useTenant } from "@/contexts/tenant-context";
+import { authClient } from "@/lib/auth-client";
+import { getRedirectPath } from "@/lib/auth-redirect";
 import { useForm } from "@tanstack/react-form";
 import { Fingerprint, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -5,9 +9,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
-import { useTenant } from "@/contexts/tenant-context";
-import { authClient } from "@/lib/auth-client";
-import { getRedirectPath } from "@/lib/auth-redirect";
 import Loader from "./loader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -185,150 +186,177 @@ export default function SignInForm() {
   }
 
   return (
-    <div className="mx-auto mt-10 w-full max-w-md p-6">
-      <h1 className="mb-3 text-center font-bold text-3xl">
-        Bem-vindo de volta
-      </h1>
-      <p className="mb-6 text-center text-muted-foreground text-sm">
-        Entre com sua conta para continuar
-      </p>
-
-      <form
-        className="space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-      >
-        <div>
-          <form.Field name="email">
-            {(field) => (
-              <div className="space-y-2">
-                <Label htmlFor={field.name}>Email</Label>
-                <Input
-                  aria-invalid={!!submitError}
-                  id={field.name}
-                  name={field.name}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => {
-                    field.handleChange(e.target.value);
-                    if (submitError) {
-                      setSubmitError(null);
-                    }
-                  }}
-                  placeholder="seu@email.com"
-                  type="email"
-                  value={field.state.value}
-                />
-                {field.state.meta.errors.map((error) => (
-                  <p className="text-destructive text-sm" key={error?.message}>
-                    {error?.message}
-                  </p>
-                ))}
-              </div>
-            )}
-          </form.Field>
+    <div className="mx-auto flex min-h-[calc(100vh-160px)] w-full max-w-md flex-col justify-center px-4 py-8">
+      <div className="mb-6 flex flex-col items-center gap-1.5">
+        <div className="flex h-24 w-24 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm">
+          <FbiIcon className="h-20 w-20" />
         </div>
-
-        <div>
-          <form.Field name="password">
-            {(field) => (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor={field.name}>Senha</Label>
-                  <Link
-                    className="text-muted-foreground text-sm hover:text-primary hover:underline"
-                    href="/forgot-password"
-                  >
-                    Esqueceu a senha?
-                  </Link>
-                </div>
-                <Input
-                  aria-invalid={!!submitError}
-                  id={field.name}
-                  name={field.name}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => {
-                    field.handleChange(e.target.value);
-                    if (submitError) {
-                      setSubmitError(null);
-                    }
-                  }}
-                  placeholder="••••••••"
-                  type="password"
-                  value={field.state.value}
-                />
-                {field.state.meta.errors.map((error) => (
-                  <p className="text-destructive text-sm" key={error?.message}>
-                    {error?.message}
-                  </p>
-                ))}
-                {submitError && (
-                  <p className="text-destructive text-sm" role="alert">
-                    {submitError}
-                  </p>
-                )}
-              </div>
-            )}
-          </form.Field>
-        </div>
-
-        <form.Subscribe>
-          {(state) => (
-            <Button
-              className="w-full"
-              disabled={!state.canSubmit || state.isSubmitting}
-              type="submit"
-            >
-              {state.isSubmitting ? "Entrando..." : "Entrar"}
-            </Button>
-          )}
-        </form.Subscribe>
-      </form>
-
-      {/* Separador */}
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Ou continue com
-          </span>
-        </div>
+        <span className="font-semibold text-lg tracking-tight">Gestor Web</span>
       </div>
 
-      {/* Botões de login alternativo */}
-      <div className="grid grid-cols-2 gap-3">
-        {/* Login com Google */}
-        <Button
-          className="w-auto"
-          disabled={isSigningInWithGoogle}
-          onClick={handleGoogleSignIn}
-          variant="outline"
+      <div className="rounded-2xl bg-card/60 p-6 shadow-sm backdrop-blur">
+        <div className="mb-6 text-center">
+          <h1 className="font-semibold text-2xl tracking-tight md:text-3xl">
+            Bem-vindo de volta
+          </h1>
+          <p className="mt-2 text-muted-foreground text-sm">
+            Acesse sua conta para continuar gerenciando o seu negócio.
+          </p>
+        </div>
+
+        <form
+          className="space-y-5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
         >
-          {isSigningInWithGoogle ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <GoogleIcon className="mr-2 h-4 w-4" />
-          )}
-          Entrar com Google
-        </Button>
-        {/* Login com Passkey */}
-        <Button
-          className="w-auto"
-          disabled={isSigningInWithPasskey}
-          onClick={handlePasskeySignIn}
-          variant="outline"
-        >
-          {isSigningInWithPasskey ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Fingerprint className="mr-2 h-4 w-4" />
-          )}
-          Entrar com Passkey
-        </Button>
+          <div className="space-y-2">
+            <form.Field name="email">
+              {(field) => (
+                <div className="space-y-1.5">
+                  <Label htmlFor={field.name}>Email</Label>
+                  <Input
+                    aria-invalid={!!submitError}
+                    autoComplete="email"
+                    id={field.name}
+                    name={field.name}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value);
+                      if (submitError) {
+                        setSubmitError(null);
+                      }
+                    }}
+                    placeholder="seu@email.com"
+                    type="email"
+                    value={field.state.value}
+                  />
+                  {field.state.meta.errors.map((error) => (
+                    <p
+                      className="text-destructive text-xs"
+                      key={error?.message}
+                    >
+                      {error?.message}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </form.Field>
+          </div>
+
+          <div className="space-y-2">
+            <form.Field name="password">
+              {(field) => (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <Label htmlFor={field.name}>Senha</Label>
+                    <Link
+                      className="font-medium text-muted-foreground text-xs hover:text-primary hover:underline"
+                      href="/forgot-password"
+                    >
+                      Esqueceu a senha?
+                    </Link>
+                  </div>
+                  <Input
+                    aria-invalid={!!submitError}
+                    autoComplete="current-password"
+                    id={field.name}
+                    name={field.name}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value);
+                      if (submitError) {
+                        setSubmitError(null);
+                      }
+                    }}
+                    placeholder="••••••••"
+                    type="password"
+                    value={field.state.value}
+                  />
+                  {field.state.meta.errors.map((error) => (
+                    <p
+                      className="text-destructive text-xs"
+                      key={error?.message}
+                    >
+                      {error?.message}
+                    </p>
+                  ))}
+                  {submitError && (
+                    <p className="text-destructive text-xs" role="alert">
+                      {submitError}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+          </div>
+
+          <form.Subscribe>
+            {(state) => (
+              <Button
+                className="w-full gap-1.5"
+                disabled={!state.canSubmit || state.isSubmitting}
+                size="lg"
+                type="submit"
+              >
+                {state.isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                    Entrando...
+                  </>
+                ) : (
+                  "Entrar"
+                )}
+              </Button>
+            )}
+          </form.Subscribe>
+        </form>
+
+        {/* Separador */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-[11px] uppercase">
+            <span className="bg-card px-2 text-muted-foreground">
+              Ou entre com
+            </span>
+          </div>
+        </div>
+
+        {/* Botões de login alternativo */}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {/* Login com Google */}
+          <Button
+            className="w-full justify-center"
+            disabled={isSigningInWithGoogle}
+            onClick={handleGoogleSignIn}
+            variant="outline"
+          >
+            {isSigningInWithGoogle ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <GoogleIcon className="mr-2 h-4 w-4" />
+            )}
+            Google
+          </Button>
+          {/* Login com Passkey */}
+          <Button
+            className="w-full justify-center"
+            disabled={isSigningInWithPasskey}
+            onClick={handlePasskeySignIn}
+            variant="outline"
+          >
+            {isSigningInWithPasskey ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Fingerprint className="mr-2 h-4 w-4" />
+            )}
+            Passkey
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import type { ReactNode } from "react";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface PaymentAccordionItemProps {
   amount: string | number;
@@ -27,7 +27,7 @@ export function PaymentAccordionItem({
 }: PaymentAccordionItemProps) {
   return (
     <AccordionItem value={value}>
-      <AccordionTrigger>
+      <AccordionTrigger className="cursor-pointer py-2.5">
         <div className={`flex items-center ${color}`}>
           <div className="mr-4 flex flex-row items-center">
             {Icon && <Icon className="mr-2 size-4" />}

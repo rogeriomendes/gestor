@@ -1,9 +1,5 @@
 "use client";
 
-import { ChevronRightIcon } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { FbiIcon } from "@/assets/FbiIcon";
 import {
   Collapsible,
@@ -29,6 +25,10 @@ import {
 } from "@/components/ui/sidebar";
 import isActive from "@/lib/is-active";
 import { useHasPermission } from "@/lib/permissions";
+import { ChevronRightIcon } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { CompanySelector } from "../company-selector";
 import { ShowTextSwitcher } from "../show-text-switcher";
 import UserCard from "../user-card";
@@ -93,9 +93,8 @@ function TenantMenuItemWithPermission({
               <CollapsibleTrigger
                 render={
                   <SidebarMenuAction
-                    className={`right-1.5 mt-0.5 ml-auto size-4 transition-transform duration-300 ${
-                      expandedItems.has(item.title) ? "rotate-90" : "rotate-0"
-                    }`}
+                    className={`right-1.5 mt-0.5 ml-auto size-4 transition-transform duration-300 ${expandedItems.has(item.title) ? "rotate-90" : "rotate-0"
+                      }`}
                   />
                 }
               >
@@ -229,7 +228,7 @@ export function TenantSidebar() {
         <div className="flex items-center justify-between gap-2">
           <Link className="flex items-center gap-2" href="/dashboard">
             <FbiIcon aria-label="FBI Logo" className="size-8" />
-            <span className="font-bold text-current text-xl">FBI</span>
+            <span className="font-bold text-current text-xl">Gestor Web</span>
           </Link>
           <div className="flex items-center gap-2">
             <ShowTextSwitcher />

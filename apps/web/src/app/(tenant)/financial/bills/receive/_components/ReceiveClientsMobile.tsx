@@ -1,13 +1,13 @@
 "use client";
 
+import { ChevronDownIcon } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDownIcon } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import ReceiveClientsLinks from "./ReceiveClientsLinks";
 
 export default function ReceiveClientsMobile() {

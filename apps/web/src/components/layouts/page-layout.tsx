@@ -1,12 +1,12 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import type { Route } from "next";
-import { usePathname, useRouter } from "next/navigation";
 import { FbiIcon } from "@/assets/FbiIcon";
 import { type BreadcrumbItemType, Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { getIconForPathname } from "@/lib/menu-icon";
+import { ArrowLeft } from "lucide-react";
+import type { Route } from "next";
+import { usePathname, useRouter } from "next/navigation";
 import { ShowTextSwitcher } from "../show-text-switcher";
 import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
@@ -98,7 +98,7 @@ export function PageLayout({
         <div className="flex items-center gap-2 md:gap-4">
           {showBackButton && (
             <Button
-              className="transition-all hover:bg-accent"
+              className="cursor-pointer transition-all hover:bg-accent"
               onClick={handleBack}
               size="icon"
               variant="ghost"

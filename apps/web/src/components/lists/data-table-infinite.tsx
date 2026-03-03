@@ -1,8 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { useEffect, useMemo } from "react";
-import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
+import { useEffect, useMemo } from "react";
+import { useInView } from "react-intersection-observer";
 
 export interface DataTableInfiniteHeader {
   className?: string;
@@ -143,7 +143,7 @@ export function DataTableInfinite<T>({
               ? String(getRowKey(item, index))
               : `row-${index}`;
             const rowClassName = cn(
-              // "h-8",
+              "h-7 max-h-7 min-h-7",
               onRowClick && "cursor-pointer hover:bg-muted/50",
               customClassName
             );
@@ -165,7 +165,10 @@ export function DataTableInfinite<T>({
                 }}
               >
                 {headers.map((header, colIndex) => (
-                  <TableCell className={header.className} key={header.key}>
+                  <TableCell
+                    className={cn("p-1.5", header.className)}
+                    key={header.key}
+                  >
                     {rowData[colIndex] ?? ""}
                   </TableCell>
                 ))}

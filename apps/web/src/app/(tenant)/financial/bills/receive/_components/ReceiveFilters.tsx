@@ -1,18 +1,8 @@
 "use client";
 
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { CalendarIcon, Settings2Icon } from "lucide-react";
-import type { DateRange } from "react-day-picker";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { DatePicker, type DateRange } from "@/components/ui/date-picker";
+import { Settings2Icon } from "lucide-react";
 
 interface ReceiveFiltersProps {
   dateRange?: DateRange;
@@ -54,43 +44,15 @@ export function ReceiveFilters({
         />
 
         {/* Período - Data de Lançamento */}
-        <Popover>
-          <PopoverTrigger
-            render={
-              <Button
-                className={cn(
-                  "flex-1 justify-start text-left font-normal md:w-60",
-                  !dateRange && "text-muted-foreground"
-                )}
-                variant="outline"
-              />
-            }
-          >
-            <CalendarIcon className="size-4" />
-            {dateRange?.from ? (
-              dateRange.to ? (
-                <>
-                  {format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })} -{" "}
-                  {format(dateRange.to, "dd/MM/yyyy", { locale: ptBR })}
-                </>
-              ) : (
-                format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })
-              )
-            ) : (
-              "Selecionar período"
-            )}
-          </PopoverTrigger>
-          <PopoverContent align="start" className="w-auto p-0">
-            <Calendar
-              captionLayout="dropdown"
-              disabled={{ after: new Date() }}
-              locale={ptBR}
-              mode="range"
-              onSelect={onDateRangeChange}
-              selected={dateRange}
-            />
-          </PopoverContent>
-        </Popover>
+        <DatePicker
+          calendarCaptionLayout="dropdown"
+          // calendarDisabled={{ after: new Date() }}
+          className="flex-1 md:w-60"
+          mode="range"
+          onChange={onDateRangeChange}
+          placeholder="Selecionar período"
+          value={dateRange}
+        />
       </div>
 
       {/* Botão Limpar */}

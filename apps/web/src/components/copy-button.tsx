@@ -1,10 +1,10 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { CheckIcon, ClipboardIcon } from "lucide-react";
 import { type ComponentProps, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 interface CopyButtonProps extends ComponentProps<"button"> {
   className?: string;
@@ -42,7 +42,7 @@ export function CopyButton({
     <Button
       className={cn(
         text ? "h-6 px-2" : "size-4 px-0",
-        "justify-start [&_svg]:size-3",
+        "cursor-pointer justify-start [&_svg]:size-3",
         className
       )}
       onClick={() => {

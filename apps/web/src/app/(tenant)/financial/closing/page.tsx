@@ -1,16 +1,15 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { PackageIcon, SquareUserIcon } from "lucide-react";
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -19,12 +18,6 @@ import { getFinancialClosingStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
-import { CalendarIcon, PackageIcon, SquareUserIcon } from "lucide-react";
-import type { Route } from "next";
-import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
 import { FinancialClosingGrid } from "./_components/FinancialClosingGrid";
 
 type AccountItem =
@@ -221,34 +214,15 @@ export default function FinancialClosingsList() {
             searchPlaceholder="Buscar conta caixa..."
             value={account}
           />
-          <Popover>
-            <PopoverTrigger
-              render={
-                <Button
-                  className={cn(
-                    "flex-1 justify-between px-3 text-left font-normal md:w-60",
-                    !date && "text-muted-foreground"
-                  )}
-                  variant="outline"
-                />
-              }
-            >
-              <div className="flex flex-row items-center">
-                <CalendarIcon className="mr-2 size-4" />
-                {date ? formatDate(date, true) : <span>Data de abertura</span>}
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                captionLayout="dropdown"
-                disabled={{ after: new Date() }}
-                locale={ptBR}
-                mode="single"
-                onSelect={setDate}
-                selected={date}
-              />
-            </PopoverContent>
-          </Popover>
+          <DatePicker
+            calendarCaptionLayout="dropdown"
+            calendarDisabled={{ after: new Date() }}
+            className="flex-1 md:w-60"
+            closeOnSelect={false}
+            onChange={setDate}
+            placeholder="Data de abertura"
+            value={date}
+          />
         </div>
       </div>
       {isMobile ? (

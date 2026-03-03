@@ -1,18 +1,11 @@
 "use client";
 
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { CalendarIcon, FilterIcon, Search } from "lucide-react";
+import { FilterIcon, Search } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -20,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 
 interface ReportFiltersProps {
   initialFilters?: ReportFilters;
@@ -97,70 +89,31 @@ export function ReportFilters({
             <label className="font-medium text-sm" htmlFor="initial-date">
               Data Inicial
             </label>
-            <Popover>
-              <PopoverTrigger>
-                <Button
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !filters.initialDate && "text-muted-foreground"
-                  )}
-                  variant="outline"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {filters.initialDate ? (
-                    format(filters.initialDate, "dd/MM/yyyy", { locale: ptBR })
-                  ) : (
-                    <span>Selecionar data</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  captionLayout="dropdown"
-                  initialFocus
-                  locale={ptBR}
-                  mode="single"
-                  onSelect={(date) =>
-                    date && handleFilterChange("initialDate", date)
-                  }
-                  selected={filters.initialDate}
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker
+              calendarCaptionLayout="dropdown"
+              onChange={(date) =>
+                handleFilterChange(
+                  "initialDate",
+                  date ?? new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+                )
+              }
+              placeholder="Selecionar data"
+              value={filters.initialDate}
+            />
           </div>
 
           <div className="space-y-2">
             <label className="font-medium text-sm" htmlFor="final-date">
               Data Final
             </label>
-            <Popover>
-              <PopoverTrigger>
-                <Button
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !filters.finalDate && "text-muted-foreground"
-                  )}
-                  variant="outline"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {filters.finalDate ? (
-                    format(filters.finalDate, "dd/MM/yyyy", { locale: ptBR })
-                  ) : (
-                    <span>Selecionar data</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  initialFocus
-                  mode="single"
-                  onSelect={(date) =>
-                    date && handleFilterChange("finalDate", date)
-                  }
-                  selected={filters.finalDate}
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker
+              calendarCaptionLayout="dropdown"
+              onChange={(date) =>
+                handleFilterChange("finalDate", date ?? new Date())
+              }
+              placeholder="Selecionar data"
+              value={filters.finalDate}
+            />
           </div>
         </div>
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +12,7 @@ import {
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpcClient } from "@/utils/trpc";
+import { useMutation } from "@tanstack/react-query";
 
 type DfeItem =
   RouterOutputs["tenant"]["invoiceDfe"]["all"]["invoiceDfe"][number];
@@ -70,7 +70,7 @@ export function HideDfeDialog({
         </div>
         <DialogFooter className="flex w-full flex-row justify-between gap-2">
           <Button
-            className="w-full"
+            className="flex-1"
             disabled={hideDfeMutation.isPending}
             onClick={() => onOpenChange(false)}
             variant="outline"
@@ -78,7 +78,7 @@ export function HideDfeDialog({
             Cancelar
           </Button>
           <Button
-            className="w-full"
+            className="flex-1"
             disabled={hideDfeMutation.isPending}
             onClick={confirmHide}
             variant="destructive"

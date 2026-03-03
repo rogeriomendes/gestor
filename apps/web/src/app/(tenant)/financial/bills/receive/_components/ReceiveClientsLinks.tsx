@@ -42,19 +42,17 @@ export default function ReceiveClientsLinks() {
       />
       {clientsQuery.isLoading ? (
         <div className="mt-2 grid gap-1 md:mt-4">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
         </div>
       ) : (
         <div className="mt-2 grid gap-1 md:mt-4">
           <Link
             className={cn(
-              "group/link flex flex-row items-center justify-between rounded-md p-2 text-xs transition-colors hover:bg-accent focus:bg-accent focus:outline-none active:bg-accent md:text-sm",
+              "group/link flex flex-row items-center justify-between rounded-md p-1.5 text-xs transition-colors hover:bg-accent focus:bg-accent focus:outline-none active:bg-accent md:text-sm",
               searchParams.size === 0 ? "bg-accent" : ""
             )}
             href={pathname as unknown as Route}
@@ -70,7 +68,7 @@ export default function ReceiveClientsLinks() {
           {clientsQuery.data?.client.map((client: ClientItem) => (
             <Link
               className={cn(
-                "group/link flex flex-row items-center justify-between rounded-md p-2 text-xs transition-colors hover:bg-accent focus:bg-accent focus:outline-none md:text-sm",
+                "group/link flex flex-row items-center justify-between rounded-md p-1.5 text-xs transition-colors hover:bg-accent focus:bg-accent focus:outline-none md:text-sm",
                 isActive(
                   `${pathname}?clientId=${client.ID}`,
                   pathname,

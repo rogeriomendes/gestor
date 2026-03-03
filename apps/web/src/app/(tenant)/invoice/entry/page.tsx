@@ -1,26 +1,18 @@
 "use client";
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
-import { Building2Icon, CalendarRangeIcon, FileCheckIcon } from "lucide-react";
+import { Building2Icon, FileCheckIcon } from "lucide-react";
 import type { Route } from "next";
 import { useMemo, useState } from "react";
-import type { DateRange } from "react-day-picker";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import type { DateRange } from "@/components/ui/date-picker";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDate } from "@/lib/format-date";
-import { cn, formatAsCurrency } from "@/lib/utils";
+import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
 import { DetailEntry } from "./_components/DetailEntry";
@@ -48,9 +40,9 @@ export default function InvoiceEntryList() {
       date: date
         ? {
             from: date.from ?? new Date(),
-            to: date.to ?? undefined,
+            to: date.to ?? null,
           }
-        : undefined,
+        : null,
     }),
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled,
@@ -95,7 +87,7 @@ export default function InvoiceEntryList() {
       <div className="flex flex-col md:flex-row md:items-center">
         <div className="flex flex-row gap-2 md:gap-3">
           <Combobox
-            className="flex-1 md:w-64"
+            className="flex-1 md:w-72"
             icon={<Building2Icon />}
             onValueChange={setSupplier}
             options={supplierOptions}
@@ -105,44 +97,15 @@ export default function InvoiceEntryList() {
           />
           {/* </div>
         <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3"> */}
-          <Popover>
-            <PopoverTrigger
-              render={
-                <Button
-                  className={cn(
-                    "flex-1 justify-start text-left font-normal md:w-60",
-                    !date && "text-muted-foreground"
-                  )}
-                  id="date"
-                  variant="outline"
-                />
-              }
-            >
-              <CalendarRangeIcon className="h-4 w-4" />
-              {date?.from ? (
-                date.to ? (
-                  <>
-                    {formatDate(date.from, true)} - {formatDate(date.to, true)}
-                  </>
-                ) : (
-                  formatDate(date.from, true)
-                )
-              ) : (
-                <span>Data de entrada</span>
-              )}
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-auto p-0">
-              <Calendar
-                captionLayout="dropdown"
-                defaultMonth={date?.from}
-                disabled={{ after: new Date() }}
-                locale={ptBR}
-                mode="range"
-                onSelect={setDate}
-                selected={date}
-              />
-            </PopoverContent>
-          </Popover>
+          {/* <DatePicker
+            calendarCaptionLayout="dropdown"
+            calendarDisabled={{ after: new Date() }}
+            className="flex-1 md:w-64"
+            mode="range"
+            onChange={setDate}
+            placeholder="Data de entrada"
+            value={date}
+          /> */}
         </div>
       </div>
       {isMobile ? (

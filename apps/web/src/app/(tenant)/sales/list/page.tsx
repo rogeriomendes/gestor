@@ -1,31 +1,18 @@
 "use client";
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
-import {
-  CalendarIcon,
-  ShoppingCartIcon,
-  SquareUserIcon,
-  XIcon,
-} from "lucide-react";
+import { ShoppingCartIcon, SquareUserIcon } from "lucide-react";
 import type { Route } from "next";
 import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { formatDate } from "@/lib/format-date";
 import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
@@ -125,46 +112,14 @@ export default function SalesList() {
             searchPlaceholder="Buscar conta caixa..."
             value={account}
           />
-          <Popover>
-            <PopoverTrigger
-              render={
-                <Button
-                  className={cn(
-                    "w-60 flex-1 justify-between px-3 text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                  variant="outline"
-                />
-              }
-            >
-              <div className="flex flex-row items-center">
-                <CalendarIcon className="mr-2 size-4" />
-                {date ? formatDate(date, true) : <span>Data</span>}
-              </div>
-              <div
-                className={cn(
-                  "invisible size-5 cursor-pointer rounded-sm hover:bg-muted-foreground",
-                  date && "visible"
-                )}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setDate(undefined);
-                }}
-              >
-                <XIcon className="size-5" />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                captionLayout="dropdown"
-                disabled={{ after: new Date() }}
-                locale={ptBR}
-                mode="single"
-                onSelect={(selectedDate) => setDate(selectedDate ?? undefined)}
-                selected={date}
-              />
-            </PopoverContent>
-          </Popover>
+          <DatePicker
+            calendarCaptionLayout="dropdown"
+            calendarDisabled={{ after: new Date() }}
+            className="w-60 flex-1"
+            onChange={setDate}
+            placeholder="Data"
+            value={date}
+          />
         </div>
       </div>
       {isMobile ? (
