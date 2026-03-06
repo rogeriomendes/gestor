@@ -25,7 +25,6 @@ catalog:
 
 onlyBuiltDependencies:
   - '@prisma/engines'
-  - inotify
   - msw
   - prisma
   - sharp

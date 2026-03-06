@@ -14,9 +14,6 @@ COPY turbo.json ./
 # Stage de dependências
 FROM base AS deps
 
-# Dependências para compilar módulos nativos (ex.: inotify usado por pacote dev)
-RUN apk add --no-cache python3 make g++
-
 # Copiar todos os package.json dos workspaces
 COPY apps/web/package.json ./apps/web/
 COPY packages/db/package.json ./packages/db/

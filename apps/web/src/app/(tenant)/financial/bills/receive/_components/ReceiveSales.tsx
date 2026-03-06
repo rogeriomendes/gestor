@@ -1,5 +1,15 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  HandshakeIcon,
+  ShoppingCartIcon,
+  UserIcon,
+  UsersIcon,
+} from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import type { DateRange } from "react-day-picker";
 import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { MetricCard } from "@/components/metric-card";
@@ -12,16 +22,6 @@ import { getReceiveStatusById } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  HandshakeIcon,
-  ShoppingCartIcon,
-  UserIcon,
-  UsersIcon,
-} from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import type { DateRange } from "react-day-picker";
 import { ReceiveFilters } from "./ReceiveFilters";
 import { ReceiveGrid } from "./ReceiveGrid";
 import { ReceiveInfoModal } from "./ReceiveInfoModal";
