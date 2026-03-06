@@ -24,7 +24,7 @@
     "@react-email/components": "^1.0.8",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
-    "nodemailer": "^7.0.12",
+    "nodemailer": "^8.0.1",
     "react": "catalog:",
     "resend": "^6.9.2",
     "zod": "catalog:"

@@ -118,7 +118,7 @@ export const productsRouter = router({
           ...wherePromotion,
         };
 
-        const parsedCursor = cursor ? parseInt(cursor, 10) : 0;
+        const parsedCursor = cursor ? Number.parseInt(cursor, 10) : 0;
 
         const products = await gestorPrisma.produto.findMany({
           take: limit + 1,
