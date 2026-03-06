@@ -1,7 +1,7 @@
 "use client";
 
 import { PackageIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
@@ -52,20 +52,82 @@ export function ProductGrid({
   rootMargin = "30%",
   className = "",
 }: ProductGridProps) {
-  const { ref, inView } = useInView({ rootMargin });
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const [sentinelMounted, setSentinelMounted] = useState(false);
+  const { ref, inView } = useInView({
+    rootMargin,
+    threshold: 0,
+    triggerOnce: false,
+  });
+
+  const setRefs = useCallback(
+    (el: HTMLDivElement | null) => {
+      sentinelRef.current = el;
+      if (el) {
+        setSentinelMounted(true);
+      }
+      if (typeof ref === "function") {
+        ref(el);
+      } else if (ref) {
+        (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+      }
+    },
+    [ref]
+  );
 
   useEffect(() => {
-    const fetchNextPageAndHandlePromise = async () => {
-      try {
-        await fetchNextPage();
-      } catch (error) {
-        console.error("Error fetching next page:", error);
-      }
-    };
     if (inView && hasNextPage && !isFetchingNextPage) {
-      void fetchNextPageAndHandlePromise();
+      void fetchNextPage();
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Fallback: disparar pelo scroll (window ou container com overflow)
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) {
+      return;
+    }
+    const THRESHOLD = 400;
+
+    function checkAndLoad() {
+      const el = sentinelRef.current;
+      if (!el) {
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= window.innerHeight + THRESHOLD) {
+        void fetchNextPage();
+      }
+    }
+
+    function findScrollParent(element: HTMLElement): HTMLElement | null {
+      let parent = element.parentElement;
+      while (parent) {
+        const { overflowY } = getComputedStyle(parent);
+        if (
+          (overflowY === "auto" ||
+            overflowY === "scroll" ||
+            overflowY === "overlay") &&
+          parent.scrollHeight > parent.clientHeight
+        ) {
+          return parent;
+        }
+        parent = parent.parentElement;
+      }
+      return null;
+    }
+
+    window.addEventListener("scroll", checkAndLoad, { passive: true });
+    const scrollParent = sentinelRef.current
+      ? findScrollParent(sentinelRef.current)
+      : null;
+    scrollParent?.addEventListener("scroll", checkAndLoad, { passive: true });
+    checkAndLoad();
+
+    return () => {
+      window.removeEventListener("scroll", checkAndLoad);
+      scrollParent?.removeEventListener("scroll", checkAndLoad);
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, sentinelMounted]);
 
   function extractItemsFromPage(page: unknown): ProductData[] {
     if (Array.isArray(pageItemKeys) && pageItemKeys.length > 0) {
@@ -135,7 +197,7 @@ export function ProductGrid({
       )}
 
       {/* Botão carregar mais */}
-      <div ref={ref}>
+      <div className="min-h-px" ref={setRefs}>
         <LoadMoreButton
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}

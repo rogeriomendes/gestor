@@ -93,8 +93,9 @@ function TenantMenuItemWithPermission({
               <CollapsibleTrigger
                 render={
                   <SidebarMenuAction
-                    className={`right-1.5 mt-0.5 ml-auto size-4 transition-transform duration-300 ${expandedItems.has(item.title) ? "rotate-90" : "rotate-0"
-                      }`}
+                    className={`right-1.5 mt-0.5 ml-auto size-4 transition-transform duration-300 ${
+                      expandedItems.has(item.title) ? "rotate-90" : "rotate-0"
+                    }`}
                   />
                 }
               >

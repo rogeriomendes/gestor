@@ -87,13 +87,13 @@ export default function ProductsList() {
 
   const productsQuery = useInfiniteQuery({
     ...trpc.tenant.products.all.infiniteQueryOptions({
-      limit: 20,
+      limit: 30,
       searchTerm: debouncedSearch || undefined,
       group: group !== "0" ? Number(group) : undefined,
       scale: scale !== "T" ? scale : undefined,
       promotion: promotion !== "T" ? promotion : undefined,
     }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled,
   });
 
@@ -315,7 +315,7 @@ export default function ProductsList() {
             setIsModalOpen(true);
           }}
           pageItemKeys={["products"]}
-          renderRow={(product, _index) => {
+          renderRow={(product) => {
             // Verificar se o produto existe
             if (!product) {
               return null;
@@ -323,8 +323,8 @@ export default function ProductsList() {
 
             return [
               "",
-              product.CODIGO_INTERNO,
-              product.GTIN,
+              product.CODIGO_INTERNO || "—",
+              product.GTIN || "—",
               <div
                 className="flex items-center gap-2"
                 key={`nome-${product.ID}`}
@@ -375,7 +375,8 @@ export default function ProductsList() {
               <span className="text-primary" key={`venda-${product.ID}`}>
                 {formatAsCurrency(Number(product.VALOR_VENDA))}
               </span>,
-              product.DATA_ALTERACAO && formatDate(product.DATA_ALTERACAO),
+              (product.DATA_ALTERACAO && formatDate(product.DATA_ALTERACAO)) ||
+              "—",
             ];
           }}
         />

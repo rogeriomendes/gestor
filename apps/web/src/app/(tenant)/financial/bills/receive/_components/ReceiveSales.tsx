@@ -231,10 +231,11 @@ export default function ReceiveSalesList() {
               );
             } else if (receive.ID_FIN_STATUS_PARCELA === 3) {
               valorCell = (
-                <div className="flex flex-col">
+                <div className="flex flex-row items-center gap-1">
                   <span className="text-muted-foreground text-xs line-through">
                     {formatAsCurrency(valorAReceber)}
                   </span>
+                  <span className="text-muted-foreground text-xs">/</span>
                   <span className="font-medium">
                     {formatAsCurrency(valorRestante)}
                   </span>

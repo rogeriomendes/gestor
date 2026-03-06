@@ -7,10 +7,10 @@ export const salesBudgetRouter = router({
     .input(
       z.object({
         limit: z.number().min(1).max(100).nullish(),
-        cursor: z.string().nullish(),
-        searchTerm: z.string().nullish(),
-        situation: z.string().nullish(),
-        seller: z.number().nullish(),
+        cursor: z.string().nullish().optional(),
+        searchTerm: z.string().nullish().optional(),
+        situation: z.string().nullish().optional(),
+        seller: z.number().nullish().optional(),
         companyId: z.number().optional(),
       })
     )

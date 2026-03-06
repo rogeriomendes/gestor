@@ -1,10 +1,10 @@
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import type { ReactNode } from "react";
 
 interface PaymentAccordionItemProps {
   amount: string | number;

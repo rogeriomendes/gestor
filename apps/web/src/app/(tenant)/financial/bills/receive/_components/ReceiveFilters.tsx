@@ -1,8 +1,8 @@
 "use client";
 
+import { Settings2Icon } from "lucide-react";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { DatePicker, type DateRange } from "@/components/ui/date-picker";
-import { Settings2Icon } from "lucide-react";
 
 interface ReceiveFiltersProps {
   dateRange?: DateRange;

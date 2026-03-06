@@ -1,13 +1,5 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  CircleEllipsisIcon,
-  CircleHelpIcon,
-  SquarePercentIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +11,14 @@ import { formatDate } from "@/lib/format-date";
 import { getSaleStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 import { type RouterOutputs, trpc } from "@/utils/trpc";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  CircleEllipsisIcon,
+  CircleHelpIcon,
+  SquarePercentIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useState } from "react";
 import { DetailSale } from "./_components/DetailSale";
 import { SaleGrid } from "./_components/SaleGrid";
 
@@ -165,6 +165,7 @@ export default function productsSale() {
               sale.NOME_REAJUSTE,
               <Badge
                 className={cn(statusInfo.color, "px-1.5 py-0.5 text-xs")}
+                key={`status-${sale.ID_EMPRESA}-${sale.ID_REAJUSTE ?? ""}`}
                 variant={statusInfo.variant}
               >
                 {statusInfo.label}

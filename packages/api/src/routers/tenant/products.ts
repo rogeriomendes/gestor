@@ -118,9 +118,11 @@ export const productsRouter = router({
           ...wherePromotion,
         };
 
+        const parsedCursor = cursor ? parseInt(cursor, 10) : 0;
+
         const products = await gestorPrisma.produto.findMany({
           take: limit + 1,
-          cursor: cursor ? { ID: Number(cursor) } : undefined,
+          skip: parsedCursor,
           where,
           select: {
             ID: true,
@@ -166,9 +168,7 @@ export const productsRouter = router({
             NCM: true,
             CEST: true,
           },
-          orderBy: {
-            NOME: "asc",
-          },
+          orderBy: [{ NOME: "asc" }, { ID: "asc" }],
         });
 
         // Buscar promoções ativas para os produtos
@@ -241,19 +241,19 @@ export const productsRouter = router({
           }
         });
 
-        // Adicionar informações de promoção aos produtos
+        const totalProducts = await gestorPrisma.produto.count();
+
+        let nextCursor: typeof cursor | undefined;
+        if (products.length > limit) {
+          products.pop();
+          nextCursor = String(parsedCursor + limit);
+        }
+
+        // Adicionar informações de promoção aos produtos (apenas aos produtos que sobraram)
         const productsWithPromotions = products.map((product: ProductRow) => ({
           ...product,
           activePromotion: promotionsByProduct.get(product.ID) ?? null,
         }));
-
-        const totalProducts = await gestorPrisma.produto.count();
-
-        let nextCursor: typeof cursor | undefined;
-        if (productsWithPromotions.length > limit) {
-          const nextSale = productsWithPromotions.pop();
-          nextCursor = String(nextSale?.ID);
-        }
 
         return { products: productsWithPromotions, nextCursor, totalProducts };
       } catch (error) {
