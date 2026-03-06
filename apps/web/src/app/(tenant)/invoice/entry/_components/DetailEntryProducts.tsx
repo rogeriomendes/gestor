@@ -19,8 +19,11 @@ export function DetailEntryProducts({ entryID }: { entryID: number }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-1 md:py-2" size="sm">
-        <CardContent className="px-1 md:px-2">
+      <Card
+        className="rounded-md data-[size=sm]:py-1 data-[size=sm]:md:py-2"
+        size="sm"
+      >
+        <CardContent className="group-data-[size=sm]/card:px-1 group-data-[size=sm]/card:md:px-2">
           {invoiceEntryProductsQuery.isLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, index) => (

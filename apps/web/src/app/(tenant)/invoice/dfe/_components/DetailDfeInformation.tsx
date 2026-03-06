@@ -5,11 +5,14 @@ export function DetailDfeInformation({ xml }: { xml: NFeInfo }) {
   return (
     <div className="space-y-1.5 md:space-y-3">
       {xml.infAdic?.infCpl && (
-        <Card className="break-all rounded-md py-1 md:py-2" size="sm">
+        <Card
+          className="break-all rounded-md data-[size=sm]:py-1 data-[size=sm]:md:py-2"
+          size="sm"
+        >
           <CardDescription className="px-1 md:px-2">
             Contribuinte
           </CardDescription>
-          <CardContent className="px-1 md:px-2">
+          <CardContent className="group-data-[size=sm]/card:px-1 group-data-[size=sm]/card:md:px-2">
             <div className="text-wrap text-xs leading-relaxed md:text-sm">
               {xml.infAdic?.infCpl}
             </div>
@@ -17,9 +20,12 @@ export function DetailDfeInformation({ xml }: { xml: NFeInfo }) {
         </Card>
       )}
       {xml.infAdic?.infAdFisco && (
-        <Card className="break-all rounded-md py-1 md:py-2" size="sm">
+        <Card
+          className="break-all rounded-md data-[size=sm]:py-1 data-[size=sm]:md:py-2"
+          size="sm"
+        >
           <CardDescription className="px-1 md:px-2">Fisco</CardDescription>
-          <CardContent className="px-1 md:px-2">
+          <CardContent className="group-data-[size=sm]/card:px-1 group-data-[size=sm]/card:md:px-2">
             <div className="text-wrap text-xs leading-relaxed md:text-sm">
               {xml.infAdic?.infAdFisco}
             </div>
@@ -27,8 +33,11 @@ export function DetailDfeInformation({ xml }: { xml: NFeInfo }) {
         </Card>
       )}
       {!(xml.infAdic?.infCpl || xml.infAdic?.infAdFisco) && (
-        <Card className="mt-2 rounded-md py-1 md:mt-3 md:py-2" size="sm">
-          <CardContent className="px-1 md:px-2">
+        <Card
+          className="mt-2 rounded-md data-[size=sm]:py-1 data-[size=sm]:md:mt-3 data-[size=sm]:md:py-2"
+          size="sm"
+        >
+          <CardContent className="group-data-[size=sm]/card:px-1 group-data-[size=sm]/card:md:px-2">
             <div className="text-wrap text-xs leading-relaxed md:text-sm">
               Sem informações adicionais para exibir
             </div>

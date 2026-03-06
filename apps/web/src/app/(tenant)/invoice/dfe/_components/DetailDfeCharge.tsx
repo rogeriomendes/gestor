@@ -1,4 +1,3 @@
-import { FileCheckIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -10,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { formatDate } from "@/lib/format-date";
 import { formatAsCurrency } from "@/lib/utils";
+import { FileCheckIcon } from "lucide-react";
 import type { Duplicata, NFeInfo } from "./DetailDfe";
 
 export function DetailDfeCharge({ xml }: { xml: NFeInfo }) {
@@ -22,8 +22,11 @@ export function DetailDfeCharge({ xml }: { xml: NFeInfo }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-1 md:py-2" size="sm">
-        <CardContent className="px-0 md:px-0">
+      <Card
+        className="rounded-md data-[size=sm]:py-1 data-[size=sm]:md:py-2"
+        size="sm"
+      >
+        <CardContent className="group-data-[size=sm]/card:px-0 group-data-[size=sm]/card:md:px-0">
           {xml.cobr ? (
             <>
               <div className="mx-2 mb-2 grid grid-cols-2 gap-1 text-xs md:gap-2 md:text-sm">

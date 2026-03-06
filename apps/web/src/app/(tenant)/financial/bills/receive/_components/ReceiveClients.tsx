@@ -5,13 +5,13 @@ import ReceiveClientsLinks from "./ReceiveClientsLinks";
 
 export default function ReceiveClients() {
   return (
-    <Card className="h-full rounded-md">
+    <Card className="h-full rounded-md" size="sm">
       <CardHeader>
-        <CardTitle className="flex flex-row items-center justify-between text-base md:text-lg">
+        <CardTitle className="flex flex-row items-center justify-between group-data-[size=sm]/card:text-base group-data-[size=sm]/card:md:text-lg">
           Clientes
         </CardTitle>
       </CardHeader>
-      <CardContent className="">
+      <CardContent>
         <ReceiveClientsLinks />
       </CardContent>
     </Card>

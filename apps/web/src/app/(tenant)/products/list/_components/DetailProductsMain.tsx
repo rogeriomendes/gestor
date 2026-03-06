@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
@@ -15,6 +14,7 @@ import {
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
 
 type productData =
   RouterOutputs["tenant"]["products"]["all"]["products"][number];

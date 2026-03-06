@@ -1,5 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { FileCheckIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,6 +13,8 @@ import { formatDate } from "@/lib/format-date";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { FileCheckIcon } from "lucide-react";
 
 type entryData =
   RouterOutputs["tenant"]["invoiceEntry"]["byId"]["invoiceEntry"];
@@ -39,9 +39,12 @@ export function DetailEntryCharge({
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-1 md:py-2" size="sm">
-        <CardContent className="px-0 md:px-0">
-          <div className="mx-2 mb-2 grid grid-cols-2 gap-1 text-xs md:gap-2 md:text-sm">
+      <Card
+        className="rounded-md data-[size=sm]:py-1 data-[size=sm]:md:py-2"
+        size="sm"
+      >
+        <CardContent className="group-data-[size=sm]/card:px-1 group-data-[size=sm]/card:md:px-2">
+          <div className="mb-2 grid grid-cols-2 gap-1 text-xs md:gap-2 md:text-sm">
             <div className="relative flex flex-row rounded bg-muted/50 p-1.5">
               <div className="mr-2">Total produtos:</div>
               <div>

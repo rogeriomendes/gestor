@@ -8,8 +8,11 @@ type entryData =
 export function DetailEntryTotals({ entryData }: { entryData: entryData }) {
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-1 md:py-2" size="sm">
-        <CardContent className="grid grid-cols-2 gap-1 px-1 text-xs md:gap-2 md:px-2 md:text-sm">
+      <Card
+        className="rounded-md data-[size=sm]:py-1 data-[size=sm]:md:py-2"
+        size="sm"
+      >
+        <CardContent className="grid grid-cols-2 gap-1 text-xs group-data-[size=sm]/card:px-1 md:gap-2 md:text-sm group-data-[size=sm]/card:md:px-2">
           <div className="relative flex flex-row rounded bg-muted/50 p-1.5">
             <div className="mr-2 w-24">ICMS:</div>
             <div>{formatAsCurrency(Number(entryData?.VALOR_ICMS))}</div>

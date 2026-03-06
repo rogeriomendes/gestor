@@ -1,17 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  ClockIcon,
-  DotIcon,
-  InfoIcon,
-  LandmarkIcon,
-  SheetIcon,
-  SquareUserIcon,
-  TriangleAlertIcon,
-  UserIcon,
-  XIcon,
-} from "lucide-react";
-import { useState } from "react";
 import { CopyButton } from "@/components/copy-button";
 import { NfButton } from "@/components/nf-button";
 import { NfeAccessKey } from "@/components/nfe-access-key";
@@ -42,6 +28,20 @@ import { formatDate } from "@/lib/format-date";
 import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  ClockIcon,
+  DotIcon,
+  InfoIcon,
+  LandmarkIcon,
+  SheetIcon,
+  SquareUserIcon,
+  TriangleAlertIcon,
+  UserIcon,
+  XIcon,
+} from "lucide-react";
+import { useState } from "react";
 import { DetailBudget } from "../../budget/_components/DetailBudget";
 import { DetailSalesProducts } from "./DetailSalesProducts";
 import { PaymentSales } from "./PaymentSales";
@@ -345,8 +345,11 @@ export function DetailSales({
                     </AlertDescription>
                   </Alert>
                 )}
-              <Card className="rounded-md py-1 md:py-2" size="sm">
-                <CardContent className="px-1 md:px-2">
+              <Card
+                className="rounded-md data-[size=sm]:py-1 data-[size=sm]:md:py-2"
+                size="sm"
+              >
+                <CardContent className="group-data-[size=sm]/card:px-1 group-data-[size=sm]/card:md:px-2">
                   <DetailSalesProducts saleId={saleId} />
                   <Separator className="mt-1 mb-4 md:mt-2" />
                   <div className="mt-3 text-sm md:text-base">

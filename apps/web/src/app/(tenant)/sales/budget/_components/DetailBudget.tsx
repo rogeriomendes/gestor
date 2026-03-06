@@ -1,14 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  ClockIcon,
-  DotIcon,
-  InfoIcon,
-  LandmarkIcon,
-  ShoppingBagIcon,
-  UserIcon,
-  XIcon,
-} from "lucide-react";
-import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,6 +25,17 @@ import { formatDate } from "@/lib/format-date";
 import { getBudgetSituationInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ClockIcon,
+  DotIcon,
+  InfoIcon,
+  LandmarkIcon,
+  ShoppingBagIcon,
+  UserIcon,
+  XIcon,
+} from "lucide-react";
+import { useState } from "react";
 import { DetailSales } from "../../list/_components/DetailSales";
 import { DetailBudgetProducts } from "./DetailBudgetProducts";
 
@@ -266,8 +266,11 @@ export function DetailBudget({
                   </AlertDescription>
                 </Alert>
               )}
-              <Card className="rounded-md py-1 md:py-2" size="sm">
-                <CardContent className="px-1 md:px-2">
+              <Card
+                className="rounded-md data-[size=sm]:py-1 data-[size=sm]:md:py-2"
+                size="sm"
+              >
+                <CardContent className="group-data-[size=sm]/card:px-1 group-data-[size=sm]/card:md:px-2">
                   <DetailBudgetProducts
                     budgetId={budgetByIdQuery.data?.budget?.ID}
                   />

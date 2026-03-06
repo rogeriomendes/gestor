@@ -1,6 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { ShoppingCartIcon } from "lucide-react";
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -16,6 +13,9 @@ import { formatDate } from "@/lib/format-date";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { ShoppingCartIcon } from "lucide-react";
+import { useState } from "react";
 import { DetailEntry } from "../../../invoice/entry/_components/DetailEntry";
 
 type PurchaseItem =
@@ -38,8 +38,11 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-0 md:py-0" size="sm">
-        <CardContent className="px-0 md:px-0">
+      <Card
+        className="rounded-md data-[size=sm]:py-0 data-[size=sm]:md:py-0"
+        size="sm"
+      >
+        <CardContent className="group-data-[size=sm]/card:px-0 group-data-[size=sm]/card:md:px-0">
           {productsPurchaseQuery.isLoading ? (
             <div className="min-w-0 overflow-hidden">
               <Table className="w-full table-fixed bg-card">

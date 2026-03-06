@@ -1,6 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { PackageIcon } from "lucide-react";
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -16,6 +13,9 @@ import { formatDate } from "@/lib/format-date";
 import { removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { PackageIcon } from "lucide-react";
+import { useState } from "react";
 import { DetailSales } from "../../../sales/list/_components/DetailSales";
 
 type SaleItem = RouterOutputs["tenant"]["products"]["sales"]["sales"][number];
@@ -32,8 +32,11 @@ export function DetailProductsSales({ productId }: { productId: number }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md py-0 md:py-0" size="sm">
-        <CardContent className="px-0 md:px-0">
+      <Card
+        className="rounded-md data-[size=sm]:py-0 data-[size=sm]:md:py-0"
+        size="sm"
+      >
+        <CardContent className="group-data-[size=sm]/card:px-0 group-data-[size=sm]/card:md:px-0">
           {productsSalesQuery.isLoading ? (
             <Table className="bg-card">
               <TableHeader>
