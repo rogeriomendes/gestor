@@ -1,5 +1,22 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  type IDetectedBarcode,
+  Scanner,
+  useDevices,
+} from "@yudiel/react-qr-scanner";
+import {
+  GroupIcon,
+  PackageIcon,
+  ScaleIcon,
+  ScanBarcodeIcon,
+  SquarePercentIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useQueryState } from "nuqs";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -29,23 +46,6 @@ import {
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  type IDetectedBarcode,
-  Scanner,
-  useDevices,
-} from "@yudiel/react-qr-scanner";
-import {
-  GroupIcon,
-  PackageIcon,
-  ScaleIcon,
-  ScanBarcodeIcon,
-  SquarePercentIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useQueryState } from "nuqs";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { DetailProducts } from "./_components/DetailProducts";
 import { ProductGrid } from "./_components/ProductGrid";
 
@@ -86,14 +86,19 @@ export default function ProductsList() {
   }, [search]);
 
   const productsQuery = useInfiniteQuery({
-    ...trpc.tenant.products.all.infiniteQueryOptions({
-      limit: 30,
-      searchTerm: debouncedSearch || undefined,
-      group: group !== "0" ? Number(group) : undefined,
-      scale: scale !== "T" ? scale : undefined,
-      promotion: promotion !== "T" ? promotion : undefined,
-    }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    ...trpc.tenant.products.all.infiniteQueryOptions(
+      {
+        limit: 20,
+        searchTerm: debouncedSearch || null,
+        group: group !== "0" ? Number(group) : null,
+        scale: scale !== "T" ? scale : null,
+        promotion: promotion !== "T" ? promotion : null,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        initialCursor: null,
+      }
+    ),
     enabled,
   });
 
@@ -376,7 +381,7 @@ export default function ProductsList() {
                 {formatAsCurrency(Number(product.VALOR_VENDA))}
               </span>,
               (product.DATA_ALTERACAO && formatDate(product.DATA_ALTERACAO)) ||
-              "—",
+                "—",
             ];
           }}
         />

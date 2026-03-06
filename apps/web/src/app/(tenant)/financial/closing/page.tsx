@@ -76,14 +76,18 @@ export default function FinancialClosingsList() {
       : undefined;
 
   const financialClosingsQuery = useInfiniteQuery({
-    ...trpc.tenant.financialClosing.all.infiniteQueryOptions({
-      limit: 20,
-      account: account !== "0" ? Number(account) : undefined,
-      date: dateFormatted || null,
-      companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
-    }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-    initialPageParam: null as string | null,
+    ...trpc.tenant.financialClosing.all.infiniteQueryOptions(
+      {
+        limit: 20,
+        account: account !== "0" ? Number(account) : null,
+        date: dateFormatted ?? null,
+        companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        initialCursor: null,
+      }
+    ),
     enabled: !!tenant,
   });
 

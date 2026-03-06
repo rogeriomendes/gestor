@@ -41,7 +41,7 @@ export function Overview({ data }: { data: IData }) {
           axisLine={false}
           dataKey="date"
           fontSize={11}
-          tickFormatter={(value: Date) =>
+          tickFormatter={(value: any) =>
             format(toZonedTime(value, "UTC"), "dd MMM", { locale: ptBR })
           }
           tickLine={false}
@@ -67,7 +67,7 @@ export function Overview({ data }: { data: IData }) {
                   </div>
                 </>
               )}
-              labelFormatter={(value: Date) => {
+              labelFormatter={(value: any) => {
                 return format(
                   toZonedTime(value, "UTC"),
                   "EEEEEE, dd 'de' MMMM",
@@ -86,9 +86,7 @@ export function Overview({ data }: { data: IData }) {
             className="fill-foreground"
             dataKey="date"
             fontSize={10}
-            formatter={(value: string) =>
-              format(toZonedTime(value, "UTC"), "dd")
-            }
+            formatter={(value: any) => format(toZonedTime(value, "UTC"), "dd")}
             offset={10}
             position="top"
           />

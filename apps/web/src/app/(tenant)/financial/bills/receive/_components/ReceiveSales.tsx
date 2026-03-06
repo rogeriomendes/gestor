@@ -1,15 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  HandshakeIcon,
-  ShoppingCartIcon,
-  UserIcon,
-  UsersIcon,
-} from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import type { DateRange } from "react-day-picker";
 import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { MetricCard } from "@/components/metric-card";
@@ -22,6 +12,16 @@ import { getReceiveStatusById } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  HandshakeIcon,
+  ShoppingCartIcon,
+  UserIcon,
+  UsersIcon,
+} from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import type { DateRange } from "react-day-picker";
 import { ReceiveFilters } from "./ReceiveFilters";
 import { ReceiveGrid } from "./ReceiveGrid";
 import { ReceiveInfoModal } from "./ReceiveInfoModal";
@@ -67,16 +67,20 @@ export default function ReceiveSalesList() {
   });
 
   const billsReceiveQuery = useInfiniteQuery({
-    ...trpc.tenant.financialBillsReceive.all.infiniteQueryOptions({
-      limit: 30,
-      clientId: clientId ? Number(clientId) : undefined,
-      companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
-      status: status ? Number(status) : undefined,
-      dateFrom: dateRange?.from,
-      dateTo: dateRange?.to,
-    }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-    initialPageParam: null as string | null,
+    ...trpc.tenant.financialBillsReceive.all.infiniteQueryOptions(
+      {
+        limit: 20,
+        clientId: clientId ? Number(clientId) : null,
+        companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
+        status: Number(status),
+        dateFrom: dateRange?.from ?? null,
+        dateTo: dateRange?.to ?? null,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        initialCursor: null,
+      }
+    ),
     enabled: !!tenant,
   });
 

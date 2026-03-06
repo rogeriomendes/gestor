@@ -1,5 +1,13 @@
 "use client";
 
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  CircleEllipsisIcon,
+  CircleHelpIcon,
+  SquarePercentIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -11,14 +19,6 @@ import { formatDate } from "@/lib/format-date";
 import { getSaleStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 import { type RouterOutputs, trpc } from "@/utils/trpc";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  CircleEllipsisIcon,
-  CircleHelpIcon,
-  SquarePercentIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useState } from "react";
 import { DetailSale } from "./_components/DetailSale";
 import { SaleGrid } from "./_components/SaleGrid";
 
@@ -51,13 +51,18 @@ export default function productsSale() {
   const enabled = !!tenant;
 
   const productsSaleQuery = useInfiniteQuery({
-    ...trpc.tenant.productsSale.all.infiniteQueryOptions({
-      limit: 20,
-      company: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
-      status: status !== "T" ? status : undefined,
-      inactive: inactive !== "T" ? inactive : undefined,
-    }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    ...trpc.tenant.productsSale.all.infiniteQueryOptions(
+      {
+        limit: 20,
+        company: selectedCompanyId !== 0 ? selectedCompanyId : null,
+        status: status !== "T" ? status : null,
+        inactive: inactive !== "T" ? inactive : null,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        initialCursor: null,
+      }
+    ),
     enabled,
   });
 

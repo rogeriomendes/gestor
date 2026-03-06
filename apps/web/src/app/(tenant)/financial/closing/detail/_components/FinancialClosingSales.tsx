@@ -1,11 +1,3 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  MoveDownIcon,
-  MoveUpIcon,
-  MoveVerticalIcon,
-  ShoppingCartIcon,
-} from "lucide-react";
-import { useState } from "react";
 import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +9,14 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  MoveDownIcon,
+  MoveUpIcon,
+  MoveVerticalIcon,
+  ShoppingCartIcon,
+} from "lucide-react";
+import { useState } from "react";
 import type { ClosingData } from "../types";
 import { FinancialReceiptGrid } from "./FinancialReceiptGrid";
 
@@ -40,18 +40,28 @@ export default function FinancialClosingSalesList({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const receiptsQuery = useInfiniteQuery({
-    ...trpc.tenant.financialReceipt.all.infiniteQueryOptions({
-      limit: 30,
-      idClosing: Number(closingData?.id),
-      dataAbertura: closingData?.dateOpen,
-      horaAbertura: closingData?.hourOpen,
-      horaFechamento: closingData?.hourClosed,
-      sortOrder: sortField ? (sortOrder as "asc" | "desc") : undefined,
-      sortField: sortField || undefined,
-      companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
-    }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-    initialPageParam: null as string | null,
+    ...trpc.tenant.financialReceipt.all.infiniteQueryOptions(
+      {
+        limit: 20,
+        idClosing: closingData?.id ? Number(closingData.id) : null,
+        dataAbertura: closingData?.dateOpen ?? null,
+        horaAbertura: closingData?.hourOpen ?? null,
+        horaFechamento: closingData?.hourClosed ?? null,
+        companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
+        sortOrder:
+          sortOrder === "asc" || sortOrder === "desc" ? sortOrder : null,
+        sortField:
+          sortField === "valor" ||
+          sortField === "tipo_pagamento" ||
+          sortField === "serie_nfe"
+            ? sortField
+            : null,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        initialCursor: null,
+      }
+    ),
     enabled:
       !!tenant &&
       !!closingData?.id &&

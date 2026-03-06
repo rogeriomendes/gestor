@@ -57,20 +57,24 @@ export default function FinancialBillsPayList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const financialBillsPayQuery = useInfiniteQuery({
-    ...trpc.tenant.financialBillsPay.all.infiniteQueryOptions({
-      limit: 20,
-      filter: situation,
-      company: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
-      supplier: supplier !== "0" ? Number(supplier) : null,
-      date: date
-        ? {
-            from: date.from ?? new Date(),
-            to: date.to ?? null,
-          }
-        : null,
-    }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-    initialPageParam: null as string | null,
+    ...trpc.tenant.financialBillsPay.all.infiniteQueryOptions(
+      {
+        limit: 20,
+        filter: situation,
+        company: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
+        supplier: supplier !== "0" ? Number(supplier) : null,
+        date: date
+          ? {
+              from: date.from ?? new Date(),
+              to: date.to ?? null,
+            }
+          : null,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        initialCursor: null,
+      }
+    ),
     enabled: !!tenant,
   });
 

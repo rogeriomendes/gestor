@@ -1,8 +1,8 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface DataCardsProps<T extends { id: string }> {
   className?: string;

@@ -1,5 +1,9 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { Settings2Icon, SheetIcon, UserIcon } from "lucide-react";
+import type { Route } from "next";
+import { useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -13,10 +17,6 @@ import { getBudgetSituationInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Settings2Icon, SheetIcon, UserIcon } from "lucide-react";
-import type { Route } from "next";
-import { useMemo, useState } from "react";
 import { BudgetGrid } from "./_components/BudgetGrid";
 import { DetailBudget } from "./_components/DetailBudget";
 
@@ -36,14 +36,19 @@ export default function BudgetList() {
   const enabled = !!tenant;
 
   const salesBudgetQuery = useInfiniteQuery({
-    ...trpc.tenant.salesBudget.all.infiniteQueryOptions({
-      limit: 30,
-      searchTerm: search,
-      situation: situation !== "T" ? situation : undefined,
-      seller: seller !== "0" ? Number(seller) : undefined,
-      companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
-    }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    ...trpc.tenant.salesBudget.all.infiniteQueryOptions(
+      {
+        limit: 20,
+        searchTerm: search || null,
+        situation: situation !== "T" ? situation : null,
+        seller: seller !== "0" ? Number(seller) : null,
+        companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        initialCursor: null,
+      }
+    ),
     enabled,
   });
 

@@ -33,18 +33,18 @@ export default function InvoiceEntryList() {
   const enabled = !!tenant;
 
   const invoiceEntryQuery = useInfiniteQuery({
-    ...trpc.tenant.invoiceEntry.all.infiniteQueryOptions({
-      limit: 20,
-      company: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
-      supplier: supplier !== "0" ? Number(supplier) : undefined,
-      date: date
-        ? {
-            from: date.from ?? new Date(),
-            to: date.to ?? null,
-          }
-        : null,
-    }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    ...trpc.tenant.invoiceEntry.all.infiniteQueryOptions(
+      {
+        limit: 20,
+        company: selectedCompanyId !== 0 ? selectedCompanyId : null,
+        supplier: supplier !== "0" ? Number(supplier) : null,
+        date: date?.from ? { from: date.from, to: date.to ?? undefined } : null,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+        initialCursor: null,
+      }
+    ),
     enabled,
   });
 

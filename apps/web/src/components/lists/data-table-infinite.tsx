@@ -1,5 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
+import { useEffect, useMemo } from "react";
+import { useInView } from "react-intersection-observer";
 import { EmptyState } from "@/components/empty-state";
 import { LoadMoreButton } from "@/components/load-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,9 +15,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
-import { useEffect, useMemo } from "react";
-import { useInView } from "react-intersection-observer";
 
 export interface DataTableInfiniteHeader {
   className?: string;

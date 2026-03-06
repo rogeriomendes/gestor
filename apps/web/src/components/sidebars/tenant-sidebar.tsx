@@ -1,5 +1,9 @@
 "use client";
 
+import { ChevronRightIcon } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { FbiIcon } from "@/assets/FbiIcon";
 import {
   Collapsible,
@@ -25,10 +29,6 @@ import {
 } from "@/components/ui/sidebar";
 import isActive from "@/lib/is-active";
 import { useHasPermission } from "@/lib/permissions";
-import { ChevronRightIcon } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { CompanySelector } from "../company-selector";
 import { ShowTextSwitcher } from "../show-text-switcher";
 import UserCard from "../user-card";
