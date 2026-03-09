@@ -1,6 +1,5 @@
 "use client";
 
-import { createContext, useContext } from "react";
 import {
   Dialog,
   DialogClose,
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { createContext, useContext } from "react";
 import { ScrollArea } from "./scroll-area";
 
 interface BaseProps {
@@ -104,7 +104,10 @@ const CredenzaContent = ({ className, children, ...props }: CredenzaProps) => {
 
   if (isMobile) {
     return (
-      <DrawerContent className={cn("max-h-[98%]", className)} {...props}>
+      <DrawerContent
+        className={cn("max-h-[98%] p-2 md:p-3", className)}
+        {...props}
+      >
         <ScrollArea className="mx-auto flex w-full max-w-2xl flex-col overflow-auto py-2">
           {children}
         </ScrollArea>
@@ -113,7 +116,10 @@ const CredenzaContent = ({ className, children, ...props }: CredenzaProps) => {
   }
   return (
     <DialogContent
-      className={cn("max-h-[95%] overflow-auto md:max-w-2xl", className)}
+      className={cn(
+        "max-h-[95%] overflow-auto p-2 md:max-w-2xl md:p-3",
+        className
+      )}
       {...props}
     >
       {children}
@@ -145,7 +151,7 @@ const CredenzaHeader = ({ className, children, ...props }: CredenzaProps) => {
   const CredenzaHeader = isMobile ? DrawerHeader : DialogHeader;
 
   return (
-    <CredenzaHeader className={className} {...props}>
+    <CredenzaHeader className={cn("px-0", className)} {...props}>
       {children}
     </CredenzaHeader>
   );
@@ -164,7 +170,7 @@ const CredenzaTitle = ({ className, children, ...props }: CredenzaProps) => {
 
 const CredenzaBody = ({ className, children, ...props }: CredenzaProps) => {
   return (
-    <div className={cn("px-4 md:px-0", className)} {...props}>
+    <div className={cn("pt-0", className)} {...props}>
       {children}
     </div>
   );
@@ -175,7 +181,7 @@ const CredenzaFooter = ({ className, children, ...props }: CredenzaProps) => {
   const CredenzaFooter = isMobile ? DrawerFooter : DialogFooter;
 
   return (
-    <CredenzaFooter className={className} {...props}>
+    <CredenzaFooter className={cn("px-0 py-2", className)} {...props}>
       {children}
     </CredenzaFooter>
   );
@@ -190,5 +196,6 @@ export {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaTrigger,
+  CredenzaTrigger
 };
+

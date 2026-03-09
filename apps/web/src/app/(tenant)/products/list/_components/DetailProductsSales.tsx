@@ -1,3 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import { PackageIcon } from "lucide-react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,9 +16,6 @@ import { formatDate } from "@/lib/format-date";
 import { removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { PackageIcon } from "lucide-react";
-import { useState } from "react";
 import { DetailSales } from "../../../sales/list/_components/DetailSales";
 
 type SaleItem = RouterOutputs["tenant"]["products"]["sales"]["sales"][number];

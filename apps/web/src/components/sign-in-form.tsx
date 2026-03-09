@@ -1,3 +1,7 @@
+import { FbiIcon } from "@/assets/FbiIcon";
+import { useTenant } from "@/contexts/tenant-context";
+import { authClient } from "@/lib/auth-client";
+import { getRedirectPath } from "@/lib/auth-redirect";
 import { useForm } from "@tanstack/react-form";
 import { Fingerprint, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -5,10 +9,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
-import { FbiIcon } from "@/assets/FbiIcon";
-import { useTenant } from "@/contexts/tenant-context";
-import { authClient } from "@/lib/auth-client";
-import { getRedirectPath } from "@/lib/auth-redirect";
 import Loader from "./loader";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -293,7 +293,12 @@ export default function SignInForm() {
             </form.Field>
           </div>
 
-          <form.Subscribe>
+          <form.Subscribe
+            selector={(state) => ({
+              canSubmit: state.canSubmit,
+              isSubmitting: state.isSubmitting,
+            })}
+          >
             {(state) => (
               <Button
                 className="w-full gap-1.5"
