@@ -30,11 +30,11 @@ export function EntryCard({ entry, companyName, onClick }: EntryCardProps) {
 
   return (
     <Card
-      className="h-full cursor-pointer rounded-md transition-all"
+      className="h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2"
       onClick={() => onClick?.(entry)}
       size="sm"
     >
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2">
         {/* Header com fornecedor e status */}
         <div className="mb-2 flex items-center justify-between">
           <h3 className="min-w-0 flex-1 truncate font-medium text-sm leading-tight">

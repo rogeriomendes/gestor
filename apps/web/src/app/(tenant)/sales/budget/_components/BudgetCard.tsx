@@ -29,14 +29,14 @@ export function BudgetCard({ budget, companyName, onClick }: BudgetCardProps) {
   return (
     <Card
       className={cn(
-        "h-full cursor-pointer rounded-md transition-all",
+        "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isInProgress &&
           "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20"
       )}
       onClick={() => onClick?.(budget)}
       size="sm"
     >
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2">
         {/* Header com ID e situação */}
         <div className="mb-2 flex items-center justify-between font-medium text-sm leading-tight">
           <h3 className="flex flex-row items-center font-medium text-sm leading-tight">

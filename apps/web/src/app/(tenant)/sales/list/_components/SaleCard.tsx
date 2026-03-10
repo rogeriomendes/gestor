@@ -1,10 +1,10 @@
 "use client";
 
-import { DotIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
+import { DotIcon } from "lucide-react";
 
 interface SaleCardProps {
   /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
@@ -38,14 +38,14 @@ export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
   return (
     <Card
       className={cn(
-        "h-full cursor-pointer rounded-md transition-all",
+        "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isCanceled &&
-          "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
+        "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
       )}
       onClick={() => onClick?.(sale)}
       size="sm"
     >
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2">
         {/* Header com número da venda e status */}
         <div className="mb-2 flex items-center justify-between font-medium text-sm leading-tight">
           <h3 className="flex flex-row items-center font-medium text-sm leading-tight">

@@ -40,14 +40,14 @@ export function FinancialReceiptCard({
   return (
     <Card
       className={cn(
-        "h-full cursor-pointer rounded-md transition-all",
+        "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isCanceled &&
-          "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
+        "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
       )}
       onClick={() => onClick?.(receipt)}
       size="sm"
     >
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2">
         {/* Header com valor e status */}
         <div className="mb-2 flex items-center justify-between">
           <h3 className="font-medium text-sm leading-tight">

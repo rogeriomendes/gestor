@@ -1,6 +1,5 @@
 "use client";
 
-import { EyeOffIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import { formatDate } from "@/lib/format-date";
 import { getXmlStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
+import { EyeOffIcon } from "lucide-react";
 
 type DfeItem =
   RouterOutputs["tenant"]["invoiceDfe"]["all"]["invoiceDfe"][number];
@@ -35,7 +35,7 @@ export function DfeCard({ dfe, companyName, onClick, onHide }: DfeCardProps) {
 
   return (
     <Card
-      className="h-full cursor-pointer rounded-md transition-all"
+      className="h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2"
       onClick={(e) => {
         if (
           (e.target as HTMLElement).closest(
@@ -48,7 +48,7 @@ export function DfeCard({ dfe, companyName, onClick, onHide }: DfeCardProps) {
       }}
       size="sm"
     >
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2">
         {/* Header com fornecedor e botão de ocultar */}
         <div className="mb-2 flex items-center justify-between">
           <h3 className="min-w-0 flex-1 cursor-pointer truncate font-medium text-sm uppercase leading-tight">

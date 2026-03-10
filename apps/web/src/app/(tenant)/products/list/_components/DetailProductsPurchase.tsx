@@ -51,9 +51,15 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
                     <TableHead className="w-[min(40%,12rem)]">
                       Fornecedor
                     </TableHead>
-                    <TableHead className="w-24 shrink-0">Data ent.</TableHead>
-                    <TableHead className="w-20 shrink-0">Qtd.</TableHead>
-                    <TableHead className="w-24 shrink-0">Valor unt.</TableHead>
+                    <TableHead className="w-12 shrink-0 md:w-24">
+                      Data ent.
+                    </TableHead>
+                    <TableHead className="w-12 shrink-0 md:w-16">
+                      Qtd.
+                    </TableHead>
+                    <TableHead className="w-12 shrink-0 md:w-24">
+                      Valor unt.
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="text-xs md:text-sm">
@@ -63,13 +69,13 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
                         <Skeleton className="h-4 w-full max-w-24" />
                       </TableCell>
                       <TableCell className="py-3">
-                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-4 w-20 shrink-0 md:w-24" />
                       </TableCell>
                       <TableCell className="py-3">
-                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-4 w-12 shrink-0 md:w-16" />
                       </TableCell>
                       <TableCell className="py-3">
-                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-4 w-20 shrink-0 md:w-24" />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -89,9 +95,15 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
                     <TableHead className="w-[min(40%,12rem)]">
                       Fornecedor
                     </TableHead>
-                    <TableHead className="w-24 shrink-0">Data ent.</TableHead>
-                    <TableHead className="w-20 shrink-0">Qtd.</TableHead>
-                    <TableHead className="w-24 shrink-0">Valor unt.</TableHead>
+                    <TableHead className="w-20 shrink-0 md:w-24">
+                      Data ent.
+                    </TableHead>
+                    <TableHead className="w-12 shrink-0 md:w-16">
+                      Qtd.
+                    </TableHead>
+                    <TableHead className="w-20 shrink-0 md:w-24">
+                      Valor unt.
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="text-xs md:text-sm">

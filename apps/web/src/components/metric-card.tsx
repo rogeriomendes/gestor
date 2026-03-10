@@ -1,5 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
 import { ShowText } from "@/components/show-text";
 import {
   Card,
@@ -10,6 +8,8 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatAsCurrency } from "@/lib/utils";
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface MetricCardProps {
   badge?: ReactNode;
@@ -38,11 +38,15 @@ export function MetricCard({
 }: MetricCardProps) {
   return (
     <Card
-      className={`${onClick ? "hover:cursor-pointer" : ""} ${className}`}
+      className={cn(
+        "h-full cursor-pointer rounded-md transition-all data-[size=sm]:gap-2 data-[size=sm]:py-2 data-[size=sm]:md:gap-4 data-[size=sm]:md:py-4",
+        onClick && "hover:cursor-pointer",
+        className
+      )}
       onClick={onClick}
       size="sm"
     >
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-row items-center justify-between group-data-[size=sm]/card:px-2 group-data-[size=sm]/card:md:px-4 group-data-[size=sm]/card:[.border-b]:pb-2">
         <CardTitle className="truncate font-medium text-xs md:text-sm">
           {title}
         </CardTitle>
@@ -58,7 +62,7 @@ export function MetricCard({
           ) : null}
         </CardAction>
       </CardHeader>
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2 group-data-[size=sm]/card:md:px-4">
         <div className="font-bold text-xl md:text-2xl">
           {isLoading ? (
             <Skeleton className="h-7 w-full" />

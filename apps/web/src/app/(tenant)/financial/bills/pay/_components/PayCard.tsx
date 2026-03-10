@@ -45,13 +45,14 @@ export function PayCard({
 
   return (
     <Card
-      className={`h-full cursor-pointer rounded-md transition-all ${
+      className={cn(
+        "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isSelected && "border-primary/20 bg-primary/5"
-      }`}
+      )}
       onClick={() => onClick?.(bills)}
       size="sm"
     >
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2">
         {/* Header com checkbox e status */}
         <div className="mb-2 flex items-center justify-between">
           <div className="flex min-w-0 flex-1 items-center gap-2">

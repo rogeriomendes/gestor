@@ -33,11 +33,11 @@ export function ReceiveCard({ receive, onClick }: ReceiveCardProps) {
 
   return (
     <Card
-      className="h-full cursor-pointer rounded-md transition-all"
+      className="h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2"
       onClick={() => onClick?.(receive)}
       size="sm"
     >
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2">
         {/* Header com data e status */}
         <div className="mb-2 flex items-center justify-between">
           <h3 className="font-medium text-sm leading-tight">

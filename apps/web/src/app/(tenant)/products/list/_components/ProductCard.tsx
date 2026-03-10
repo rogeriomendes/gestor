@@ -1,6 +1,5 @@
 "use client";
 
-import { DotIcon, SquarePercentIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/format-date";
@@ -11,6 +10,7 @@ import {
   formatAsCurrency,
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
+import { DotIcon, SquarePercentIcon } from "lucide-react";
 
 type ProductData =
   RouterOutputs["tenant"]["products"]["all"]["products"][number];
@@ -67,14 +67,14 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
   return (
     <Card
       className={cn(
-        "h-full cursor-pointer rounded-md transition-all"
+        "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2"
         // product.activePromotion &&
         //   "border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20",
       )}
       onClick={() => onClick?.(product)}
       size="sm"
     >
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2">
         {/* Header com nome e promoção */}
         <div className="flex items-center justify-between">
           <div className="flex min-w-0 flex-1 items-center gap-1.5">

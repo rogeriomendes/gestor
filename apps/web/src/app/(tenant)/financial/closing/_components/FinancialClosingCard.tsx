@@ -27,11 +27,11 @@ export function FinancialClosingCard({
     // Conta aberta
     return (
       <Card
-        className="h-full cursor-pointer rounded-md border-primary/20 bg-primary/5 transition-all"
+        className="h-full cursor-pointer rounded-md border-primary/20 bg-primary/5 transition-all data-[size=sm]:py-2"
         onClick={() => onClick?.(item)}
         size="sm"
       >
-        <CardContent>
+        <CardContent className="group-data-[size=sm]/card:px-2">
           {/* Header com status e empresa */}
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-medium text-sm leading-tight">{data.NOME}</h3>
@@ -79,11 +79,11 @@ export function FinancialClosingCard({
   // Fechamento
   return (
     <Card
-      className="h-full cursor-pointer rounded-md transition-all"
+      className="h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2"
       onClick={() => onClick?.(item)}
       size="sm"
     >
-      <CardContent>
+      <CardContent className="group-data-[size=sm]/card:px-2">
         {/* Header com nome e status */}
         <div className="mb-2 flex items-center justify-between">
           <h3 className="font-medium text-sm leading-tight">
