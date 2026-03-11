@@ -380,7 +380,7 @@ export const financialClosingRouter = router({
             ...allDiscount.map((item) => item.ID_VENDEDOR),
             ...installments.map((item) => item.ID_VENDEDOR),
           ]),
-        ].filter((id): id is number => id !== null && id !== 0);
+        ].filter((id) => id !== null && id !== 0);
 
         const vendedores =
           closingVendedorIds.length > 0

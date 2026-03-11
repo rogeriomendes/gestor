@@ -367,9 +367,9 @@ export default function FinancialClosingPayment({
                 title="ORÇAMENTO / PEDIDO"
                 value="OP"
               >
-                {/* <div className="mb-4 text-xs text-yellow-500">
-                  Serão listados apenas os pedidos em digitação do dia.
-                </div> */}
+                <div className="mb-4 text-xs text-yellow-500">
+                  Serão listados os pedidos em digitação do dia.
+                </div>
                 {closingAmountQuery.data?.budget?.map(
                   (budget: AmountByIdData["budget"][number]) => {
                     const descricaoPrincipal =
