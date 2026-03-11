@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
+import { FileCheckIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,8 +15,6 @@ import { formatDate } from "@/lib/format-date";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { FileCheckIcon } from "lucide-react";
 
 type entryData =
   RouterOutputs["tenant"]["invoiceEntry"]["byId"]["invoiceEntry"];

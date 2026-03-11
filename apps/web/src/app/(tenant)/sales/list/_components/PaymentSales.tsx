@@ -1,8 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTenant } from "@/contexts/tenant-context";
 import { formatAsCurrency } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
 import type { Decimal } from "../../../../../../../../packages/db/prisma/generated/internal/prismaNamespace";
 
 // type paymentData = RouterOutputs["sales"]["byId"]["sales"]["venda_recebimento"];

@@ -1,3 +1,4 @@
+import { FileCheckIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -9,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { formatDate } from "@/lib/format-date";
 import { formatAsCurrency } from "@/lib/utils";
-import { FileCheckIcon } from "lucide-react";
 import type { Duplicata, NFeInfo } from "./DetailDfe";
 
 export function DetailDfeCharge({ xml }: { xml: NFeInfo }) {

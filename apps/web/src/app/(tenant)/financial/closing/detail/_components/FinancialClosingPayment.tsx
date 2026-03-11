@@ -1,18 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  BanknoteIcon,
-  CornerDownLeftIcon,
-  CreditCardIcon,
-  HandshakeIcon,
-  MinusIcon,
-  PanelBottomCloseIcon,
-  PanelBottomIcon,
-  PanelBottomOpenIcon,
-  SheetIcon,
-  TicketCheckIcon,
-  TicketIcon,
-} from "lucide-react";
-import { useMemo, useState } from "react";
 import { DetailBudget } from "@/app/(tenant)/sales/budget/_components/DetailBudget";
 import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
 import { PixIcon } from "@/assets/PixIcon";
@@ -30,6 +15,22 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import {
+  BanknoteIcon,
+  CircleAlertIcon,
+  CornerDownLeftIcon,
+  CreditCardIcon,
+  HandshakeIcon,
+  MinusIcon,
+  PanelBottomCloseIcon,
+  PanelBottomIcon,
+  PanelBottomOpenIcon,
+  SheetIcon,
+  TicketCheckIcon,
+  TicketIcon,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import type { ClosingData } from "../types";
 import { PaymentAccordionItem } from "./PaymentAccordionItem";
 import { PaymentLineItem } from "./PaymentLineItem";
@@ -152,11 +153,11 @@ export default function FinancialClosingPayment({
               amount={
                 closingAmountQuery.data
                   ? formatAsCurrency(
-                      closingAmountQuery.data?.paymentsDnAmount +
-                        closingAmountQuery.data?.supplyAmount -
-                        closingAmountQuery.data?.sangriaAmount -
-                        closingAmountQuery.data?.devolutionDnAmount
-                    )
+                    closingAmountQuery.data?.paymentsDnAmount +
+                    closingAmountQuery.data?.supplyAmount -
+                    closingAmountQuery.data?.sangriaAmount -
+                    closingAmountQuery.data?.devolutionDnAmount
+                  )
                   : ""
               }
               icon={PanelBottomIcon}
@@ -370,19 +371,29 @@ export default function FinancialClosingPayment({
                   Serão listados apenas os pedidos em digitação do dia.
                 </div> */}
                 {closingAmountQuery.data?.budget?.map(
-                  (budget: AmountByIdData["budget"][number]) => (
-                    <PaymentLineItem
-                      amount={formatAsCurrency(Number(budget.VALOR_TOTAL))}
-                      key={budget.ID}
-                      label=""
-                      onClick={() => {
-                        setSelectedBudgetId(budget.ID);
-                        setIsBudgetModalOpen(true);
-                      }}
-                    >
-                      {budget.vendedor?.colaborador?.pessoa?.NOME}
-                    </PaymentLineItem>
-                  )
+                  (budget: AmountByIdData["budget"][number]) => {
+                    const descricaoPrincipal =
+                      budget.OBSERVACAO ||
+                      budget.NOME_CLIENTE_PEDIDO ||
+                      budget.cliente?.pessoa?.NOME ||
+                      "";
+
+                    return (
+                      <PaymentLineItem
+                        amount={formatAsCurrency(Number(budget.VALOR_TOTAL))}
+                        key={budget.ID}
+                        label={descricaoPrincipal}
+                        onClick={() => {
+                          setSelectedBudgetId(budget.ID);
+                          setIsBudgetModalOpen(true);
+                        }}
+                      >
+                        {budget.OBSERVACAO && (
+                          <CircleAlertIcon className="mr-1 size-3.5 text-blue-600 dark:text-blue-400" />
+                        )}
+                      </PaymentLineItem>
+                    );
+                  }
                 )}
               </PaymentAccordionItem>
             )}
@@ -462,7 +473,7 @@ export default function FinancialClosingPayment({
               <ShowText>
                 {formatAsCurrency(
                   Number(closingAmountQuery.data?.groupedPaymentsTotalAmount) +
-                    Number(closingAmountQuery.data?.installmentsAmount)
+                  Number(closingAmountQuery.data?.installmentsAmount)
                 )}
               </ShowText>
             </div>

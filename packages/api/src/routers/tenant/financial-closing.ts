@@ -188,6 +188,7 @@ export const financialClosingRouter = router({
               ST_SUPRIMENTO: true,
               HISTORICO: true,
               HORA_RECEBIMENTO: true,
+              ID_COLABORADOR: true,
               fin_tipo_recebimento: {
                 select: {
                   ID: true,
@@ -238,6 +239,7 @@ export const financialClosingRouter = router({
             select: {
               ID: true,
               ID_VENDEDOR: true,
+              ID_VENDA_ORCAMENTO_CABECALHO: true,
               PDV_CLIENTE_NOME: true,
               HORA_SAIDA: true,
               VALOR_TOTAL: true,
@@ -258,6 +260,8 @@ export const financialClosingRouter = router({
               VALOR_TOTAL: true,
               SITUACAO: true,
               ID_VENDEDOR: true,
+              OBSERVACAO: true,
+              NOME_CLIENTE_PEDIDO: true,
               cliente: {
                 select: {
                   pessoa: {
@@ -287,6 +291,7 @@ export const financialClosingRouter = router({
               HORA_SAIDA: true,
               VALOR_TOTAL: true,
               ID_VENDEDOR: true,
+              ID_VENDA_ORCAMENTO_CABECALHO: true,
               DEVOLUCAO: true,
               MOTIVO: true,
               FORMA_PAGAMENTO: true,
@@ -326,6 +331,7 @@ export const financialClosingRouter = router({
               HORA_SAIDA: true,
               VALOR_TOTAL: true,
               ID_VENDEDOR: true,
+              ID_VENDA_ORCAMENTO_CABECALHO: true,
               VALOR_ACRESCIMO: true,
               VALOR_DESCONTO: true,
             },
@@ -346,6 +352,7 @@ export const financialClosingRouter = router({
               ID: true,
               HORA_SAIDA: true,
               VALOR_TOTAL: true,
+              ID_VENDA_ORCAMENTO_CABECALHO: true,
               PDV_CLIENTE_NOME: true,
               cliente: {
                 select: {
@@ -369,11 +376,11 @@ export const financialClosingRouter = router({
         // Batch load vendedores (optimized with Set deduplication)
         const closingVendedorIds = [
           ...new Set([
-            ...devolution.map((item: any) => item.ID_VENDEDOR),
-            ...allDiscount.map((item: any) => item.ID_VENDEDOR),
-            ...installments.map((item: any) => item.ID_VENDEDOR),
+            ...devolution.map((item) => item.ID_VENDEDOR),
+            ...allDiscount.map((item) => item.ID_VENDEDOR),
+            ...installments.map((item) => item.ID_VENDEDOR),
           ]),
-        ].filter((id: any): id is number => id !== null && id !== 0);
+        ].filter((id): id is number => id !== null && id !== 0);
 
         const vendedores =
           closingVendedorIds.length > 0
@@ -399,33 +406,33 @@ export const financialClosingRouter = router({
             : [];
 
         const vendedorMap = new Map(
-          vendedores.map((vendedor: any) => [vendedor.ID, vendedor])
+          vendedores.map((vendedor) => [vendedor.ID, vendedor])
         );
 
         const closingVendedorIdSet = new Set<number>(closingVendedorIds);
 
         // Combinar dados com vendedores e filtrar budgets pelo(s) vendedor(es) do fechamento
         const budgetWithVendedor = budget
-          .filter((item: any) =>
+          .filter((item) =>
             closingVendedorIdSet.size === 0
               ? true
               : closingVendedorIdSet.has(item.ID_VENDEDOR)
           )
-          .map((item: any) => ({
+          .map((item) => ({
             ...item,
             vendedor: item.ID_VENDEDOR
               ? vendedorMap.get(item.ID_VENDEDOR) || null
               : null,
           }));
 
-        const devolutionWithVendedor = devolution.map((item: any) => ({
+        const devolutionWithVendedor = devolution.map((item) => ({
           ...item,
           vendedor: item.ID_VENDEDOR
             ? vendedorMap.get(item.ID_VENDEDOR) || null
             : null,
         }));
 
-        const allDiscountWithVendedor = allDiscount.map((item: any) => ({
+        const allDiscountWithVendedor = allDiscount.map((item) => ({
           ...item,
           vendedor: item.ID_VENDEDOR
             ? vendedorMap.get(item.ID_VENDEDOR) || null

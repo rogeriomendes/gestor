@@ -42,7 +42,7 @@ export function FinancialReceiptCard({
       className={cn(
         "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isCanceled &&
-        "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
+          "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
       )}
       onClick={() => onClick?.(receipt)}
       size="sm"

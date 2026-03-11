@@ -35,7 +35,7 @@ export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
         "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isActive && "border-primary/20 bg-primary/5",
         isAwaiting &&
-        "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20"
+          "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20"
       )}
       onClick={() => onClick?.(sale)}
       size="sm"

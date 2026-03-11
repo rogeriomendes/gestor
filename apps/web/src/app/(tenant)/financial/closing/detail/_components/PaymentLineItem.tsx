@@ -23,7 +23,9 @@ export function PaymentLineItem({
       <div className="flex flex-row items-center">
         {onClick && <Maximize2Icon className="mr-2 size-3.5" />}
         {children}
-        {label && label}
+        {label && (
+          <span className="ml-1 max-w-[260px] truncate uppercase">{label}</span>
+        )}
       </div>
       <div className="ml-2">
         {prefix}

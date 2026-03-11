@@ -1,3 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
+import {
+  ClockIcon,
+  DotIcon,
+  InfoIcon,
+  LandmarkIcon,
+  XIcon,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,14 +32,6 @@ import { formatDate } from "@/lib/format-date";
 import { getSaleStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import { type RouterOutputs, trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import {
-  ClockIcon,
-  DotIcon,
-  InfoIcon,
-  LandmarkIcon,
-  XIcon,
-} from "lucide-react";
 
 type saleData =
   RouterOutputs["tenant"]["productsSale"]["all"]["productsSale"][number];

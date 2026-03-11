@@ -1,3 +1,14 @@
+import { useQuery } from "@tanstack/react-query";
+import {
+  ClockIcon,
+  DotIcon,
+  InfoIcon,
+  LandmarkIcon,
+  ShoppingBagIcon,
+  UserIcon,
+  XIcon,
+} from "lucide-react";
+import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,17 +36,6 @@ import { formatDate } from "@/lib/format-date";
 import { getBudgetSituationInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import {
-  ClockIcon,
-  DotIcon,
-  InfoIcon,
-  LandmarkIcon,
-  ShoppingBagIcon,
-  UserIcon,
-  XIcon,
-} from "lucide-react";
-import { useState } from "react";
 import { DetailSales } from "../../list/_components/DetailSales";
 import { DetailBudgetProducts } from "./DetailBudgetProducts";
 

@@ -1,3 +1,5 @@
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { ShowText } from "@/components/show-text";
 import {
   Card,
@@ -8,8 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatAsCurrency } from "@/lib/utils";
-import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
 
 interface MetricCardProps {
   badge?: ReactNode;

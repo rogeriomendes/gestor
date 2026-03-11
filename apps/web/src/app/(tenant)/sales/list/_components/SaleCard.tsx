@@ -1,10 +1,10 @@
 "use client";
 
+import { DotIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
-import { DotIcon } from "lucide-react";
 
 interface SaleCardProps {
   /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
@@ -40,7 +40,7 @@ export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
       className={cn(
         "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isCanceled &&
-        "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
+          "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
       )}
       onClick={() => onClick?.(sale)}
       size="sm"

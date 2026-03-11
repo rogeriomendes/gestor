@@ -1,3 +1,17 @@
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  ClockIcon,
+  DotIcon,
+  InfoIcon,
+  LandmarkIcon,
+  SheetIcon,
+  SquareUserIcon,
+  TriangleAlertIcon,
+  UserIcon,
+  XIcon,
+} from "lucide-react";
+import { useState } from "react";
 import { CopyButton } from "@/components/copy-button";
 import { NfButton } from "@/components/nf-button";
 import { NfeAccessKey } from "@/components/nfe-access-key";
@@ -28,20 +42,6 @@ import { formatDate } from "@/lib/format-date";
 import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  ClockIcon,
-  DotIcon,
-  InfoIcon,
-  LandmarkIcon,
-  SheetIcon,
-  SquareUserIcon,
-  TriangleAlertIcon,
-  UserIcon,
-  XIcon,
-} from "lucide-react";
-import { useState } from "react";
 import { DetailBudget } from "../../budget/_components/DetailBudget";
 import { DetailSalesProducts } from "./DetailSalesProducts";
 import { PaymentSales } from "./PaymentSales";
