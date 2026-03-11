@@ -139,7 +139,9 @@ export default function FinancialClosingSalesList({
           emptyIcon={<ShoppingCartIcon className="mr-5 size-20" />}
           emptyMessage="Não foram encontradas parcelas a receber."
           fetchNextPage={receiptsQuery.fetchNextPage}
-          getRowKey={(receipt) => receipt.ID}
+          getRowKey={(receipt, index) =>
+            `${receipt.ID}-${receipt.ID_VENDA_CABECALHO}-${index}`
+          }
           hasNextPage={receiptsQuery.hasNextPage}
           headers={[
             { key: "actions", label: "", className: "w-4" },

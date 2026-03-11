@@ -30,6 +30,9 @@ import type { ClosingData } from "./types";
 
 export type { ClosingData } from "./types";
 
+type AccountItem =
+  RouterOutputs["tenant"]["account"]["all"]["accounts"][number];
+
 type ClosingItem =
   RouterOutputs["tenant"]["financialClosing"]["all"]["financialClosing"][number];
 
@@ -85,6 +88,13 @@ export default function FinancialClosingDetailPage() {
 
   const [selectedClosingId, setSelectedClosingId] = useState<string>("");
 
+  const accountsQuery = useQuery({
+    ...trpc.tenant.account.all.queryOptions({
+      companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
+    }),
+    enabled: !!tenant && !!closingData?.id,
+  });
+
   const closingsQuery = useQuery({
     ...trpc.tenant.financialClosing.all.queryOptions({
       limit: 20,
@@ -95,11 +105,36 @@ export default function FinancialClosingDetailPage() {
     enabled: !!tenant && !!closingData?.id,
   });
 
-  const closingOptions: ClosingSelectOption[] =
-    closingsQuery.data?.financialClosing?.map((closing: ClosingItem) => ({
-      value: String(closing.ID),
-      label: `${closing.DATA_ABERTURA ? formatDate(new Date(closing.DATA_ABERTURA)) : "Sem data"} - ${closing.HORA_ABERTURA ?? ""}`,
-    })) ?? [];
+  const openAccountForCurrentClosing: AccountItem | undefined =
+    accountsQuery.data?.accounts?.find(
+      (acc: AccountItem) =>
+        acc.ID === Number(closingData?.id) && acc.STATUS_CAIXA_ABERTO === "S"
+    );
+
+  const openOption: ClosingSelectOption | null = openAccountForCurrentClosing
+    ? {
+      value: "open",
+      label: `${openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA
+          ? formatDate(
+            new Date(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
+          )
+          : "Sem data"
+        } - ${openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA ?? ""}`,
+    }
+    : null;
+
+  const closingOptions: ClosingSelectOption[] = [
+    ...(openOption ? [openOption] : []),
+    ...(closingsQuery.data?.financialClosing?.map(
+      (closing: ClosingItem): ClosingSelectOption => ({
+        value: String(closing.ID),
+        label: `${closing.DATA_ABERTURA
+            ? formatDate(new Date(closing.DATA_ABERTURA))
+            : "Sem data"
+          } - ${closing.HORA_ABERTURA ?? ""}`,
+      })
+    ) ?? []),
+  ];
 
   // Selecionar automaticamente o fechamento atual deste caixa no select
   useEffect(() => {
@@ -107,10 +142,21 @@ export default function FinancialClosingDetailPage() {
       !(
         closingData?.dateOpen &&
         closingData.hourOpen &&
-        closingsQuery.data?.financialClosing
+        (closingsQuery.data?.financialClosing || openAccountForCurrentClosing)
       ) ||
       selectedClosingId
     ) {
+      return;
+    }
+
+    // Se o caixa está aberto (sem hora de fechamento) e existe conta aberta,
+    // seleciona a opção "open" no select.
+    if (!closingData.hourClosed && openAccountForCurrentClosing) {
+      setSelectedClosingId("open");
+      return;
+    }
+
+    if (!closingsQuery.data?.financialClosing) {
       return;
     }
 
@@ -146,9 +192,42 @@ export default function FinancialClosingDetailPage() {
     if (currentClosing) {
       setSelectedClosingId(String(currentClosing.ID));
     }
-  }, [closingData, closingsQuery.data?.financialClosing, selectedClosingId]);
+  }, [
+    closingData,
+    closingsQuery.data?.financialClosing,
+    openAccountForCurrentClosing,
+    selectedClosingId,
+  ]);
 
   const handleChangeClosing = (closingId: string) => {
+    if (closingId === "open") {
+      if (!openAccountForCurrentClosing) {
+        return;
+      }
+
+      const today = new Date();
+      const dateOpenStr =
+        openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA != null &&
+          String(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA) !== ""
+          ? String(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
+          : today.toISOString().slice(0, 10);
+
+      const hourOpenStr =
+        openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA &&
+          String(openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA).trim() !== ""
+          ? String(openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA)
+          : "00:00:00";
+
+      const params = new URLSearchParams();
+      params.set("id", String(openAccountForCurrentClosing.ID));
+      params.set("name", openAccountForCurrentClosing.NOME ?? "");
+      params.set("dateOpen", dateOpenStr);
+      params.set("hourOpen", hourOpenStr);
+
+      router.push(`/financial/closing/detail?${params.toString()}` as Route);
+      return;
+    }
+
     const closing = closingsQuery.data?.financialClosing?.find(
       (item: ClosingItem) => String(item.ID) === closingId
     );
@@ -179,12 +258,13 @@ export default function FinancialClosingDetailPage() {
   if (!closingData?.id) {
     return (
       <PageLayout
+        backHref="/financial/closing"
         breadcrumbs={[
-          { label: "Dashboard", href: "/dashboard" as Route },
-          { label: "Financeiro", href: "/financial" as Route },
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Financeiro", href: "/financial" },
           {
             label: "Fechamentos de Caixa",
-            href: "/financial/closing" as Route,
+            href: "/financial/closing",
           },
           { label: "Detalhes", isCurrent: true },
         ]}
@@ -210,12 +290,13 @@ export default function FinancialClosingDetailPage() {
   if (!hasRequiredParams) {
     return (
       <PageLayout
+        backHref="/financial/closing"
         breadcrumbs={[
-          { label: "Dashboard", href: "/dashboard" as Route },
-          { label: "Financeiro", href: "/financial" as Route },
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Financeiro", href: "/financial" },
           {
             label: "Fechamentos de Caixa",
-            href: "/financial/closing" as Route,
+            href: "/financial/closing",
           },
           { label: closingData.name ?? "Detalhes", isCurrent: true },
         ]}
@@ -264,10 +345,11 @@ export default function FinancialClosingDetailPage() {
           </div>
         )
       }
+      backHref="/financial/closing"
       breadcrumbs={[
-        { label: "Dashboard", href: "/dashboard" as Route },
-        { label: "Financeiro", href: "/financial" as Route },
-        { label: "Fechamentos de Caixa", href: "/financial/closing" as Route },
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Financeiro", href: "/financial" },
+        { label: "Fechamentos de Caixa", href: "/financial/closing" },
         {
           label: `${closingData?.name} - ${closingData?.dateOpen && formatDate(closingData?.dateOpen)}`,
           isCurrent: true,
