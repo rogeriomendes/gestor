@@ -1,23 +1,42 @@
 "use client";
 
-import type { Route } from "next";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCompany } from "@/contexts/company-context";
+import { useTenant } from "@/contexts/tenant-context";
 import { formatDate } from "@/lib/format-date";
 import { getFinancialClosingStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
+import type { RouterOutputs } from "@/utils/trpc";
+import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import type { Route } from "next";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import FinancialClosingPayment from "./_components/FinancialClosingPayment";
 import FinancialClosingSalesList from "./_components/FinancialClosingSales";
 import type { ClosingData } from "./types";
 
 export type { ClosingData } from "./types";
+
+type ClosingItem =
+  RouterOutputs["tenant"]["financialClosing"]["all"]["financialClosing"][number];
+
+interface ClosingSelectOption {
+  label: string;
+  value: string;
+}
 
 export function parseClosingDataFromSearchParams(
   searchParams: URLSearchParams
@@ -50,6 +69,9 @@ export function parseClosingDataFromSearchParams(
 
 export default function FinancialClosingDetailPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { tenant } = useTenant();
+  const { selectedCompanyId } = useCompany();
 
   const closingData = useMemo(
     () => parseClosingDataFromSearchParams(searchParams),
@@ -60,6 +82,99 @@ export default function FinancialClosingDetailPage() {
     closingData?.id &&
     closingData.dateOpen != null &&
     closingData.hourOpen != null;
+
+  const [selectedClosingId, setSelectedClosingId] = useState<string>("");
+
+  const closingsQuery = useQuery({
+    ...trpc.tenant.financialClosing.all.queryOptions({
+      limit: 20,
+      account: closingData?.id ? Number(closingData.id) : null,
+      date: null,
+      companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
+    }),
+    enabled: !!tenant && !!closingData?.id,
+  });
+
+  const closingOptions: ClosingSelectOption[] =
+    closingsQuery.data?.financialClosing?.map((closing: ClosingItem) => ({
+      value: String(closing.ID),
+      label: `${closing.DATA_ABERTURA ? formatDate(new Date(closing.DATA_ABERTURA)) : "Sem data"} - ${closing.HORA_ABERTURA ?? ""}`,
+    })) ?? [];
+
+  // Selecionar automaticamente o fechamento atual deste caixa no select
+  useEffect(() => {
+    if (
+      !(
+        closingData?.dateOpen &&
+        closingData.hourOpen &&
+        closingsQuery.data?.financialClosing
+      ) ||
+      selectedClosingId
+    ) {
+      return;
+    }
+
+    const currentDateStr = new Date(
+      Date.UTC(
+        closingData.dateOpen.getUTCFullYear(),
+        closingData.dateOpen.getUTCMonth(),
+        closingData.dateOpen.getUTCDate()
+      )
+    )
+      .toISOString()
+      .slice(0, 10);
+
+    const currentHour = closingData.hourOpen.trim();
+
+    const currentClosing = closingsQuery.data.financialClosing.find(
+      (item: ClosingItem) => {
+        if (!(item.DATA_ABERTURA && item.HORA_ABERTURA)) {
+          return false;
+        }
+
+        const itemDateStr = new Date(item.DATA_ABERTURA)
+          .toISOString()
+          .slice(0, 10);
+
+        return (
+          itemDateStr === currentDateStr &&
+          item.HORA_ABERTURA.trim() === currentHour
+        );
+      }
+    );
+
+    if (currentClosing) {
+      setSelectedClosingId(String(currentClosing.ID));
+    }
+  }, [closingData, closingsQuery.data?.financialClosing, selectedClosingId]);
+
+  const handleChangeClosing = (closingId: string) => {
+    const closing = closingsQuery.data?.financialClosing?.find(
+      (item: ClosingItem) => String(item.ID) === closingId
+    );
+
+    if (!closing) {
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.set("id", String(closing.ID_CONTA_CAIXA));
+    params.set("name", closing.conta_caixa?.NOME ?? "");
+    if (closing.DATA_ABERTURA) {
+      params.set("dateOpen", String(closing.DATA_ABERTURA));
+    }
+    if (closing.HORA_ABERTURA) {
+      params.set("hourOpen", closing.HORA_ABERTURA);
+    }
+    if (closing.DATA_FECHAMENTO) {
+      params.set("dateClosed", String(closing.DATA_FECHAMENTO));
+    }
+    if (closing.HORA_FECHAMENTO) {
+      params.set("hourClosed", closing.HORA_FECHAMENTO);
+    }
+
+    router.push(`/financial/closing/detail?${params.toString()}` as Route);
+  };
 
   if (!closingData?.id) {
     return (
@@ -173,18 +288,46 @@ export default function FinancialClosingDetailPage() {
               >
                 ABERTURA
               </Badge>
-              <Badge
-                className="flex-1 py-3.5 text-base md:w-56 md:text-lg"
+              {/* <Badge
+                className="flex-1 py-3.5 text-base md:w-64 md:text-lg"
                 variant="secondary"
               >
                 {closingData.dateOpen && formatDate(closingData.dateOpen)} -{" "}
                 {closingData.hourOpen}
-              </Badge>
+              </Badge> */}
+              <Select
+                disabled={
+                  closingsQuery.isLoading || closingOptions.length === 0
+                }
+                onValueChange={(value) => {
+                  if (!value) {
+                    return;
+                  }
+                  setSelectedClosingId(value);
+                  handleChangeClosing(value);
+                }}
+                value={selectedClosingId}
+              >
+                <SelectTrigger className="flex-1 items-center rounded-md border border-transparent bg-secondary px-2 py-3.5 font-medium text-base text-secondary-foreground hover:bg-secondary/80 data-[size=default]:h-5 md:w-64 md:text-lg dark:bg-secondary dark:hover:bg-secondary/80">
+                  <span className="justify-center truncate">
+                    {closingOptions.find(
+                      (option) => option.value === selectedClosingId
+                    )?.label || "Selecionar outro fechamento"}
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  {closingOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </>
           ) : (
             <>
               <Skeleton className="h-8 flex-1 md:w-56" />
-              <Skeleton className="h-8 flex-1 md:w-56" />
+              <Skeleton className="h-8 flex-1 md:w-64" />
             </>
           )}
         </div>
@@ -199,7 +342,7 @@ export default function FinancialClosingDetailPage() {
               </Badge>
 
               <Badge
-                className="flex-1 py-3.5 text-base md:w-56 md:text-lg"
+                className="flex-1 justify-start py-3.5 text-base md:w-64 md:justify-center md:text-lg"
                 variant="secondary"
               >
                 {closingData.dateClosed && formatDate(closingData.dateClosed)} -{" "}
@@ -210,7 +353,7 @@ export default function FinancialClosingDetailPage() {
         ) : (
           <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
             <Skeleton className="h-8 flex-1 md:w-56" />
-            <Skeleton className="h-8 flex-1 md:w-56" />
+            <Skeleton className="h-8 flex-1 md:w-64" />
           </div>
         )}
       </div>
