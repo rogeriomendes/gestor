@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
 import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -370,41 +371,43 @@ export default function FinancialClosingDetailPage() {
               >
                 ABERTURA
               </Badge>
-              {/* <Badge
-                className="flex-1 py-3.5 text-base md:w-64 md:text-lg"
-                variant="secondary"
-              >
-                {closingData.dateOpen && formatDate(closingData.dateOpen)} -{" "}
-                {closingData.hourOpen}
-              </Badge> */}
-              <Select
-                disabled={
-                  closingsQuery.isLoading || closingOptions.length === 0
-                }
-                onValueChange={(value) => {
-                  if (!value) {
-                    return;
-                  }
-                  setSelectedClosingId(value);
-                  handleChangeClosing(value);
-                }}
-                value={selectedClosingId}
-              >
-                <SelectTrigger className="flex-1 items-center rounded-md border border-transparent bg-secondary px-2 py-3.5 font-medium text-base text-secondary-foreground hover:bg-secondary/80 data-[size=default]:h-5 md:w-64 md:text-lg dark:bg-secondary dark:hover:bg-secondary/80">
-                  <span className="justify-center truncate">
-                    {closingOptions.find(
-                      (option) => option.value === selectedClosingId
-                    )?.label || "Selecionar outro fechamento"}
-                  </span>
-                </SelectTrigger>
-                <SelectContent>
-                  {closingOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {closingsQuery.isLoading || closingOptions.length === 0 ? (
+                <Badge
+                  className="w-56 items-center justify-between py-3.5 text-base md:w-64 md:text-lg"
+                  variant="secondary"
+                >
+                  {closingData.dateOpen && formatDate(closingData.dateOpen)} -{" "}
+                  {closingData.hourOpen}
+                  <Loader2 className="ml-1.5 size-4 shrink-0 animate-spin text-muted-foreground" />
+                </Badge>
+              ) : (
+                <Select
+                  disabled={closingOptions.length === 0}
+                  onValueChange={(value) => {
+                    if (!value) {
+                      return;
+                    }
+                    setSelectedClosingId(value);
+                    handleChangeClosing(value);
+                  }}
+                  value={selectedClosingId}
+                >
+                  <SelectTrigger className="w-56 cursor-pointer items-center rounded-md border border-transparent bg-secondary px-2 py-3.5 font-medium text-base text-secondary-foreground hover:bg-secondary/80 data-[size=default]:h-5 md:w-64 md:text-lg dark:bg-secondary dark:hover:bg-secondary/80">
+                    <span className="justify-center truncate">
+                      {closingOptions.find(
+                        (option) => option.value === selectedClosingId
+                      )?.label || "Selecionar outro fechamento"}
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {closingOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </>
           ) : (
             <>
@@ -424,7 +427,7 @@ export default function FinancialClosingDetailPage() {
               </Badge>
 
               <Badge
-                className="flex-1 justify-start py-3.5 text-base md:w-64 md:justify-center md:text-lg"
+                className="w-56 justify-start py-3.5 text-base md:w-64 md:justify-center md:text-lg"
                 variant="secondary"
               >
                 {closingData.dateClosed && formatDate(closingData.dateClosed)} -{" "}
