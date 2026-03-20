@@ -1,5 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,12 +25,6 @@ import { getFinancialClosingStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import type { Route } from "next";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
 import FinancialClosingPayment from "./_components/FinancialClosingPayment";
 import FinancialClosingSalesList from "./_components/FinancialClosingSales";
 import type { ClosingData } from "./types";
@@ -114,14 +114,15 @@ export default function FinancialClosingDetailPage() {
 
   const openOption: ClosingSelectOption | null = openAccountForCurrentClosing
     ? {
-      value: "open",
-      label: `${openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA
-          ? formatDate(
-            new Date(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
-          )
-          : "Sem data"
+        value: "open",
+        label: `${
+          openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA
+            ? formatDate(
+                new Date(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
+              )
+            : "Sem data"
         } - ${openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA ?? ""}`,
-    }
+      }
     : null;
 
   const closingOptions: ClosingSelectOption[] = [
@@ -129,10 +130,11 @@ export default function FinancialClosingDetailPage() {
     ...(closingsQuery.data?.financialClosing?.map(
       (closing: ClosingItem): ClosingSelectOption => ({
         value: String(closing.ID),
-        label: `${closing.DATA_ABERTURA
+        label: `${
+          closing.DATA_ABERTURA
             ? formatDate(new Date(closing.DATA_ABERTURA))
             : "Sem data"
-          } - ${closing.HORA_ABERTURA ?? ""}`,
+        } - ${closing.HORA_ABERTURA ?? ""}`,
       })
     ) ?? []),
   ];
@@ -209,13 +211,13 @@ export default function FinancialClosingDetailPage() {
       const today = new Date();
       const dateOpenStr =
         openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA != null &&
-          String(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA) !== ""
+        String(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA) !== ""
           ? String(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
           : today.toISOString().slice(0, 10);
 
       const hourOpenStr =
         openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA &&
-          String(openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA).trim() !== ""
+        String(openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA).trim() !== ""
           ? String(openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA)
           : "00:00:00";
 

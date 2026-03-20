@@ -1,3 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import { ShoppingCartIcon } from "lucide-react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,9 +16,6 @@ import { formatDate } from "@/lib/format-date";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { ShoppingCartIcon } from "lucide-react";
-import { useState } from "react";
 import { DetailEntry } from "../../../invoice/entry/_components/DetailEntry";
 
 type PurchaseItem =
@@ -138,7 +138,7 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
                         <TableCell className="py-3">
                           {formatAsCurrency(
                             Number(purchase.VALOR_TOTAL) /
-                            Number(purchase.QUANTIDADE_COMERCIAL)
+                              Number(purchase.QUANTIDADE_COMERCIAL)
                           )}
                         </TableCell>
                       </TableRow>
