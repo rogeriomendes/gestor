@@ -1,6 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { toZonedTime } from "date-fns-tz";
 import { Loader2 } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -11,12 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
@@ -25,6 +22,10 @@ import { getFinancialClosingStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import {
+  ClosingSelectResponsive,
+  type ClosingSelectResponsiveOption,
+} from "./_components/ClosingSelectResponsive";
 import FinancialClosingPayment from "./_components/FinancialClosingPayment";
 import FinancialClosingSalesList from "./_components/FinancialClosingSales";
 import type { ClosingData } from "./types";
@@ -36,11 +37,6 @@ type AccountItem =
 
 type ClosingItem =
   RouterOutputs["tenant"]["financialClosing"]["all"]["financialClosing"][number];
-
-interface ClosingSelectOption {
-  label: string;
-  value: string;
-}
 
 export function parseClosingDataFromSearchParams(
   searchParams: URLSearchParams
@@ -112,30 +108,45 @@ export default function FinancialClosingDetailPage() {
         acc.ID === Number(closingData?.id) && acc.STATUS_CAIXA_ABERTO === "S"
     );
 
-  const openOption: ClosingSelectOption | null = openAccountForCurrentClosing
-    ? {
-        value: "open",
-        label: `${
-          openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA
-            ? formatDate(
-                new Date(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
-              )
-            : "Sem data"
-        } - ${openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA ?? ""}`,
-      }
-    : null;
+  const openOption: ClosingSelectResponsiveOption | null =
+    openAccountForCurrentClosing
+      ? (() => {
+          const openDate = openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA
+            ? new Date(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
+            : null;
+          const hour = openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA || "";
+          const label = `${openDate ? formatDate(openDate) : "Sem data"} - ${hour}`;
+          const listLabel =
+            openDate != null
+              ? `${label} · ${format(toZonedTime(openDate, "UTC"), "EEEEEE", {
+                  locale: ptBR,
+                })}.`
+              : `${label}.`;
+          return { value: "open", label, listLabel };
+        })()
+      : null;
 
-  const closingOptions: ClosingSelectOption[] = [
+  const closingOptions: ClosingSelectResponsiveOption[] = [
     ...(openOption ? [openOption] : []),
     ...(closingsQuery.data?.financialClosing?.map(
-      (closing: ClosingItem): ClosingSelectOption => ({
-        value: String(closing.ID),
-        label: `${
-          closing.DATA_ABERTURA
-            ? formatDate(new Date(closing.DATA_ABERTURA))
-            : "Sem data"
-        } - ${closing.HORA_ABERTURA ?? ""}`,
-      })
+      (closing: ClosingItem): ClosingSelectResponsiveOption => {
+        const openDate = closing.DATA_ABERTURA
+          ? new Date(closing.DATA_ABERTURA)
+          : null;
+        const hour = closing.HORA_ABERTURA || "";
+        const label = `${openDate ? formatDate(openDate) : "Sem data"} - ${hour}`;
+        const listLabel =
+          openDate != null
+            ? `${label} · ${format(toZonedTime(openDate, "UTC"), "EEEEEE", {
+                locale: ptBR,
+              })}.`
+            : `${label}.`;
+        return {
+          value: String(closing.ID),
+          label,
+          listLabel,
+        };
+      }
     ) ?? []),
   ];
 
@@ -383,32 +394,15 @@ export default function FinancialClosingDetailPage() {
                   <Loader2 className="ml-1.5 size-4 shrink-0 animate-spin text-muted-foreground" />
                 </Badge>
               ) : (
-                <Select
+                <ClosingSelectResponsive
                   disabled={closingOptions.length === 0}
                   onValueChange={(value) => {
-                    if (!value) {
-                      return;
-                    }
                     setSelectedClosingId(value);
                     handleChangeClosing(value);
                   }}
+                  options={closingOptions}
                   value={selectedClosingId}
-                >
-                  <SelectTrigger className="w-56 cursor-pointer items-center rounded-md border border-transparent bg-secondary px-2 py-3.5 font-medium text-base text-secondary-foreground hover:bg-secondary/80 data-[size=default]:h-5 md:w-64 md:text-lg dark:bg-secondary dark:hover:bg-secondary/80">
-                    <span className="justify-center truncate">
-                      {closingOptions.find(
-                        (option) => option.value === selectedClosingId
-                      )?.label || "Selecionar outro fechamento"}
-                    </span>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {closingOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               )}
             </>
           ) : (
