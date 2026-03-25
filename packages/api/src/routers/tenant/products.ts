@@ -1,3 +1,4 @@
+import type { Tenant } from "@gestor/db/types";
 import { format } from "date-fns";
 import { z } from "zod";
 import { router, tenantProcedure } from "../..";
@@ -20,7 +21,7 @@ export const productsRouter = router({
         const limit = input.limit ?? 30;
         const { cursor, searchTerm, group, scale, promotion } = input;
 
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const whereSearch = searchTerm && {
           OR: [
             { CODIGO_INTERNO: { contains: searchTerm } },
@@ -272,7 +273,7 @@ export const productsRouter = router({
       try {
         const { id } = input;
 
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const product = await gestorPrisma.produto.findUnique({
           where: {
             ID: Number(id),
@@ -420,7 +421,7 @@ export const productsRouter = router({
       try {
         const { id } = input;
 
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const stock = await gestorPrisma.estoque_rede.findFirst({
           where: {
             ID_PRODUTO: Number(id),
@@ -450,7 +451,7 @@ export const productsRouter = router({
         const { id } = input;
         const limit = 30;
 
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const sales = await gestorPrisma.venda_detalhe.findMany({
           take: limit + 1,
           where: {
@@ -502,16 +503,17 @@ export const productsRouter = router({
     .query(async ({ ctx, input }) => {
       try {
         const { id } = input;
-        const limit = 30;
+        const limit = 10;
 
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const purchase = await gestorPrisma.nfe_detalhe.findMany({
-          take: limit + 1,
+          take: limit,
           where: {
             ID_PRODUTO: Number(id),
-            nfe_cabecalho: {
-              NATUREZA_OPERACAO: "COMPRA",
-            },
+            ENTRA_TOTAL: "1",
+            // nfe_cabecalho: {
+            //   NATUREZA_OPERACAO: "COMPRA",
+            // },
           },
           select: {
             ID: true,
@@ -563,7 +565,7 @@ export const productsRouter = router({
       try {
         const { cod } = input;
 
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const ncm = await gestorPrisma.ncm.findFirst({
           where: {
             CODIGO: cod,
@@ -591,7 +593,7 @@ export const productsRouter = router({
       try {
         const { cod } = input;
 
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const cest = await gestorPrisma.ncm_cest.findFirst({
           where: {
             CEST: cod,
@@ -620,7 +622,7 @@ export const productsRouter = router({
       try {
         const { id } = input;
 
-        const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const compound = await gestorPrisma.produto_composto.findMany({
           where: {
             ID_PRODUTO_COMPOSTO: Number(id),
