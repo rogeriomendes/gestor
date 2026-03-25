@@ -444,12 +444,15 @@ export const productsRouter = router({
     .input(
       z.object({
         id: z.number().min(1).nullish(),
+        companyId: z.number().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { id } = input;
+        const { id, companyId } = input;
         const limit = 30;
+        const whereCompany =
+          companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
 
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const sales = await gestorPrisma.venda_detalhe.findMany({
@@ -459,6 +462,7 @@ export const productsRouter = router({
             venda_cabecalho: {
               DEVOLUCAO: "N",
               SITUACAO: "F",
+              ...whereCompany,
             },
           },
           select: {
@@ -478,6 +482,7 @@ export const productsRouter = router({
               select: {
                 DATA_VENDA: true,
                 ID: true,
+                ID_EMPRESA: true,
                 NUMERO_NFE: true,
               },
             },
@@ -498,12 +503,15 @@ export const productsRouter = router({
     .input(
       z.object({
         id: z.number().min(1).nullish(),
+        companyId: z.number().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { id } = input;
+        const { id, companyId } = input;
         const limit = 10;
+        const whereCompany =
+          companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
 
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const purchase = await gestorPrisma.nfe_detalhe.findMany({
@@ -511,9 +519,10 @@ export const productsRouter = router({
           where: {
             ID_PRODUTO: Number(id),
             ENTRA_TOTAL: "1",
-            // nfe_cabecalho: {
-            //   NATUREZA_OPERACAO: "COMPRA",
-            // },
+            nfe_cabecalho: {
+              ...whereCompany,
+              // NATUREZA_OPERACAO: "COMPRA",
+            },
           },
           select: {
             ID: true,

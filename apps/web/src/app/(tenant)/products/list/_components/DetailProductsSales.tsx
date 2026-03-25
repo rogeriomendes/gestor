@@ -1,6 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { PackageIcon } from "lucide-react";
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -11,22 +8,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { formatDate } from "@/lib/format-date";
 import { removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { PackageIcon } from "lucide-react";
+import { useState } from "react";
 import { DetailSales } from "../../../sales/list/_components/DetailSales";
 
 type SaleItem = RouterOutputs["tenant"]["products"]["sales"]["sales"][number];
 
 export function DetailProductsSales({ productId }: { productId: number }) {
   const { tenant } = useTenant();
+  const { selectedCompanyId } = useCompany();
   const [selectedSaleId, setSelectedSaleId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const productsSalesQuery = useQuery({
-    ...trpc.tenant.products.sales.queryOptions({ id: productId }),
+    ...trpc.tenant.products.sales.queryOptions({
+      id: productId,
+      companyId:
+        selectedCompanyId && selectedCompanyId !== 0
+          ? selectedCompanyId
+          : undefined,
+    }),
     enabled: !!tenant && productId > 0,
   });
 
@@ -41,6 +49,7 @@ export function DetailProductsSales({ productId }: { productId: number }) {
             <Table className="bg-card">
               <TableHeader>
                 <TableRow>
+                  <TableHead>Emp.</TableHead>
                   <TableHead>Nr. Venda</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Qtd.</TableHead>
@@ -50,6 +59,9 @@ export function DetailProductsSales({ productId }: { productId: number }) {
               <TableBody className="text-xs md:text-sm">
                 {Array.from({ length: 4 }).map((_, index) => (
                   <TableRow key={index}>
+                    <TableCell className="py-3">
+                      <Skeleton className="h-4 w-14" />
+                    </TableCell>
                     <TableCell className="py-3">
                       <Skeleton className="h-4 w-16" />
                     </TableCell>
@@ -75,6 +87,7 @@ export function DetailProductsSales({ productId }: { productId: number }) {
             <Table className="bg-card">
               <TableHeader>
                 <TableRow>
+                  <TableHead>Emp.</TableHead>
                   <TableHead>Nr. Venda</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Qtd.</TableHead>
@@ -91,6 +104,9 @@ export function DetailProductsSales({ productId }: { productId: number }) {
                       setIsModalOpen(true);
                     }}
                   >
+                    <TableCell className="py-3">
+                      {sale.venda_cabecalho.ID_EMPRESA ?? "-"}
+                    </TableCell>
                     <TableCell className="py-3">
                       {sale.venda_cabecalho.ID}
                     </TableCell>

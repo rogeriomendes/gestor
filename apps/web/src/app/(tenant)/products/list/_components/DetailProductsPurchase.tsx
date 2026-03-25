@@ -1,6 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { ShoppingCartIcon } from "lucide-react";
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -11,11 +8,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { formatDate } from "@/lib/format-date";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { ShoppingCartIcon } from "lucide-react";
+import { useState } from "react";
 import { DetailEntry } from "../../../invoice/entry/_components/DetailEntry";
 
 type PurchaseItem =
@@ -23,11 +24,18 @@ type PurchaseItem =
 
 export function DetailProductsPurchase({ productId }: { productId: number }) {
   const { tenant } = useTenant();
+  const { selectedCompanyId } = useCompany();
   const [selectedEntryId, setSelectedEntryId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const productsPurchaseQuery = useQuery({
-    ...trpc.tenant.products.purchase.queryOptions({ id: productId }),
+    ...trpc.tenant.products.purchase.queryOptions({
+      id: productId,
+      companyId:
+        selectedCompanyId && selectedCompanyId !== 0
+          ? selectedCompanyId
+          : undefined,
+    }),
     enabled: !!tenant && productId > 0,
   });
 
@@ -48,6 +56,9 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
               <Table className="w-full table-fixed bg-card">
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10 shrink-0 md:w-11">
+                      Emp.
+                    </TableHead>
                     <TableHead className="w-[min(40%,8rem)]">
                       Fornecedor
                     </TableHead>
@@ -65,6 +76,9 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
                 <TableBody className="text-xs md:text-sm">
                   {Array.from({ length: 5 }).map((_, index) => (
                     <TableRow key={index}>
+                      <TableCell className="py-3">
+                        <Skeleton className="h-4 w-14" />
+                      </TableCell>
                       <TableCell className="py-3">
                         <Skeleton className="h-4 w-[min(40%,8rem)]" />
                       </TableCell>
@@ -92,6 +106,9 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
               <Table className="w-full table-fixed bg-card">
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10 shrink-0 md:w-11">
+                      Emp.
+                    </TableHead>
                     <TableHead className="w-[min(40%,10rem)]">
                       Fornecedor
                     </TableHead>
@@ -114,6 +131,9 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
                         key={purchase.ID}
                         onClick={() => handleRowClick(purchase)}
                       >
+                        <TableCell className="py-3">
+                          {purchase.nfe_cabecalho.ID_EMPRESA ?? "-"}
+                        </TableCell>
                         <TableCell className="max-w-0 py-3">
                           <span
                             className="block truncate"
@@ -138,7 +158,7 @@ export function DetailProductsPurchase({ productId }: { productId: number }) {
                         <TableCell className="py-3">
                           {formatAsCurrency(
                             Number(purchase.VALOR_TOTAL) /
-                              Number(purchase.QUANTIDADE_COMERCIAL)
+                            Number(purchase.QUANTIDADE_COMERCIAL)
                           )}
                         </TableCell>
                       </TableRow>
