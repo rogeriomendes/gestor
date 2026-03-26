@@ -4,8 +4,10 @@ import { AuthGuard } from "@/components/auth/auth-guard";
 import { DatabaseConfigGuard } from "@/components/database-config";
 import { TenantSidebar } from "@/components/sidebars/tenant-sidebar";
 import { SubscriptionGuard } from "@/components/subscription/subscription-guard";
+import { TenantTabsBar } from "@/components/tenant/tenant-tabs-bar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { CompanyProvider } from "@/contexts/company-context";
+import { TenantTabsProvider } from "@/contexts/tenant-tabs-context";
 import { TextShowProvider } from "@/contexts/text-show-context";
 
 /**
@@ -30,12 +32,15 @@ export function TenantLayoutClient({
               } as React.CSSProperties
             }
           >
-            <TenantSidebar />
-            <SidebarInset>
-              <SubscriptionGuard>
-                <DatabaseConfigGuard>{children}</DatabaseConfigGuard>
-              </SubscriptionGuard>
-            </SidebarInset>
+            <TenantTabsProvider>
+              <TenantSidebar />
+              <SidebarInset>
+                <TenantTabsBar />
+                <SubscriptionGuard>
+                  <DatabaseConfigGuard>{children}</DatabaseConfigGuard>
+                </SubscriptionGuard>
+              </SidebarInset>
+            </TenantTabsProvider>
           </SidebarProvider>
         </TextShowProvider>
       </CompanyProvider>

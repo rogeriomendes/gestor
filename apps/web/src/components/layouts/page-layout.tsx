@@ -3,9 +3,11 @@
 import { ArrowLeft } from "lucide-react";
 import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { FbiIcon } from "@/assets/FbiIcon";
 import { type BreadcrumbItemType, Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { useOptionalTenantTabs } from "@/contexts/tenant-tabs-context";
 import { getIconForPathname } from "@/lib/menu-icon";
 import { ShowTextSwitcher } from "../show-text-switcher";
 import { Separator } from "../ui/separator";
@@ -63,10 +65,18 @@ export function PageLayout({
 }: PageLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const tenantTabs = useOptionalTenantTabs();
 
   // Gerar breadcrumbs automaticamente se não fornecidos
   const finalBreadcrumbs =
     breadcrumbs ?? generateBreadcrumbsFromPathname(pathname);
+
+  useEffect(() => {
+    if (pathname.startsWith("/admin")) {
+      return;
+    }
+    tenantTabs?.setTabLabel(pathname, title);
+  }, [pathname, tenantTabs, title]);
 
   const handleBack = () => {
     if (backHref) {

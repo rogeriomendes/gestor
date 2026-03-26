@@ -27,6 +27,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useTenantTabs } from "@/contexts/tenant-tabs-context";
 import isActive from "@/lib/is-active";
 import { useHasPermission } from "@/lib/permissions";
 import { CompanySelector } from "../company-selector";
@@ -51,6 +52,7 @@ function TenantMenuItemWithPermission({
   toggleExpanded: (title: string) => void;
   handleLinkClick: () => void;
 }) {
+  const { openOrActivateTab } = useTenantTabs();
   const hasPermission = item.permission
     ? useHasPermission(item.permission.resource, item.permission.action)
     : true;
@@ -81,7 +83,17 @@ function TenantMenuItemWithPermission({
                   type="button"
                 />
               ) : (
-                <Link href={item.url} onClick={handleLinkClick} />
+                <Link
+                  href={item.url}
+                  onClick={() => {
+                    openOrActivateTab({
+                      id: item.url,
+                      href: item.url,
+                      label: item.title,
+                    });
+                    handleLinkClick();
+                  }}
+                />
               )
             }
           >
@@ -134,6 +146,7 @@ function SubMenuItemWithPermission({
   searchParams: URLSearchParams;
   handleLinkClick: () => void;
 }) {
+  const { openOrActivateTab } = useTenantTabs();
   const hasPermission = subItem.permission
     ? useHasPermission(subItem.permission.resource, subItem.permission.action)
     : true;
@@ -146,7 +159,19 @@ function SubMenuItemWithPermission({
     <SidebarMenuSubItem>
       <SidebarMenuSubButton
         isActive={isActive(subItem.url, pathname, searchParams)}
-        render={<Link href={subItem.url} onClick={handleLinkClick} />}
+        render={
+          <Link
+            href={subItem.url}
+            onClick={() => {
+              openOrActivateTab({
+                id: subItem.url,
+                href: subItem.url,
+                label: subItem.title,
+              });
+              handleLinkClick();
+            }}
+          />
+        }
       >
         <subItem.icon />
         <span>{subItem.title}</span>
@@ -162,6 +187,7 @@ function SettingsMenuItemWithPermission({
   item: MenuItemProps;
   pathname: string;
 }) {
+  const { openOrActivateTab } = useTenantTabs();
   const hasPermission = item.permission
     ? useHasPermission(item.permission.resource, item.permission.action)
     : true;
@@ -175,7 +201,18 @@ function SettingsMenuItemWithPermission({
     <SidebarMenuItem>
       <SidebarMenuButton
         isActive={isLinkActive}
-        render={<Link href={item.url} />}
+        render={
+          <Link
+            href={item.url}
+            onClick={() =>
+              openOrActivateTab({
+                id: item.url,
+                href: item.url,
+                label: item.title,
+              })
+            }
+          />
+        }
       >
         <item.icon />
         <span>{item.title}</span>
