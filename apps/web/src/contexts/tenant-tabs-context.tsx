@@ -8,10 +8,13 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useTenant } from "@/contexts/tenant-context";
+import { authClient } from "@/lib/auth-client";
 import { formatDate } from "@/lib/format-date";
 
 export interface TenantTabItem {
@@ -59,6 +62,77 @@ function makeFallbackLabel(pathname: string) {
 
 const MAX_TENANT_TABS = 6;
 
+const TABS_STORAGE_VERSION = 1;
+
+function buildTabsStorageKey(tenantId: string, userId: string) {
+  return `gestor-tenant-tabs:v${TABS_STORAGE_VERSION}:${tenantId}:${userId}`;
+}
+
+interface PersistedTabsPayload {
+  tabs: TenantTabItem[];
+  v: number;
+}
+
+function loadTabsFromStorage(raw: string | null): TenantTabItem[] | null {
+  if (!raw) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(raw) as PersistedTabsPayload;
+    if (parsed?.v !== TABS_STORAGE_VERSION || !Array.isArray(parsed.tabs)) {
+      return null;
+    }
+    return parsed.tabs;
+  } catch {
+    return null;
+  }
+}
+
+function sanitizeTabsFromStorage(incoming: TenantTabItem[]): TenantTabItem[] {
+  const seen = new Set<string>();
+  const result: TenantTabItem[] = [];
+
+  const dashboardStored = incoming.find((t) => t.id === DASHBOARD_TAB.id);
+  result.push({
+    ...DASHBOARD_TAB,
+    ...dashboardStored,
+    id: DASHBOARD_TAB.id,
+    href: DASHBOARD_TAB.href,
+    label: "Dashboard",
+    isPinned: true,
+  });
+  seen.add(DASHBOARD_TAB.id);
+
+  for (const t of incoming) {
+    if (seen.has(t.id)) {
+      continue;
+    }
+    if (!(t.id?.trim() && t.href?.trim() && t.label?.trim())) {
+      continue;
+    }
+    seen.add(t.id);
+    result.push({
+      ...t,
+      isPinned: t.id === DASHBOARD_TAB.id || !!t.isPinned,
+      lastActiveAt:
+        typeof t.lastActiveAt === "number" ? t.lastActiveAt : Date.now(),
+    });
+  }
+
+  while (result.length > MAX_TENANT_TABS) {
+    const victim = pickMostInactiveClosableTab(result);
+    if (!victim) {
+      break;
+    }
+    result.splice(
+      result.findIndex((x) => x.id === victim.id),
+      1
+    );
+  }
+
+  return result;
+}
+
 function pickMostInactiveClosableTab(tabs: TenantTabItem[]) {
   const closable = tabs.filter((t) => !t.isPinned);
   if (closable.length === 0) {
@@ -79,6 +153,13 @@ export function TenantTabsProvider({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { tenant, isLoading: tenantLoading } = useTenant();
+  const { data: session, isPending: sessionLoading } = authClient.useSession();
+
+  const tenantId = tenant?.id ?? null;
+  const userId = session?.user?.id ?? null;
+  const persistKey =
+    tenantId && userId ? buildTabsStorageKey(tenantId, userId) : null;
 
   const activeTabId = useMemo(() => pathname, [pathname]);
   const activeHref = useMemo(
@@ -86,6 +167,7 @@ export function TenantTabsProvider({
     [pathname, searchParams]
   );
   const [tabs, setTabs] = useState<TenantTabItem[]>([DASHBOARD_TAB]);
+  const [tabsHydrated, setTabsHydrated] = useState(false);
   const [limitDialogOpen, setLimitDialogOpen] = useState(false);
   const [pendingOpenTab, setPendingOpenTab] = useState<TenantTabItem | null>(
     null
@@ -93,7 +175,59 @@ export function TenantTabsProvider({
   const [suggestedCloseTab, setSuggestedCloseTab] =
     useState<TenantTabItem | null>(null);
 
+  /** Só persiste após hidratar a chave tenant+usuário atual (evita sobrescrever outro slot). */
+  const persistedKeyRef = useRef<string | null>(null);
+
+  // Hidrata abas do localStorage (por tenant + usuário) antes de sincronizar com a URL.
   useEffect(() => {
+    if (tenantLoading || sessionLoading) {
+      return;
+    }
+    persistedKeyRef.current = null;
+    if (!tenantId) {
+      setTabs([DASHBOARD_TAB]);
+      setTabsHydrated(true);
+      return;
+    }
+    if (!(userId && persistKey)) {
+      setTabs([DASHBOARD_TAB]);
+      setTabsHydrated(true);
+      return;
+    }
+
+    const raw = window.localStorage.getItem(persistKey);
+    const loaded = loadTabsFromStorage(raw);
+    if (loaded && loaded.length > 0) {
+      setTabs(sanitizeTabsFromStorage(loaded));
+    } else {
+      setTabs([DASHBOARD_TAB]);
+    }
+    persistedKeyRef.current = persistKey;
+    setTabsHydrated(true);
+  }, [tenantLoading, sessionLoading, tenantId, userId, persistKey]);
+
+  useEffect(() => {
+    if (!(persistKey && tabsHydrated)) {
+      return;
+    }
+    if (persistedKeyRef.current !== persistKey) {
+      return;
+    }
+    try {
+      const payload: PersistedTabsPayload = {
+        v: TABS_STORAGE_VERSION,
+        tabs,
+      };
+      window.localStorage.setItem(persistKey, JSON.stringify(payload));
+    } catch {
+      // storage cheio ou indisponível — ignora
+    }
+  }, [persistKey, tabs, tabsHydrated]);
+
+  useEffect(() => {
+    if (!tabsHydrated) {
+      return;
+    }
     const tabLabel =
       pathname === "/dashboard" ? "Dashboard" : makeFallbackLabel(pathname);
     setTabs((current) => {
@@ -125,9 +259,12 @@ export function TenantTabsProvider({
         },
       ];
     });
-  }, [activeHref, pathname]);
+  }, [activeHref, pathname, tabsHydrated]);
 
   useEffect(() => {
+    if (!tabsHydrated) {
+      return;
+    }
     setTabs((current) => {
       const index = current.findIndex((tab) => tab.id === activeTabId);
       if (index < 0) {
@@ -141,7 +278,7 @@ export function TenantTabsProvider({
       next[index] = { ...existing, lastActiveAt: Date.now() };
       return next;
     });
-  }, [activeTabId]);
+  }, [activeTabId, tabsHydrated]);
 
   const navigateToTab = useCallback(
     (href: string) => {
