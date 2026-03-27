@@ -12,6 +12,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { formatDate } from "@/lib/format-date";
 
 export interface TenantTabItem {
   href: string;
@@ -23,11 +24,14 @@ export interface TenantTabItem {
 
 interface TenantTabsContextValue {
   activeTabId: string;
+  closeOtherTabs: (tabId: string) => void;
   closeTab: (tabId: string) => void;
+  closeTabsToRight: (tabId: string) => void;
   navigateToTab: (href: string) => void;
   openOrActivateTab: (tab: TenantTabItem) => void;
   setTabLabel: (tabId: string, label: string) => void;
   tabs: TenantTabItem[];
+  togglePinTab: (tabId: string) => void;
 }
 
 const DASHBOARD_TAB: TenantTabItem = {
@@ -65,19 +69,6 @@ function pickMostInactiveClosableTab(tabs: TenantTabItem[]) {
     const currentTs = current.lastActiveAt ?? 0;
     return currentTs < oldestTs ? current : oldest;
   }, closable[0]);
-}
-
-function formatLastActiveAt(ts?: number) {
-  if (!ts) {
-    return "desconhecido";
-  }
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(ts));
 }
 
 export function TenantTabsProvider({
@@ -233,6 +224,59 @@ export function TenantTabsProvider({
     [activeTabId, navigateToTab]
   );
 
+  const closeOtherTabs = useCallback((tabId: string) => {
+    setTabs((current) => {
+      const keep = new Set(
+        current.filter((t) => t.isPinned || t.id === tabId).map((t) => t.id)
+      );
+      keep.add(DASHBOARD_TAB.id);
+      return current.filter((t) => keep.has(t.id));
+    });
+  }, []);
+
+  const closeTabsToRight = useCallback((tabId: string) => {
+    setTabs((current) => {
+      const index = current.findIndex((t) => t.id === tabId);
+      if (index < 0) {
+        return current;
+      }
+
+      const leftSide = current.slice(0, index + 1);
+      const rightSide = current.slice(index + 1);
+      const pinnedRight = rightSide.filter((t) => t.isPinned);
+      const result = [...leftSide, ...pinnedRight];
+
+      const seen = new Set<string>();
+      return result.filter((t) => {
+        if (seen.has(t.id)) {
+          return false;
+        }
+        seen.add(t.id);
+        return true;
+      });
+    });
+  }, []);
+
+  const togglePinTab = useCallback((tabId: string) => {
+    setTabs((current) => {
+      const index = current.findIndex((t) => t.id === tabId);
+      if (index < 0) {
+        return current;
+      }
+      const existing = current[index];
+      if (!existing) {
+        return current;
+      }
+      if (existing.id === DASHBOARD_TAB.id) {
+        return current;
+      }
+
+      const next = [...current];
+      next[index] = { ...existing, isPinned: !existing.isPinned };
+      return next;
+    });
+  }, []);
+
   const setTabLabel = useCallback((tabId: string, label: string) => {
     setTabs((current) => {
       const index = current.findIndex((tab) => tab.id === tabId);
@@ -282,9 +326,22 @@ export function TenantTabsProvider({
       openOrActivateTab,
       navigateToTab,
       closeTab,
+      closeOtherTabs,
+      closeTabsToRight,
       setTabLabel,
+      togglePinTab,
     }),
-    [tabs, activeTabId, openOrActivateTab, navigateToTab, closeTab, setTabLabel]
+    [
+      tabs,
+      activeTabId,
+      openOrActivateTab,
+      navigateToTab,
+      closeTab,
+      closeOtherTabs,
+      closeTabsToRight,
+      setTabLabel,
+      togglePinTab,
+    ]
   );
 
   return (
@@ -308,7 +365,7 @@ export function TenantTabsProvider({
                 </div>
                 <div className="text-muted-foreground text-xs">
                   Última atividade:{" "}
-                  {formatLastActiveAt(suggestedCloseTab.lastActiveAt)}
+                  {formatDate(new Date(suggestedCloseTab.lastActiveAt ?? 0))}
                 </div>
               </div>
             )}
