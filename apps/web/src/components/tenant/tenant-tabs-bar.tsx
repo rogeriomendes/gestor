@@ -26,7 +26,7 @@ export function TenantTabsBar() {
   } = useTenantTabs();
 
   return (
-    <div className="scrollbar-thin flex items-center gap-1 overflow-x-auto border-b bg-muted/20 px-2 py-1 md:px-4">
+    <div className="scrollbar-thin flex w-full max-w-full items-center gap-1 overflow-x-auto border-b bg-muted/20 px-2 py-1 md:px-4">
       {tabs.map((tab) => {
         const isActive = tab.id === activeTabId;
         return (
