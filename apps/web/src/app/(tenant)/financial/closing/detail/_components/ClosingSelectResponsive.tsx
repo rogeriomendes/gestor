@@ -1,7 +1,5 @@
 "use client";
 
-import { ChevronDownIcon } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -25,6 +23,8 @@ import {
 } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { ChevronDownIcon } from "lucide-react";
+import { useState } from "react";
 
 export interface ClosingSelectResponsiveOption {
   label: string;
@@ -33,7 +33,7 @@ export interface ClosingSelectResponsiveOption {
 }
 
 const defaultTriggerClassName =
-  "w-56 cursor-pointer items-center rounded-md border border-transparent bg-secondary px-2 py-3.5 font-medium text-base text-secondary-foreground hover:bg-secondary/80 data-[size=default]:h-5 md:w-64 md:text-lg dark:bg-secondary dark:hover:bg-secondary/80";
+  "w-56 h-5 cursor-pointer items-center rounded-md border border-transparent bg-secondary px-2 py-3.5 font-medium text-base text-secondary-foreground hover:bg-secondary/80 data-[size=default]:h-5 md:w-64 md:text-lg dark:bg-secondary dark:hover:bg-secondary/80 bg-clip-border";
 
 interface ClosingSelectResponsiveProps {
   disabled?: boolean;
@@ -100,7 +100,6 @@ export function ClosingSelectResponsive({
           className={cn(triggerCn, "justify-between font-normal")}
           disabled={disabled || options.length === 0}
           type="button"
-          variant="secondary"
         >
           <span
             className={cn(
