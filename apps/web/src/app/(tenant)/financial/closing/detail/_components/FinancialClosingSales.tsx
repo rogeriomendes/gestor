@@ -1,11 +1,3 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  MoveDownIcon,
-  MoveUpIcon,
-  MoveVerticalIcon,
-  ShoppingCartIcon,
-} from "lucide-react";
-import { useState } from "react";
 import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +9,15 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import type { ClosingData } from "../types";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  MoveDownIcon,
+  MoveUpIcon,
+  MoveVerticalIcon,
+  ShoppingCartIcon,
+} from "lucide-react";
+import { useState } from "react";
+import type { ClosingData } from "../page";
 import { FinancialReceiptGrid } from "./FinancialReceiptGrid";
 
 type ReceiptItem =
@@ -52,8 +52,8 @@ export default function FinancialClosingSalesList({
           sortOrder === "asc" || sortOrder === "desc" ? sortOrder : null,
         sortField:
           sortField === "valor" ||
-          sortField === "tipo_pagamento" ||
-          sortField === "serie_nfe"
+            sortField === "tipo_pagamento" ||
+            sortField === "serie_nfe"
             ? sortField
             : null,
       },
@@ -267,7 +267,7 @@ export default function FinancialClosingSalesList({
                 removeLeadingZero(
                   String(receipt.venda_cabecalho?.NUMERO_NFE)
                 )) ||
-                "—",
+              "—",
               receipt?.venda_cabecalho?.SERIE_NFE || "—",
             ];
           }}

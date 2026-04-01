@@ -31,9 +31,9 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import type { ClosingData } from "../types";
 import { PaymentAccordionItem } from "./PaymentAccordionItem";
 import { PaymentLineItem } from "./PaymentLineItem";
+import type { ClosingData } from "../page";
 
 type AmountByIdData = RouterOutputs["tenant"]["financialClosing"]["amountById"];
 type GroupedPaymentItem = NonNullable<
