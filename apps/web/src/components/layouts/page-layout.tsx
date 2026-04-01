@@ -1,15 +1,16 @@
 "use client";
 
+import { FbiIcon } from "@/assets/FbiIcon";
+import type { BreadcrumbItemType } from "@/components/breadcrumbs";
+import { Button } from "@/components/ui/button";
+import { useOptionalTenantTabs } from "@/contexts/tenant-tabs-context";
+import { getIconForPathname } from "@/lib/menu-icon";
 import { ArrowLeft } from "lucide-react";
 import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { FbiIcon } from "@/assets/FbiIcon";
-import { type BreadcrumbItemType, Breadcrumbs } from "@/components/breadcrumbs";
-import { Button } from "@/components/ui/button";
-import { useOptionalTenantTabs } from "@/contexts/tenant-tabs-context";
-import { getIconForPathname } from "@/lib/menu-icon";
 import { ShowTextSwitcher } from "../show-text-switcher";
+import { TenantTabsBar } from "../tenant/tenant-tabs-bar";
 import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";
 
@@ -95,7 +96,7 @@ export function PageLayout({
         <SidebarTrigger className="cursor-pointer md:hidden" />
         <Separator className="mr-1 h-8 md:hidden" orientation="vertical" />
         <FbiIcon className="mr-2 size-6 shrink-0 md:hidden" />
-        <Breadcrumbs items={finalBreadcrumbs} />
+        <TenantTabsBar />
         {!pathname.startsWith("/admin") && (
           <div className="ml-auto md:hidden">
             <ShowTextSwitcher />

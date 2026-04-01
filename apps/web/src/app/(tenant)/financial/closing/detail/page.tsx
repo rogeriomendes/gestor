@@ -1,14 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { toZonedTime } from "date-fns-tz";
-import { Loader2 } from "lucide-react";
-import type { Route } from "next";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,21 +13,36 @@ import { getFinancialClosingStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
+import { ptBR } from "date-fns/locale";
+import { Loader2 } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import {
   ClosingSelectResponsive,
   type ClosingSelectResponsiveOption,
 } from "./_components/ClosingSelectResponsive";
 import FinancialClosingPayment from "./_components/FinancialClosingPayment";
 import FinancialClosingSalesList from "./_components/FinancialClosingSales";
-import type { ClosingData } from "./types";
-
-export type { ClosingData } from "./types";
 
 type AccountItem =
   RouterOutputs["tenant"]["account"]["all"]["accounts"][number];
 
 type ClosingItem =
   RouterOutputs["tenant"]["financialClosing"]["all"]["financialClosing"][number];
+
+export interface ClosingData {
+  dateClosed?: Date | null;
+  dateOpen: Date | null;
+  hourClosed?: string | null;
+  hourOpen: string | null;
+  id: string | null;
+  name: string | null;
+}
 
 export function parseClosingDataFromSearchParams(
   searchParams: URLSearchParams
@@ -111,19 +117,19 @@ export default function FinancialClosingDetailPage() {
   const openOption: ClosingSelectResponsiveOption | null =
     openAccountForCurrentClosing
       ? (() => {
-          const openDate = openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA
-            ? new Date(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
-            : null;
-          const hour = openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA || "";
-          const label = `${openDate ? formatDate(openDate) : "Sem data"} - ${hour}`;
-          const listLabel =
-            openDate != null
-              ? `${label} · ${format(toZonedTime(openDate, "UTC"), "EEEEEE", {
-                  locale: ptBR,
-                })}.`
-              : `${label}.`;
-          return { value: "open", label, listLabel };
-        })()
+        const openDate = openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA
+          ? new Date(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
+          : null;
+        const hour = openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA || "";
+        const label = `${openDate ? formatDate(openDate) : "Sem data"} - ${hour}`;
+        const listLabel =
+          openDate != null
+            ? `${label} · ${format(toZonedTime(openDate, "UTC"), "EEEEEE", {
+              locale: ptBR,
+            })}.`
+            : `${label}.`;
+        return { value: "open", label, listLabel };
+      })()
       : null;
 
   const closingOptions: ClosingSelectResponsiveOption[] = [
@@ -138,8 +144,8 @@ export default function FinancialClosingDetailPage() {
         const listLabel =
           openDate != null
             ? `${label} · ${format(toZonedTime(openDate, "UTC"), "EEEEEE", {
-                locale: ptBR,
-              })}.`
+              locale: ptBR,
+            })}.`
             : `${label}.`;
         return {
           value: String(closing.ID),
@@ -222,13 +228,13 @@ export default function FinancialClosingDetailPage() {
       const today = new Date();
       const dateOpenStr =
         openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA != null &&
-        String(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA) !== ""
+          String(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA) !== ""
           ? String(openAccountForCurrentClosing.DATA_ULTIMA_ABERTURA)
           : today.toISOString().slice(0, 10);
 
       const hourOpenStr =
         openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA &&
-        String(openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA).trim() !== ""
+          String(openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA).trim() !== ""
           ? String(openAccountForCurrentClosing.HORA_ULTIMA_ABERTURA)
           : "00:00:00";
 

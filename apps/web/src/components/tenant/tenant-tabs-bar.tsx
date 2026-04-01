@@ -1,7 +1,5 @@
 "use client";
 
-import { MoreVerticalIcon, PinIcon, PinOffIcon, XIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,6 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTenantTabs } from "@/contexts/tenant-tabs-context";
 import { cn } from "@/lib/utils";
+import { MoreVerticalIcon, PinIcon, PinOffIcon, XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function TenantTabsBar() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export function TenantTabsBar() {
   } = useTenantTabs();
 
   return (
-    <div className="scrollbar-thin flex w-full max-w-full items-center gap-1 overflow-x-auto border-b bg-muted/20 px-2 py-1 md:px-4">
+    <div className="scrollbar-thin flex w-full max-w-full items-center gap-1 overflow-x-auto">
       {tabs.map((tab) => {
         const isActive = tab.id === activeTabId;
         return (
