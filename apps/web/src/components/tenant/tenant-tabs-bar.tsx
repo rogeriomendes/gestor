@@ -1,5 +1,7 @@
 "use client";
 
+import { MoreVerticalIcon, PinIcon, PinOffIcon, XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,8 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTenantTabs } from "@/contexts/tenant-tabs-context";
 import { cn } from "@/lib/utils";
-import { MoreVerticalIcon, PinIcon, PinOffIcon, XIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export function TenantTabsBar() {
   const router = useRouter();

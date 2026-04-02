@@ -10,7 +10,7 @@ import {
   getAuditActionLabel,
   getAuditResourceTypeLabel,
 } from "@/lib/audit-labels";
-import { formatDateTime } from "@/lib/date-utils";
+import { formatDateTime } from "@/lib/format-date";
 
 interface AuditLog {
   action: string;

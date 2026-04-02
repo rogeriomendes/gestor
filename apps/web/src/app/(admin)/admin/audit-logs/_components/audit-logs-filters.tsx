@@ -17,7 +17,7 @@ import {
   getAuditActionLabel,
   getAuditResourceTypeLabel,
 } from "@/lib/audit-labels";
-import { formatDate } from "@/lib/date-utils";
+import { formatDate } from "@/lib/format-date";
 
 interface Tenant {
   id: string;
