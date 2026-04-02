@@ -14,6 +14,7 @@ interface BudgetCardProps {
     cliente: { pessoa: { NOME: string } };
     VALOR_TOTAL: number;
     SITUACAO?: string;
+    DATA_CADASTRO?: string;
     ALTERACAO_DATA_HORA?: string;
     OBSERVACAO?: string;
   };
@@ -31,7 +32,7 @@ export function BudgetCard({ budget, companyName, onClick }: BudgetCardProps) {
       className={cn(
         "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isInProgress &&
-          "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20"
+        "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20"
       )}
       onClick={() => onClick?.(budget)}
       size="sm"
@@ -62,7 +63,7 @@ export function BudgetCard({ budget, companyName, onClick }: BudgetCardProps) {
         </div>
 
         {/* Informações principais em grid compacto */}
-        <div className="grid grid-cols-3 gap-2 text-xs">
+        <div className="grid grid-cols-2 gap-2 text-xs">
           {/* Vendedor */}
           <div className="space-y-1">
             <span className="text-muted-foreground">Vendedor</span>
@@ -71,16 +72,22 @@ export function BudgetCard({ budget, companyName, onClick }: BudgetCardProps) {
             </div>
           </div>
 
+          {/* Data de criação */}
+          <div className="space-y-1">
+            <span className="text-muted-foreground">Criação</span>
+            <div className="truncate font-medium">
+              {budget.DATA_CADASTRO ? formatDate(budget.DATA_CADASTRO) : "-"}
+            </div>
+          </div>
+
           {/* Data de alteração */}
           <div className="space-y-1">
-            {budget.ALTERACAO_DATA_HORA && (
-              <>
-                <span className="text-muted-foreground">Alteração</span>
-                <div className="truncate font-medium">
-                  {formatDate(new Date(budget.ALTERACAO_DATA_HORA))}
-                </div>
-              </>
-            )}
+            <span className="text-muted-foreground">Alteração</span>
+            <div className="truncate font-medium">
+              {budget.ALTERACAO_DATA_HORA
+                ? formatDate(budget.ALTERACAO_DATA_HORA)
+                : "—"}
+            </div>
           </div>
 
           {/* Valor total */}

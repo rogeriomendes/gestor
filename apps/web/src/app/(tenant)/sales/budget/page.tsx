@@ -1,9 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Settings2Icon, SheetIcon, UserIcon } from "lucide-react";
-import type { Route } from "next";
-import { useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -17,6 +13,10 @@ import { getBudgetSituationInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { Settings2Icon, SheetIcon, UserIcon } from "lucide-react";
+import type { Route } from "next";
+import { useMemo, useState } from "react";
 import { BudgetGrid } from "./_components/BudgetGrid";
 import { DetailBudget } from "./_components/DetailBudget";
 
@@ -155,6 +155,7 @@ export default function BudgetList() {
             { key: "cliente", label: "Cliente", className: "" },
             { key: "situacao", label: "Situação", className: "" },
             { key: "valor", label: "Vlr. Total", className: "" },
+            { key: "criacao", label: "Criação", className: "" },
             { key: "alteracao", label: "Alteração", className: "" },
             { key: "observacao", label: "Observação", className: "" },
           ]}
@@ -194,10 +195,11 @@ export default function BudgetList() {
                 {statusInfo.label}
               </Badge>,
               formatAsCurrency(Number(budget.VALOR_TOTAL)),
+              (budget.DATA_CADASTRO && formatDate(budget.DATA_CADASTRO)) || "—",
               (budget.ALTERACAO_DATA_HORA &&
                 formatDate(budget.ALTERACAO_DATA_HORA)) ||
-                "—",
-              budget.OBSERVACAO,
+              "—",
+              budget.OBSERVACAO || "—",
             ];
           }}
         />
