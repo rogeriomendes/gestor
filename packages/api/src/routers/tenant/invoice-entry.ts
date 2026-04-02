@@ -193,6 +193,7 @@ export const invoiceEntryRouter = router({
           select: {
             ID: true,
             ID_PRODUTO: true,
+            NUMERO_ITEM: true,
             GTIN: true,
             NOME_PRODUTO: true,
             UNIDADE_COMERCIAL: true,
@@ -211,6 +212,57 @@ export const invoiceEntryRouter = router({
       } catch (error) {
         console.error(
           "An error occurred when returning entry invoice products:",
+          error
+        );
+        throw error;
+      }
+    }),
+
+  productDetailByAccessKey: tenantProcedure
+    .input(
+      z.object({
+        chaveAcesso: z.string().min(44).max(44),
+        numeroItem: z.number().int().positive().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { chaveAcesso, numeroItem } = input;
+
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
+        const invoiceEntryDetail =
+          await gestorPrisma.nfe_entrada_detalhe.findFirst({
+            where: {
+              CHAVE_ACESSO: chaveAcesso,
+              ...(numeroItem ? { N_ITEM: numeroItem } : {}),
+            },
+            select: {
+              ID: true,
+              N_ITEM: true,
+              XML_CODIGO_PRODUTO: true,
+              XML_NOME_PRODUTO: true,
+              XML_GTIN: true,
+              XML_NCM: true,
+              XML_CEST: true,
+              XML_UNID_COM: true,
+              XML_QUANT_COM: true,
+              XML_VLR_UNIT_COM: true,
+              XML_VLR_BRUTO_PROD: true,
+              CAD_CODIGO_INTERNO: true,
+              CAD_NOME_PRODUTO: true,
+              CAD_CUSTO_FINAL: true,
+              CAD_PRECO_VENDA: true,
+              CADASTRADO: true,
+              POSSUI_VINCULO: true,
+              ALTERADO_CUSTO: true,
+            },
+            orderBy: [{ ID: "asc" }],
+          });
+
+        return { invoiceEntryDetail };
+      } catch (error) {
+        console.error(
+          "An error occurred when returning invoice entry detail by access key:",
           error
         );
         throw error;

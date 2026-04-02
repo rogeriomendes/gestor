@@ -32,7 +32,7 @@ export function BudgetCard({ budget, companyName, onClick }: BudgetCardProps) {
       className={cn(
         "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isInProgress &&
-        "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20"
+          "border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20"
       )}
       onClick={() => onClick?.(budget)}
       size="sm"

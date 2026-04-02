@@ -237,7 +237,10 @@ export function DetailEntry({
                 <TabsTrigger value="information">Informações</TabsTrigger>
               </TabsList>
               <TabsContent value="products">
-                <DetailEntryProducts entryID={entryID} />
+                <DetailEntryProducts
+                  accessKey={invoiceEntryQuery.data?.invoiceEntry?.CHAVE_ACESSO}
+                  entryID={entryID}
+                />
               </TabsContent>
               <TabsContent value="charge">
                 {invoiceEntryQuery.data?.invoiceEntry && (
