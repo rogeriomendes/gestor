@@ -55,24 +55,24 @@ function ProductEntryDetail({
   return (
     <div className="mt-2 rounded-md border bg-muted/20 p-2 text-xs md:text-sm">
       <div className="mb-2">
-        <span className="text-muted-foreground">Produto na nota:</span>{" "}
-        <span className="font-medium">{detail.XML_NOME_PRODUTO || "-"}</span>
+        <span className="text-muted-foreground">Produto:</span>{" "}
+        <span className="font-medium">{detail.XML_NOME_PRODUTO || "—"}</span>
       </div>
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+      <div className="grid grid-cols-2 gap-2">
         <div>
-          <span className="text-muted-foreground">Codigo:</span>{" "}
+          <span className="text-muted-foreground">Código:</span>{" "}
           <span>
-            {removeLeadingZero(detail.XML_CODIGO_PRODUTO || "") || "-"}
+            {removeLeadingZero(detail.XML_CODIGO_PRODUTO || "") || "—"}
           </span>
         </div>
         <div>
           <span className="text-muted-foreground">GTIN:</span>{" "}
-          <span>{detail.XML_GTIN || "-"}</span>
+          <span>{detail.XML_GTIN || "—"}</span>
         </div>
-        <div>
+        <div className="col-span-2">
           <span className="text-muted-foreground">NCM/CEST:</span>{" "}
           <span>
-            {detail.XML_NCM || "-"} / {detail.XML_CEST || "-"}
+            {detail.XML_NCM || "—"} / {detail.XML_CEST || "—"}
           </span>
         </div>
       </div>
