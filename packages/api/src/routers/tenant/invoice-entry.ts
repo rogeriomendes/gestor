@@ -223,11 +223,13 @@ export const invoiceEntryRouter = router({
       z.object({
         chaveAcesso: z.string().min(44).max(44),
         numeroItem: z.number().int().positive().nullish(),
+        /** Para INFORMACOES_ADICIONAIS (só existe em nfe_detalhe, não em nfe_entrada_detalhe). */
+        nfeDetalheId: z.number().int().positive().nullish(),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { chaveAcesso, numeroItem } = input;
+        const { chaveAcesso, numeroItem, nfeDetalheId } = input;
 
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const invoiceEntryDetail =
@@ -248,6 +250,17 @@ export const invoiceEntryRouter = router({
               XML_QUANT_COM: true,
               XML_VLR_UNIT_COM: true,
               XML_VLR_BRUTO_PROD: true,
+              XML_VLR_FRETE: true,
+              XML_VLR_SEGURO: true,
+              XML_VLR_DESCONTO: true,
+              XML_VLR_OUTRAS_DESPESAS: true,
+              XML_OUTROS_VALORES: true,
+              XML_CUSTO_FINAL: true,
+              XML_VLR_ICMS: true,
+              XML_VLR_ST: true,
+              XML_VLR_IPI: true,
+              XML_VLR_OUTROS_IMPOSTOS: true,
+              XML_VLR_FCP_ST: true,
               CAD_CODIGO_INTERNO: true,
               CAD_NOME_PRODUTO: true,
               CAD_CUSTO_FINAL: true,
@@ -259,7 +272,18 @@ export const invoiceEntryRouter = router({
             orderBy: [{ ID: "asc" }],
           });
 
-        return { invoiceEntryDetail };
+        let informacoesAdicionais: string | null = null;
+        if (nfeDetalheId) {
+          const linhaNfe = await gestorPrisma.nfe_detalhe.findUnique({
+            where: { ID: nfeDetalheId },
+            select: {
+              INFORMACOES_ADICIONAIS: true,
+            },
+          });
+          informacoesAdicionais = linhaNfe?.INFORMACOES_ADICIONAIS ?? null;
+        }
+
+        return { invoiceEntryDetail, informacoesAdicionais };
       } catch (error) {
         console.error(
           "An error occurred when returning invoice entry detail by access key:",

@@ -22,7 +22,7 @@ jobs:
         id: changelog
         uses: metcalfc/changelog-generator@v4.6.2
         with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
+          mytoken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         uses: actions/create-release@v1
