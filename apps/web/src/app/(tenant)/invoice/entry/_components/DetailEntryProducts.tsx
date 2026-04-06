@@ -1,3 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import { ChevronDownIcon, ChevronUpIcon, PackageIcon } from "lucide-react";
+import { useState } from "react";
 import { DetailProducts } from "@/app/(tenant)/products/list/_components/DetailProducts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,9 +9,6 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { ChevronDownIcon, ChevronUpIcon, PackageIcon } from "lucide-react";
-import { useState } from "react";
 
 type EntryProductItem =
   RouterOutputs["tenant"]["invoiceEntry"]["products"]["invoiceEntry"][number];
@@ -24,8 +24,8 @@ function fmtQuantidadeEntrada(value: unknown): string {
   return n.toLocaleString("pt-BR", { maximumFractionDigits: 6 });
 }
 
-function fmtMoneyXml(value: unknown): string {
-  if (value == null) {
+function fmtMoneyXml(value: string | null): string {
+  if (value == null || value === "") {
     return "—";
   }
   return formatAsCurrency(Number(value));
@@ -33,23 +33,30 @@ function fmtMoneyXml(value: unknown): string {
 
 /** Bruto + frete + seguro + outras despesas + outros valores − desconto (campos XML da entrada). */
 function fmtTotalLinhaXml(detail: {
-  XML_VLR_BRUTO_PROD: unknown;
-  XML_VLR_DESCONTO: unknown;
-  XML_VLR_FRETE: unknown;
-  XML_VLR_OUTRAS_DESPESAS: unknown;
-  XML_VLR_SEGURO: unknown;
-  XML_OUTROS_VALORES: unknown;
-}): string {
+  XML_VLR_BRUTO_PROD: string | null;
+  XML_QUANT_COM: string | null;
+  XML_VLR_DESCONTO: string | null;
+  XML_VLR_FCP_ST: string | null;
+  XML_VLR_FRETE: string | null;
+  XML_VLR_OUTRAS_DESPESAS: string | null;
+  XML_VLR_SEGURO: string | null;
+  XML_OUTROS_VALORES: string | null;
+  XML_VLR_ST: string | null;
+  XML_VLR_OUTROS_IMPOSTOS: string | null;
+}): string | null {
   if (detail.XML_VLR_BRUTO_PROD == null) {
     return "—";
   }
   const total =
     Number(detail.XML_VLR_BRUTO_PROD) +
-    Number(detail.XML_VLR_FRETE ?? 0) +
-    Number(detail.XML_VLR_SEGURO ?? 0) +
-    Number(detail.XML_VLR_OUTRAS_DESPESAS ?? 0) +
-    Number(detail.XML_OUTROS_VALORES ?? 0) -
-    Number(detail.XML_VLR_DESCONTO ?? 0);
+    (Number(detail.XML_QUANT_COM) ?? 0) *
+      (Number(detail.XML_VLR_FRETE ?? 0) +
+        Number(detail.XML_VLR_SEGURO ?? 0) +
+        Number(detail.XML_VLR_OUTRAS_DESPESAS ?? 0) +
+        Number(detail.XML_OUTROS_VALORES ?? 0) +
+        Number(detail.XML_VLR_ST ?? 0) +
+        Number(detail.XML_VLR_OUTROS_IMPOSTOS ?? 0) -
+        Number(detail.XML_VLR_DESCONTO ?? 0));
   return formatAsCurrency(total);
 }
 
@@ -108,7 +115,7 @@ function ProductEntryDetail({
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <span className="text-muted-foreground">Código Forn:</span>{" "}
+          <span className="text-muted-foreground">Código:</span>{" "}
           <span>
             {removeLeadingZero(detail.XML_CODIGO_PRODUTO || "") || "—"}
           </span>
@@ -123,8 +130,8 @@ function ProductEntryDetail({
             {detail.XML_NCM || "—"} / {detail.XML_CEST || "—"}
           </span>
         </div>
-        {/* <div>
-          <span className="text-muted-foreground">Quantidade (entrada):</span>{" "}
+        <div>
+          <span className="text-muted-foreground">Quantidade:</span>{" "}
           <span>{fmtQuantidadeEntrada(detail.XML_QUANT_COM)}</span>
         </div>
         <div>
@@ -138,7 +145,7 @@ function ProductEntryDetail({
         <div>
           <span className="text-muted-foreground">Valor bruto:</span>{" "}
           <span>{fmtMoneyXml(detail.XML_VLR_BRUTO_PROD)}</span>
-        </div> */}
+        </div>
         <div>
           <span className="text-muted-foreground">Frete:</span>{" "}
           <span>{fmtMoneyXml(detail.XML_VLR_FRETE)}</span>
@@ -183,13 +190,13 @@ function ProductEntryDetail({
           <span className="text-muted-foreground">Custo final:</span>{" "}
           <span>{fmtMoneyXml(detail.XML_CUSTO_FINAL)}</span>
         </div>
-        {/* <div>
+        <div>
           <span className="text-muted-foreground">Total:</span>{" "}
           <span className="font-medium">{fmtTotalLinhaXml(detail)}</span>
-          <span className="mt-0.5 block text-[0.65rem] text-muted-foreground leading-snug">
+          {/* <span className="mt-0.5 block text-[0.65rem] text-muted-foreground leading-snug">
             bruto + frete + seguro + outras despesas + outros valores − desconto
-          </span>
-        </div> */}
+          </span> */}
+        </div>
         {informacoesAdicionais && (
           <div className="col-span-2 border-t pt-2">
             <span className="text-muted-foreground">
@@ -297,7 +304,7 @@ export function DetailEntryProducts({
                             <div className="flex flex-col items-center text-muted-foreground text-xs md:text-sm">
                               {formatAsCurrency(
                                 Number(entry.VALOR_TOTAL) /
-                                Number(entry.QUANTIDADE_COMERCIAL)
+                                  Number(entry.QUANTIDADE_COMERCIAL)
                               )}{" "}
                               {entry.UNIDADE_COMERCIAL}
                             </div>
