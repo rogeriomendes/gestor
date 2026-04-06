@@ -3,7 +3,8 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Settings2Icon, SheetIcon, UserIcon } from "lucide-react";
 import type { Route } from "next";
-import { useMemo, useState } from "react";
+import { useQueryState } from "nuqs";
+import { useEffect, useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -27,19 +28,29 @@ export default function BudgetList() {
   const { tenant } = useTenant();
   const { selectedCompanyId } = useCompany();
   const isMobile = useIsMobile();
-  const [search, setSearch] = useState("");
-  const [seller, setSeller] = useState<string>("0");
-  const [situation, setSituation] = useState<string>("T");
+  const [search, setSearch] = useQueryState("search", { defaultValue: "" });
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [seller, setSeller] = useQueryState("seller", { defaultValue: "0" });
+  const [situation, setSituation] = useQueryState("situation", {
+    defaultValue: "T",
+  });
   const [selectedBudgetId, setSelectedBudgetId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const enabled = !!tenant;
 
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 300);
+    return () => clearTimeout(id);
+  }, [search]);
+
   const salesBudgetQuery = useInfiniteQuery({
     ...trpc.tenant.salesBudget.all.infiniteQueryOptions(
       {
         limit: 20,
-        searchTerm: search || null,
+        searchTerm: debouncedSearch || null,
         situation: situation !== "T" ? situation : null,
         seller: seller !== "0" ? Number(seller) : null,
         companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
@@ -92,7 +103,7 @@ export default function BudgetList() {
       <div className="flex flex-col md:flex-row md:items-center">
         <SearchInput
           enableF9Shortcut
-          onChange={setSearch}
+          onChange={(v) => void setSearch(v)}
           placeholder="Pesquisa por ID e Cliente"
           value={search}
         />
@@ -100,7 +111,7 @@ export default function BudgetList() {
           <Combobox
             className="flex-1 md:w-48"
             icon={<UserIcon />}
-            onValueChange={setSeller}
+            onValueChange={(v) => void setSeller(v)}
             options={sellerOptions}
             placeholder="Vendedor"
             searchPlaceholder="Buscar vendedor..."
@@ -109,7 +120,7 @@ export default function BudgetList() {
           <Combobox
             className="flex-1 md:w-48"
             icon={<Settings2Icon />}
-            onValueChange={setSituation}
+            onValueChange={(v) => void setSituation(v)}
             options={situationOptions}
             placeholder="Situação"
             searchPlaceholder="Buscar situação..."

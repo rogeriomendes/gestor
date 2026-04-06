@@ -11,6 +11,7 @@ import {
   SquareCheckIcon,
 } from "lucide-react";
 import type { Route } from "next";
+import { parseAsIsoDate, parseAsStringLiteral, useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { useInView } from "react-intersection-observer";
@@ -48,9 +49,17 @@ export default function FinancialBillsPayList() {
   const [totalValue, setTotalValue] = useState(0);
   const [selectedBillsCount, setSelectedBillsCount] = useState(0);
   const [selectAll, setSelectAll] = useState(false);
-  const [supplier, setSupplier] = useState<string>("0");
-  const [situation, setSituation] = useState<string>("open");
-  const [date, setDate] = useState<DateRange | undefined>();
+  const [supplier, setSupplier] = useQueryState("supplier", {
+    defaultValue: "0",
+  });
+  const [situation, setSituation] = useQueryState(
+    "situation",
+    parseAsStringLiteral(["all", "open", "paid"] as const).withDefault("open")
+  );
+  const [dateFrom, setDateFrom] = useQueryState("dateFrom", parseAsIsoDate);
+  const [dateTo, setDateTo] = useQueryState("dateTo", parseAsIsoDate);
+  const date: DateRange | undefined =
+    dateFrom != null ? { from: dateFrom, to: dateTo ?? undefined } : undefined;
   const [selectedBillsPay, setSelectedBillsPay] = useState<BillsPayItem | null>(
     null
   );
@@ -300,7 +309,7 @@ export default function FinancialBillsPayList() {
             className="flex-1 md:w-64"
             icon={<Building2Icon className="size-4" />}
             onValueChange={(v) => {
-              setSupplier(v);
+              void setSupplier(v);
               resetSelection();
             }}
             options={supplierOptions}
@@ -314,7 +323,7 @@ export default function FinancialBillsPayList() {
             className="flex-1 md:w-64"
             icon={<Settings2Icon className="size-4" />}
             onValueChange={(v) => {
-              setSituation(v);
+              void setSituation(v as "all" | "open" | "paid");
               resetSelection();
             }}
             options={situationOptions}
@@ -327,7 +336,8 @@ export default function FinancialBillsPayList() {
             className="flex-1 md:w-64"
             mode="range"
             onChange={(range) => {
-              setDate(range);
+              void setDateFrom(range?.from ?? null);
+              void setDateTo(range?.to ?? null);
               resetSelection();
             }}
             placeholder="Data de vencimento"

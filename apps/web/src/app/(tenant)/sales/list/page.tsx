@@ -3,6 +3,7 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ShoppingCartIcon, SquareUserIcon } from "lucide-react";
 import type { Route } from "next";
+import { parseAsIsoDate, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
@@ -26,10 +27,10 @@ export default function SalesList() {
   const { tenant } = useTenant();
   const { selectedCompanyId } = useCompany();
   const isMobile = useIsMobile();
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [account, setAccount] = useState<string>("0");
-  const [date, setDate] = useState<Date>();
+  const [search, setSearch] = useQueryState("search", { defaultValue: "" });
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [account, setAccount] = useQueryState("account", { defaultValue: "0" });
+  const [date, setDate] = useQueryState("date", parseAsIsoDate);
   const [selectedSaleId, setSelectedSaleId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Lazy initial state — evita flash de conteúdo vazio sem useEffect
@@ -121,9 +122,9 @@ export default function SalesList() {
             calendarCaptionLayout="dropdown"
             calendarDisabled={{ after: new Date() }}
             className="w-60 flex-1"
-            onChange={setDate}
+            onChange={(d) => void setDate(d ?? null)}
             placeholder="Data"
-            value={date}
+            value={date ?? undefined}
           />
         </div>
       </div>

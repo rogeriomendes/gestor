@@ -3,11 +3,12 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Building2Icon, FileCheckIcon } from "lucide-react";
 import type { Route } from "next";
+import { parseAsIsoDate, useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import type { DateRange } from "@/components/ui/date-picker";
+import { DatePicker, type DateRange } from "@/components/ui/date-picker";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -25,8 +26,13 @@ export default function InvoiceEntryList() {
   const { tenant } = useTenant();
   const { selectedCompanyId } = useCompany();
   const isMobile = useIsMobile();
-  const [supplier, setSupplier] = useState<string>("0");
-  const [date, setDate] = useState<DateRange | undefined>();
+  const [supplier, setSupplier] = useQueryState("supplier", {
+    defaultValue: "0",
+  });
+  const [dateFrom, setDateFrom] = useQueryState("dateFrom", parseAsIsoDate);
+  const [dateTo, setDateTo] = useQueryState("dateTo", parseAsIsoDate);
+  const date: DateRange | undefined =
+    dateFrom != null ? { from: dateFrom, to: dateTo ?? undefined } : undefined;
   const [selectedEntryId, setSelectedEntryId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -89,23 +95,24 @@ export default function InvoiceEntryList() {
           <Combobox
             className="flex-1 md:w-72"
             icon={<Building2Icon />}
-            onValueChange={setSupplier}
+            onValueChange={(v) => void setSupplier(v)}
             options={supplierOptions}
             placeholder="Fornecedor"
             searchPlaceholder="Buscar fornecedor..."
             value={supplier}
           />
-          {/* </div>
-        <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3"> */}
-          {/* <DatePicker
+          <DatePicker
             calendarCaptionLayout="dropdown"
             calendarDisabled={{ after: new Date() }}
             className="flex-1 md:w-64"
             mode="range"
-            onChange={setDate}
+            onChange={(range) => {
+              void setDateFrom(range?.from ?? null);
+              void setDateTo(range?.to ?? null);
+            }}
             placeholder="Data de entrada"
             value={date}
-          /> */}
+          />
         </div>
       </div>
       {isMobile ? (

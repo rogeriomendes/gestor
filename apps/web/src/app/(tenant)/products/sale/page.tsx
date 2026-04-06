@@ -7,6 +7,7 @@ import {
   SquarePercentIcon,
 } from "lucide-react";
 import type { Route } from "next";
+import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
@@ -41,8 +42,10 @@ export default function productsSale() {
   const { tenant } = useTenant();
   const { selectedCompanyId } = useCompany();
   const isMobile = useIsMobile();
-  const [status, setStatus] = useState<string>("T");
-  const [inactive, setInactive] = useState<string>("N");
+  const [status, setStatus] = useQueryState("status", { defaultValue: "T" });
+  const [inactive, setInactive] = useQueryState("inactive", {
+    defaultValue: "N",
+  });
   const [selectedSale, setSelectedSale] = useState<ProductsSaleItem | null>(
     null
   );
@@ -81,7 +84,7 @@ export default function productsSale() {
           <Combobox
             className="flex-1 md:w-48"
             icon={<CircleEllipsisIcon />}
-            onValueChange={setStatus}
+            onValueChange={(v) => void setStatus(v)}
             options={statusOptions}
             placeholder="Status"
             searchPlaceholder="Buscar status..."
@@ -90,7 +93,7 @@ export default function productsSale() {
           <Combobox
             className="flex-1 md:w-48"
             icon={<CircleHelpIcon />}
-            onValueChange={setInactive}
+            onValueChange={(v) => void setInactive(v)}
             options={inactiveOptions}
             placeholder="Inativo"
             searchPlaceholder="Buscar inativo..."

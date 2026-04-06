@@ -1,7 +1,8 @@
 "use client";
 
 import { Info, SearchIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
+import { useMemo } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { SearchInput } from "@/components/search-input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,8 +15,19 @@ import {
 } from "./_lib/reportRegistry";
 
 export default function ReportsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useQueryState("q", {
+    defaultValue: "",
+  });
+  const [selectedCategory, setSelectedCategory] = useQueryState(
+    "category",
+    parseAsStringLiteral([
+      "all",
+      "sales",
+      "financial",
+      "inventory",
+      "analytics",
+    ] as const).withDefault("all")
+  );
 
   // Filtrar relatórios — memoizado para evitar recalc a cada render
   const filteredReports = useMemo(
@@ -75,7 +87,7 @@ export default function ReportsPage() {
             <SearchInput
               enableF9Shortcut
               icon={<SearchIcon className="size-4" />}
-              onChange={setSearchQuery}
+              onChange={(v) => void setSearchQuery(v)}
               placeholder="Buscar relatórios..."
               value={searchQuery}
             />
@@ -85,7 +97,7 @@ export default function ReportsPage() {
         {/* Tabs por categoria */}
         <Tabs
           className="space-y-6"
-          onValueChange={setSelectedCategory}
+          onValueChange={(v) => void setSelectedCategory(v)}
           value={selectedCategory}
         >
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">

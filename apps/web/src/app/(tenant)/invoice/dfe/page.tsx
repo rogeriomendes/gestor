@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Building2Icon, EyeOffIcon } from "lucide-react";
 import type { Route } from "next";
+import { useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
@@ -29,7 +30,9 @@ export default function InvoiceDfeList() {
   const isMobile = useIsMobile();
   const { tenant } = useTenant();
   const { selectedCompany } = useCompany();
-  const [supplier, setSupplier] = useState<string>("0");
+  const [supplier, setSupplier] = useQueryState("supplier", {
+    defaultValue: "0",
+  });
   const [selectedDfeId, setSelectedDfeId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHideModalOpen, setIsHideModalOpen] = useState(false);
@@ -102,7 +105,7 @@ export default function InvoiceDfeList() {
           <Combobox
             className="flex-1 md:w-72"
             icon={<Building2Icon />}
-            onValueChange={setSupplier}
+            onValueChange={(v) => void setSupplier(v)}
             options={supplierOptions}
             placeholder="Fornecedor"
             searchPlaceholder="Buscar fornecedor..."
