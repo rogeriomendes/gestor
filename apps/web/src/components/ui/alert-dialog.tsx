@@ -126,6 +126,7 @@ function AlertDialogTitle({
 
 function AlertDialogDescription({
   className,
+  render,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Description>) {
   return (
@@ -135,6 +136,7 @@ function AlertDialogDescription({
         className
       )}
       data-slot="alert-dialog-description"
+      render={render ?? <div />}
       {...props}
     />
   );
