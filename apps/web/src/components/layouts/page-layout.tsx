@@ -1,14 +1,14 @@
 "use client";
 
+import { ArrowLeft } from "lucide-react";
+import type { Route } from "next";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { FbiIcon } from "@/assets/FbiIcon";
 import type { BreadcrumbItemType } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { useOptionalTenantTabs } from "@/contexts/tenant-tabs-context";
 import { getIconForPathname } from "@/lib/menu-icon";
-import { ArrowLeft } from "lucide-react";
-import type { Route } from "next";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { ShowTextSwitcher } from "../show-text-switcher";
 import { TenantTabsBar } from "../tenant/tenant-tabs-bar";
 import { Separator } from "../ui/separator";

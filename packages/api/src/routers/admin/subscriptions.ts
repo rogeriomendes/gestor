@@ -15,6 +15,7 @@ import {
 } from "../../lib/pagination";
 import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+import { invalidateAllContexts } from "../../utils/context-cache";
 import {
   createTrialSubscription,
   TRIAL_DURATION_DAYS,
@@ -210,6 +211,8 @@ export const subscriptionsRouter = router({
         ctx
       );
 
+      invalidateAllContexts();
+
       return subscription;
     }),
 
@@ -262,6 +265,8 @@ export const subscriptionsRouter = router({
         },
         ctx
       );
+
+      invalidateAllContexts();
 
       return subscription;
     }),
@@ -355,6 +360,8 @@ export const subscriptionsRouter = router({
         ctx
       );
 
+      invalidateAllContexts();
+
       return subscription;
     }),
 
@@ -418,6 +425,8 @@ export const subscriptionsRouter = router({
         ctx
       );
 
+      invalidateAllContexts();
+
       return subscription;
     }),
 
@@ -427,7 +436,7 @@ export const subscriptionsRouter = router({
    */
   getAvailablePlans: adminProcedure
     .use(requirePermission("PLAN", "READ"))
-    .query(async () => {
+    .query(() => {
       return prisma.plan.findMany({
         where: { active: true },
         orderBy: [{ isDefault: "desc" }, { name: "asc" }],

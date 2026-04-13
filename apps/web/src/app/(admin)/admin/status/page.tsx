@@ -5,6 +5,7 @@ import { AdminGuard } from "@/components/admin";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { ConnectionStats } from "./_components/connection-stats";
 import { ConnectionsTable } from "./_components/connections-table";
+import { ContextCacheStats } from "./_components/context-cache-stats";
 import { ServerStatusCards } from "./_components/server-status-cards";
 
 function StatusPageContent() {
@@ -24,6 +25,9 @@ function StatusPageContent() {
 
         {/* Estatísticas de Conexões */}
         <ConnectionStats />
+
+        {/* Estatísticas do cache de contexto */}
+        <ContextCacheStats />
 
         {/* Tabela de Conexões */}
         <ConnectionsTable />

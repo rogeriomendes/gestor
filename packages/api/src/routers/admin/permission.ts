@@ -8,6 +8,7 @@ import {
   requirePermission,
 } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+import { invalidateAllContexts } from "../../utils/context-cache";
 
 export const permissionRouter = router({
   /**
@@ -173,6 +174,9 @@ export const permissionRouter = router({
         },
         ctx
       );
+
+      // Invalida contexto em memória para refletir permissões imediatamente
+      invalidateAllContexts();
 
       return { success: true };
     }),
@@ -440,6 +444,9 @@ export const permissionRouter = router({
         },
         ctx
       );
+
+      // Invalida contexto em memória para refletir permissões imediatamente
+      invalidateAllContexts();
 
       return { success: true, message: "Permissões inicializadas com sucesso" };
     }),

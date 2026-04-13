@@ -2,23 +2,14 @@ import { auth } from "@gestor/auth";
 import prisma from "@gestor/db";
 import { Role } from "@gestor/db/types";
 import type { NextRequest } from "next/server";
-import { getPermissionsForRole } from "./utils/permission-cache";
 import {
-  getActiveSubscription,
-  type SubscriptionWithPlan,
-} from "./utils/subscription";
+  buildContextFromUser,
+  type CachedContext,
+  type CachedTenant,
+  getCachedContext,
+} from "./utils/context-cache";
 
-type TenantWithCredentials = {
-  id: string;
-  name: string;
-  slug: string;
-  active: boolean;
-  deletedAt: Date | null;
-  dbHost: string | null;
-  dbPort: string | null;
-  dbUsername: string | null;
-  dbPassword: string | null;
-} | null;
+type TenantWithCredentials = CachedTenant | null;
 
 export interface ContextReturn {
   db?: unknown;
@@ -27,8 +18,9 @@ export interface ContextReturn {
   req: NextRequest;
   role: Role | null;
   session: { user: { id: string } } | null;
-  subscription: SubscriptionWithPlan | null;
+  subscription: CachedContext["subscription"];
   tenant: TenantWithCredentials;
+  userId: string | null;
 }
 
 export async function createContext(req: NextRequest): Promise<ContextReturn> {
@@ -36,7 +28,6 @@ export async function createContext(req: NextRequest): Promise<ContextReturn> {
     headers: req.headers,
   });
 
-  // Retornar contexto vazio se não houver sessão
   if (!session?.user?.id) {
     return {
       session: null,
@@ -46,14 +37,29 @@ export async function createContext(req: NextRequest): Promise<ContextReturn> {
       isSuperAdmin: false,
       permissions: new Set<string>(),
       req,
+      userId: null,
     };
   }
 
-  // Buscar User com tenant
+  const userId = session.user.id;
+
+  const cached = await getCachedContext(userId);
+  if (cached) {
+    return {
+      session,
+      db: prisma,
+      tenant: cached.tenant,
+      subscription: cached.subscription,
+      role: cached.user.role,
+      isSuperAdmin: cached.user.role === Role.SUPER_ADMIN,
+      permissions: new Set(cached.permissions),
+      req,
+      userId,
+    };
+  }
+
   const user = await prisma.user.findUnique({
-    where: {
-      id: session.user.id,
-    },
+    where: { id: userId },
     select: {
       id: true,
       role: true,
@@ -83,30 +89,19 @@ export async function createContext(req: NextRequest): Promise<ContextReturn> {
       isSuperAdmin: false,
       permissions: new Set<string>(),
       req,
+      userId: null,
     };
   }
 
-  // Extrair role e tenant do resultado da query
   const role = user.role as Role | null;
   const tenant = user.tenant;
-  const isSuperAdmin = role === Role.SUPER_ADMIN;
 
-  // Carregar permissões da role apenas se necessário (não é SUPER_ADMIN)
-  // Usando cache para evitar query em toda requisição (ganho: ~50-100ms)
-  let permissions: Set<string> = new Set();
-  if (role && !isSuperAdmin) {
-    permissions = await getPermissionsForRole(role);
-  }
-
-  // SUPER_ADMIN e TENANT_ADMIN não precisam de tenant
-  // Outros roles precisam de tenant para funcionar
   if (
     role &&
     role !== Role.SUPER_ADMIN &&
     role !== Role.TENANT_ADMIN &&
     !tenant
   ) {
-    // Role que exige tenant mas não tem - limpar role
     return {
       session,
       tenant: null,
@@ -115,20 +110,30 @@ export async function createContext(req: NextRequest): Promise<ContextReturn> {
       isSuperAdmin: false,
       permissions: new Set<string>(),
       req,
+      userId,
     };
   }
 
-  const subscription = tenant ? await getActiveSubscription(tenant.id) : null;
+  const cachedContext = await buildContextFromUser(
+    userId,
+    {
+      id: user.id,
+      role,
+      tenantId: user.tenantId,
+    },
+    tenant
+  );
 
   return {
     session,
     db: prisma,
-    tenant,
-    subscription,
-    role,
-    isSuperAdmin,
-    permissions,
-    req, // Passar request para audit logs
+    tenant: cachedContext.tenant,
+    subscription: cachedContext.subscription,
+    role: cachedContext.user.role,
+    isSuperAdmin: cachedContext.user.role === Role.SUPER_ADMIN,
+    permissions: new Set(cachedContext.permissions),
+    req,
+    userId,
   };
 }
 

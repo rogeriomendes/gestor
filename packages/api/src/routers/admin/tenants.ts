@@ -11,6 +11,7 @@ import {
 } from "../../lib/pagination";
 import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+import { invalidateAllContexts } from "../../utils/context-cache";
 import {
   testDatabaseConnection,
   validateConnectionParams,
@@ -467,6 +468,8 @@ export const tenantsRouter = router({
         ctx
       );
 
+      invalidateAllContexts();
+
       return tenant;
     }),
 
@@ -527,6 +530,8 @@ export const tenantsRouter = router({
         },
         ctx
       );
+
+      invalidateAllContexts();
 
       return deletedTenant;
     }),
@@ -650,6 +655,8 @@ export const tenantsRouter = router({
         ctx
       );
 
+      invalidateAllContexts();
+
       return restoredTenant;
     }),
 
@@ -694,6 +701,8 @@ export const tenantsRouter = router({
       await prisma.tenant.delete({
         where: { id: input.tenantId },
       });
+
+      invalidateAllContexts();
 
       return { success: true };
     }),

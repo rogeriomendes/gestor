@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { adminProcedure, router } from "../../index";
 import { requirePermission } from "../../middleware/permissions";
+import { clearContextCache, getCacheStats } from "../../utils/context-cache";
 import {
   closeAllConnections,
   closeConnection,
@@ -176,6 +177,26 @@ export const statusRouter = router({
     .use(requirePermission("STATUS", "READ"))
     .query(() => {
       return getConnectionStats();
+    }),
+
+  /**
+   * Obter estatísticas do cache de contexto da API
+   * Requer permissão STATUS:READ
+   */
+  getContextCacheStats: adminProcedure
+    .use(requirePermission("STATUS", "READ"))
+    .query(() => {
+      return getCacheStats();
+    }),
+
+  /**
+   * Limpar cache de contexto da API
+   * Requer permissão STATUS:MANAGE
+   */
+  clearContextCache: adminProcedure
+    .use(requirePermission("STATUS", "MANAGE"))
+    .mutation(() => {
+      return clearContextCache();
     }),
 
   /**

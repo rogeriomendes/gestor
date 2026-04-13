@@ -12,6 +12,7 @@ import {
 } from "../../lib/pagination";
 import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+import { invalidateUserContext } from "../../utils/context-cache";
 
 const roleLabels: Record<string, string> = {
   SUPER_ADMIN: "Super Administrador",
@@ -252,6 +253,8 @@ export const tenantUsersRouter = router({
         },
       });
 
+      invalidateUserContext(updatedUser.id);
+
       return {
         id: updatedUser.id,
         userId: updatedUser.id,
@@ -341,6 +344,8 @@ export const tenantUsersRouter = router({
           role: true,
         },
       });
+
+      invalidateUserContext(input.userId);
 
       // Registrar no audit log
       await createAuditLogFromContext(
@@ -435,6 +440,8 @@ export const tenantUsersRouter = router({
           role: null,
         },
       });
+
+      invalidateUserContext(input.userId);
 
       return { success: true };
     }),

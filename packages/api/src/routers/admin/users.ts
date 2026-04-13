@@ -11,6 +11,7 @@ import {
 } from "../../lib/pagination";
 import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+import { invalidateUserContext } from "../../utils/context-cache";
 
 // Mapeamento de roles para nomes amigáveis
 const roleLabels: Record<string, string> = {
@@ -556,6 +557,9 @@ export const usersRouter = router({
         },
       });
 
+      // Invalidar cache de contexto do usuário
+      invalidateUserContext(input.userId);
+
       // Registrar no audit log
       await createAuditLogFromContext(
         {
@@ -702,6 +706,9 @@ export const usersRouter = router({
         },
       });
 
+      // Invalidar cache de contexto do usuário
+      invalidateUserContext(input.userId);
+
       // Registrar no audit log
       await createAuditLogFromContext(
         {
@@ -768,6 +775,9 @@ export const usersRouter = router({
           email: true,
         },
       });
+
+      // Invalidar cache de contexto do usuário
+      invalidateUserContext(input.userId);
 
       // Registrar no audit log
       await createAuditLogFromContext(
@@ -837,6 +847,9 @@ export const usersRouter = router({
         },
       });
 
+      // Invalidar cache de contexto do usuário
+      invalidateUserContext(input.userId);
+
       // Registrar no audit log
       await createAuditLogFromContext(
         {
@@ -901,6 +914,9 @@ export const usersRouter = router({
         },
       });
 
+      // Invalidar cache de contexto do usuário
+      invalidateUserContext(input.userId);
+
       // Registrar no audit log
       await createAuditLogFromContext(
         {
@@ -956,6 +972,9 @@ export const usersRouter = router({
           deletedBy: null,
         },
       });
+
+      // Invalidar cache de contexto do usuário
+      invalidateUserContext(input.userId);
 
       // Registrar no audit log
       await createAuditLogFromContext(

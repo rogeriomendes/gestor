@@ -11,6 +11,7 @@ import {
 } from "../../lib/pagination";
 import { requirePermission } from "../../middleware/permissions";
 import { createAuditLogFromContext } from "../../utils/audit-log";
+import { invalidateAllContexts } from "../../utils/context-cache";
 
 export const plansRouter = router({
   /**
@@ -153,6 +154,8 @@ export const plansRouter = router({
         ctx
       );
 
+      invalidateAllContexts();
+
       return plan;
     }),
 
@@ -232,6 +235,8 @@ export const plansRouter = router({
         ctx
       );
 
+      invalidateAllContexts();
+
       return plan;
     }),
 
@@ -289,6 +294,8 @@ export const plansRouter = router({
         ctx
       );
 
+      invalidateAllContexts();
+
       return updatedPlan;
     }),
 
@@ -335,6 +342,8 @@ export const plansRouter = router({
         },
         ctx
       );
+
+      invalidateAllContexts();
 
       return updatedPlan;
     }),
