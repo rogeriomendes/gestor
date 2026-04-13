@@ -85,7 +85,8 @@ function TenantMenuItemWithPermission({
               ) : (
                 <Link
                   href={item.url}
-                  onClick={() => {
+                  onClick={(event) => {
+                    event.preventDefault();
                     openOrActivateTab({
                       id: item.url,
                       href: item.url,
@@ -162,7 +163,8 @@ function SubMenuItemWithPermission({
         render={
           <Link
             href={subItem.url}
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               openOrActivateTab({
                 id: subItem.url,
                 href: subItem.url,
@@ -204,13 +206,14 @@ function SettingsMenuItemWithPermission({
         render={
           <Link
             href={item.url}
-            onClick={() =>
+            onClick={(event) => {
+              event.preventDefault();
               openOrActivateTab({
                 id: item.url,
                 href: item.url,
                 label: item.title,
-              })
-            }
+              });
+            }}
           />
         }
       >

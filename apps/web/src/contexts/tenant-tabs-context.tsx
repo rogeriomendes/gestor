@@ -2,6 +2,7 @@
 
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTopLoader } from "nextjs-toploader";
 import {
   createContext,
   useCallback,
@@ -155,6 +156,7 @@ export function TenantTabsProvider({
   const searchParams = useSearchParams();
   const { tenant, isLoading: tenantLoading } = useTenant();
   const { data: session, isPending: sessionLoading } = authClient.useSession();
+  const topLoader = useTopLoader();
 
   const tenantId = tenant?.id ?? null;
   const userId = session?.user?.id ?? null;
@@ -290,6 +292,7 @@ export function TenantTabsProvider({
   const openOrActivateTab = useCallback(
     (tab: TenantTabItem) => {
       const now = Date.now();
+      let shouldNavigate = true;
 
       setTabs((current) => {
         const existingIndex = current.findIndex((item) => item.id === tab.id);
@@ -315,24 +318,31 @@ export function TenantTabsProvider({
             toast.warning(
               `Limite de ${MAX_TENANT_TABS} abas atingido. Feche uma aba para abrir outra.`
             );
+            shouldNavigate = false;
             return current;
           }
 
           setPendingOpenTab({ ...tab, lastActiveAt: now });
           setSuggestedCloseTab(candidate);
           setLimitDialogOpen(true);
+          shouldNavigate = false;
           return current;
         }
 
         return [...current, { ...tab, lastActiveAt: now }];
       });
 
-      // Se abriu o dialog, não navega agora.
-      if (!limitDialogOpen) {
+      if (shouldNavigate) {
         navigateToTab(tab.href);
+      } else {
+        // nextjs-toploader escuta click em document e chama nprogress.start() *depois*
+        // do nosso onClick no Link (bubble). Sem isso a barra fica ativa ao cancelar.
+        queueMicrotask(() => {
+          topLoader.done();
+        });
       }
     },
-    [limitDialogOpen, navigateToTab]
+    [navigateToTab, topLoader]
   );
 
   const closeTab = useCallback(
@@ -514,6 +524,9 @@ export function TenantTabsProvider({
           if (!open) {
             setPendingOpenTab(null);
             setSuggestedCloseTab(null);
+            queueMicrotask(() => {
+              topLoader.done();
+            });
           }
         }}
         open={limitDialogOpen}
