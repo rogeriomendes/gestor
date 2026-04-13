@@ -8,7 +8,7 @@ import { useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import { DatePicker, type DateRange } from "@/components/ui/date-picker";
+import type { DateRange } from "@/components/ui/date-picker";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -21,6 +21,18 @@ import { EntryGrid } from "./_components/EntryGrid";
 
 type EntryItem =
   RouterOutputs["tenant"]["invoiceEntry"]["all"]["invoiceEntry"][number];
+
+/** Vários IDs na URL vêm como "79,388" (nuqs). */
+function supplierFromQuery(s: string | null) {
+  if (!s || s === "0") {
+    return null;
+  }
+  const ids = s
+    .split(",")
+    .map((p) => Number(p.trim()))
+    .filter((n) => n > 0);
+  return ids.length === 0 ? null : ids.length === 1 ? ids[0] : ids;
+}
 
 export default function InvoiceEntryList() {
   const { tenant } = useTenant();
@@ -43,7 +55,7 @@ export default function InvoiceEntryList() {
       {
         limit: 20,
         company: selectedCompanyId !== 0 ? selectedCompanyId : null,
-        supplier: supplier !== "0" ? Number(supplier) : null,
+        supplier: supplierFromQuery(supplier),
         date: date?.from ? { from: date.from, to: date.to ?? undefined } : null,
       },
       {
@@ -101,7 +113,7 @@ export default function InvoiceEntryList() {
             searchPlaceholder="Buscar fornecedor..."
             value={supplier}
           />
-          <DatePicker
+          {/* <DatePicker
             calendarCaptionLayout="dropdown"
             calendarDisabled={{ after: new Date() }}
             className="flex-1 md:w-64"
@@ -112,7 +124,7 @@ export default function InvoiceEntryList() {
             }}
             placeholder="Data de entrada"
             value={date}
-          />
+          /> */}
         </div>
       </div>
       {isMobile ? (

@@ -37,6 +37,17 @@ import { PayGrid } from "./_components/PayGrid";
 type BillsPayItem =
   RouterOutputs["tenant"]["financialBillsPay"]["all"]["financialBills"][number];
 
+function supplierFromQuery(s: string | null) {
+  if (!s || s === "0") {
+    return null;
+  }
+  const ids = s
+    .split(",")
+    .map((p) => Number(p.trim()))
+    .filter((n) => n > 0);
+  return ids.length === 0 ? null : ids.length === 1 ? ids[0] : ids;
+}
+
 export default function FinancialBillsPayList() {
   const isMobile = useIsMobile();
   const { tenant } = useTenant();
@@ -71,7 +82,7 @@ export default function FinancialBillsPayList() {
         limit: 20,
         filter: situation,
         company: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
-        supplier: supplier !== "0" ? Number(supplier) : null,
+        supplier: supplierFromQuery(supplier),
         date: date
           ? {
               from: date.from ?? new Date(),
@@ -115,7 +126,7 @@ export default function FinancialBillsPayList() {
   const totalBillsPayAmountRange = useQuery({
     ...trpc.tenant.financialBillsPay.amount.queryOptions({
       company: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
-      supplier: supplier !== "0" ? Number(supplier) : null,
+      supplier: supplierFromQuery(supplier),
       date: date
         ? {
             from: date.from ?? new Date(),
