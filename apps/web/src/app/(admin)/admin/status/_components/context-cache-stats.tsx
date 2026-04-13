@@ -101,7 +101,7 @@ export function ContextCacheStats() {
   });
 
   const clearContextCacheMutation = useMutation({
-    mutationFn: () => trpcClient.admin.status.clearContextCache.mutateAsync(),
+    mutationFn: () => trpcClient.admin.status.clearContextCache.mutate(),
     onSuccess: (data) => {
       toast.success(`Cache de contexto limpo (${data.clearedCount} entradas).`);
       refetch();
@@ -149,7 +149,9 @@ export function ContextCacheStats() {
           </span>
         }
         isLoading={clearContextCacheMutation.isPending}
-        onConfirm={() => clearContextCacheMutation.mutateAsync()}
+        onConfirm={async () => {
+          await clearContextCacheMutation.mutateAsync();
+        }}
         onOpenChange={setClearDialogOpen}
         open={clearDialogOpen}
         title="Limpar cache de contexto?"
