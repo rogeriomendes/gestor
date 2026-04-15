@@ -1,22 +1,5 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  type IDetectedBarcode,
-  Scanner,
-  useDevices,
-} from "@yudiel/react-qr-scanner";
-import {
-  GroupIcon,
-  PackageIcon,
-  ScaleIcon,
-  ScanBarcodeIcon,
-  SquarePercentIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useQueryState } from "nuqs";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -46,6 +29,23 @@ import {
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  type IDetectedBarcode,
+  Scanner,
+  useDevices,
+} from "@yudiel/react-qr-scanner";
+import {
+  GroupIcon,
+  PackageIcon,
+  ScaleIcon,
+  ScanBarcodeIcon,
+  SquarePercentIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useQueryState } from "nuqs";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { DetailProducts } from "./_components/DetailProducts";
 import { ProductGrid } from "./_components/ProductGrid";
 
@@ -61,6 +61,9 @@ export default function ProductsList() {
   const [scale, setScale] = useQueryState("scale", { defaultValue: "T" });
   const [promotion, setPromotion] = useQueryState("promotion", {
     defaultValue: "T",
+  });
+  const [inactive, setInactive] = useQueryState("inactive", {
+    defaultValue: "N",
   });
 
   // Estados para controlar o modal de detalhes
@@ -93,6 +96,7 @@ export default function ProductsList() {
         group: group !== "0" ? Number(group) : null,
         scale: scale !== "T" ? scale : null,
         promotion: promotion !== "T" ? promotion : null,
+        inactive,
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -130,6 +134,12 @@ export default function ProductsList() {
     { value: "T", label: "TODOS" },
     { value: "S", label: "ATIVA" },
     { value: "N", label: "INATIVA" },
+  ];
+
+  const inactiveOptions: ComboboxOption[] = [
+    { value: "T", label: "TODOS" },
+    { value: "N", label: "ATIVOS" },
+    { value: "S", label: "INATIVOS" },
   ];
 
   function handleOnScan(detectedCodes: IDetectedBarcode[]) {
@@ -263,6 +273,15 @@ export default function ProductsList() {
             searchPlaceholder="Buscar promoção..."
             value={promotion}
           />
+          <Combobox
+            className="flex-1 md:w-48"
+            icon={<PackageIcon />}
+            onValueChange={setInactive}
+            options={inactiveOptions}
+            placeholder="Status"
+            searchPlaceholder="Buscar status..."
+            value={inactive}
+          />
         </div>
       </div>
       {isMobile ? (
@@ -381,7 +400,7 @@ export default function ProductsList() {
                 {formatAsCurrency(Number(product.VALOR_VENDA))}
               </span>,
               (product.DATA_ALTERACAO && formatDate(product.DATA_ALTERACAO)) ||
-                "—",
+              "—",
             ];
           }}
         />

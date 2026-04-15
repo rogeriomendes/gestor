@@ -14,12 +14,13 @@ export const productsRouter = router({
         group: z.number().nullish().optional(),
         scale: z.string().nullish().optional(),
         promotion: z.string().nullish().optional(),
+        inactive: z.string().nullish().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
         const limit = input.limit ?? 30;
-        const { cursor, searchTerm, group, scale, promotion } = input;
+        const { cursor, searchTerm, group, scale, promotion, inactive } = input;
 
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
         const whereSearch = searchTerm && {
@@ -39,6 +40,13 @@ export const productsRouter = router({
           scale !== "T" && {
             PRODUTO_PESADO: scale,
           };
+
+        const whereInactive =
+          inactive === "T"
+            ? {}
+            : {
+                INATIVO: inactive === "S" ? "S" : "N",
+              };
 
         // Filtro por promoção - buscar IDs dos produtos com promoção ativa
         let wherePromotion = {};
@@ -112,7 +120,7 @@ export const productsRouter = router({
         }
 
         const where = {
-          INATIVO: "N",
+          ...whereInactive,
           ...whereGroup,
           ...whereSearch,
           ...whereScale,
