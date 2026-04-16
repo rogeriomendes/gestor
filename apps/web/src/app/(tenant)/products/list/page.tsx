@@ -275,71 +275,69 @@ export default function ProductsList() {
       subtitle="Consulte o cadastro de produtos"
       title="Produtos"
     >
-      <div className="flex flex-col md:flex-row md:items-center">
-        <div className="flex flex-row gap-2">
-          <SearchInput
-            className="w-full flex-1 md:w-96"
-            enableF9Shortcut
-            onChange={(v: string) => void setSearch(v)}
-            placeholder="Pesquisar por produtos"
-            value={search}
-          />
-          <Dialog onOpenChange={setOpen} open={open}>
-            <DialogTrigger
-              className="md:hidden"
-              render={<Button size="icon" variant="default" />}
-            >
-              <ScanBarcodeIcon className="size-5" />
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Ler código de barras</DialogTitle>
-              </DialogHeader>
-              <Select
-                defaultValue={deviceId}
-                onValueChange={(value) => setDeviceId(value ?? undefined)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue>Selecione a câmera</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {devices.map((device, index) => (
-                    <SelectItem key={index} value={device.deviceId}>
-                      {device.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Scanner
-                components={{
-                  torch: true,
-                  zoom: true,
-                  finder: true,
-                }}
-                constraints={{
-                  deviceId,
-                }}
-                formats={["ean_8", "ean_13"]}
-                onError={(_error) => {
-                  // console.log(`onError: ${error}'`);
-                  toast.error("Erro ao ler codigo de barras");
-                }}
-                onScan={handleOnScan}
-                paused={!stopScan}
-                scanDelay={2000}
-                sound={true}
-              />
-            </DialogContent>
-          </Dialog>
-          <FiltersPanel
-            onOpenChange={setFiltersOpen}
-            open={filtersOpen}
-            title="Filtros de produtos"
-            triggerIcon={<FilterIcon className="size-4 md:mr-0.5" />}
+      <div className="flex gap-2">
+        <SearchInput
+          className="w-full md:w-96"
+          enableF9Shortcut
+          onChange={(v: string) => void setSearch(v)}
+          placeholder="Pesquisar por produtos"
+          value={search}
+        />
+        <Dialog onOpenChange={setOpen} open={open}>
+          <DialogTrigger
+            className="md:hidden"
+            render={<Button size="icon" variant="default" />}
           >
-            {filtersContent}
-          </FiltersPanel>
-        </div>
+            <ScanBarcodeIcon className="size-5" />
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Ler código de barras</DialogTitle>
+            </DialogHeader>
+            <Select
+              defaultValue={deviceId}
+              onValueChange={(value) => setDeviceId(value ?? undefined)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue>Selecione a câmera</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {devices.map((device, index) => (
+                  <SelectItem key={index} value={device.deviceId}>
+                    {device.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Scanner
+              components={{
+                torch: true,
+                zoom: true,
+                finder: true,
+              }}
+              constraints={{
+                deviceId,
+              }}
+              formats={["ean_8", "ean_13"]}
+              onError={(_error) => {
+                // console.log(`onError: ${error}'`);
+                toast.error("Erro ao ler codigo de barras");
+              }}
+              onScan={handleOnScan}
+              paused={!stopScan}
+              scanDelay={2000}
+              sound={true}
+            />
+          </DialogContent>
+        </Dialog>
+        <FiltersPanel
+          onOpenChange={setFiltersOpen}
+          open={filtersOpen}
+          title="Filtros de produtos"
+          triggerIcon={<FilterIcon className="size-4 md:mr-0.5" />}
+        >
+          {filtersContent}
+        </FiltersPanel>
       </div>
       {hasActiveFilters && (
         <div className="flex flex-wrap items-center gap-1">

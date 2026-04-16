@@ -8,6 +8,7 @@ export const productsSaleRouter = router({
       z.object({
         limit: z.number().min(1).max(100).nullish(),
         cursor: z.string().nullish(),
+        searchTerm: z.string().nullish(),
         company: z.number().nullish(),
         status: z.string().nullish(),
         inactive: z.string().nullish(),
@@ -16,7 +17,7 @@ export const productsSaleRouter = router({
     .query(async ({ ctx, input }) => {
       try {
         const limit = input.limit ?? 30;
-        const { cursor, company, status, inactive } = input;
+        const { cursor, searchTerm, company, status, inactive } = input;
 
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as any);
         const whereCompany = company &&
@@ -34,7 +35,14 @@ export const productsSaleRouter = router({
             INATIVO: inactive,
           };
 
+        const whereSearch = searchTerm && {
+          NOME_REAJUSTE: {
+            contains: searchTerm,
+          },
+        };
+
         const where = {
+          ...whereSearch,
           ...whereCompany,
           ...whereStatus,
           ...whereInactive,

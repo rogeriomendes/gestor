@@ -1,18 +1,12 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  CircleEllipsisIcon,
-  CircleHelpIcon,
-  SquarePercentIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useQueryState } from "nuqs";
-import { useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
+import { SearchInput } from "@/components/search-input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
+import { FiltersPanel } from "@/components/ui/filters-panel";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -20,6 +14,18 @@ import { formatDate } from "@/lib/format-date";
 import { getSaleStatusInfo } from "@/lib/status-info";
 import { cn } from "@/lib/utils";
 import { type RouterOutputs, trpc } from "@/utils/trpc";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  CircleEllipsisIcon,
+  CircleHelpIcon,
+  FilterIcon,
+  FilterXIcon,
+  SquarePercentIcon,
+  XIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import { DetailSale } from "./_components/DetailSale";
 import { SaleGrid } from "./_components/SaleGrid";
 
@@ -42,6 +48,8 @@ export default function productsSale() {
   const { tenant } = useTenant();
   const { selectedCompanyId } = useCompany();
   const isMobile = useIsMobile();
+  const [search, setSearch] = useQueryState("search", { defaultValue: "" });
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [status, setStatus] = useQueryState("status", { defaultValue: "T" });
   const [inactive, setInactive] = useQueryState("inactive", {
     defaultValue: "N",
@@ -50,13 +58,22 @@ export default function productsSale() {
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const enabled = !!tenant;
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 300);
+    return () => clearTimeout(id);
+  }, [search]);
 
   const productsSaleQuery = useInfiniteQuery({
     ...trpc.tenant.productsSale.all.infiniteQueryOptions(
       {
         limit: 20,
+        searchTerm: debouncedSearch || null,
         company: selectedCompanyId !== 0 ? selectedCompanyId : null,
         status: status !== "T" ? status : null,
         inactive: inactive !== "T" ? inactive : null,
@@ -69,6 +86,57 @@ export default function productsSale() {
     enabled,
   });
 
+  const statusLabel = statusOptions.find(
+    (option) => option.value === status
+  )?.label;
+  const inactiveLabel = inactiveOptions.find(
+    (option) => option.value === inactive
+  )?.label;
+  const hasActiveFilters =
+    search.trim().length > 0 || status !== "T" || inactive !== "N";
+
+  const clearAllFilters = () => {
+    void setSearch("");
+    void setStatus("T");
+    void setInactive("N");
+  };
+
+  const filtersContent = (
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <Combobox
+          className="w-full"
+          icon={<CircleEllipsisIcon />}
+          onValueChange={(v) => void setStatus(v)}
+          options={statusOptions}
+          placeholder="Status"
+          searchPlaceholder="Buscar status..."
+          value={status}
+        />
+        <Combobox
+          className="w-full"
+          icon={<CircleHelpIcon />}
+          onValueChange={(v) => void setInactive(v)}
+          options={inactiveOptions}
+          placeholder="Inativo"
+          searchPlaceholder="Buscar inativo..."
+          value={inactive}
+        />
+      </div>
+      <div className="flex justify-end">
+        <Button
+          onClick={clearAllFilters}
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          <FilterXIcon className="mr-1 h-3 w-3" />
+          Limpar
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <PageLayout
       breadcrumbs={[
@@ -79,28 +147,72 @@ export default function productsSale() {
       subtitle="Consulte campanhas promocionais e ofertas"
       title="Promoções"
     >
-      <div className="flex flex-col md:flex-row md:items-center">
-        <div className="flex flex-row gap-2 md:gap-3">
-          <Combobox
-            className="flex-1 md:w-48"
-            icon={<CircleEllipsisIcon />}
-            onValueChange={(v) => void setStatus(v)}
-            options={statusOptions}
-            placeholder="Status"
-            searchPlaceholder="Buscar status..."
-            value={status}
-          />
-          <Combobox
-            className="flex-1 md:w-48"
-            icon={<CircleHelpIcon />}
-            onValueChange={(v) => void setInactive(v)}
-            options={inactiveOptions}
-            placeholder="Inativo"
-            searchPlaceholder="Buscar inativo..."
-            value={inactive}
-          />
-        </div>
+      <div className="flex gap-2">
+        <SearchInput
+          className="w-full md:w-96"
+          enableF9Shortcut
+          onChange={(v: string) => void setSearch(v)}
+          placeholder="Pesquisar por nome da promoção"
+          value={search}
+        />
+        <FiltersPanel
+          onOpenChange={setFiltersOpen}
+          open={filtersOpen}
+          title="Filtros de promoções"
+          triggerIcon={<FilterIcon className="size-4 md:mr-2" />}
+        >
+          {filtersContent}
+        </FiltersPanel>
       </div>
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-1">
+          {search.trim().length > 0 && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Busca: {search.trim()}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setSearch("")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {status !== "T" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Status: {statusLabel}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setStatus("T")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {inactive !== "N" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Inativo: {inactiveLabel}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setInactive("N")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          <Button
+            className="md:h-8 md:text-sm"
+            onClick={clearAllFilters}
+            size="xs"
+            variant="ghost"
+          >
+            <FilterXIcon className="mr-0.5 h-3 w-3" />
+            Limpar
+          </Button>
+        </div>
+      )}
       {isMobile ? (
         <SaleGrid
           data={productsSaleQuery.data?.pages}
