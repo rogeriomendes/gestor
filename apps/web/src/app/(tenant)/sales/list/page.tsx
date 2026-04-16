@@ -1,16 +1,11 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ShoppingCartIcon, SquareUserIcon } from "lucide-react";
-import type { Route } from "next";
-import { parseAsIsoDate, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
 import { Badge } from "@/components/ui/badge";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
-import { DatePicker } from "@/components/ui/date-picker";
+import { DatePickerTimeRange } from "@/components/ui/date-picker-time-range";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -18,6 +13,11 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { ShoppingCartIcon, SquareUserIcon } from "lucide-react";
+import type { Route } from "next";
+import { parseAsIsoDate, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import { DetailSales } from "./_components/DetailSales";
 import { SalesGrid } from "./_components/SalesGrid";
 
@@ -31,6 +31,12 @@ export default function SalesList() {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [account, setAccount] = useQueryState("account", { defaultValue: "0" });
   const [date, setDate] = useQueryState("date", parseAsIsoDate);
+  const [timeFrom, setTimeFrom] = useQueryState("timeFrom", {
+    defaultValue: "",
+  });
+  const [timeTo, setTimeTo] = useQueryState("timeTo", {
+    defaultValue: "",
+  });
   const [selectedSaleId, setSelectedSaleId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Lazy initial state — evita flash de conteúdo vazio sem useEffect
@@ -51,8 +57,8 @@ export default function SalesList() {
   const dateFormatted =
     date instanceof Date
       ? new Date(
-          Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-        )
+        Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+      )
       : undefined;
 
   const salesQuery = useInfiniteQuery({
@@ -61,6 +67,8 @@ export default function SalesList() {
         limit: 20,
         searchTerm: debouncedSearch || null,
         date: dateFormatted ?? null,
+        timeFrom: timeFrom || null,
+        timeTo: timeTo || null,
         account: account !== "0" ? Number(account) : null,
         companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
       },
@@ -118,13 +126,15 @@ export default function SalesList() {
             searchPlaceholder="Buscar conta caixa..."
             value={account}
           />
-          <DatePicker
-            calendarCaptionLayout="dropdown"
-            calendarDisabled={{ after: new Date() }}
-            className="w-60 flex-1"
-            onChange={(d) => void setDate(d ?? null)}
-            placeholder="Data"
-            value={date ?? undefined}
+          <DatePickerTimeRange
+            className="flex-1 md:w-60"
+            date={date ?? undefined}
+            onDateChange={(d) => void setDate(d ?? null)}
+            onTimeFromChange={(value) => void setTimeFrom(value)}
+            onTimeToChange={(value) => void setTimeTo(value)}
+            placeholder="Data e horário"
+            timeFrom={timeFrom}
+            timeTo={timeTo}
           />
         </div>
       </div>
@@ -233,15 +243,14 @@ export default function SalesList() {
               >
                 {statusInfo.label}
               </Badge>,
-              `${
-                sale.DATA_VENDA &&
-                new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
-                  timeZone: "UTC",
-                })
+              `${sale.DATA_VENDA &&
+              new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
+                timeZone: "UTC",
+              })
               } ${sale.HORA_SAIDA}`,
               formatAsCurrency(Number(sale.VALOR_TOTAL)),
               (sale.NUMERO_NFE && removeLeadingZero(String(sale.NUMERO_NFE))) ||
-                "—",
+              "—",
               sale.SERIE_NFE || "—",
             ];
           }}

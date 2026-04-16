@@ -15,6 +15,8 @@ export const salesRouter = router({
         horaAbertura: z.string().min(1).nullish(),
         horaFechamento: z.string().min(1).nullish(),
         date: z.coerce.date().nullish(),
+        timeFrom: z.string().nullish(),
+        timeTo: z.string().nullish(),
         account: z.number().nullish(),
         sortOrder: z.string().nullish(),
         companyId: z.number().optional(),
@@ -32,6 +34,8 @@ export const salesRouter = router({
           horaAbertura,
           horaFechamento,
           date,
+          timeFrom,
+          timeTo,
           account,
           sortOrder,
           companyId,
@@ -54,6 +58,24 @@ export const salesRouter = router({
           DATA_VENDA: date,
         };
 
+        const normalizeToTime = (value: string | null | undefined) => {
+          if (!value) {
+            return null;
+          }
+          return value.length === 5 ? `${value}:00` : value;
+        };
+        const startTime = normalizeToTime(timeFrom) ?? "00:00:00";
+        const endTime = normalizeToTime(timeTo) ?? "23:59:59";
+        const whereTime =
+          timeFrom || timeTo
+            ? {
+                HORA_SAIDA: {
+                  gte: startTime,
+                  lte: endTime,
+                },
+              }
+            : {};
+
         const whereAccount = account &&
           account !== 0 && {
             ID_CONTA_CAIXA: account,
@@ -75,6 +97,7 @@ export const salesRouter = router({
           ...whereClosing,
           ...whereSearch,
           ...whereDate,
+          ...whereTime,
           ...whereAccount,
           ...whereCompany,
         };
