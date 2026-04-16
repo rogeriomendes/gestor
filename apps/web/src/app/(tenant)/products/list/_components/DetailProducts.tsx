@@ -1,14 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  ClockIcon,
-  DotIcon,
-  ScaleIcon,
-  SquarePercentIcon,
-  XIcon,
-} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,6 +29,15 @@ import {
   formatAsCurrency,
 } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  ClockIcon,
+  DotIcon,
+  ScaleIcon,
+  SquarePercentIcon,
+  XIcon,
+} from "lucide-react";
 import { DetailProductsCompound } from "./DetailProductsCompound";
 import { DetailProductsInformation } from "./DetailProductsInformation";
 import { DetailProductsMain } from "./DetailProductsMain";
@@ -88,6 +88,23 @@ export function DetailProducts({
                       Nome
                     </PopoverContent>
                   </Popover>
+                  {productQuery.data?.product?.INATIVO === "S" && (
+                    <Popover>
+                      <PopoverTrigger>
+                        <div className="flex items-center">
+                          <Badge
+                            className="ml-3 px-1.5 py-0.5 text-xs md:text-sm"
+                            variant="destructive"
+                          >
+                            Inativo
+                          </Badge>
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-2 text-xs">
+                        Status
+                      </PopoverContent>
+                    </Popover>
+                  )}
                   <Popover>
                     <PopoverTrigger>
                       <div className="flex items-center">
@@ -158,7 +175,7 @@ export function DetailProducts({
                         : "NÃO"}
                       {productQuery.data?.product?.PRODUTO_PESADO === "S" &&
                         typeof productQuery.data?.product?.DIA_VALIDADE ===
-                          "number" &&
+                        "number" &&
                         (productQuery.data.product.DIA_VALIDADE ||
                           productQuery.data.product.DIA_VALIDADE !== 0) &&
                         ` - ${productQuery.data.product.DIA_VALIDADE} Dias`}

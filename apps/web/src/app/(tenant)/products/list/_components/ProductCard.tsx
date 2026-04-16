@@ -21,6 +21,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onClick }: ProductCardProps) {
+  const isInactive = product.INATIVO === "S";
+
   function custoFinal(
     valuePurchase: unknown | null,
     ValueFreight: unknown | null,
@@ -67,7 +69,8 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
   return (
     <Card
       className={cn(
-        "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2"
+        "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
+        isInactive && "opacity-70"
         // product.activePromotion &&
         //   "border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20",
       )}
@@ -88,12 +91,19 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
               {product.NOME}
             </h3>
           </div>
-          <Badge
-            className="px-1.5 py-0.5 text-xs md:text-sm"
-            variant="secondary"
-          >
-            {product.unidade_produto.SIGLA}
-          </Badge>
+          <div className="flex items-center gap-1.5">
+            {isInactive && (
+              <Badge className="px-1.5 py-0.5 text-xs" variant="destructive">
+                Inativo
+              </Badge>
+            )}
+            <Badge
+              className="px-1.5 py-0.5 text-xs md:text-sm"
+              variant="secondary"
+            >
+              {product.unidade_produto.SIGLA}
+            </Badge>
+          </div>
         </div>
 
         {/* Códigos */}

@@ -3,6 +3,7 @@
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import {
@@ -25,6 +26,7 @@ import { formatDate } from "@/lib/format-date";
 import {
   calculePercentage,
   calculePercentageBetweenValues,
+  cn,
   formatAsCurrency,
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
@@ -253,8 +255,6 @@ export default function ProductsList() {
             searchPlaceholder="Buscar grupos..."
             value={group}
           />
-        </div>
-        <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
           <Combobox
             className="flex-1 md:w-48"
             icon={<ScaleIcon />}
@@ -264,6 +264,8 @@ export default function ProductsList() {
             searchPlaceholder="Buscar balança..."
             value={scale}
           />
+        </div>
+        <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
           <Combobox
             className="flex-1 md:w-48"
             icon={<SquarePercentIcon />}
@@ -308,6 +310,9 @@ export default function ProductsList() {
           emptyIcon={<PackageIcon className="mr-5 size-10 md:size-14" />}
           emptyMessage="Não foram encontrados Produtos."
           fetchNextPage={productsQuery.fetchNextPage}
+          getRowClassName={(product) =>
+            product.INATIVO === "S" ? "opacity-60" : ""
+          }
           getRowKey={(product) => product.ID}
           hasNextPage={productsQuery.hasNextPage}
           headers={[
@@ -350,7 +355,10 @@ export default function ProductsList() {
               product.CODIGO_INTERNO || "—",
               product.GTIN || "—",
               <div
-                className="flex items-center gap-2"
+                className={cn(
+                  "flex items-center gap-2",
+                  product.INATIVO === "S" && "text-muted-foreground"
+                )}
                 key={`nome-${product.ID}`}
               >
                 {product.activePromotion && (
@@ -360,6 +368,14 @@ export default function ProductsList() {
                   />
                 )}
                 <span>{product.NOME}</span>
+                {product.INATIVO === "S" && (
+                  <Badge
+                    className="h-5 px-1.5 py-0 text-[10px]"
+                    variant="destructive"
+                  >
+                    Inativo
+                  </Badge>
+                )}
               </div>,
               product.unidade_produto.SIGLA,
               formatAsCurrency(
