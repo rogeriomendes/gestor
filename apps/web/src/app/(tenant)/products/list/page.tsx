@@ -1,5 +1,25 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  type IDetectedBarcode,
+  Scanner,
+  useDevices,
+} from "@yudiel/react-qr-scanner";
+import {
+  FilterIcon,
+  FilterXIcon,
+  GroupIcon,
+  PackageIcon,
+  ScaleIcon,
+  ScanBarcodeIcon,
+  SquarePercentIcon,
+  XIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useQueryState } from "nuqs";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -32,26 +52,6 @@ import {
 } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  type IDetectedBarcode,
-  Scanner,
-  useDevices,
-} from "@yudiel/react-qr-scanner";
-import {
-  FilterIcon,
-  FilterXIcon,
-  GroupIcon,
-  PackageIcon,
-  ScaleIcon,
-  ScanBarcodeIcon,
-  SquarePercentIcon,
-  XIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { useQueryState } from "nuqs";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { DetailProducts } from "./_components/DetailProducts";
 import { ProductGrid } from "./_components/ProductGrid";
 
@@ -542,7 +542,7 @@ export default function ProductsList() {
                 {formatAsCurrency(Number(product.VALOR_VENDA))}
               </span>,
               (product.DATA_ALTERACAO && formatDate(product.DATA_ALTERACAO)) ||
-              "—",
+                "—",
             ];
           }}
         />

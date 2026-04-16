@@ -1,15 +1,12 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Settings2Icon, SheetIcon, UserIcon } from "lucide-react";
-import type { Route } from "next";
-import { useQueryState } from "nuqs";
-import { useEffect, useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
+import { FiltersPanel } from "@/components/ui/filters-panel";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -18,6 +15,18 @@ import { getBudgetSituationInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  FilterIcon,
+  FilterXIcon,
+  Settings2Icon,
+  SheetIcon,
+  UserIcon,
+  XIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { useQueryState } from "nuqs";
+import { useEffect, useMemo, useState } from "react";
 import { BudgetGrid } from "./_components/BudgetGrid";
 import { DetailBudget } from "./_components/DetailBudget";
 
@@ -34,6 +43,7 @@ export default function BudgetList() {
   const [situation, setSituation] = useQueryState("situation", {
     defaultValue: "T",
   });
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedBudgetId, setSelectedBudgetId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -90,6 +100,56 @@ export default function BudgetList() {
     { value: "C", label: "CANCELADO" },
   ];
 
+  const sellerLabel = sellerOptions.find((o) => o.value === seller)?.label;
+  const situationLabel = situationOptions.find(
+    (o) => o.value === situation
+  )?.label;
+
+  const hasActiveFilters =
+    search.trim().length > 0 || seller !== "0" || situation !== "T";
+
+  const clearAllFilters = () => {
+    void setSearch("");
+    void setSeller("0");
+    void setSituation("T");
+  };
+
+  const filtersContent = (
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <Combobox
+          className="w-full"
+          icon={<UserIcon />}
+          onValueChange={(v) => void setSeller(v)}
+          options={sellerOptions}
+          placeholder="Vendedor"
+          searchPlaceholder="Buscar vendedor..."
+          value={seller}
+        />
+        <Combobox
+          className="w-full"
+          icon={<Settings2Icon />}
+          onValueChange={(v) => void setSituation(v)}
+          options={situationOptions}
+          placeholder="Situação"
+          searchPlaceholder="Buscar situação..."
+          value={situation}
+        />
+      </div>
+      <div className="flex justify-end">
+        <Button
+          onClick={clearAllFilters}
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          <FilterXIcon className="mr-1 h-3 w-3" />
+          Limpar
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <PageLayout
       breadcrumbs={[
@@ -100,34 +160,72 @@ export default function BudgetList() {
       subtitle="Consulte orçamentos e pedidos de venda"
       title="Orçamento e Pedido"
     >
-      <div className="flex flex-col md:flex-row md:items-center">
+      <div className="flex gap-2">
         <SearchInput
+          className="w-full md:w-96"
           enableF9Shortcut
           onChange={(v) => void setSearch(v)}
           placeholder="Pesquisa por ID e Cliente"
           value={search}
         />
-        <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
-          <Combobox
-            className="flex-1 md:w-48"
-            icon={<UserIcon />}
-            onValueChange={(v) => void setSeller(v)}
-            options={sellerOptions}
-            placeholder="Vendedor"
-            searchPlaceholder="Buscar vendedor..."
-            value={seller}
-          />
-          <Combobox
-            className="flex-1 md:w-48"
-            icon={<Settings2Icon />}
-            onValueChange={(v) => void setSituation(v)}
-            options={situationOptions}
-            placeholder="Situação"
-            searchPlaceholder="Buscar situação..."
-            value={situation}
-          />
-        </div>
+        <FiltersPanel
+          onOpenChange={setFiltersOpen}
+          open={filtersOpen}
+          title="Filtros de orçamento"
+          triggerIcon={<FilterIcon className="size-4 md:mr-2" />}
+        >
+          {filtersContent}
+        </FiltersPanel>
       </div>
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-1">
+          {search.trim().length > 0 && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Busca: {search.trim()}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setSearch("")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {seller !== "0" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Vendedor: {sellerLabel}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setSeller("0")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {situation !== "T" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Situação: {situationLabel}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setSituation("T")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          <Button
+            className="md:h-8 md:text-sm md:[&_svg:not([class*='size-'])]:size-4"
+            onClick={clearAllFilters}
+            size="xs"
+            variant="ghost"
+          >
+            <FilterXIcon className="mr-0.5 h-3 w-3" />
+            Limpar
+          </Button>
+        </div>
+      )}
       {isMobile ? (
         <BudgetGrid
           data={salesBudgetQuery.data?.pages}
@@ -209,7 +307,7 @@ export default function BudgetList() {
               (budget.DATA_CADASTRO && formatDate(budget.DATA_CADASTRO)) || "—",
               (budget.ALTERACAO_DATA_HORA &&
                 formatDate(budget.ALTERACAO_DATA_HORA)) ||
-                "—",
+              "—",
               budget.OBSERVACAO || "—",
             ];
           }}
