@@ -1,5 +1,8 @@
 "use client";
 
+import { CalendarIcon } from "lucide-react";
+import type { ComponentProps } from "react";
+import { useMemo, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -26,9 +29,6 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDate } from "@/lib/format-date";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import type { ComponentProps } from "react";
-import { useMemo, useState } from "react";
 
 interface DatePickerTimeRangeProps {
   className?: string;
@@ -92,7 +92,10 @@ export function DatePickerTimeRange({
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Inicial" />
             </SelectTrigger>
-            <SelectContent className="min-w-(--anchor-width)">
+            <SelectContent
+              className="min-w-(--anchor-width)"
+              portal={!isMobile}
+            >
               {TIME_OPTIONS.map((time) => (
                 <SelectItem key={time} value={time}>
                   {time}
@@ -110,7 +113,10 @@ export function DatePickerTimeRange({
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Final" />
             </SelectTrigger>
-            <SelectContent className="min-w-(--anchor-width)">
+            <SelectContent
+              className="min-w-(--anchor-width)"
+              portal={!isMobile}
+            >
               {TIME_OPTIONS.map((time) => (
                 <SelectItem key={time} value={time}>
                   {time}
