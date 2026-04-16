@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { FiltersPanel } from "@/components/ui/filters-panel";
 import {
   Select,
   SelectContent,
@@ -38,11 +39,14 @@ import {
   useDevices,
 } from "@yudiel/react-qr-scanner";
 import {
+  FilterIcon,
+  FilterXIcon,
   GroupIcon,
   PackageIcon,
   ScaleIcon,
   ScanBarcodeIcon,
   SquarePercentIcon,
+  XIcon,
 } from "lucide-react";
 import type { Route } from "next";
 import { useQueryState } from "nuqs";
@@ -74,6 +78,7 @@ export default function ProductsList() {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [deviceId, setDeviceId] = useState<string | undefined>(undefined);
   const [stopScan, setStopScan] = useState(true);
   const devices = useDevices();
@@ -144,6 +149,26 @@ export default function ProductsList() {
     { value: "S", label: "INATIVOS" },
   ];
 
+  const groupLabel = groupOptions.find(
+    (option) => option.value === group
+  )?.label;
+  const scaleLabel = scaleOptions.find(
+    (option) => option.value === scale
+  )?.label;
+  const promotionLabel = promotionOptions.find(
+    (option) => option.value === promotion
+  )?.label;
+  const inactiveLabel = inactiveOptions.find(
+    (option) => option.value === inactive
+  )?.label;
+
+  const hasActiveFilters =
+    search.trim().length > 0 ||
+    group !== "0" ||
+    scale !== "T" ||
+    promotion !== "T" ||
+    inactive !== "N";
+
   function handleOnScan(detectedCodes: IDetectedBarcode[]) {
     void setSearch(detectedCodes?.[0]?.rawValue || "");
     setStopScan(true);
@@ -177,6 +202,68 @@ export default function ProductsList() {
 
     return custoFinal;
   }
+
+  const clearAllFilters = () => {
+    void setSearch("");
+    void setGroup("0");
+    void setScale("T");
+    void setPromotion("T");
+    void setInactive("N");
+  };
+
+  const filtersContent = (
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <Combobox
+          className="w-full"
+          icon={<GroupIcon />}
+          onValueChange={setGroup}
+          options={groupOptions}
+          placeholder="Grupos"
+          searchPlaceholder="Buscar grupos..."
+          value={group}
+        />
+        <Combobox
+          className="w-full"
+          icon={<ScaleIcon />}
+          onValueChange={setScale}
+          options={scaleOptions}
+          placeholder="Balança"
+          searchPlaceholder="Buscar balança..."
+          value={scale}
+        />
+        <Combobox
+          className="w-full"
+          icon={<SquarePercentIcon />}
+          onValueChange={setPromotion}
+          options={promotionOptions}
+          placeholder="Promoção"
+          searchPlaceholder="Buscar promoção..."
+          value={promotion}
+        />
+        <Combobox
+          className="w-full"
+          icon={<PackageIcon />}
+          onValueChange={setInactive}
+          options={inactiveOptions}
+          placeholder="Status"
+          searchPlaceholder="Buscar status..."
+          value={inactive}
+        />
+      </div>
+      <div className="flex justify-end">
+        <Button
+          onClick={clearAllFilters}
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          <FilterXIcon className="mr-1 h-3 w-3" />
+          Limpar
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <PageLayout
@@ -244,48 +331,89 @@ export default function ProductsList() {
               />
             </DialogContent>
           </Dialog>
-        </div>
-        <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
-          <Combobox
-            className="flex-1 md:w-48"
-            icon={<GroupIcon />}
-            onValueChange={setGroup}
-            options={groupOptions}
-            placeholder="Grupos"
-            searchPlaceholder="Buscar grupos..."
-            value={group}
-          />
-          <Combobox
-            className="flex-1 md:w-48"
-            icon={<ScaleIcon />}
-            onValueChange={setScale}
-            options={scaleOptions}
-            placeholder="Balança"
-            searchPlaceholder="Buscar balança..."
-            value={scale}
-          />
-        </div>
-        <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
-          <Combobox
-            className="flex-1 md:w-48"
-            icon={<SquarePercentIcon />}
-            onValueChange={setPromotion}
-            options={promotionOptions}
-            placeholder="Promoção"
-            searchPlaceholder="Buscar promoção..."
-            value={promotion}
-          />
-          <Combobox
-            className="flex-1 md:w-48"
-            icon={<PackageIcon />}
-            onValueChange={setInactive}
-            options={inactiveOptions}
-            placeholder="Status"
-            searchPlaceholder="Buscar status..."
-            value={inactive}
-          />
+          <FiltersPanel
+            onOpenChange={setFiltersOpen}
+            open={filtersOpen}
+            title="Filtros de produtos"
+            triggerIcon={<FilterIcon className="size-4 md:mr-0.5" />}
+          >
+            {filtersContent}
+          </FiltersPanel>
         </div>
       </div>
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-1">
+          {search.trim().length > 0 && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Busca: {search.trim()}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setSearch("")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {group !== "0" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Grupo: {groupLabel}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setGroup("0")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {scale !== "T" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Balança: {scaleLabel}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setScale("T")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {promotion !== "T" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Promoção: {promotionLabel}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setPromotion("T")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {inactive !== "N" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Status: {inactiveLabel}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setInactive("N")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          <Button
+            className="md:h-8 md:text-sm"
+            onClick={clearAllFilters}
+            size="xs"
+            variant="ghost"
+          >
+            <FilterXIcon className="mr-0.5 h-3 w-3" />
+            Limpar
+          </Button>
+        </div>
+      )}
       {isMobile ? (
         <ProductGrid
           data={productsQuery.data?.pages}
