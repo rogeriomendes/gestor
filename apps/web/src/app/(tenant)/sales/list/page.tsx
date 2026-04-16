@@ -1,5 +1,10 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { ShoppingCartIcon, SquareUserIcon } from "lucide-react";
+import type { Route } from "next";
+import { parseAsIsoDate, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
@@ -13,11 +18,6 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ShoppingCartIcon, SquareUserIcon } from "lucide-react";
-import type { Route } from "next";
-import { parseAsIsoDate, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
 import { DetailSales } from "./_components/DetailSales";
 import { SalesGrid } from "./_components/SalesGrid";
 
@@ -57,8 +57,8 @@ export default function SalesList() {
   const dateFormatted =
     date instanceof Date
       ? new Date(
-        Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-      )
+          Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+        )
       : undefined;
 
   const salesQuery = useInfiniteQuery({
@@ -243,14 +243,15 @@ export default function SalesList() {
               >
                 {statusInfo.label}
               </Badge>,
-              `${sale.DATA_VENDA &&
-              new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
-                timeZone: "UTC",
-              })
+              `${
+                sale.DATA_VENDA &&
+                new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
+                  timeZone: "UTC",
+                })
               } ${sale.HORA_SAIDA}`,
               formatAsCurrency(Number(sale.VALOR_TOTAL)),
               (sale.NUMERO_NFE && removeLeadingZero(String(sale.NUMERO_NFE))) ||
-              "—",
+                "—",
               sale.SERIE_NFE || "—",
             ];
           }}
