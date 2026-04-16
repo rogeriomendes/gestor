@@ -1,8 +1,5 @@
 "use client";
 
-import { CalendarIcon } from "lucide-react";
-import type { ComponentProps } from "react";
-import { useMemo, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -29,6 +26,9 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDate } from "@/lib/format-date";
 import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import type { ComponentProps } from "react";
+import { useMemo, useState } from "react";
 
 interface DatePickerTimeRangeProps {
   className?: string;
@@ -147,13 +147,8 @@ export function DatePickerTimeRange({
   const triggerContent = (
     <div className="flex w-full items-center justify-between gap-2">
       <div className="flex min-w-0 items-center">
-        <CalendarIcon
-          className={cn(
-            "mr-2 size-4 shrink-0",
-            !label && "text-muted-foreground"
-          )}
-        />
-        {label ?? <span className="text-muted-foreground">{placeholder}</span>}
+        <CalendarIcon className="mr-2 size-4 shrink-0" />
+        {placeholder}
       </div>
     </div>
   );
@@ -163,8 +158,7 @@ export function DatePickerTimeRange({
       aria-disabled={disabled}
       className={cn(
         buttonVariants({ size: "default", variant: "outline" }),
-        "w-full justify-between px-3 text-left font-normal",
-        !label && "text-muted-foreground",
+        "w-full justify-between px-3 text-left font-normal text-foreground",
         disabled && "pointer-events-none opacity-50",
         className
       )}

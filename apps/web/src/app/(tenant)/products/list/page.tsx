@@ -402,7 +402,7 @@ export default function ProductsList() {
             </Badge>
           )}
           <Button
-            className="md:h-8 md:text-sm"
+            className="md:h-8 md:text-sm md:[&_svg:not([class*='size-'])]:size-4"
             onClick={clearAllFilters}
             size="xs"
             variant="ghost"

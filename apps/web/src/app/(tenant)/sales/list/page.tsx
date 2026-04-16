@@ -1,23 +1,32 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ShoppingCartIcon, SquareUserIcon } from "lucide-react";
-import type { Route } from "next";
-import { parseAsIsoDate, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { DatePickerTimeRange } from "@/components/ui/date-picker-time-range";
+import { FiltersPanel } from "@/components/ui/filters-panel";
 import { useCompany } from "@/contexts/company-context";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { formatDate } from "@/lib/format-date";
 import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  FilterIcon,
+  FilterXIcon,
+  ShoppingCartIcon,
+  SquareUserIcon,
+  XIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { parseAsIsoDate, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import { DetailSales } from "./_components/DetailSales";
 import { SalesGrid } from "./_components/SalesGrid";
 
@@ -37,6 +46,7 @@ export default function SalesList() {
   const [timeTo, setTimeTo] = useQueryState("timeTo", {
     defaultValue: "",
   });
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedSaleId, setSelectedSaleId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Lazy initial state — evita flash de conteúdo vazio sem useEffect
@@ -57,8 +67,8 @@ export default function SalesList() {
   const dateFormatted =
     date instanceof Date
       ? new Date(
-          Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-        )
+        Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+      )
       : undefined;
 
   const salesQuery = useInfiniteQuery({
@@ -98,6 +108,57 @@ export default function SalesList() {
       label: item.NOME ?? "",
     })),
   ];
+  const accountLabel = accountsOptions.find(
+    (item) => item.value === account
+  )?.label;
+  const hasDateOrTimeFilter = !!date || !!timeFrom || !!timeTo;
+  const hasActiveFilters =
+    search.trim().length > 0 || account !== "0" || hasDateOrTimeFilter;
+
+  const clearAllFilters = () => {
+    void setSearch("");
+    void setAccount("0");
+    void setDate(null);
+    void setTimeFrom("");
+    void setTimeTo("");
+  };
+
+  const filtersContent = (
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <Combobox
+          className="w-full"
+          icon={<SquareUserIcon />}
+          onValueChange={setAccount}
+          options={accountsOptions}
+          placeholder="Conta caixa"
+          searchPlaceholder="Buscar conta caixa..."
+          value={account}
+        />
+        <DatePickerTimeRange
+          className="w-full"
+          date={date ?? undefined}
+          onDateChange={(d) => void setDate(d ?? null)}
+          onTimeFromChange={(value) => void setTimeFrom(value)}
+          onTimeToChange={(value) => void setTimeTo(value)}
+          placeholder="Data e horário"
+          timeFrom={timeFrom}
+          timeTo={timeTo}
+        />
+      </div>
+      <div className="flex justify-end">
+        <Button
+          onClick={clearAllFilters}
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          <FilterXIcon className="mr-1 h-3 w-3" />
+          Limpar
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <PageLayout
@@ -109,35 +170,76 @@ export default function SalesList() {
       subtitle="Consulte as vendas realizadas"
       title="Vendas"
     >
-      <div className="flex flex-col md:flex-row md:items-center">
+      <div className="flex gap-2">
         <SearchInput
+          className="w-full md:w-96"
           enableF9Shortcut
           onChange={(v: string) => setSearch(v)}
           placeholder="Pesquisa por ID e Número NFCe"
           value={search}
         />
-        <div className="mt-2 flex flex-row gap-2 md:mt-0 md:ml-3 md:gap-3">
-          <Combobox
-            className="flex-1 md:w-48"
-            icon={<SquareUserIcon />}
-            onValueChange={setAccount}
-            options={accountsOptions}
-            placeholder="Conta caixa"
-            searchPlaceholder="Buscar conta caixa..."
-            value={account}
-          />
-          <DatePickerTimeRange
-            className="flex-1 md:w-60"
-            date={date ?? undefined}
-            onDateChange={(d) => void setDate(d ?? null)}
-            onTimeFromChange={(value) => void setTimeFrom(value)}
-            onTimeToChange={(value) => void setTimeTo(value)}
-            placeholder="Data e horário"
-            timeFrom={timeFrom}
-            timeTo={timeTo}
-          />
-        </div>
+        <FiltersPanel
+          onOpenChange={setFiltersOpen}
+          open={filtersOpen}
+          title="Filtros de vendas"
+          triggerIcon={<FilterIcon className="size-4 md:mr-2" />}
+        >
+          {filtersContent}
+        </FiltersPanel>
       </div>
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-1">
+          {search.trim().length > 0 && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Busca: {search.trim()}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setSearch("")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {account !== "0" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              Conta: {accountLabel}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setAccount("0")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {hasDateOrTimeFilter && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              {`Data/hora: ${date ? formatDate(date, true) : "Todas"} ${timeFrom || "00:00"}-${timeTo || "23:59"}`}
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => {
+                  void setDate(null);
+                  void setTimeFrom("");
+                  void setTimeTo("");
+                }}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          <Button
+            className="md:h-8 md:text-sm md:[&_svg:not([class*='size-'])]:size-4"
+            onClick={clearAllFilters}
+            size="xs"
+            variant="ghost"
+          >
+            <FilterXIcon className="mr-0.5 h-3 w-3" />
+            Limpar
+          </Button>
+        </div>
+      )}
       {isMobile ? (
         <SalesGrid
           data={salesQuery.data?.pages}
@@ -243,15 +345,14 @@ export default function SalesList() {
               >
                 {statusInfo.label}
               </Badge>,
-              `${
-                sale.DATA_VENDA &&
-                new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
-                  timeZone: "UTC",
-                })
+              `${sale.DATA_VENDA &&
+              new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
+                timeZone: "UTC",
+              })
               } ${sale.HORA_SAIDA}`,
               formatAsCurrency(Number(sale.VALOR_TOTAL)),
               (sale.NUMERO_NFE && removeLeadingZero(String(sale.NUMERO_NFE))) ||
-                "—",
+              "—",
               sale.SERIE_NFE || "—",
             ];
           }}
