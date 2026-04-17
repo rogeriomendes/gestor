@@ -1,10 +1,10 @@
 "use client";
 
-import { DotIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { getNfceStatusInfo } from "@/lib/status-info";
+import { getNfceStatusInfo, isNfceDevolucao } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
+import { DotIcon } from "lucide-react";
 
 interface SaleCardProps {
   /** Nome da empresa (RAZAO_SOCIAL) para exibir no card, como no company-selector */
@@ -33,14 +33,18 @@ export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
     canceladoIdUsuario: sale.CANCELADO_ID_USUARIO,
     nfeStatus: sale.nfe_cabecalho?.[0]?.STATUS_NOTA ?? null,
   });
-  const isCanceled = sale.DEVOLUCAO === "S" || sale.CANCELADO_ID_USUARIO;
+
+  const isCanceled =
+    isNfceDevolucao(sale.DEVOLUCAO) || Boolean(sale.CANCELADO_ID_USUARIO);
 
   return (
     <Card
       className={cn(
         "h-full cursor-pointer rounded-md transition-all data-[size=sm]:py-2",
         isCanceled &&
-          "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
+          "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20",
+        isNfceDevolucao(sale.DEVOLUCAO) &&
+          "border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950/20",
       )}
       onClick={() => onClick?.(sale)}
       size="sm"
@@ -106,14 +110,15 @@ export function SaleCard({ sale, companyName, onClick }: SaleCardProps) {
           </div>
 
           {/* Observação (se houver) */}
-          {sale.OBSERVACAO && (
-            <div className="col-span-2 space-y-1">
-              <span className="text-muted-foreground">Observação</span>
-              <div className="line-clamp-2 text-blue-600 text-xs">
-                {sale.OBSERVACAO}
+          {sale.OBSERVACAO &&
+            sale.OBSERVACAO !== "Devolução " && (
+              <div className="col-span-2 space-y-1">
+                <span className="text-muted-foreground">Observação</span>
+                <div className="line-clamp-2 text-blue-600 text-xs">
+                  {sale.OBSERVACAO}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </CardContent>
     </Card>

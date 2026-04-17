@@ -7,6 +7,13 @@ export interface StatusInfo {
   variant: "default" | "secondary" | "outline" | "destructive";
 }
 
+/** Campo DEVOLUCAO no gestor: "S" indica devolução (aceita variações comuns). */
+export function isNfceDevolucao(devolucao?: string | null): boolean {
+  return (
+    typeof devolucao === "string" && devolucao.trim().toUpperCase() === "S"
+  );
+}
+
 // Vendas e recibos (NFCe): usa devolução/cancelado e STATUS_NOTA (5,7,9)
 export function getNfceStatusInfo(params: {
   devolucao?: string | null;
@@ -15,16 +22,16 @@ export function getNfceStatusInfo(params: {
 }): StatusInfo {
   const { devolucao, canceladoIdUsuario, nfeStatus } = params;
 
-  if (devolucao === "S" || !!canceladoIdUsuario) {
-    return {
-      label: "Cancelada",
-      variant: "secondary",
-      color: "bg-red-500/15 text-red-600 dark:text-red-400",
-    };
-  }
-  if (devolucao === "S") {
+  if (isNfceDevolucao(devolucao)) {
     return {
       label: "Devolução",
+      variant: "secondary",
+      color: "bg-purple-500/15 text-purple-600 dark:text-purple-400",
+    };
+  }
+  if (canceladoIdUsuario) {
+    return {
+      label: "Cancelada",
       variant: "secondary",
       color: "bg-red-500/15 text-red-600 dark:text-red-400",
     };

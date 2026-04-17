@@ -1,6 +1,5 @@
 "use client";
 
-import { createContext, useContext } from "react";
 import {
   Dialog,
   DialogClose,
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { createContext, useContext } from "react";
 import { ScrollArea } from "./scroll-area";
 
 interface BaseProps {
@@ -117,7 +117,7 @@ const CredenzaContent = ({ className, children, ...props }: CredenzaProps) => {
   return (
     <DialogContent
       className={cn(
-        "max-h-[95%] overflow-auto p-2 md:max-w-2xl md:p-3",
+        "max-h-[95%] gap-2 overflow-auto p-2 md:max-w-2xl md:p-3",
         className
       )}
       {...props}
@@ -196,5 +196,6 @@ export {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaTrigger,
+  CredenzaTrigger
 };
+

@@ -1,17 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  ClockIcon,
-  DotIcon,
-  InfoIcon,
-  LandmarkIcon,
-  SheetIcon,
-  SquareUserIcon,
-  TriangleAlertIcon,
-  UserIcon,
-  XIcon,
-} from "lucide-react";
-import { useState } from "react";
 import { CopyButton } from "@/components/copy-button";
 import { NfButton } from "@/components/nf-button";
 import { NfeAccessKey } from "@/components/nfe-access-key";
@@ -42,6 +28,20 @@ import { formatDate } from "@/lib/format-date";
 import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  ClockIcon,
+  DotIcon,
+  InfoIcon,
+  LandmarkIcon,
+  SheetIcon,
+  SquareUserIcon,
+  TriangleAlertIcon,
+  UserIcon,
+  XIcon,
+} from "lucide-react";
+import { useState } from "react";
 import { DetailBudget } from "../../budget/_components/DetailBudget";
 import { DetailSalesProducts } from "./DetailSalesProducts";
 import { PaymentSales } from "./PaymentSales";
@@ -211,7 +211,7 @@ export function DetailSales({
                           {saleData?.sales?.nfe_cabecalho[0]?.empresa
                             ?.RAZAO_SOCIAL
                             ? saleData?.sales?.nfe_cabecalho[0]?.empresa
-                                ?.RAZAO_SOCIAL
+                              ?.RAZAO_SOCIAL
                             : saleData?.sales?.empresa?.RAZAO_SOCIAL}
                         </div>
                       </PopoverTrigger>
@@ -317,7 +317,7 @@ export function DetailSales({
           ) : (
             <>
               {saleData?.sales?.nfe_cabecalho[0]?.STATUS_NOTA === "7" && (
-                <Alert className="mb-2 break-all md:mb-4" variant="warning">
+                <Alert className="mb-2 break-all" variant="warning">
                   <TriangleAlertIcon className="size-4" />
                   <AlertTitle>Motivo da Rejeição</AlertTitle>
                   <AlertDescription className="max-w-full break-all">
@@ -329,15 +329,15 @@ export function DetailSales({
               )}
               {(saleData?.sales?.DEVOLUCAO === "S" ||
                 saleData?.sales?.CANCELADO_ID_USUARIO) && (
-                <Alert className="mb-2 break-all md:mb-4" variant="danger">
-                  <InfoIcon className="size-4" />
-                  <AlertTitle>Motivo</AlertTitle>
-                  <AlertDescription>{saleData?.sales?.MOTIVO}</AlertDescription>
-                </Alert>
-              )}
+                  <Alert className="mb-2 break-all" variant="danger">
+                    <InfoIcon className="size-4" />
+                    <AlertTitle>Motivo</AlertTitle>
+                    <AlertDescription>{saleData?.sales?.MOTIVO}</AlertDescription>
+                  </Alert>
+                )}
               {saleData?.sales?.OBSERVACAO &&
                 saleData?.sales?.OBSERVACAO !== "Devolução " && (
-                  <Alert className="mb-2 break-all md:mb-4" variant="info">
+                  <Alert className="mb-2 break-all" variant="info">
                     <InfoIcon className="size-4" />
                     <AlertTitle>Observação</AlertTitle>
                     <AlertDescription>
@@ -385,7 +385,7 @@ export function DetailSales({
                       )}
                     <Separator className="mt-4 mb-4" />
                     <div className="mx-3 mb-2 flex justify-between">
-                      <div>Valor a Pagar</div>
+                      <div>Valor a {saleData?.sales?.DEVOLUCAO === "S" ? "Devolver" : "Pagar"}</div>
                       <div>
                         {formatAsCurrency(Number(saleData?.sales?.VALOR_TOTAL))}
                       </div>

@@ -1,14 +1,14 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import type { Route } from "next";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { FbiIcon } from "@/assets/FbiIcon";
 import type { BreadcrumbItemType } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { useOptionalTenantTabs } from "@/contexts/tenant-tabs-context";
 import { getIconForPathname } from "@/lib/menu-icon";
+import { ArrowLeft } from "lucide-react";
+import type { Route } from "next";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { ShowTextSwitcher } from "../show-text-switcher";
 import { TenantTabsBar } from "../tenant/tenant-tabs-bar";
 import { Separator } from "../ui/separator";
@@ -139,7 +139,7 @@ export function PageLayout({
       </header>
 
       {/* Content */}
-      <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col space-y-2 p-2 pt-1 duration-300 md:space-y-4 md:p-6 md:pt-1">
+      <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col space-y-2 p-2 pt-1 duration-300 md:p-6 md:pt-1">
         {children}
       </div>
     </div>
