@@ -29,6 +29,17 @@ type ClosingListItem =
   | { type: "open"; data: AccountItem }
   | { type: "closed"; data: ClosingItem };
 
+function toFriendlyDateParam(value: unknown): string {
+  if (value == null || String(value).trim() === "") {
+    return "";
+  }
+  const parsedDate = new Date(String(value));
+  if (Number.isNaN(parsedDate.getTime())) {
+    return String(value);
+  }
+  return parsedDate.toISOString().slice(0, 10);
+}
+
 function buildQueryFromItem(item: ClosingListItem): Record<string, string> {
   const { data, type } = item;
   if (type === "open") {
@@ -53,9 +64,9 @@ function buildQueryFromItem(item: ClosingListItem): Record<string, string> {
   return {
     id: String(d.ID_CONTA_CAIXA),
     name: d.conta_caixa?.NOME || "",
-    dateOpen: d.DATA_ABERTURA ? String(d.DATA_ABERTURA) : "",
+    dateOpen: d.DATA_ABERTURA ? toFriendlyDateParam(d.DATA_ABERTURA) : "",
     hourOpen: d.HORA_ABERTURA || "",
-    dateClosed: d.DATA_FECHAMENTO ? String(d.DATA_FECHAMENTO) : "",
+    dateClosed: d.DATA_FECHAMENTO ? toFriendlyDateParam(d.DATA_FECHAMENTO) : "",
     hourClosed: d.HORA_FECHAMENTO || "",
   };
 }
