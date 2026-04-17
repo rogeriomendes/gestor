@@ -1,8 +1,21 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  FilterIcon,
+  FilterXIcon,
+  InfoIcon,
+  ShoppingCartIcon,
+  SquareUserIcon,
+  XIcon,
+} from "lucide-react";
+import type { Route } from "next";
+import { parseAsIsoDate, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
+import { StatusDotLabel } from "@/components/status/status-dot-label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
@@ -16,17 +29,6 @@ import { getNfceStatusInfo } from "@/lib/status-info";
 import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  FilterIcon,
-  FilterXIcon,
-  ShoppingCartIcon,
-  SquareUserIcon,
-  XIcon,
-} from "lucide-react";
-import type { Route } from "next";
-import { parseAsIsoDate, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
 import { DetailSales } from "./_components/DetailSales";
 import { SalesGrid } from "./_components/SalesGrid";
 
@@ -39,6 +41,7 @@ export default function SalesList() {
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [account, setAccount] = useQueryState("account", { defaultValue: "0" });
+  const [status, setStatus] = useQueryState("status", { defaultValue: "T" });
   const [date, setDate] = useQueryState("date", parseAsIsoDate);
   const [timeFrom, setTimeFrom] = useQueryState("timeFrom", {
     defaultValue: "",
@@ -67,8 +70,8 @@ export default function SalesList() {
   const dateFormatted =
     date instanceof Date
       ? new Date(
-        Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-      )
+          Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+        )
       : undefined;
 
   const salesQuery = useInfiniteQuery({
@@ -80,6 +83,7 @@ export default function SalesList() {
         timeFrom: timeFrom || null,
         timeTo: timeTo || null,
         account: account !== "0" ? Number(account) : null,
+        status: status !== "T" ? status : null,
         companyId: selectedCompanyId !== 0 ? selectedCompanyId : undefined,
       },
       {
@@ -111,13 +115,69 @@ export default function SalesList() {
   const accountLabel = accountsOptions.find(
     (item) => item.value === account
   )?.label;
+  const statusDefinitions = [
+    {
+      value: "DEV",
+      label: "Devolução",
+      info: getNfceStatusInfo({ devolucao: "S" }),
+    },
+    {
+      value: "CAN",
+      label: "Cancelada",
+      info: getNfceStatusInfo({ canceladoIdUsuario: 1 }),
+    },
+    {
+      value: "ENV",
+      label: "Enviado",
+      info: getNfceStatusInfo({ nfeStatus: "5" }),
+    },
+    {
+      value: "CON",
+      label: "Contingência",
+      info: getNfceStatusInfo({ nfeStatus: "7" }),
+    },
+    {
+      value: "AGU",
+      label: "Aguardando autorização",
+      info: getNfceStatusInfo({ nfeStatus: "9" }),
+    },
+    {
+      value: "NAO",
+      label: "Não enviada",
+      info: getNfceStatusInfo({ nfeStatus: null }),
+    },
+  ] as const;
+
+  const statusOptions: ComboboxOption[] = [
+    { value: "T", label: "TODOS" },
+    ...statusDefinitions.map((statusItem) => ({
+      value: statusItem.value,
+      searchLabel: statusItem.label,
+      label: (
+        <StatusDotLabel
+          dotClassName={statusItem.info.colorDot}
+          label={statusItem.label}
+        />
+      ),
+    })),
+  ];
+
+  const selectedStatusDefinition = statusDefinitions.find(
+    (statusItem) => statusItem.value === status
+  );
+  const statusLabel =
+    status === "T" ? "TODOS" : (selectedStatusDefinition?.label ?? "TODOS");
   const hasDateOrTimeFilter = !!date || !!timeFrom || !!timeTo;
   const hasActiveFilters =
-    search.trim().length > 0 || account !== "0" || hasDateOrTimeFilter;
+    search.trim().length > 0 ||
+    account !== "0" ||
+    status !== "T" ||
+    hasDateOrTimeFilter;
 
   const clearAllFilters = () => {
     void setSearch("");
     void setAccount("0");
+    void setStatus("T");
     void setDate(null);
     void setTimeFrom("");
     void setTimeTo("");
@@ -134,6 +194,15 @@ export default function SalesList() {
           placeholder="Conta caixa"
           searchPlaceholder="Buscar conta caixa..."
           value={account}
+        />
+        <Combobox
+          className="w-full"
+          icon={<InfoIcon />}
+          onValueChange={setStatus}
+          options={statusOptions}
+          placeholder="Status"
+          searchPlaceholder="Buscar status..."
+          value={status}
         />
         <DatePickerTimeRange
           className="w-full"
@@ -207,6 +276,23 @@ export default function SalesList() {
               <button
                 className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
                 onClick={() => void setAccount("0")}
+                type="button"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+          {status !== "T" && (
+            <Badge className="gap-1 pr-1" variant="secondary">
+              <span className="mr-1">Status:</span>
+              <StatusDotLabel
+                dotClassName={selectedStatusDefinition?.info.colorDot}
+                label={statusLabel}
+                size="sm"
+              />
+              <button
+                className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
+                onClick={() => void setStatus("T")}
                 type="button"
               >
                 <XIcon className="h-3 w-3" />
@@ -338,14 +424,15 @@ export default function SalesList() {
               >
                 {statusInfo.label}
               </Badge>,
-              `${sale.DATA_VENDA &&
-              new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
-                timeZone: "UTC",
-              })
+              `${
+                sale.DATA_VENDA &&
+                new Date(sale.DATA_VENDA).toLocaleDateString("pt-BR", {
+                  timeZone: "UTC",
+                })
               } ${sale.HORA_SAIDA}`,
               formatAsCurrency(Number(sale.VALOR_TOTAL)),
               (sale.NUMERO_NFE && removeLeadingZero(String(sale.NUMERO_NFE))) ||
-              "—",
+                "—",
               sale.SERIE_NFE || "—",
             ];
           }}

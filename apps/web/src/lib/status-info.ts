@@ -3,6 +3,7 @@ import { toZonedTime } from "date-fns-tz";
 
 export interface StatusInfo {
   color?: string;
+  colorDot?: string;
   label: string;
   variant: "default" | "secondary" | "outline" | "destructive";
 }
@@ -27,6 +28,7 @@ export function getNfceStatusInfo(params: {
       label: "Devolução",
       variant: "secondary",
       color: "bg-purple-500/15 text-purple-600 dark:text-purple-400",
+      colorDot: "bg-purple-600 dark:bg-purple-400",
     };
   }
   if (canceladoIdUsuario) {
@@ -34,29 +36,37 @@ export function getNfceStatusInfo(params: {
       label: "Cancelada",
       variant: "secondary",
       color: "bg-red-500/15 text-red-600 dark:text-red-400",
+      colorDot: "bg-red-600 dark:bg-red-400",
     };
   }
 
   switch (nfeStatus) {
     case "5":
-      return { label: "Enviado", variant: "secondary" };
+      return {
+        label: "Enviado",
+        variant: "secondary",
+        colorDot: "bg-secondary-foreground",
+      };
     case "7":
       return {
         label: "Contingência",
         variant: "secondary",
         color: "bg-yellow-500/15 text-yellow-600 dark:text-yellow-400",
+        colorDot: "bg-yellow-600 dark:bg-yellow-400",
       };
     case "9":
       return {
         label: "Aguardando aut.",
         variant: "secondary",
         color: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+        colorDot: "bg-blue-600 dark:bg-blue-400",
       };
     default:
       return {
         label: "Não enviada",
         variant: "secondary",
         color: "bg-red-500/15 text-red-600 dark:text-red-400",
+        colorDot: "bg-red-600 dark:bg-red-400",
       };
   }
 }
@@ -65,24 +75,31 @@ export function getNfceStatusInfo(params: {
 export function getBudgetSituationInfo(situacao?: string | null): StatusInfo {
   switch (situacao) {
     case "F":
-      return { label: "Faturado", variant: "secondary" };
+      return {
+        label: "Faturado",
+        variant: "secondary",
+        colorDot: "bg-secondary-foreground",
+      };
     case "D":
       return {
         label: "Digitação",
         variant: "secondary",
         color: "bg-yellow-500/15 text-yellow-600 dark:text-yellow-400",
+        colorDot: "bg-yellow-600 dark:bg-yellow-400",
       };
     case "C":
       return {
         label: "Cancelado",
         variant: "secondary",
         color: "bg-red-500/15 text-red-600 dark:text-red-400",
+        colorDot: "bg-red-600 dark:bg-red-400",
       };
     default:
       return {
         label: "Desconhecido",
         variant: "outline",
         color: "text-muted-foreground",
+        colorDot: "bg-muted-foreground",
       };
   }
 }

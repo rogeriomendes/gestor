@@ -1,5 +1,6 @@
 "use client";
 
+import { createContext, useContext } from "react";
 import {
   Dialog,
   DialogClose,
@@ -22,7 +23,6 @@ import {
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { createContext, useContext } from "react";
 import { ScrollArea } from "./scroll-area";
 
 interface BaseProps {
@@ -196,6 +196,5 @@ export {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaTrigger
+  CredenzaTrigger,
 };
-

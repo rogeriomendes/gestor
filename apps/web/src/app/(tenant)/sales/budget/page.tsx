@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PageLayout } from "@/components/layouts/page-layout";
 import { DataTableInfinite } from "@/components/lists/data-table-infinite";
 import { SearchInput } from "@/components/search-input";
+import { StatusDotLabel } from "@/components/status/status-dot-label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
@@ -93,17 +94,34 @@ export default function BudgetList() {
     [sellerList]
   );
 
+  const situationDefinitions = [
+    { value: "F", label: "Faturado", info: getBudgetSituationInfo("F") },
+    { value: "D", label: "Digitação", info: getBudgetSituationInfo("D") },
+    { value: "C", label: "Cancelado", info: getBudgetSituationInfo("C") },
+  ] as const;
+
   const situationOptions: ComboboxOption[] = [
     { value: "T", label: "TODOS" },
-    { value: "F", label: "FATURADO" },
-    { value: "D", label: "DIGITAÇÃO" },
-    { value: "C", label: "CANCELADO" },
+    ...situationDefinitions.map((situationItem) => ({
+      value: situationItem.value,
+      searchLabel: situationItem.label,
+      label: (
+        <StatusDotLabel
+          dotClassName={situationItem.info.colorDot}
+          label={situationItem.label}
+        />
+      ),
+    })),
   ];
 
   const sellerLabel = sellerOptions.find((o) => o.value === seller)?.label;
-  const situationLabel = situationOptions.find(
-    (o) => o.value === situation
-  )?.label;
+  const selectedSituationDefinition = situationDefinitions.find(
+    (situationItem) => situationItem.value === situation
+  );
+  const situationLabel =
+    situation === "T"
+      ? "TODOS"
+      : (selectedSituationDefinition?.label ?? "TODOS");
 
   const hasActiveFilters =
     search.trim().length > 0 || seller !== "0" || situation !== "T";
@@ -205,7 +223,12 @@ export default function BudgetList() {
           )}
           {situation !== "T" && (
             <Badge className="gap-1 pr-1" variant="secondary">
-              Situação: {situationLabel}
+              <span className="mr-1">Situação:</span>
+              <StatusDotLabel
+                dotClassName={selectedSituationDefinition?.info.colorDot}
+                label={situationLabel}
+                size="sm"
+              />
               <button
                 className="ml-1 cursor-pointer rounded-full p-0.5 hover:bg-muted-foreground/20"
                 onClick={() => void setSituation("T")}

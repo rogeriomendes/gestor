@@ -28,7 +28,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 export interface ComboboxOption {
-  label: string;
+  label: ReactNode;
+  searchLabel?: string;
   value: string;
 }
 
@@ -97,7 +98,10 @@ export function Combobox({
               data-checked={value === option.value}
               key={option.value}
               onSelect={() => handleSelect(option.value)}
-              value={option.label}
+              value={
+                option.searchLabel ??
+                (typeof option.label === "string" ? option.label : option.value)
+              }
             >
               {option.label}
             </CommandItem>

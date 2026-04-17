@@ -10,6 +10,7 @@ export const salesRouter = router({
         limit: z.number().min(1).max(100).nullish(),
         cursor: z.string().nullish(),
         searchTerm: z.string().nullish(),
+        status: z.string().nullish(),
         idClosing: z.number().min(1).nullish(),
         dataAbertura: z.coerce.date().nullish(),
         horaAbertura: z.string().min(1).nullish(),
@@ -29,6 +30,7 @@ export const salesRouter = router({
         const {
           cursor,
           searchTerm,
+          status,
           idClosing,
           dataAbertura,
           horaAbertura,
@@ -84,6 +86,49 @@ export const salesRouter = router({
         const whereCompany =
           companyId && companyId !== 0 ? { ID_EMPRESA: companyId } : {};
 
+        const whereStatus = (() => {
+          switch (status) {
+            case "DEV":
+              return { DEVOLUCAO: "S" };
+            case "CAN":
+              return { CANCELADO_ID_USUARIO: { not: null } };
+            case "ENV":
+              return {
+                DEVOLUCAO: { not: "S" },
+                CANCELADO_ID_USUARIO: null,
+                nfe_cabecalho: { some: { STATUS_NOTA: "5" } },
+              };
+            case "CON":
+              return {
+                DEVOLUCAO: { not: "S" },
+                CANCELADO_ID_USUARIO: null,
+                nfe_cabecalho: { some: { STATUS_NOTA: "7" } },
+              };
+            case "AGU":
+              return {
+                DEVOLUCAO: { not: "S" },
+                CANCELADO_ID_USUARIO: null,
+                nfe_cabecalho: { some: { STATUS_NOTA: "9" } },
+              };
+            case "NAO":
+              return {
+                DEVOLUCAO: { not: "S" },
+                CANCELADO_ID_USUARIO: null,
+                OR: [
+                  { nfe_cabecalho: { none: {} } },
+                  { nfe_cabecalho: { some: { STATUS_NOTA: null } } },
+                  {
+                    nfe_cabecalho: {
+                      some: { STATUS_NOTA: { notIn: ["5", "7", "9"] } },
+                    },
+                  },
+                ],
+              };
+            default:
+              return {};
+          }
+        })();
+
         const whereClosing = idClosing && {
           ID_CONTA_CAIXA: idClosing,
           DATA_VENDA: dataAbertura,
@@ -100,6 +145,7 @@ export const salesRouter = router({
           ...whereTime,
           ...whereAccount,
           ...whereCompany,
+          ...whereStatus,
         };
 
         type OrderByItem =
