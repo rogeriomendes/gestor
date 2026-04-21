@@ -64,7 +64,7 @@ export function ProductSelector({
         />
       </div>
 
-      <ScrollArea className="h-[300px] w-full flex-1 md:w-auto lg:h-auto">
+      <ScrollArea className="h-[400px] w-full flex-1 md:w-auto lg:h-auto">
         <div className="space-y-1 md:space-y-2">
           {isLoading && (
             <div className="p-2 text-center text-muted-foreground text-sm md:p-4">

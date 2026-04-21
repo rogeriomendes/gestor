@@ -1,6 +1,15 @@
 "use client";
 
-import { FileText, LayoutGrid, Pencil, Printer, Trash2 } from "lucide-react";
+import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import {
+  Download,
+  Eye,
+  FileText,
+  LayoutGrid,
+  Pencil,
+  Printer,
+  Trash2,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,6 +33,7 @@ import { Separator } from "@/components/ui/separator";
 import { formatAsCurrency } from "@/lib/utils";
 import { PosterPreview, type PosterProduct } from "./PosterPreview";
 import { ProductSelector } from "./ProductSelector";
+import { A4FullPosterPdfDocument } from "./pdf/A4FullPosterPdfDocument";
 
 export function PosterBuilder() {
   const [products, setProducts] = useState<PosterProduct[]>([]);
@@ -35,6 +45,7 @@ export function PosterBuilder() {
     null
   );
   const [editName, setEditName] = useState("");
+  const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
 
   const handleProductSelect = (product: any) => {
     // Map existing product type to PosterProduct
@@ -288,14 +299,44 @@ export function PosterBuilder() {
           })}
         </div>
 
-        <Button
-          className="w-full gap-2"
-          disabled={products.length === 0}
-          onClick={handlePrint}
-        >
-          <Printer className="h-4 w-4" />
-          Imprimir Cartazes
-        </Button>
+        <div className="grid gap-2">
+          <Button
+            className="w-full gap-2"
+            disabled={products.length === 0}
+            onClick={handlePrint}
+          >
+            <Printer className="h-4 w-4" />
+            Imprimir Cartazes
+          </Button>
+
+          {format === "a4-full" && products.length > 0 ? (
+            <>
+              <Button
+                className="w-full gap-2"
+                onClick={() => setPdfPreviewOpen(true)}
+                variant="secondary"
+              >
+                <Eye className="h-4 w-4" />
+                Visualizar PDF
+              </Button>
+              <PDFDownloadLink
+                document={<A4FullPosterPdfDocument products={products} />}
+                fileName={`cartazes-a4-${new Date().toISOString().slice(0, 10)}.pdf`}
+              >
+                {({ loading }) => (
+                  <Button
+                    className="w-full gap-2"
+                    disabled={loading}
+                    variant="outline"
+                  >
+                    <Download className="h-4 w-4" />
+                    {loading ? "Gerando PDF..." : "Baixar PDF (exemplo A4)"}
+                  </Button>
+                )}
+              </PDFDownloadLink>
+            </>
+          ) : null}
+        </div>
       </Card>
 
       {/* Área de Preview */}
@@ -314,6 +355,31 @@ export function PosterBuilder() {
           />
         </div>
       </div>
+
+      <Dialog onOpenChange={setPdfPreviewOpen} open={pdfPreviewOpen}>
+        <DialogContent
+          className="flex max-h-[90vh] w-[min(100vw-2rem,56rem)] max-w-none flex-col gap-0 p-0 sm:max-w-[min(100vw-2rem,56rem)]"
+          showCloseButton
+        >
+          <DialogHeader className="shrink-0 border-b px-6 py-4">
+            <DialogTitle>Pré-visualização do PDF</DialogTitle>
+          </DialogHeader>
+          {pdfPreviewOpen && products.length > 0 ? (
+            <div className="min-h-[min(75vh,720px)] w-full flex-1 bg-muted/30">
+              <PDFViewer
+                showToolbar
+                style={{
+                  border: "none",
+                  height: "min(75vh, 720px)",
+                  width: "100%",
+                }}
+              >
+                <A4FullPosterPdfDocument products={products} />
+              </PDFViewer>
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         onOpenChange={(open) => !open && setEditingProduct(null)}
