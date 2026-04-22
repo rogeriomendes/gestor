@@ -34,4 +34,3 @@ export function A4FullPosterPdfDocument({
     </Document>
   );
 }
-

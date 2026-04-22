@@ -1,16 +1,5 @@
 "use client";
 
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
-import {
-  Download,
-  Eye,
-  FileText,
-  LayoutGrid,
-  Pencil,
-  Printer,
-  Trash2,
-} from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -31,7 +20,17 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { formatAsCurrency } from "@/lib/utils";
-import { PosterPreview, type PosterProduct } from "./PosterPreview";
+import { PDFDownloadLink, PDFViewer, pdf } from "@react-pdf/renderer";
+import {
+  Download,
+  FileText,
+  LayoutGrid,
+  Pencil,
+  Printer,
+  Trash2,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import type { PosterProduct } from "./PosterPreview";
 import { ProductSelector } from "./ProductSelector";
 import { A3FullPosterPdfDocument } from "./pdf/A3FullPosterPdfDocument";
 import { A4FullPosterPdfDocument } from "./pdf/A4FullPosterPdfDocument";
@@ -43,12 +42,15 @@ export function PosterBuilder() {
   const [format, setFormat] = useState<
     "a4-full" | "a4-grid-2x4" | "a4-grid-2x2" | "a3-full"
   >("a4-full");
-  const [showYellowBackground, _setShowYellowBackground] = useState(false);
   const [editingProduct, setEditingProduct] = useState<PosterProduct | null>(
     null
   );
   const [editName, setEditName] = useState("");
-  const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
+  const [isPrintingPdf, setIsPrintingPdf] = useState(false);
+  const [isMobilePreview, setIsMobilePreview] = useState(false);
+  const [isGeneratingMobilePreview, setIsGeneratingMobilePreview] =
+    useState(false);
+  const [mobilePreviewUrl, setMobilePreviewUrl] = useState<string | null>(null);
 
   const handleProductSelect = (product: any) => {
     // Map existing product type to PosterProduct
@@ -113,10 +115,6 @@ export function PosterBuilder() {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   const getPromoTypeName = (type?: number) => {
     switch (String(type)) {
       case "1":
@@ -148,11 +146,120 @@ export function PosterBuilder() {
   const getPdfFileName = () =>
     `cartazes-${format}-${new Date().toISOString().slice(0, 10)}.pdf`;
 
+  const pdfDocument = useMemo(() => getPdfDocument(), [format, products]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const update = () => setIsMobilePreview(mediaQuery.matches);
+    update();
+
+    mediaQuery.addEventListener("change", update);
+    return () => {
+      mediaQuery.removeEventListener("change", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMobilePreview || products.length === 0) {
+      setMobilePreviewUrl((previousUrl) => {
+        if (previousUrl) {
+          URL.revokeObjectURL(previousUrl);
+        }
+        return null;
+      });
+      return;
+    }
+
+    let cancelled = false;
+
+    const generatePreview = async () => {
+      setIsGeneratingMobilePreview(true);
+      try {
+        const blob = await pdf(pdfDocument).toBlob();
+        const url = URL.createObjectURL(blob);
+
+        if (cancelled) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+
+        setMobilePreviewUrl((previousUrl) => {
+          if (previousUrl) {
+            URL.revokeObjectURL(previousUrl);
+          }
+          return url;
+        });
+      } finally {
+        if (!cancelled) {
+          setIsGeneratingMobilePreview(false);
+        }
+      }
+    };
+
+    generatePreview();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isMobilePreview, pdfDocument, products.length]);
+
+  const handlePrintPdf = async () => {
+    if (isPrintingPdf || products.length === 0) {
+      return;
+    }
+
+    setIsPrintingPdf(true);
+    let previewWindow: Window | null = null;
+    try {
+      // Open window immediately to avoid popup blockers.
+      previewWindow = window.open("", "_blank");
+      const blob = await pdf(pdfDocument).toBlob();
+      const url = URL.createObjectURL(blob);
+
+      if (!previewWindow) {
+        window.open(url, "_blank", "noopener,noreferrer");
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        return;
+      }
+
+      previewWindow.location.href = url;
+
+      const triggerPrint = () => {
+        try {
+          previewWindow?.focus();
+          previewWindow?.print();
+        } catch {
+          // If auto-print is blocked, user can still print manually in opened tab.
+        }
+      };
+
+      previewWindow.onload = () => {
+        setTimeout(triggerPrint, 400);
+      };
+
+      setTimeout(triggerPrint, 1400);
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } finally {
+      setIsPrintingPdf(false);
+    }
+  };
+
+  const openMobilePreview = () => {
+    if (!mobilePreviewUrl) {
+      return;
+    }
+    window.open(mobilePreviewUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
-    <div className="flex h-auto flex-col gap-2 md:h-[calc(100vh-4rem)] md:flex-row md:gap-4 print:block print:h-auto">
+    <div className="flex h-auto flex-col gap-2 md:h-[calc(100vh-4rem)] md:flex-row md:gap-4">
       {/* Sidebar de Configuração - Hide on Print */}
       <Card
-        className="flex w-full flex-col gap-2 rounded-md px-2 md:w-1/3 md:max-w-[500px] md:shrink-0 md:gap-4 md:px-5 print:hidden"
+        className="flex w-full flex-col gap-2 rounded-md px-2 md:w-1/3 md:max-w-[500px] md:shrink-0 md:gap-4 md:px-5"
         size="sm"
       >
         <div>
@@ -319,27 +426,18 @@ export function PosterBuilder() {
         </div>
 
         <div className="grid gap-2">
-          <Button
-            className="w-full gap-2"
-            disabled={products.length === 0}
-            onClick={handlePrint}
-          >
-            <Printer className="h-4 w-4" />
-            Imprimir Cartazes
-          </Button>
-
           {products.length > 0 ? (
             <>
               <Button
                 className="w-full gap-2"
-                onClick={() => setPdfPreviewOpen(true)}
-                variant="secondary"
+                disabled={isPrintingPdf}
+                onClick={handlePrintPdf}
               >
-                <Eye className="h-4 w-4" />
-                Visualizar PDF
+                <Printer className="h-4 w-4" />
+                {isPrintingPdf ? "Gerando PDF..." : "Imprimir"}
               </Button>
               <PDFDownloadLink
-                document={getPdfDocument()}
+                document={pdfDocument}
                 fileName={getPdfFileName()}
               >
                 {({ loading }) => (
@@ -358,47 +456,46 @@ export function PosterBuilder() {
         </div>
       </Card>
 
-      {/* Área de Preview */}
-      <div className="flex-1 overflow-auto rounded-md bg-gray-100/50 px-1 py-2 md:px-2 md:py-6 print:rounded-none print:bg-white print:px-0 print:py-0">
-        <div
-          className={`mx-2 max-w-full origin-top-left transition-transform md:mx-auto md:origin-top print:mx-0 print:max-w-none print:scale-100 ${
-            format === "a3-full"
-              ? "w-[297mm] scale-[0.32] sm:scale-[0.52] md:max-w-[297mm] md:scale-[0.6] print:relative"
-              : "w-[210mm] scale-[0.45] sm:scale-[0.75] md:max-w-[210mm] md:scale-100 print:relative"
-          }`}
-        >
-          <PosterPreview
-            format={format}
-            products={products}
-            showYellowBackground={showYellowBackground}
-          />
-        </div>
-      </div>
-
-      <Dialog onOpenChange={setPdfPreviewOpen} open={pdfPreviewOpen}>
-        <DialogContent
-          className="flex max-h-[90vh] w-[min(100vw-2rem,56rem)] max-w-none flex-col gap-0 p-0 sm:max-w-[min(100vw-2rem,56rem)]"
-          showCloseButton
-        >
-          <DialogHeader className="shrink-0 border-b px-6 py-4">
-            <DialogTitle>Pré-visualização do PDF</DialogTitle>
-          </DialogHeader>
-          {pdfPreviewOpen && products.length > 0 ? (
-            <div className="min-h-[min(75vh,720px)] w-full flex-1 bg-muted/30">
-              <PDFViewer
-                showToolbar
-                style={{
-                  border: "none",
-                  height: "min(75vh, 720px)",
-                  width: "100%",
-                }}
+      {/* Área de Preview PDF */}
+      <div className="flex-1 overflow-hidden rounded-md border bg-muted/20">
+        {isMobilePreview ? (
+          <div className="flex h-full flex-col gap-3 p-3">
+            {/* <Button
+                className="w-full"
+                disabled={!mobilePreviewUrl || isGeneratingMobilePreview}
+                onClick={openMobilePreview}
+                variant="outline"
               >
-                {getPdfDocument()}
-              </PDFViewer>
+                {isGeneratingMobilePreview
+                  ? "Gerando preview..."
+                  : "Abrir preview do PDF"}
+              </Button> */}
+            <div className="rounded-md border bg-background p-3 text-muted-foreground text-sm">
+              No mobile, clique no botão imprimir, isso abrirá o preview em
+              uma nova aba para visualizar e imprimir com maior
+              compatibilidade.
             </div>
-          ) : null}
-        </DialogContent>
-      </Dialog>
+          </div>
+        ) : (products.length > 0 ? (
+
+          <PDFViewer
+            showToolbar
+            style={{
+              border: "none",
+              height: "100%",
+              minHeight: "calc(100vh - 7rem)",
+              width: "100%",
+            }}
+          >
+            {pdfDocument}
+          </PDFViewer>
+
+        ) : (
+          <div className="flex h-full min-h-[480px] items-center justify-center text-muted-foreground text-sm">
+            Selecione produtos para visualizar o PDF.
+          </div>
+        ))}
+      </div>
 
       <Dialog
         onOpenChange={(open) => !open && setEditingProduct(null)}
