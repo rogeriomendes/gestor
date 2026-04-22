@@ -33,7 +33,10 @@ import { Separator } from "@/components/ui/separator";
 import { formatAsCurrency } from "@/lib/utils";
 import { PosterPreview, type PosterProduct } from "./PosterPreview";
 import { ProductSelector } from "./ProductSelector";
+import { A3FullPosterPdfDocument } from "./pdf/A3FullPosterPdfDocument";
 import { A4FullPosterPdfDocument } from "./pdf/A4FullPosterPdfDocument";
+import { A4Grid2x2PosterPdfDocument } from "./pdf/A4Grid2x2PosterPdfDocument";
+import { A4Grid2x4PosterPdfDocument } from "./pdf/A4Grid2x4PosterPdfDocument";
 
 export function PosterBuilder() {
   const [products, setProducts] = useState<PosterProduct[]>([]);
@@ -128,6 +131,22 @@ export function PosterBuilder() {
         return type ? `Tipo ${type}` : "";
     }
   };
+
+  const getPdfDocument = () => {
+    switch (format) {
+      case "a3-full":
+        return <A3FullPosterPdfDocument products={products} />;
+      case "a4-grid-2x2":
+        return <A4Grid2x2PosterPdfDocument products={products} />;
+      case "a4-grid-2x4":
+        return <A4Grid2x4PosterPdfDocument products={products} />;
+      default:
+        return <A4FullPosterPdfDocument products={products} />;
+    }
+  };
+
+  const getPdfFileName = () =>
+    `cartazes-${format}-${new Date().toISOString().slice(0, 10)}.pdf`;
 
   return (
     <div className="flex h-auto flex-col gap-2 md:h-[calc(100vh-4rem)] md:flex-row md:gap-4 print:block print:h-auto">
@@ -309,7 +328,7 @@ export function PosterBuilder() {
             Imprimir Cartazes
           </Button>
 
-          {format === "a4-full" && products.length > 0 ? (
+          {products.length > 0 ? (
             <>
               <Button
                 className="w-full gap-2"
@@ -320,8 +339,8 @@ export function PosterBuilder() {
                 Visualizar PDF
               </Button>
               <PDFDownloadLink
-                document={<A4FullPosterPdfDocument products={products} />}
-                fileName={`cartazes-a4-${new Date().toISOString().slice(0, 10)}.pdf`}
+                document={getPdfDocument()}
+                fileName={getPdfFileName()}
               >
                 {({ loading }) => (
                   <Button
@@ -330,7 +349,7 @@ export function PosterBuilder() {
                     variant="outline"
                   >
                     <Download className="h-4 w-4" />
-                    {loading ? "Gerando PDF..." : "Baixar PDF (exemplo A4)"}
+                    {loading ? "Gerando PDF..." : "Baixar PDF"}
                   </Button>
                 )}
               </PDFDownloadLink>
@@ -374,7 +393,7 @@ export function PosterBuilder() {
                   width: "100%",
                 }}
               >
-                <A4FullPosterPdfDocument products={products} />
+                {getPdfDocument()}
               </PDFViewer>
             </div>
           ) : null}

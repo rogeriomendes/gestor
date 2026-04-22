@@ -5,14 +5,14 @@ import { registerPosterPdfFonts } from "./_components/register-poster-pdf-fonts"
 
 registerPosterPdfFonts();
 
-interface A4FullPosterPdfDocumentProps {
+interface A3FullPosterPdfDocumentProps {
   products: PosterProduct[];
 }
 
-export function A4FullPosterPdfDocument({
+export function A3FullPosterPdfDocument({
   products,
-}: A4FullPosterPdfDocumentProps) {
-  const size = "a4-full" as const;
+}: A3FullPosterPdfDocumentProps) {
+  const size = "a3-full" as const;
   const styles = StyleSheet.create({
     page: {
       backgroundColor: "#FFFFFF",
@@ -25,7 +25,7 @@ export function A4FullPosterPdfDocument({
       {products.map((product) => (
         <Page
           key={product.internalId || product.id}
-          size="A4"
+          size="A3"
           style={styles.page}
         >
           <PosterPdfCard product={product} size={size} />
@@ -34,4 +34,3 @@ export function A4FullPosterPdfDocument({
     </Document>
   );
 }
-
