@@ -205,7 +205,7 @@ export function PosterBuilder() {
 
         <div className="flex flex-1 flex-col overflow-hidden">
           <label className="mb-2 font-medium text-sm">Adicionar Produtos</label>
-          <div className="flex-1 overflow-hidden rounded-md border bg-background">
+          <div className="flex-1 overflow-auto rounded-md border bg-background">
             <ProductSelector
               onSelect={handleProductSelect}
               selectedIds={products.map((p) => p.id)}

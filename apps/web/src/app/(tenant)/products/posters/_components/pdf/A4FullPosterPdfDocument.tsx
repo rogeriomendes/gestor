@@ -1,3 +1,4 @@
+import { theme } from "@/lib/pdfx-theme";
 import {
   Document,
   Font,
@@ -6,7 +7,6 @@ import {
   Text,
   View,
 } from "@react-pdf/renderer";
-import { theme } from "@/lib/pdfx-theme";
 import type { PosterProduct } from "../types";
 
 let oswaldRegistered = false;
@@ -56,14 +56,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     flex: 1,
     justifyContent: "space-between",
-    paddingBottom: 24,
-    paddingHorizontal: 28,
-    paddingTop: 20,
+    paddingBottom: 14,
+    paddingHorizontal: 24,
+    paddingTop: 14,
   },
   productNameWrap: {
     alignItems: "center",
-    flex: 1,
+    flex: 0,
     justifyContent: "center",
+    minHeight: 210,
     paddingHorizontal: 8,
   },
   productName: {
@@ -77,6 +78,108 @@ const styles = StyleSheet.create({
   },
   originalWrap: {
     marginBottom: 12,
+  },
+  promoMetaRow: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 6,
+    width: "100%",
+  },
+  promoOriginalBlock: {
+    flexDirection: "column",
+    maxWidth: "58%",
+  },
+  promoOriginalLabel: {
+    color: "#27272A",
+    fontFamily: "Oswald",
+    fontSize: 18,
+    fontWeight: 700,
+    marginBottom: 2,
+  },
+  promoOriginalPriceRow: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+  },
+  promoOriginalCurrency: {
+    color: "#27272A",
+    fontFamily: "Oswald",
+    fontSize: 24,
+    fontWeight: 700,
+    marginRight: 4,
+    marginTop: 6,
+  },
+  promoOriginalInteger: {
+    color: "#27272A",
+    fontFamily: "Oswald",
+    fontSize: 70,
+    fontWeight: 700,
+    letterSpacing: -4,
+    lineHeight: 0.9,
+  },
+  promoOriginalDecimalWrap: {
+    alignItems: "flex-start",
+    marginLeft: 4,
+    marginTop: 8,
+  },
+  promoOriginalDecimal: {
+    color: "#27272A",
+    fontFamily: "Oswald",
+    fontSize: 34,
+    fontWeight: 700,
+    textDecoration: "underline",
+  },
+  promoOriginalUnit: {
+    color: "#27272A",
+    fontFamily: "Oswald",
+    fontSize: 18,
+    fontWeight: 700,
+    marginTop: 2,
+  },
+  badgeWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    borderColor: "#FFFFFF",
+    borderWidth: 3,
+    minWidth: 135,
+    paddingHorizontal: 16,
+    paddingTop: 6,
+    paddingBottom: 16,
+  },
+  badgePack: {
+    borderRadius: 50,
+    backgroundColor: "#2563EB",
+  },
+  badgeWholesale: {
+    borderRadius: 10,
+    backgroundColor: "#16A34A",
+  },
+  badgeText: {
+    color: "#FFFFFF",
+    fontFamily: "Oswald",
+    fontSize: 20,
+    fontWeight: 700,
+    lineHeight: 1.05,
+    textAlign: "center",
+    textTransform: "uppercase",
+  },
+  finalPriceRowPromoPack: {
+    alignItems: "flex-end",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 22,
+    marginTop: 2,
+    width: "100%",
+  },
+  promoHelperText: {
+    color: "#27272A",
+    fontFamily: "Oswald",
+    fontSize: 23,
+    fontWeight: 700,
+    lineHeight: 1.15,
+    maxWidth: "34%",
+    textAlign: "left",
   },
   originalLabel: {
     color: "#B91C1C",
@@ -96,43 +199,48 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 6,
-    marginBottom: 75,
+    marginBottom: 22,
+    marginTop: 2,
+  },
+  finalPriceMain: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "center",
   },
   currency: {
     color: "#D00000",
     fontFamily: "Oswald",
-    fontSize: 40,
+    fontSize: 34,
     fontWeight: 700,
-    marginRight: 8,
-    marginTop: 85,
+    marginRight: 6,
+    marginTop: 60,
   },
   integer: {
     color: "#D00000",
     fontFamily: "Oswald",
-    fontSize: 250,
+    fontSize: 190,
     fontWeight: 700,
     letterSpacing: -6,
     lineHeight: 0.95,
   },
   decimalWrap: {
     alignItems: "center",
-    marginLeft: 6,
-    marginTop: 60,
+    marginLeft: 4,
+    marginTop: 42,
   },
   decimal: {
     color: "#D00000",
     fontFamily: "Oswald",
-    fontSize: 100,
+    fontSize: 76,
     fontWeight: 700,
     textDecoration: "underline",
   },
   unit: {
     color: "#18181B",
     fontFamily: "Oswald",
-    fontSize: 38,
+    fontSize: 30,
     fontWeight: 700,
-    // marginTop: 8,
+    marginTop: -2,
   },
   footerInfo: {
     alignItems: "center",
@@ -140,8 +248,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 8,
-    paddingTop: 8,
+    marginTop: 2,
+    minHeight: 16,
+    paddingTop: 4,
   },
   footerText: {
     color: theme.colors.mutedForeground,
@@ -216,6 +325,20 @@ export function A4FullPosterPdfDocument({
     <Document>
       {products.map((product) => {
         const { int, cents } = formatPriceParts(product.price);
+        const { int: originalInt, cents: originalCents } = formatPriceParts(
+          product.originalPrice
+        );
+        const hasPromo = product.qtdPromocao != null && product.qtdPromocao > 0;
+        const isPack =
+          hasPromo &&
+          product.qtdPagar != null &&
+          product.qtdPagar > 0 &&
+          product.qtdPagar !== product.qtdPromocao;
+        const isWholesale =
+          hasPromo &&
+          (!product.qtdPagar ||
+            product.qtdPagar === product.qtdPromocao ||
+            product.qtdPagar === 0);
         const showOriginal =
           product.showOriginalPrice && product.originalPrice > 0;
         const productName = formatProductNameMaxThreeLines(product.name);
@@ -235,21 +358,79 @@ export function A4FullPosterPdfDocument({
                 <Text style={styles.productName}>{productName}</Text>
               </View>
 
-              {showOriginal ? (
-                <View style={styles.originalWrap}>
-                  <Text style={styles.originalLabel}>DE</Text>
-                  <Text style={styles.originalPrice}>
-                    R$ {Number(product.originalPrice).toFixed(2)} {product.unit}
-                  </Text>
-                </View>
-              ) : null}
+              {hasPromo ? (
+                <View style={styles.promoMetaRow}>
+                  <View style={styles.promoOriginalBlock}>
+                    <Text style={styles.promoOriginalLabel}>
+                      Comprando 1 unidade:
+                    </Text>
+                    <View style={styles.promoOriginalPriceRow}>
+                      <Text style={styles.promoOriginalCurrency}>R$</Text>
+                      <Text style={styles.promoOriginalInteger}>
+                        {originalInt}
+                      </Text>
+                      <View style={styles.promoOriginalDecimalWrap}>
+                        <Text style={styles.promoOriginalDecimal}>
+                          ,{originalCents}
+                        </Text>
+                        <Text style={styles.promoOriginalUnit}>
+                          {product.unit}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
 
-              <View style={styles.finalPriceWrap}>
-                <Text style={styles.currency}>R$</Text>
-                <Text style={styles.integer}>{int}</Text>
-                <View style={styles.decimalWrap}>
-                  <Text style={styles.decimal}>,{cents}</Text>
-                  <Text style={styles.unit}>{product.unit}</Text>
+                  {isPack && (
+                    <View style={[styles.badgeWrap, styles.badgePack]}>
+                      <Text style={styles.badgeText}>
+                        LEVE {product.qtdPromocao}
+                      </Text>
+                      <Text style={styles.badgeText}>
+                        PAGUE {product.qtdPagar}
+                      </Text>
+                    </View>
+                  )}
+
+                  {isWholesale && (
+                    <View style={[styles.badgeWrap, styles.badgeWholesale]}>
+                      <Text style={styles.badgeText}>A PARTIR DE</Text>
+                      <Text style={styles.badgeText}>
+                        {product.qtdPromocao} UN
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              ) : (
+                showOriginal && (
+                  <View style={styles.originalWrap}>
+                    <Text style={styles.originalLabel}>DE</Text>
+                    <Text style={styles.originalPrice}>
+                      R$ {Number(product.originalPrice).toFixed(2)}{" "}
+                      {product.unit}
+                    </Text>
+                  </View>
+                )
+              )}
+
+              <View
+                style={
+                  isPack ? styles.finalPriceRowPromoPack : styles.finalPriceWrap
+                }
+              >
+                {isPack && (
+                  <Text style={styles.promoHelperText}>
+                    Comprando{"\n"}
+                    {product.qtdPromocao} unidades,{"\n"}
+                    cada 1 sai por:
+                  </Text>
+                )}
+                <View style={styles.finalPriceMain}>
+                  <Text style={styles.currency}>R$</Text>
+                  <Text style={styles.integer}>{int}</Text>
+                  <View style={styles.decimalWrap}>
+                    <Text style={styles.decimal}>,{cents}</Text>
+                    <Text style={styles.unit}>{product.unit}</Text>
+                  </View>
                 </View>
               </View>
 
