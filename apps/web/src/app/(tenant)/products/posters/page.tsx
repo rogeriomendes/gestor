@@ -1,7 +1,7 @@
 "use client";
 
-import { PageLayout } from "@/components/layouts/page-layout";
 import type { Route } from "next";
+import { PageLayout } from "@/components/layouts/page-layout";
 import { PosterBuilder } from "./_components/PosterBuilder";
 
 export default function PostersPage() {

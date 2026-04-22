@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import {
   Dialog,
   DialogContent,
@@ -11,13 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { formatAsCurrency } from "@/lib/utils";
 import { PDFDownloadLink, PDFViewer, pdf } from "@react-pdf/renderer";
@@ -129,6 +123,53 @@ export function PosterBuilder() {
         return type ? `Tipo ${type}` : "";
     }
   };
+
+  const formatOptions: ComboboxOption[] = [
+    {
+      label: (
+        <div className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          <span>A4 (1 por página)</span>
+        </div>
+      ),
+      searchLabel: "A4 (1 por página)",
+      value: "a4-full",
+    },
+    {
+      label: (
+        <div className="flex items-center gap-2">
+          <LayoutGrid className="h-4 w-4" />
+          <span>A4 2x2 (4 por página)</span>
+        </div>
+      ),
+      searchLabel: "A4 2x2 (4 por página)",
+      value: "a4-grid-2x2",
+    },
+    {
+      label: (
+        <div className="flex items-center gap-2">
+          <LayoutGrid className="h-4 w-4" />
+          <span>A4 2x4 (8 por página)</span>
+        </div>
+      ),
+      searchLabel: "A4 2x4 (8 por página)",
+      value: "a4-grid-2x4",
+    },
+    {
+      label: (
+        <div className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          <span>A3 (1 por página)</span>
+        </div>
+      ),
+      searchLabel: "A3 (1 por página)",
+      value: "a3-full",
+    },
+  ];
+
+  const selectedFormatLabel =
+    formatOptions.find((option) => option.value === format)?.searchLabel ??
+    "Selecione o formato";
 
   const getPdfDocument = () => {
     switch (format) {
@@ -273,44 +314,19 @@ export function PosterBuilder() {
 
         <div className="space-y-2">
           <label className="font-medium text-sm">Formato</label>
-          <Select
+          <Combobox
+            className="mt-1.5 w-full"
+            emptyMessage="Nenhum formato encontrado."
             onValueChange={(v) =>
               setFormat(
                 v as "a4-full" | "a4-grid-2x4" | "a4-grid-2x2" | "a3-full"
               )
             }
+            options={formatOptions}
+            placeholder={selectedFormatLabel}
+            searchPlaceholder="Buscar formato..."
             value={format}
-          >
-            <SelectTrigger>
-              <SelectValue>Selecione o formato</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="a4-full">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  <span>A4 (1 por página)</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="a4-grid-2x2">
-                <div className="flex items-center gap-2">
-                  <LayoutGrid className="h-4 w-4" />
-                  <span>A4 2x2 (4 por página)</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="a4-grid-2x4">
-                <div className="flex items-center gap-2">
-                  <LayoutGrid className="h-4 w-4" />
-                  <span>A4 2x4 (8 por página)</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="a3-full">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  <span>A3 (1 por página)</span>
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          />
         </div>
 
         {/* <div className="flex items-center space-x-2 py-2">
@@ -471,13 +487,11 @@ export function PosterBuilder() {
                   : "Abrir preview do PDF"}
               </Button> */}
             <div className="rounded-md border bg-background p-3 text-muted-foreground text-sm">
-              No mobile, clique no botão imprimir, isso abrirá o preview em
-              uma nova aba para visualizar e imprimir com maior
-              compatibilidade.
+              No mobile, clique no botão imprimir, isso abrirá o preview em uma
+              nova aba para visualizar e imprimir com maior compatibilidade.
             </div>
           </div>
-        ) : (products.length > 0 ? (
-
+        ) : products.length > 0 ? (
           <PDFViewer
             showToolbar
             style={{
@@ -489,12 +503,11 @@ export function PosterBuilder() {
           >
             {pdfDocument}
           </PDFViewer>
-
         ) : (
           <div className="flex h-full min-h-[480px] items-center justify-center text-muted-foreground text-sm">
             Selecione produtos para visualizar o PDF.
           </div>
-        ))}
+        )}
       </div>
 
       <Dialog
