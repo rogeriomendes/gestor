@@ -1,8 +1,5 @@
 "use client";
 
-import { CalendarIcon } from "lucide-react";
-import type { ComponentProps } from "react";
-import { useMemo, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -13,22 +10,19 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDate } from "@/lib/format-date";
 import { cn } from "@/lib/utils";
+import { CalendarIcon, ChevronsUpDownIcon } from "lucide-react";
+import type { ComponentProps } from "react";
+import { useId, useMemo, useState } from "react";
 
 interface DatePickerTimeRangeProps {
   className?: string;
@@ -42,11 +36,26 @@ interface DatePickerTimeRangeProps {
   timeTo: string;
 }
 
-const TIME_OPTIONS = Array.from({ length: 24 * 2 }, (_, i) => {
-  const hour = String(Math.floor(i / 2)).padStart(2, "0");
-  const minute = i % 2 === 0 ? "00" : "30";
-  return `${hour}:${minute}`;
-});
+/** Normaliza para HH:MM (valor aceito por input type="time"). */
+function toTimeInputValue(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "";
+  }
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (!match) {
+    return "";
+  }
+  const h = match[1].padStart(2, "0");
+  const m = match[2].padStart(2, "0");
+  return `${h}:${m}`;
+}
+
+/** Dia atual (calendário local) em UTC 00:00 — compatível com `parseAsIsoDate` / filtros. */
+function createTodayDateForFilter(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
 
 export function DatePickerTimeRange({
   className,
@@ -61,6 +70,25 @@ export function DatePickerTimeRange({
 }: DatePickerTimeRangeProps) {
   const [open, setOpen] = useState(false);
   const isMobile = useIsMobile();
+  const timeFieldId = useId();
+  const timeFromId = `${timeFieldId}-from`;
+  const timeToId = `${timeFieldId}-to`;
+
+  const ensureDateWhenMissing = () => {
+    if (date == null) {
+      onDateChange(createTodayDateForFilter());
+    }
+  };
+
+  const handleTimeFromChange = (value: string) => {
+    ensureDateWhenMissing();
+    onTimeFromChange(value);
+  };
+
+  const handleTimeToChange = (value: string) => {
+    ensureDateWhenMissing();
+    onTimeToChange(value);
+  };
 
   const label = useMemo(() => {
     if (!date) {
@@ -84,46 +112,26 @@ export function DatePickerTimeRange({
       />
       <div className="grid grid-cols-2 gap-2 px-3">
         <div className="space-y-1">
-          <Label>Hora inicial</Label>
-          <Select
-            onValueChange={(value) => onTimeFromChange(value ?? "")}
-            value={timeFrom || "00:00"}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Inicial" />
-            </SelectTrigger>
-            <SelectContent
-              className="min-w-(--anchor-width)"
-              portal={!isMobile}
-            >
-              {TIME_OPTIONS.map((time) => (
-                <SelectItem key={time} value={time}>
-                  {time}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label htmlFor={timeFromId}>Hora inicial</Label>
+          <Input
+            className="w-full font-mono tabular-nums"
+            id={timeFromId}
+            onChange={(e) => handleTimeFromChange(e.target.value)}
+            step={60}
+            type="time"
+            value={toTimeInputValue(timeFrom) || "00:00"}
+          />
         </div>
         <div className="space-y-1">
-          <Label>Hora final</Label>
-          <Select
-            onValueChange={(value) => onTimeToChange(value ?? "")}
-            value={timeTo || "23:59"}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Final" />
-            </SelectTrigger>
-            <SelectContent
-              className="min-w-(--anchor-width)"
-              portal={!isMobile}
-            >
-              {TIME_OPTIONS.map((time) => (
-                <SelectItem key={time} value={time}>
-                  {time}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label htmlFor={timeToId}>Hora final</Label>
+          <Input
+            className="w-full font-mono tabular-nums"
+            id={timeToId}
+            onChange={(e) => handleTimeToChange(e.target.value)}
+            step={60}
+            type="time"
+            value={toTimeInputValue(timeTo) || "23:59"}
+          />
         </div>
       </div>
       <div className="flex justify-end px-3 pb-3">
@@ -150,6 +158,7 @@ export function DatePickerTimeRange({
         <CalendarIcon className="mr-2 size-4 shrink-0" />
         {placeholder}
       </div>
+      <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
     </div>
   );
 
