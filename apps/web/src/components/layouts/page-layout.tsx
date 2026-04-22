@@ -90,9 +90,9 @@ export function PageLayout({
   const TitleIcon = getIconForPathname(pathname);
 
   return (
-    <div className="flex flex-col print:bg-white">
+    <div className="flex flex-col">
       {/* Breadcrumbs */}
-      <div className="flex shrink-0 flex-row items-center gap-2 rounded-t-xl border-b bg-sidebar/50 px-2 py-2 md:px-6 md:py-3 print:hidden">
+      <div className="flex shrink-0 flex-row items-center gap-2 rounded-t-xl border-b bg-sidebar/50 px-2 py-2 md:px-6 md:py-3">
         <SidebarTrigger className="cursor-pointer md:hidden" />
         <Separator className="mr-1 h-8 md:hidden" orientation="vertical" />
         <FbiIcon className="mr-2 size-6 shrink-0 md:hidden" />
@@ -105,7 +105,7 @@ export function PageLayout({
       </div>
 
       {/* Header */}
-      <header className="flex shrink-0 flex-row items-center justify-between gap-3 bg-background/95 px-2 py-2 backdrop-blur supports-backdrop-filter:bg-background/60 md:px-6 md:py-3 print:hidden">
+      <header className="flex shrink-0 flex-row items-center justify-between gap-3 bg-background/95 px-2 py-2 backdrop-blur supports-backdrop-filter:bg-background/60 md:px-6 md:py-3">
         <div className="flex items-center gap-2 md:gap-4">
           {showBackButton && (
             <Button

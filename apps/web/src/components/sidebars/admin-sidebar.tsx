@@ -57,7 +57,7 @@ export function AdminSidebar() {
   const searchParams = useSearchParams();
 
   return (
-    <Sidebar className="print:hidden" variant="inset">
+    <Sidebar variant="inset">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-2">
           <div className="flex flex-col gap-1">

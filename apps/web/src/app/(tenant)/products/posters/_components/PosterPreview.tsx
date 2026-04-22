@@ -30,13 +30,13 @@ export function PosterPreview({
   }
 
   return (
-    <div className="print:m-0" id="print-area">
+    <div id="print-area">
       {/* A3 FULL PAGE */}
       {format === "a3-full" &&
         products.map((product, index) => (
           <div
             className={cn(
-              "mb-8 h-[420mm] w-[297mm] items-center justify-center overflow-hidden bg-white shadow-lg print:mb-0 print:h-[413mm] print:w-[297mm] print:shadow-none",
+              "mb-8 h-[420mm] w-[297mm] items-center justify-center overflow-hidden bg-white shadow-lg",
               index < products.length - 1
                 ? "page-break-after-always break-after-page"
                 : ""
@@ -55,7 +55,7 @@ export function PosterPreview({
         products.map((product, index) => (
           <div
             className={cn(
-              "mb-8 h-[290mm] w-[210mm] items-center justify-center overflow-hidden bg-white shadow-lg print:mb-0 print:h-[290mm] print:w-[210mm] print:shadow-none",
+              "mb-8 h-[290mm] w-[210mm] items-center justify-center overflow-hidden bg-white shadow-lg",
               index < products.length - 1
                 ? "page-break-after-always break-after-page"
                 : ""
@@ -74,7 +74,7 @@ export function PosterPreview({
         Array.from({ length: Math.ceil(products.length / 8) }).map(
           (_, pageIndex) => (
             <div
-              className="mb-8 h-[290mm] w-[210mm] items-center justify-center overflow-hidden bg-white shadow-lg print:mb-0 print:h-[290mm] print:w-[210mm] print:shadow-none"
+              className="mb-8 h-[290mm] w-[210mm] items-center justify-center overflow-hidden bg-white shadow-lg"
               key={pageIndex}
               style={{
                 pageBreakAfter:
@@ -107,7 +107,7 @@ export function PosterPreview({
         Array.from({ length: Math.ceil(products.length / 4) }).map(
           (_, pageIndex) => (
             <div
-              className="mb-8 h-[290mm] w-[210mm] items-center justify-center overflow-hidden bg-white shadow-lg print:mb-0 print:h-[290mm] print:w-[210mm] print:shadow-none"
+              className="mb-8 h-[290mm] w-[210mm] items-center justify-center overflow-hidden bg-white shadow-lg"
               key={pageIndex}
               style={{
                 pageBreakAfter:
