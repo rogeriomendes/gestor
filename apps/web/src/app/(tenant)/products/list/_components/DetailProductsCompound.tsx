@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,6 +12,7 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
 
 type CompoundItem =
   RouterOutputs["tenant"]["products"]["compound"]["compound"][number];
@@ -27,14 +27,47 @@ export function DetailProductsCompound({ productId }: { productId: number }) {
 
   return (
     <div className="space-y-3">
-      <Card className="rounded-md leading-none" size="sm">
-        <CardContent className="p-0">
+      <Card
+        className="rounded-md data-[size=sm]:py-0 data-[size=sm]:md:py-0"
+        size="sm"
+      >
+        <CardContent className="group-data-[size=sm]/card:px-0 group-data-[size=sm]/card:md:px-0">
           {productsCompoundQuery.isLoading ? (
-            <div className="m-2 space-y-2">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
+            <div className="min-w-0 overflow-hidden">
+              <Table className="w-full table-fixed bg-card">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[min(40%,8rem)]">Produto</TableHead>
+                    <TableHead className="w-20 shrink-0 md:w-24">
+                      Custo Un.
+                    </TableHead>
+                    <TableHead className="w-12 shrink-0 md:w-16">
+                      Qtd.
+                    </TableHead>
+                    <TableHead className="w-20 shrink-0 md:w-24">
+                      Custo Total
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="text-xs md:text-sm">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="py-3">
+                        <Skeleton className="h-4 w-14" />
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <Skeleton className="h-4" />
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <Skeleton className="h-4" />
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <Skeleton className="h-4" />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           ) : (
             <Table className="bg-card">
