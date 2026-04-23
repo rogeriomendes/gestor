@@ -3,9 +3,11 @@ import { type PdfPosterFormat, POSTER_PDF_PRESETS } from "./poster-pdf-presets";
 
 interface PosterPdfPriceBlockProps {
   cents: string;
+  compoundUnitPrice: number | null;
   int: string;
   isPack: boolean;
   qtdPromocao?: number;
+  showCompoundUnitInfo: boolean;
   size: PdfPosterFormat;
   unit: string;
 }
@@ -14,12 +16,17 @@ export function PosterPdfPriceBlock({
   size,
   int,
   cents,
+  compoundUnitPrice,
   unit,
   isPack,
   qtdPromocao,
+  showCompoundUnitInfo,
 }: PosterPdfPriceBlockProps) {
   const preset = POSTER_PDF_PRESETS[size];
   const styles = StyleSheet.create({
+    wrapper: {
+      width: "100%",
+    },
     rowPack: {
       alignItems: "center",
       flexDirection: "row",
@@ -86,25 +93,50 @@ export function PosterPdfPriceBlock({
       fontWeight: 700,
       marginTop: -2,
     },
+    compoundInfo: {
+      alignSelf: "center",
+      // backgroundColor: "#EEF2FF",
+      // borderColor: "#C7D2FE",
+      borderRadius: 6,
+      borderWidth: 1,
+      color: "#1F2937",
+      fontFamily: "Oswald",
+      fontSize: Math.max(10, Math.floor(preset.promoHelperFontSize * 0.8)),
+      fontWeight: 700,
+      marginTop: 8,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      textAlign: "center",
+    },
   });
 
+  const unitPromoText =
+    showCompoundUnitInfo && compoundUnitPrice != null
+      ? `Nessa promoção, o valor unitário sai por R$ ${compoundUnitPrice.toFixed(2).replace(".", ",")}.`
+      : null;
+
   return (
-    <View style={isPack ? styles.rowPack : styles.rowNormal}>
-      {isPack ? (
-        <Text style={styles.helper}>
-          Comprando{"\n"}
-          {qtdPromocao} unidades,{"\n"}
-          cada 1 sai por:
-        </Text>
-      ) : null}
-      <View style={styles.main}>
-        <Text style={styles.currency}>R$</Text>
-        <Text style={styles.integer}>{int}</Text>
-        <View style={styles.decimalWrap}>
-          <Text style={styles.decimal}>,{cents}</Text>
-          <Text style={styles.unit}>{unit}</Text>
+    <View style={styles.wrapper}>
+      <View style={isPack ? styles.rowPack : styles.rowNormal}>
+        {isPack ? (
+          <Text style={styles.helper}>
+            Comprando{"\n"}
+            {qtdPromocao} unidades,{"\n"}
+            cada 1 sai por:
+          </Text>
+        ) : null}
+        <View style={styles.main}>
+          <Text style={styles.currency}>R$</Text>
+          <Text style={styles.integer}>{int}</Text>
+          <View style={styles.decimalWrap}>
+            <Text style={styles.decimal}>,{cents}</Text>
+            <Text style={styles.unit}>{unit}</Text>
+          </View>
         </View>
       </View>
+      {unitPromoText ? (
+        <Text style={styles.compoundInfo}>{unitPromoText}</Text>
+      ) : null}
     </View>
   );
 }

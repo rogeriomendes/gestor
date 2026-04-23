@@ -35,6 +35,10 @@ export function PosterPdfCard({ product, size }: PosterPdfCardProps) {
   );
   const { hasPromo, isPack, isWholesale } = getPromotionFlags(product);
   const showOriginal = !!product.showOriginalPrice && product.originalPrice > 0;
+  const compoundUnitPrice =
+    product.isCompound && (product.compoundTotalQuantity ?? 0) > 0
+      ? product.price / Number(product.compoundTotalQuantity)
+      : null;
   const productName = formatProductNameLines(
     product.name,
     3,
@@ -48,6 +52,7 @@ export function PosterPdfCard({ product, size }: PosterPdfCardProps) {
         <PosterPdfProductName name={productName} size={size} />
         <PosterPdfPricingSection
           cents={cents}
+          compoundUnitPrice={compoundUnitPrice}
           hasPromo={hasPromo}
           int={int}
           isPack={isPack}
@@ -57,6 +62,7 @@ export function PosterPdfCard({ product, size }: PosterPdfCardProps) {
           originalPrice={product.originalPrice}
           qtdPagar={product.qtdPagar}
           qtdPromocao={product.qtdPromocao}
+          showCompoundUnitInfo={!!product.showCompoundUnitInfo}
           showOriginal={showOriginal}
           size={size}
           unit={product.unit}

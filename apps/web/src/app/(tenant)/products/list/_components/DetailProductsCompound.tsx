@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -12,7 +13,6 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatAsCurrency } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
 
 type CompoundItem =
   RouterOutputs["tenant"]["products"]["compound"]["compound"][number];

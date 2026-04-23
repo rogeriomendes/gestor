@@ -1,5 +1,17 @@
 "use client";
 
+import { PDFDownloadLink, PDFViewer, pdf } from "@react-pdf/renderer";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Boxes,
+  Download,
+  FileText,
+  LayoutGrid,
+  Pencil,
+  Printer,
+  Trash2,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
@@ -14,16 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { formatAsCurrency } from "@/lib/utils";
-import { PDFDownloadLink, PDFViewer, pdf } from "@react-pdf/renderer";
-import {
-  Download,
-  FileText,
-  LayoutGrid,
-  Pencil,
-  Printer,
-  Trash2,
-} from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { trpc } from "@/utils/trpc";
 import type { PosterProduct } from "./PosterPreview";
 import { ProductSelector } from "./ProductSelector";
 import { A3FullPosterPdfDocument } from "./pdf/A3FullPosterPdfDocument";
@@ -32,6 +35,7 @@ import { A4Grid2x2PosterPdfDocument } from "./pdf/A4Grid2x2PosterPdfDocument";
 import { A4Grid2x4PosterPdfDocument } from "./pdf/A4Grid2x4PosterPdfDocument";
 
 export function PosterBuilder() {
+  const queryClient = useQueryClient();
   const [products, setProducts] = useState<PosterProduct[]>([]);
   const [format, setFormat] = useState<
     "a4-full" | "a4-grid-2x4" | "a4-grid-2x2" | "a3-full"
@@ -45,14 +49,42 @@ export function PosterBuilder() {
   const [isGeneratingMobilePreview, setIsGeneratingMobilePreview] =
     useState(false);
   const [mobilePreviewUrl, setMobilePreviewUrl] = useState<string | null>(null);
+  const [compoundDetailProduct, setCompoundDetailProduct] =
+    useState<PosterProduct | null>(null);
 
-  const handleProductSelect = (product: any) => {
+  const handleProductSelect = async (product: any) => {
     // Map existing product type to PosterProduct
     const price = product.activePromotion?.PRECO_PROMOCAO
       ? Number(product.activePromotion.PRECO_PROMOCAO)
       : Number(product.VALOR_VENDA);
 
     const unit = product.unidade_produto?.SIGLA || "UN";
+
+    const isCompound = String(product.COMPOSTO ?? "N") === "S";
+    let compoundTotalQuantity: number | undefined;
+    let compoundItemsCount: number | undefined;
+    let compoundItems: PosterProduct["compoundItems"];
+
+    if (isCompound) {
+      const compoundResult = await queryClient.fetchQuery(
+        trpc.tenant.products.compound.queryOptions({
+          id: Number(product.ID),
+        })
+      );
+
+      const quantities =
+        compoundResult?.compound?.map((item) => Number(item.QUANTIDADE) || 0) ??
+        [];
+      const total = quantities.reduce((sum, qty) => sum + qty, 0);
+
+      compoundTotalQuantity = total > 0 ? total : undefined;
+      compoundItemsCount = compoundResult?.compound?.length ?? 0;
+      compoundItems =
+        compoundResult?.compound?.map((item) => ({
+          description: item.DESCRICAO ?? "Sem descrição",
+          quantity: Number(item.QUANTIDADE) || 0,
+        })) ?? [];
+    }
 
     // Map existing product type to PosterProduct
     const newProduct: PosterProduct = {
@@ -71,8 +103,13 @@ export function PosterBuilder() {
       qtdPagar: product.activePromotion?.QTD_PAGAR
         ? Number(product.activePromotion.QTD_PAGAR)
         : undefined,
+      compoundItemsCount,
+      compoundItems,
+      compoundTotalQuantity,
       ean: product.GTIN,
       code: product.CODIGO_INTERNO || String(product.ID),
+      isCompound,
+      showCompoundUnitInfo: false,
     };
     setProducts((prev) => [...prev, newProduct]);
   };
@@ -89,6 +126,16 @@ export function PosterBuilder() {
 
   const removeProduct = (internalId: string) => {
     setProducts((prev) => prev.filter((p) => p.internalId !== internalId));
+  };
+
+  const toggleShowCompoundUnitInfo = (internalId: string) => {
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.internalId === internalId
+          ? { ...p, showCompoundUnitInfo: !p.showCompoundUnitInfo }
+          : p
+      )
+    );
   };
 
   const startEdit = (product: PosterProduct) => {
@@ -403,6 +450,18 @@ export function PosterBuilder() {
                         {formatAsCurrency(p.price)} {p.unit}
                       </span>
                     )}
+                    {p.isCompound ? (
+                      <div className="mt-1 flex items-center gap-2 text-[11px]">
+                        <button
+                          className="inline-flex items-center gap-1 rounded bg-blue-100 px-1.5 py-0.5 font-medium text-blue-700 hover:bg-blue-200"
+                          onClick={() => setCompoundDetailProduct(p)}
+                          type="button"
+                        >
+                          <Boxes className="h-3 w-3" />
+                          Composição ({p.compoundItemsCount ?? 0})
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
@@ -427,6 +486,19 @@ export function PosterBuilder() {
                       <span className="font-bold text-[10px]">DE</span>
                     </Button>
                   )}
+                  {p.isCompound &&
+                  p.compoundTotalQuantity &&
+                  p.compoundTotalQuantity > 0 ? (
+                    <Button
+                      className="h-6 px-2 text-[10px]"
+                      onClick={() => toggleShowCompoundUnitInfo(p.internalId!)}
+                      size="sm"
+                      title="Mostrar informação de valor unitário da composição"
+                      variant={p.showCompoundUnitInfo ? "secondary" : "ghost"}
+                    >
+                      INFO
+                    </Button>
+                  ) : null}
                   <Button
                     className="h-6 w-6 text-muted-foreground hover:text-destructive"
                     onClick={() => removeProduct(p.internalId!)}
@@ -509,6 +581,60 @@ export function PosterBuilder() {
           </div>
         )}
       </div>
+
+      <Dialog
+        onOpenChange={(open) => !open && setCompoundDetailProduct(null)}
+        open={!!compoundDetailProduct}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Itens da composição</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="rounded-md border p-2">
+              <p className="font-semibold text-sm uppercase">
+                {compoundDetailProduct?.name}
+              </p>
+            </div>
+            <div className="max-h-72 space-y-1 overflow-y-auto rounded-md border p-2">
+              {compoundDetailProduct?.compoundItems &&
+              compoundDetailProduct.compoundItems.length > 0 ? (
+                compoundDetailProduct.compoundItems.map((item, index) => (
+                  <div
+                    className="flex items-center justify-between rounded-sm bg-muted/40 px-2 py-1"
+                    key={`${item.description}-${index}`}
+                  >
+                    <span className="mr-3 truncate text-sm">
+                      {item.description}
+                    </span>
+                    <span className="font-semibold text-sm">
+                      Qtd: {item.quantity}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  Não há itens de composição para este produto.
+                </p>
+              )}
+            </div>
+            {compoundDetailProduct?.compoundTotalQuantity ? (
+              <p className="font-medium text-sm">
+                Quantidade total da composição:{" "}
+                {compoundDetailProduct.compoundTotalQuantity}
+              </p>
+            ) : null}
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => setCompoundDetailProduct(null)}
+              variant="outline"
+            >
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         onOpenChange={(open) => !open && setEditingProduct(null)}

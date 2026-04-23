@@ -5,6 +5,7 @@ import type { PdfPosterFormat } from "./poster-pdf-presets";
 
 interface PosterPdfPricingSectionProps {
   cents: string;
+  compoundUnitPrice: number | null;
   hasPromo: boolean;
   int: string;
   isPack: boolean;
@@ -14,6 +15,7 @@ interface PosterPdfPricingSectionProps {
   originalPrice: number;
   qtdPagar?: number;
   qtdPromocao?: number;
+  showCompoundUnitInfo: boolean;
   showOriginal: boolean;
   size: PdfPosterFormat;
   unit: string;
@@ -21,6 +23,7 @@ interface PosterPdfPricingSectionProps {
 
 export function PosterPdfPricingSection({
   cents,
+  compoundUnitPrice,
   hasPromo,
   int,
   isPack,
@@ -30,6 +33,7 @@ export function PosterPdfPricingSection({
   originalPrice,
   qtdPagar,
   qtdPromocao,
+  showCompoundUnitInfo,
   showOriginal,
   size,
   unit,
@@ -59,9 +63,11 @@ export function PosterPdfPricingSection({
 
       <PosterPdfPriceBlock
         cents={cents}
+        compoundUnitPrice={compoundUnitPrice}
         int={int}
         isPack={isPack}
         qtdPromocao={qtdPromocao}
+        showCompoundUnitInfo={showCompoundUnitInfo}
         size={size}
         unit={unit}
       />
