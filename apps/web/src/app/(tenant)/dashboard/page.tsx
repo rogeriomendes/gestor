@@ -1,5 +1,11 @@
 "use client";
 
+import { PageLayout } from "@/components/layouts/page-layout";
+import { MetricCard } from "@/components/metric-card";
+import { PercentDiffBadge } from "@/components/percent-diff-badge";
+import { useCompany } from "@/contexts/company-context";
+import { useTenant } from "@/contexts/tenant-context";
+import { trpc } from "@/utils/trpc";
 import { useQuery } from "@tanstack/react-query";
 import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -7,12 +13,6 @@ import { ArrowUpIcon } from "lucide-react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
-import { PageLayout } from "@/components/layouts/page-layout";
-import { MetricCard } from "@/components/metric-card";
-import { PercentDiffBadge } from "@/components/percent-diff-badge";
-import { useCompany } from "@/contexts/company-context";
-import { useTenant } from "@/contexts/tenant-context";
-import { trpc } from "@/utils/trpc";
 import { BudgetCard } from "./_components/BudgetCard";
 import { SalesChartCard } from "./_components/SalesChartCard";
 
@@ -144,61 +144,63 @@ export default function DashboardPage() {
       subtitle="Visão geral do seu cliente"
       title="Dashboard"
     >
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-4">
-        <MetricCard
-          badge={
-            <PercentDiffBadge
-              currentValue={previousTotal}
-              description={comparisonPreviousVsTwoMonths}
-              label={comparisonPreviousVsTwoMonths}
-              previousValue={twoMonthsAgoTotal}
-            />
-          }
-          isLoading={getPreviousMonthLoading || twoMonthsAgoLoading}
-          subtitle={dateLabels.previousMonth}
-          title="Vendas do Mês Anterior"
-          value={Number(getPreviousMonthData?.totalAmount)}
-        />
-        <MetricCard
-          badge={
-            <PercentDiffBadge
-              currentValue={currentTotal}
-              description={comparisonCurrentVsPrevious}
-              label={comparisonCurrentVsPrevious}
-              previousValue={previousTotal}
-            />
-          }
-          isLoading={getCurrentMonthLoading}
-          subtitle={dateLabels.currentMonth}
-          title="Vendas do Mês"
-          value={Number(getCurrentMonthData?.totalAmount)}
-        />
-        <MetricCard
-          badge={
-            <PercentDiffBadge
-              currentValue={lastDayValue}
-              description={comparisonDayVsPreviousWeek}
-              label={comparisonDayVsPreviousWeek}
-              previousValue={previousWeekDayValue}
-            />
-          }
-          isLoading={latest30DaysLoading}
-          subtitle={dateLabels.currentDay}
-          title="Vendas do Dia"
-          value={lastDayValue}
-        />
-        <MetricCard
-          icon={ArrowUpIcon}
-          iconClassName="size-5 text-red-500"
-          isLoading={totalBillsPayAmountLoading}
-          onClick={() => router.push("/financial/bills/pay" as Route)}
-          title="Total a Pagar"
-          value={Number(totalBillsPayAmountData?.totalAmount)}
-        />
-      </div>
-      <div className="grid gap-2 md:grid-cols-3 md:gap-4 lg:grid-cols-6">
-        <SalesChartCard />
-        <BudgetCard />
+      <div className="space-y-2 md:space-y-4">
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
+          <MetricCard
+            badge={
+              <PercentDiffBadge
+                currentValue={previousTotal}
+                description={comparisonPreviousVsTwoMonths}
+                label={comparisonPreviousVsTwoMonths}
+                previousValue={twoMonthsAgoTotal}
+              />
+            }
+            isLoading={getPreviousMonthLoading || twoMonthsAgoLoading}
+            subtitle={dateLabels.previousMonth}
+            title="Vendas do Mês Anterior"
+            value={Number(getPreviousMonthData?.totalAmount)}
+          />
+          <MetricCard
+            badge={
+              <PercentDiffBadge
+                currentValue={currentTotal}
+                description={comparisonCurrentVsPrevious}
+                label={comparisonCurrentVsPrevious}
+                previousValue={previousTotal}
+              />
+            }
+            isLoading={getCurrentMonthLoading}
+            subtitle={dateLabels.currentMonth}
+            title="Vendas do Mês"
+            value={Number(getCurrentMonthData?.totalAmount)}
+          />
+          <MetricCard
+            badge={
+              <PercentDiffBadge
+                currentValue={lastDayValue}
+                description={comparisonDayVsPreviousWeek}
+                label={comparisonDayVsPreviousWeek}
+                previousValue={previousWeekDayValue}
+              />
+            }
+            isLoading={latest30DaysLoading}
+            subtitle={dateLabels.currentDay}
+            title="Vendas do Dia"
+            value={lastDayValue}
+          />
+          <MetricCard
+            icon={ArrowUpIcon}
+            iconClassName="size-5 text-red-500"
+            isLoading={totalBillsPayAmountLoading}
+            onClick={() => router.push("/financial/bills/pay" as Route)}
+            title="Total a Pagar"
+            value={Number(totalBillsPayAmountData?.totalAmount)}
+          />
+        </div>
+        <div className="grid gap-2 md:grid-cols-3 md:gap-4 lg:grid-cols-6">
+          <SalesChartCard />
+          <BudgetCard />
+        </div>
       </div>
     </PageLayout>
   );

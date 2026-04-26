@@ -95,10 +95,6 @@ export function PosterPdfPriceBlock({
     },
     compoundInfo: {
       alignSelf: "center",
-      // backgroundColor: "#EEF2FF",
-      // borderColor: "#C7D2FE",
-      borderRadius: 6,
-      borderWidth: 1,
       color: "#1F2937",
       fontFamily: "Oswald",
       fontSize: Math.max(10, Math.floor(preset.promoHelperFontSize * 0.8)),
