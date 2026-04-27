@@ -104,6 +104,12 @@ export const salesRouter = router({
                 CANCELADO_ID_USUARIO: null,
                 nfe_cabecalho: { some: { STATUS_NOTA: "7" } },
               };
+            case "INU":
+              return {
+                DEVOLUCAO: { not: "S" },
+                CANCELADO_ID_USUARIO: null,
+                nfe_cabecalho: { some: { STATUS_NOTA: "8" } },
+              };
             case "AGU":
               return {
                 DEVOLUCAO: { not: "S" },
@@ -119,7 +125,7 @@ export const salesRouter = router({
                   { nfe_cabecalho: { some: { STATUS_NOTA: null } } },
                   {
                     nfe_cabecalho: {
-                      some: { STATUS_NOTA: { notIn: ["5", "7", "9"] } },
+                      some: { STATUS_NOTA: { notIn: ["5", "7", "8", "9"] } },
                     },
                   },
                 ],

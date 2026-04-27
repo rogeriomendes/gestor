@@ -15,7 +15,7 @@ export function isNfceDevolucao(devolucao?: string | null): boolean {
   );
 }
 
-// Vendas e recibos (NFCe): usa devolução/cancelado e STATUS_NOTA (5,7,9)
+// Vendas e recibos (NFCe): usa devolução/cancelado e STATUS_NOTA (5,7,8,9)
 export function getNfceStatusInfo(params: {
   devolucao?: string | null;
   canceladoIdUsuario?: number | null;
@@ -53,6 +53,13 @@ export function getNfceStatusInfo(params: {
         variant: "secondary",
         color: "bg-yellow-500/15 text-yellow-600 dark:text-yellow-400",
         colorDot: "bg-yellow-600 dark:bg-yellow-400",
+      };
+    case "8":
+      return {
+        label: "Inutilizada",
+        variant: "secondary",
+        color: "bg-orange-500/15 text-orange-600 dark:text-orange-400",
+        colorDot: "bg-orange-600 dark:bg-orange-400",
       };
     case "9":
       return {

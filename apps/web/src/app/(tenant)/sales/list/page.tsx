@@ -137,6 +137,11 @@ export default function SalesList() {
       info: getNfceStatusInfo({ nfeStatus: "7" }),
     },
     {
+      value: "INU",
+      label: "Inutilizada",
+      info: getNfceStatusInfo({ nfeStatus: "8" }),
+    },
+    {
       value: "AGU",
       label: "Aguardando autorização",
       info: getNfceStatusInfo({ nfeStatus: "9" }),
