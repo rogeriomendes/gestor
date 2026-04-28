@@ -287,12 +287,15 @@ export const salesRouter = router({
             NFCE: true,
             SERIE_NFE: true,
             OBSERVACAO: true,
+            PDV_CLIENTE_NOME: true,
+            PDV_CLIENTE_CPF_CNPJ: true,
             nfe_cabecalho: {
               select: {
                 STATUS_NOTA: true,
                 RETORNO_CODIGO: true,
                 RETORNO_MOTIVO: true,
                 CHAVE_ACESSO: true,
+                XML_NFE: true,
                 empresa: {
                   select: {
                     RAZAO_SOCIAL: true,
@@ -343,6 +346,20 @@ export const salesRouter = router({
                 },
               },
             },
+            venda_detalhe: {
+              select: {
+                produto: {
+                  select: {
+                    unidade_produto: {
+                      select: {
+                        SIGLA: true,
+                        PODE_FRACIONAR: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         });
 
@@ -376,9 +393,38 @@ export const salesRouter = router({
         }
 
         // Combinar dados da venda com dados da conta caixa e empresa
+        const xmlNfeText = (() => {
+          const rawXml = sales?.nfe_cabecalho?.[0]?.XML_NFE;
+          if (!rawXml) {
+            return null;
+          }
+          try {
+            return Buffer.from(rawXml).toString("utf-8");
+          } catch {
+            return null;
+          }
+        })();
+
         const salesWithAccount = sales
           ? {
               ...sales,
+              nfe_cabecalho: sales.nfe_cabecalho.map((item, index) => ({
+                ...item,
+                XML_NFE_TEXT: index === 0 ? xmlNfeText : null,
+              })),
+              unitFractionRules: Object.fromEntries(
+                (sales.venda_detalhe ?? [])
+                  .map((item) => item.produto?.unidade_produto)
+                  .filter(
+                    (
+                      unit
+                    ): unit is {
+                      SIGLA: string | null;
+                      PODE_FRACIONAR: string | null;
+                    } => !!unit?.SIGLA
+                  )
+                  .map((unit) => [String(unit.SIGLA).toUpperCase(), unit])
+              ),
               conta_caixa: contaCaixa,
               empresa,
             }

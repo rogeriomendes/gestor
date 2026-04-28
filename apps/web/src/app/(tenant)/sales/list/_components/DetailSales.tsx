@@ -3,6 +3,7 @@ import {
   BarcodeIcon,
   ClockIcon,
   DotIcon,
+  FileSearchIcon,
   InfoIcon,
   LandmarkIcon,
   SheetIcon,
@@ -44,7 +45,35 @@ import { cn, formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
 import { DetailBudget } from "../../budget/_components/DetailBudget";
 import { DetailSalesProducts } from "./DetailSalesProducts";
+import { NfcePrintPreview } from "./NfcePrintPreview";
 import { PaymentSales } from "./PaymentSales";
+
+function normalizeXmlNfe(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (value instanceof Uint8Array) {
+    return new TextDecoder().decode(value);
+  }
+
+  if (
+    value &&
+    typeof value === "object" &&
+    "length" in value &&
+    typeof (value as { length: unknown }).length === "number"
+  ) {
+    try {
+      return new TextDecoder().decode(
+        Uint8Array.from(value as ArrayLike<number>)
+      );
+    } catch {
+      return "";
+    }
+  }
+
+  return "";
+}
 
 export function DetailSales({
   saleId,
@@ -60,6 +89,7 @@ export function DetailSales({
   const { tenant } = useTenant();
   const isMobile = useIsMobile();
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
+  const [isNfcePreviewOpen, setIsNfcePreviewOpen] = useState(false);
 
   const {
     data: saleData,
@@ -75,6 +105,11 @@ export function DetailSales({
     canceladoIdUsuario: saleData?.sales?.CANCELADO_ID_USUARIO,
     nfeStatus: saleData?.sales?.nfe_cabecalho[0]?.STATUS_NOTA ?? null,
   });
+
+  const xmlNfe = normalizeXmlNfe(
+    saleData?.sales?.nfe_cabecalho[0]?.XML_NFE_TEXT ??
+      saleData?.sales?.nfe_cabecalho[0]?.XML_NFE
+  );
 
   return (
     <Credenza onOpenChange={onOpenChange} open={open}>
@@ -202,6 +237,19 @@ export function DetailSales({
                         </PopoverContent>
                       </Popover>
                     </span>
+                  )}
+                  {xmlNfe && (
+                    <div className="flex flex-row items-center">
+                      <Button
+                        className="pl-0"
+                        onClick={() => setIsNfcePreviewOpen(true)}
+                        size="sm"
+                        variant="link"
+                      >
+                        <FileSearchIcon className="size-4" />
+                        Visualizar DANFE NFC-e
+                      </Button>
+                    </div>
                   )}
                   <div className="flex flex-row">
                     <Popover>
@@ -423,6 +471,33 @@ export function DetailSales({
             </CredenzaClose>
           </CredenzaFooter>
         )}
+        <Credenza onOpenChange={setIsNfcePreviewOpen} open={isNfcePreviewOpen}>
+          <CredenzaContent>
+            <CredenzaHeader>
+              <CredenzaTitle>Visualizar DANFE NFC-e</CredenzaTitle>
+              <CredenzaDescription>
+                Visualização de impressão da NFC-e
+              </CredenzaDescription>
+            </CredenzaHeader>
+            <CredenzaBody>
+              <NfcePrintPreview
+                consumerDocument={saleData?.sales?.PDV_CLIENTE_CPF_CNPJ}
+                consumerName={saleData?.sales?.PDV_CLIENTE_NOME}
+                sellerName={
+                  saleData?.sales?.vendedor?.colaborador?.pessoa?.NOME
+                }
+                unitFractionRules={
+                  saleData?.sales?.unitFractionRules ?? undefined
+                }
+                valorTroco={saleData?.sales?.venda_recebimento?.reduce(
+                  (sum, r) => sum + (Number(r.VALOR_TROCO) || 0),
+                  0
+                )}
+                xml={xmlNfe}
+              />
+            </CredenzaBody>
+          </CredenzaContent>
+        </Credenza>
       </CredenzaContent>
     </Credenza>
   );
