@@ -86,16 +86,45 @@ export interface Ide {
 }
 
 export interface ProdutoDetalhe {
+  imposto?: Imposto;
+  infAdProd?: string;
   prod: Produto;
 }
 
 export interface Produto {
+  CEST?: string;
+  CFOP?: string;
+  cEAN?: string;
+  cEANTrib?: string;
   cProd: string;
+  EXTIPI?: string;
+  indTot?: string;
+  NCM?: string;
   qCom: string;
+  qTrib?: string;
   uCom: string;
+  uTrib?: string;
+  vDesc?: string;
+  vFrete?: string;
+  vOutro?: string;
   vProd: string;
+  vSeg?: string;
   vUnCom: string;
+  vUnTrib?: string;
   xProd: string;
+}
+
+export interface Imposto {
+  COFINS?: Record<string, { pCOFINS?: string; vBC?: string; vCOFINS?: string }>;
+  ICMS?: Record<string, { pICMS?: string; vBC?: string; vICMS?: string }>;
+  IPI?: {
+    IPITrib?: {
+      pIPI?: string;
+      vBC?: string;
+      vIPI?: string;
+    };
+  };
+  PIS?: Record<string, { pPIS?: string; vBC?: string; vPIS?: string }>;
 }
 
 export interface Total {
