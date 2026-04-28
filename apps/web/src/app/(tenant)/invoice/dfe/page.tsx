@@ -203,6 +203,7 @@ export default function InvoiceDfeList() {
       {selectedDfeId && (
         <DetailDfe
           entryID={selectedDfeId}
+          key={selectedDfeId}
           onOpenChange={setIsModalOpen}
           open={isModalOpen}
         />

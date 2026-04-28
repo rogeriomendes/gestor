@@ -1,5 +1,6 @@
 "use client";
 
+import QRCode from "react-qr-code";
 import { NfeAccessKey } from "@/components/nfe-access-key";
 import { formatCNPJ } from "@/lib/format-cnpj";
 import { formatDateTime } from "@/lib/format-date";
@@ -8,7 +9,6 @@ import {
   type UnitFractionRulesMap,
 } from "@/lib/product-quantity-format";
 import { formatAsCurrency } from "@/lib/utils";
-import QRCode from "react-qr-code";
 
 /** Substitui "ADM" (palavra inteira) pelo nome do vendedor quando disponível. */
 const ADM_TOKEN = /\bADM\b/g;

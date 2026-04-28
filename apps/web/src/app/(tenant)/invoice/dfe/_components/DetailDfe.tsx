@@ -144,14 +144,19 @@ export function DetailDfe({
 
   const xml = decodeDocXml(invoice?.DOCXML);
 
-  // Resetar nfe quando entryID mudar
+  // Reseta o XML parseado ao trocar de DFe para evitar estado antigo
   useEffect(() => {
     setNfe(null);
-  }, []);
+  }, [entryID, open]);
 
   useEffect(() => {
+    let isCurrent = true;
+
     if (!xml) {
-      return;
+      setNfe(null);
+      return () => {
+        isCurrent = false;
+      };
     }
 
     const parser = new xml2js.Parser({ explicitArray: false });
@@ -159,10 +164,23 @@ export function DetailDfe({
     parser
       .parseStringPromise(xml)
       .then((result: { nfeProc: { NFe: { infNFe: NFeInfo } } }) => {
+        if (!isCurrent) {
+          return;
+        }
         const nfeData = result.nfeProc.NFe.infNFe;
         setNfe(nfeData);
       })
-      .catch((error) => console.error("Erro ao processar XML:", error));
+      .catch((error) => {
+        if (!isCurrent) {
+          return;
+        }
+        setNfe(null);
+        console.error("Erro ao processar XML:", error);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
   }, [xml]);
 
   return (
