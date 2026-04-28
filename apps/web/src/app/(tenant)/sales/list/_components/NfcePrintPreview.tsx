@@ -204,7 +204,7 @@ export function NfcePrintPreview({
   if (!data) {
     return (
       <div className="rounded-md border p-3 text-muted-foreground text-sm">
-        Não foi possível interpretar o XML da NFC-e.
+        Não foi possível recuperar a NFC-e.
       </div>
     );
   }
@@ -219,7 +219,7 @@ export function NfcePrintPreview({
 
   return (
     <div className="flex justify-center bg-zinc-200 px-4 py-2">
-      <div className="w-80 max-w-full bg-white px-2 py-1 font-mono text-[11px] text-black leading-tight">
+      <div className="w-80 max-w-full bg-white p-2 font-mono text-[11px] text-black leading-tight">
         <div className="text-center font-bold text-[12px] uppercase">
           {data.emitterName}
         </div>
@@ -262,7 +262,7 @@ export function NfcePrintPreview({
 
         <div className="space-y-0.5 border-black border-t border-dashed pt-2">
           <div className="flex justify-between">
-            <span>Qtde. Total de itens</span>
+            <span>Qtd. Total de Itens</span>
             <span>{data.items.length}</span>
           </div>
           <div className="flex justify-between">
@@ -297,12 +297,12 @@ export function NfcePrintPreview({
             </div>
           )}
         </div>
-        {showTroco ? (
+        {showTroco && (
           <div className="flex justify-between">
             <span>Troco R$</span>
             <span>{formatAsCurrency(trocoNum)}</span>
           </div>
-        ) : null}
+        )}
 
         <div className="mt-2 border-black border-t border-dashed pt-1.5 text-center text-[10px] leading-tight">
           <div className="pb-2 text-center font-bold">
@@ -332,11 +332,11 @@ export function NfcePrintPreview({
               ) : (
                 <div className="font-semibold">CONSUMIDOR NÃO IDENTIFICADO</div>
               )}
-              <div className="mt-1 font-bold">
+              <div className="mt-1 font-semibold">
                 NFC-e nº {data.number} Série {data.series}
               </div>
               <div>{data.issueDateTime}</div>
-              <div className="mt-1">Protocolo de Autorização</div>
+              <div className="mt-1 font-semibold">Protocolo de Autorização</div>
               <div>
                 {data.protocol
                   ? `${data.protocol} ${data.protocolDateTime}`
@@ -361,7 +361,7 @@ export function NfcePrintPreview({
           </div>
         ) : (
           <div className="mt-2 text-[10px]">
-            NFC-E EMITIDO PARA TESTE DE IMPRESSAO
+            NFC-E EMITIDO PARA TESTE DE IMPRESSÃO
           </div>
         )}
 
