@@ -1,6 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { ChevronDownIcon, ChevronUpIcon, PackageIcon } from "lucide-react";
-import { useState } from "react";
 import { DetailProducts } from "@/app/(tenant)/products/list/_components/DetailProducts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +6,9 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronDownIcon, ChevronUpIcon, PackageIcon } from "lucide-react";
+import { useState } from "react";
 
 type EntryProductItem =
   RouterOutputs["tenant"]["invoiceEntry"]["products"]["invoiceEntry"][number];
@@ -50,13 +50,13 @@ function fmtTotalLinhaXml(detail: {
   const total =
     Number(detail.XML_VLR_BRUTO_PROD) +
     (Number(detail.XML_QUANT_COM) ?? 0) *
-      (Number(detail.XML_VLR_FRETE ?? 0) +
-        Number(detail.XML_VLR_SEGURO ?? 0) +
-        Number(detail.XML_VLR_OUTRAS_DESPESAS ?? 0) +
-        Number(detail.XML_OUTROS_VALORES ?? 0) +
-        Number(detail.XML_VLR_ST ?? 0) +
-        Number(detail.XML_VLR_OUTROS_IMPOSTOS ?? 0) -
-        Number(detail.XML_VLR_DESCONTO ?? 0));
+    (Number(detail.XML_VLR_FRETE ?? 0) +
+      Number(detail.XML_VLR_SEGURO ?? 0) +
+      Number(detail.XML_VLR_OUTRAS_DESPESAS ?? 0) +
+      Number(detail.XML_OUTROS_VALORES ?? 0) +
+      Number(detail.XML_VLR_ST ?? 0) +
+      Number(detail.XML_VLR_OUTROS_IMPOSTOS ?? 0) -
+      Number(detail.XML_VLR_DESCONTO ?? 0));
   return formatAsCurrency(total);
 }
 
@@ -193,9 +193,6 @@ function ProductEntryDetail({
         <div>
           <span className="text-muted-foreground">Total:</span>{" "}
           <span className="font-medium">{fmtTotalLinhaXml(detail)}</span>
-          {/* <span className="mt-0.5 block text-[0.65rem] text-muted-foreground leading-snug">
-            bruto + frete + seguro + outras despesas + outros valores − desconto
-          </span> */}
         </div>
         {informacoesAdicionais && (
           <div className="col-span-2 border-t pt-2">
@@ -235,12 +232,6 @@ export function DetailEntryProducts({
         size="sm"
       >
         <CardContent className="group-data-[size=sm]/card:px-1 group-data-[size=sm]/card:md:px-2">
-          {/* <div className="mb-2.5 flex items-center gap-1 text-muted-foreground text-xs">
-            <LinkIcon className="size-3" />
-            Clique em um produto para ver dados do XML de entrada; use o ícone
-            de cadastro para abrir a ficha do produto vinculado.
-          </div> */}
-
           {invoiceEntryProductsQuery.isLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, index) => (
@@ -304,7 +295,7 @@ export function DetailEntryProducts({
                             <div className="flex flex-col items-center text-muted-foreground text-xs md:text-sm">
                               {formatAsCurrency(
                                 Number(entry.VALOR_TOTAL) /
-                                  Number(entry.QUANTIDADE_COMERCIAL)
+                                Number(entry.QUANTIDADE_COMERCIAL)
                               )}{" "}
                               {entry.UNIDADE_COMERCIAL}
                             </div>

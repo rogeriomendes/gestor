@@ -246,8 +246,8 @@ export default function ProductsList() {
           icon={<PackageIcon />}
           onValueChange={setInactive}
           options={inactiveOptions}
-          placeholder="Status"
-          searchPlaceholder="Buscar status..."
+          placeholder="Mostrar"
+          searchPlaceholder="Buscar mostrar..."
           value={inactive}
         />
       </div>
