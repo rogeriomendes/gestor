@@ -1,3 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import { ChevronDownIcon, ChevronUpIcon, PackageIcon } from "lucide-react";
+import { useState } from "react";
 import { DetailProducts } from "@/app/(tenant)/products/list/_components/DetailProducts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,9 +9,6 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatAsCurrency, removeLeadingZero } from "@/lib/utils";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { ChevronDownIcon, ChevronUpIcon, PackageIcon } from "lucide-react";
-import { useState } from "react";
 
 type EntryProductItem =
   RouterOutputs["tenant"]["invoiceEntry"]["products"]["invoiceEntry"][number];
@@ -50,13 +50,13 @@ function fmtTotalLinhaXml(detail: {
   const total =
     Number(detail.XML_VLR_BRUTO_PROD) +
     (Number(detail.XML_QUANT_COM) ?? 0) *
-    (Number(detail.XML_VLR_FRETE ?? 0) +
-      Number(detail.XML_VLR_SEGURO ?? 0) +
-      Number(detail.XML_VLR_OUTRAS_DESPESAS ?? 0) +
-      Number(detail.XML_OUTROS_VALORES ?? 0) +
-      Number(detail.XML_VLR_ST ?? 0) +
-      Number(detail.XML_VLR_OUTROS_IMPOSTOS ?? 0) -
-      Number(detail.XML_VLR_DESCONTO ?? 0));
+      (Number(detail.XML_VLR_FRETE ?? 0) +
+        Number(detail.XML_VLR_SEGURO ?? 0) +
+        Number(detail.XML_VLR_OUTRAS_DESPESAS ?? 0) +
+        Number(detail.XML_OUTROS_VALORES ?? 0) +
+        Number(detail.XML_VLR_ST ?? 0) +
+        Number(detail.XML_VLR_OUTROS_IMPOSTOS ?? 0) -
+        Number(detail.XML_VLR_DESCONTO ?? 0));
   return formatAsCurrency(total);
 }
 
@@ -295,7 +295,7 @@ export function DetailEntryProducts({
                             <div className="flex flex-col items-center text-muted-foreground text-xs md:text-sm">
                               {formatAsCurrency(
                                 Number(entry.VALOR_TOTAL) /
-                                Number(entry.QUANTIDADE_COMERCIAL)
+                                  Number(entry.QUANTIDADE_COMERCIAL)
                               )}{" "}
                               {entry.UNIDADE_COMERCIAL}
                             </div>

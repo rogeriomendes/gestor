@@ -1,15 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  Building2Icon,
-  ClockIcon,
-  DotIcon,
-  FileTextIcon,
-  LandmarkIcon,
-  XIcon,
-} from "lucide-react";
 import { CopyButton } from "@/components/copy-button";
 import { NfButton } from "@/components/nf-button";
 import { NfeAccessKey } from "@/components/nfe-access-key";
@@ -36,6 +26,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { formatCNPJ } from "@/lib/format-cnpj";
 import { formatDate } from "@/lib/format-date";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  Building2Icon,
+  ClockIcon,
+  FileTextIcon,
+  LandmarkIcon,
+  XIcon,
+} from "lucide-react";
 import { DetailEntryCharge } from "./DetailEntryCharge";
 import { DetailEntryInformation } from "./DetailEntryInformation";
 import { DetailEntryProducts } from "./DetailEntryProducts";
@@ -57,7 +56,7 @@ export function DetailEntry({
 
   const invoiceEntryQuery = useQuery({
     ...trpc.tenant.invoiceEntry.byId.queryOptions({ id: entryID }),
-    enabled: !!tenant && (open ?? true),
+    enabled: !!tenant && entryID > 0 && (open ?? true),
   });
 
   return (
@@ -68,17 +67,15 @@ export function DetailEntry({
             {invoiceEntryQuery.isPending ? (
               <Skeleton className="h-6 w-48" />
             ) : (
-              <Popover>
-                <PopoverTrigger className="flex items-center text-left font-normal uppercase">
+              <div className="flex items-center">
+                Fornecedor:{" "}
+                <span className="ml-1 truncate uppercase">
                   {
                     invoiceEntryQuery.data?.invoiceEntry?.fornecedor?.pessoa
                       .NOME
                   }
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-2 text-xs">
-                  Fornecedor
-                </PopoverContent>
-              </Popover>
+                </span>
+              </div>
             )}
           </CredenzaTitle>
           <CredenzaDescription>
@@ -93,43 +90,50 @@ export function DetailEntry({
                 <>
                   {invoiceEntryQuery.data?.invoiceEntry?.fornecedor?.pessoa
                     ?.pessoa_juridica?.[0]?.CNPJ && (
-                    <div className="flex flex-row items-center space-x-0.5">
-                      <Popover>
-                        <PopoverTrigger className="flex items-center">
-                          <Building2Icon className="mr-2 size-4" />
-                          {formatCNPJ(
-                            invoiceEntryQuery.data?.invoiceEntry?.fornecedor
-                              ?.pessoa?.pessoa_juridica?.[0]?.CNPJ
-                          )}
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-2 text-xs">
-                          <div className="flex flex-col space-y-1">
-                            <span>CNPJ do fornecedor</span>
-                            <div className="flex items-center pt-2">
-                              <CopyButton
-                                text="Copiar CNPJ"
-                                value={
-                                  invoiceEntryQuery.data?.invoiceEntry
-                                    ?.fornecedor?.pessoa?.pessoa_juridica?.[0]
-                                    ?.CNPJ
-                                }
-                              />
+                      <div className="flex flex-row items-center space-x-0.5">
+                        <Popover>
+                          <PopoverTrigger className="flex cursor-pointer items-center">
+                            <Building2Icon className="mr-2 size-4" />
+                            CNPJ:{" "}
+                            <span className="ml-1">
+                              {formatCNPJ(
+                                invoiceEntryQuery.data?.invoiceEntry?.fornecedor
+                                  ?.pessoa?.pessoa_juridica?.[0]?.CNPJ
+                              )}
+                            </span>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-2 text-xs">
+                            <div className="flex flex-col space-y-1">
+                              <span>CNPJ do fornecedor</span>
+                              <div className="flex items-center pt-2">
+                                <CopyButton
+                                  text="Copiar CNPJ"
+                                  value={
+                                    invoiceEntryQuery.data?.invoiceEntry
+                                      ?.fornecedor?.pessoa?.pessoa_juridica?.[0]
+                                      ?.CNPJ
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  )}
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    )}
                   {invoiceEntryQuery.data?.invoiceEntry?.CHAVE_ACESSO && (
                     <div className="flex flex-row items-center">
                       <Popover>
-                        <PopoverTrigger className="flex items-center">
+                        <PopoverTrigger className="flex cursor-pointer items-center">
                           <BarcodeIcon className="mr-2 size-4" />
-                          <NfeAccessKey
-                            accessKey={
-                              invoiceEntryQuery.data?.invoiceEntry?.CHAVE_ACESSO
-                            }
-                          />
+                          Chave:{" "}
+                          <span className="ml-1">
+                            <NfeAccessKey
+                              accessKey={
+                                invoiceEntryQuery.data?.invoiceEntry
+                                  ?.CHAVE_ACESSO
+                              }
+                            />
+                          </span>
                         </PopoverTrigger>
                         <PopoverContent className="w-full p-2 text-xs">
                           <div className="flex flex-col space-y-1">
@@ -156,65 +160,43 @@ export function DetailEntry({
                     </div>
                   )}
                   <div className="flex flex-row items-center">
-                    <Popover>
-                      <PopoverTrigger className="flex items-center">
-                        <LandmarkIcon className="mr-2 size-4" />
-                        {
-                          invoiceEntryQuery.data?.invoiceEntry?.empresa
-                            ?.RAZAO_SOCIAL
-                        }
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Empresa
-                      </PopoverContent>
-                    </Popover>
+                    <span className="flex items-center">
+                      <LandmarkIcon className="mr-2 size-4" />
+                      Empresa:{" "}
+                      {invoiceEntryQuery.data?.invoiceEntry?.empresa
+                        ?.RAZAO_SOCIAL || "—"}
+                    </span>
                   </div>
-                  <div className="flex flex-row items-center">
-                    <Popover>
-                      <PopoverTrigger className="flex items-center">
-                        <FileTextIcon className="mr-2 size-4" />
-                        NFe {invoiceEntryQuery.data?.invoiceEntry?.NUMERO}
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Número da NFe
-                      </PopoverContent>
-                    </Popover>
-                    <DotIcon />
-                    <Popover>
-                      <PopoverTrigger className="flex items-center">
-                        <ClockIcon className="mr-2 size-4" />
-                        {invoiceEntryQuery.data?.invoiceEntry?.DATA_EMISSAO &&
-                          formatDate(
-                            new Date(
-                              invoiceEntryQuery.data.invoiceEntry.DATA_EMISSAO
-                            )
-                          )}
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Data de emissão
-                      </PopoverContent>
-                    </Popover>
-                    <DotIcon />
-                    <Popover>
-                      <PopoverTrigger className="flex items-center">
-                        <ClockIcon className="mr-2 size-4" />
-                        {invoiceEntryQuery.data?.invoiceEntry
-                          ?.DATA_ENTRADA_SAIDA &&
-                          formatDate(
-                            new Date(
-                              invoiceEntryQuery.data?.invoiceEntry
-                                ?.DATA_ENTRADA_SAIDA ?? ""
-                            )
-                          )}{" "}
-                        {
-                          invoiceEntryQuery.data?.invoiceEntry
-                            ?.HORA_ENTRADA_SAIDA
-                        }
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Data de entrada
-                      </PopoverContent>
-                    </Popover>
+                  <div className="grid grid-cols-1 gap-1 md:grid-cols-2">
+                    <span className="flex items-center md:col-span-2">
+                      <FileTextIcon className="mr-2 size-4" />
+                      NFe: {invoiceEntryQuery.data?.invoiceEntry?.NUMERO || "—"}
+                    </span>
+                    <span className="flex items-center">
+                      <ClockIcon className="mr-2 size-4" />
+                      Emissão:{" "}
+                      {invoiceEntryQuery.data?.invoiceEntry?.DATA_EMISSAO
+                        ? formatDate(
+                          new Date(
+                            invoiceEntryQuery.data.invoiceEntry.DATA_EMISSAO
+                          )
+                        )
+                        : "—"}
+                    </span>
+                    <span className="flex items-center">
+                      <ClockIcon className="mr-2 size-4" />
+                      Entrada:{" "}
+                      {invoiceEntryQuery.data?.invoiceEntry?.DATA_ENTRADA_SAIDA
+                        ? `${formatDate(
+                          new Date(
+                            invoiceEntryQuery.data?.invoiceEntry
+                              ?.DATA_ENTRADA_SAIDA
+                          )
+                        )} ${invoiceEntryQuery.data?.invoiceEntry
+                            ?.HORA_ENTRADA_SAIDA ?? ""
+                          }`.trim()
+                        : "—"}
+                    </span>
                   </div>
                 </>
               )}

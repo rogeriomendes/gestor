@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   BarcodeIcon,
   ClockIcon,
-  DotIcon,
   FileSearchIcon,
   InfoIcon,
   LandmarkIcon,
@@ -127,63 +126,24 @@ export function DetailSales({
                 "Erro ao carregar venda"
               ) : (
                 <>
-                  <Popover>
-                    <PopoverTrigger>
-                      <div className="flex items-center">
-                        {saleData?.sales?.ID}
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-2 text-xs">
-                      ID
-                    </PopoverContent>
-                  </Popover>
-                  {saleData?.sales?.ID_VENDA_ORCAMENTO_CABECALHO && (
-                    <>
-                      <DotIcon />
-                      <Popover>
-                        <PopoverTrigger>
-                          <div className="flex items-center">
-                            {saleData?.sales?.ID_VENDA_ORCAMENTO_CABECALHO}
-                          </div>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-2 text-xs">
-                          Orçamento
-                        </PopoverContent>
-                      </Popover>
-                    </>
-                  )}
-                  {saleData?.sales?.NFCE === "S" && (
-                    <>
-                      <DotIcon />
-                      <Popover>
-                        <PopoverTrigger>
-                          NFCe{" "}
-                          {removeLeadingZero(
-                            String(saleData?.sales?.NUMERO_NFE)
-                          )}
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-2 text-xs">
-                          NFCe
-                        </PopoverContent>
-                      </Popover>
-                    </>
-                  )}
-                  <Popover>
-                    <PopoverTrigger>
-                      <Badge
-                        className={cn(
-                          statusInfo.color,
-                          "ml-3 px-1.5 py-0.5 text-xs md:text-sm"
-                        )}
-                        variant={statusInfo.variant}
-                      >
-                        {statusInfo.label}
-                      </Badge>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-2 text-xs">
-                      Status: {statusInfo.label}
-                    </PopoverContent>
-                  </Popover>
+                  <div className="flex items-center">
+                    Venda #{saleData?.sales?.ID}
+                    {saleData?.sales?.NFCE === "S" && (
+                      <span className="ml-2 text-muted-foreground text-sm">
+                        NFC-e{" "}
+                        {removeLeadingZero(String(saleData?.sales?.NUMERO_NFE))}
+                      </span>
+                    )}
+                  </div>
+                  <Badge
+                    className={cn(
+                      statusInfo.color,
+                      "ml-3 px-1.5 py-0.5 text-xs md:text-sm"
+                    )}
+                    variant={statusInfo.variant}
+                  >
+                    {statusInfo.label}
+                  </Badge>
                 </>
               )}
             </div>
@@ -201,17 +161,28 @@ export function DetailSales({
                 "Não foi possível carregar os dados da venda. Tente novamente."
               ) : (
                 <>
+                  <span className="flex items-center">
+                    <LandmarkIcon className="mr-2 size-4" />
+                    Empresa:{" "}
+                    {saleData?.sales?.nfe_cabecalho[0]?.empresa?.RAZAO_SOCIAL
+                      ? saleData?.sales?.nfe_cabecalho[0]?.empresa?.RAZAO_SOCIAL
+                      : saleData?.sales?.empresa?.RAZAO_SOCIAL || "—"}
+                  </span>
                   {saleData?.sales?.nfe_cabecalho[0]?.CHAVE_ACESSO && (
                     <span className="flex flex-row items-center">
                       <Popover>
                         <PopoverTrigger>
-                          <span className="flex items-center">
+                          <span className="flex cursor-pointer items-center">
                             <BarcodeIcon className="mr-2 size-4" />
-                            <NfeAccessKey
-                              accessKey={
-                                saleData?.sales?.nfe_cabecalho[0]?.CHAVE_ACESSO
-                              }
-                            />
+                            Chave:{" "}
+                            <span className="ml-1">
+                              <NfeAccessKey
+                                accessKey={
+                                  saleData?.sales?.nfe_cabecalho[0]
+                                    ?.CHAVE_ACESSO
+                                }
+                              />
+                            </span>
                           </span>
                         </PopoverTrigger>
                         <PopoverContent className="w-full p-2 text-xs">
@@ -225,6 +196,21 @@ export function DetailSales({
                                     ?.CHAVE_ACESSO
                                 }
                               />
+                              {xmlNfe && (
+                                <Button
+                                  className={cn(
+                                    "h-6 cursor-pointer justify-start px-2 [&_svg]:size-3"
+                                  )}
+                                  onClick={() => setIsNfcePreviewOpen(true)}
+                                  size="sm"
+                                  variant="ghost"
+                                >
+                                  <FileSearchIcon />
+                                  <span className="text-muted-foreground text-xs">
+                                    Visualizar DANFE NFC-e
+                                  </span>
+                                </Button>
+                              )}
                               <NfButton
                                 chaveAcesso={
                                   saleData?.sales?.nfe_cabecalho[0]
@@ -238,12 +224,42 @@ export function DetailSales({
                       </Popover>
                     </span>
                   )}
+                  <div className="grid grid-cols-2 gap-1 md:grid-cols-2">
+                    <span className="flex items-center">
+                      <SquareUserIcon className="mr-2 size-4" />
+                      Conta caixa: {saleData?.sales?.conta_caixa?.NOME || "—"}
+                    </span>
+                    <span className="flex items-center">
+                      <UserIcon className="mr-2 size-4" />
+                      Vendedor:{" "}
+                      {saleData?.sales?.vendedor?.colaborador?.pessoa?.NOME ||
+                        "—"}
+                    </span>
+                    <span className="flex items-center">
+                      <UserIcon className="mr-2 size-4" />
+                      Cliente: {saleData?.sales?.cliente?.pessoa?.NOME || "—"}
+                    </span>
+                    {saleData?.sales?.ID_VENDA_ORCAMENTO_CABECALHO && (
+                      <span className="flex items-center">
+                        <SheetIcon className="mr-2 size-4" />
+                        Orçamento #
+                        {saleData?.sales?.ID_VENDA_ORCAMENTO_CABECALHO}
+                      </span>
+                    )}
+                    <span className="col-span-2 flex items-center md:col-span-1">
+                      <ClockIcon className="mr-2 size-4" />
+                      Data da venda:{" "}
+                      {saleData?.sales?.DATA_VENDA
+                        ? `${formatDate(saleData?.sales?.DATA_VENDA)} ${saleData?.sales?.HORA_SAIDA ?? ""}`.trim()
+                        : "—"}
+                    </span>
+                  </div>
                   {xmlNfe && (
                     <div className="flex flex-row items-center">
                       <Button
                         className="pl-0"
                         onClick={() => setIsNfcePreviewOpen(true)}
-                        size="sm"
+                        size="xs"
                         variant="link"
                       >
                         <FileSearchIcon className="size-4" />
@@ -251,82 +267,13 @@ export function DetailSales({
                       </Button>
                     </div>
                   )}
-                  <div className="flex flex-row">
-                    <Popover>
-                      <PopoverTrigger>
-                        <div className="flex items-center">
-                          <LandmarkIcon className="mr-2 size-4" />
-                          {saleData?.sales?.nfe_cabecalho[0]?.empresa
-                            ?.RAZAO_SOCIAL
-                            ? saleData?.sales?.nfe_cabecalho[0]?.empresa
-                                ?.RAZAO_SOCIAL
-                            : saleData?.sales?.empresa?.RAZAO_SOCIAL}
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Empresa
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="flex flex-row">
-                    <Popover>
-                      <PopoverTrigger>
-                        <div className="flex items-center">
-                          <SquareUserIcon className="mr-2 size-4" />
-                          {saleData?.sales?.conta_caixa?.NOME}
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Conta caixa
-                      </PopoverContent>
-                    </Popover>
-                    <DotIcon />
-                    <Popover>
-                      <PopoverTrigger>
-                        <div className="flex items-center">
-                          <UserIcon className="mr-2 size-4" />
-                          {saleData?.sales?.vendedor.colaborador?.pessoa.NOME}
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Vendedor
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="flex flex-row">
-                    <Popover>
-                      <PopoverTrigger>
-                        <div className="flex items-center">
-                          <UserIcon className="mr-2 size-4" />
-                          {saleData?.sales?.cliente.pessoa.NOME}
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Cliente
-                      </PopoverContent>
-                    </Popover>
-                    <DotIcon />
-                    <Popover>
-                      <PopoverTrigger>
-                        <div className="flex items-center">
-                          <ClockIcon className="mr-2 size-4" />
-                          {saleData?.sales?.DATA_VENDA &&
-                            formatDate(saleData?.sales?.DATA_VENDA)}{" "}
-                          {saleData?.sales?.HORA_SAIDA}
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Data da venda
-                      </PopoverContent>
-                    </Popover>
-                  </div>
                   {!fromBudget &&
                     saleData?.sales?.ID_VENDA_ORCAMENTO_CABECALHO && (
                       <div className="flex flex-row items-center">
                         <Button
                           className="pl-0"
                           onClick={() => setIsBudgetModalOpen(true)}
-                          size="sm"
+                          size="xs"
                           variant="link"
                         >
                           <SheetIcon className="size-4" />

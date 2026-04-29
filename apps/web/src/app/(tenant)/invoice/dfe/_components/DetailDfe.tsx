@@ -1,17 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  Building2Icon,
-  ClockIcon,
-  DotIcon,
-  FileTextIcon,
-  FileXIcon,
-  GitCompareArrowsIcon,
-  LandmarkIcon,
-  XIcon,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import xml2js from "xml2js";
 import { CopyButton } from "@/components/copy-button";
 import { NfButton } from "@/components/nf-button";
 import { NfeAccessKey } from "@/components/nfe-access-key";
@@ -41,6 +27,19 @@ import { formatCNPJ } from "@/lib/format-cnpj";
 import { formatDate } from "@/lib/format-date";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  Building2Icon,
+  ClockIcon,
+  FileTextIcon,
+  FileXIcon,
+  GitCompareArrowsIcon,
+  LandmarkIcon,
+  XIcon,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import xml2js from "xml2js";
 import { DetailDfeCharge } from "./DetailDfeCharge";
 import { DetailDfeInformation } from "./DetailDfeInformation";
 import { DetailDfeProducts } from "./DetailDfeProducts";
@@ -217,14 +216,12 @@ export function DetailDfe({
       <CredenzaContent>
         <CredenzaHeader>
           <CredenzaTitle>
-            <Popover>
-              <PopoverTrigger className="flex items-center text-left font-normal uppercase">
+            <div className="flex items-center">
+              Fornecedor:{" "}
+              <span className="ml-1 truncate uppercase">
                 {invoice?.RAZAO_SOCIAL}
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-2 text-xs">
-                Fornecedor
-              </PopoverContent>
-            </Popover>
+              </span>
+            </div>
           </CredenzaTitle>
           <CredenzaDescription>
             <div className="flex flex-col space-y-1">
@@ -237,26 +234,23 @@ export function DetailDfe({
               ) : (
                 <>
                   {nfe?.ide.natOp && (
-                    <div className="flex flex-row items-center">
-                      <Popover>
-                        <PopoverTrigger className="flex items-center text-left uppercase">
-                          <GitCompareArrowsIcon className="mr-2 size-4 shrink-0" />
-                          {nfe?.ide.natOp.length > 50
-                            ? `${nfe?.ide.natOp.slice(0, 47)}...`
-                            : nfe?.ide.natOp}
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-2 text-xs">
-                          Natureza da operação
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                    <span className="flex items-center">
+                      <GitCompareArrowsIcon className="mr-2 size-4 shrink-0" />
+                      Natureza:{" "}
+                      <span className="ml-1 truncate uppercase">
+                        {nfe?.ide.natOp}
+                      </span>
+                    </span>
                   )}
                   {invoice?.CNPJ_CPF && (
                     <div className="flex flex-row items-center space-x-0.5">
                       <Popover>
-                        <PopoverTrigger className="flex items-center">
+                        <PopoverTrigger className="flex cursor-pointer items-center">
                           <Building2Icon className="mr-2 size-4" />
-                          {formatCNPJ(invoice?.CNPJ_CPF)}
+                          CNPJ:{" "}
+                          <span className="ml-1">
+                            {formatCNPJ(invoice?.CNPJ_CPF)}
+                          </span>
                         </PopoverTrigger>
                         <PopoverContent className="w-full p-2 text-xs">
                           <div className="flex flex-col space-y-1">
@@ -275,9 +269,12 @@ export function DetailDfe({
                   {invoice?.CHAVE_ACESSO && (
                     <div className="flex flex-row items-center">
                       <Popover>
-                        <PopoverTrigger className="flex items-center">
+                        <PopoverTrigger className="flex cursor-pointer items-center">
                           <BarcodeIcon className="mr-2 size-4" />
-                          <NfeAccessKey accessKey={invoice?.CHAVE_ACESSO} />
+                          Chave:{" "}
+                          <span className="ml-1">
+                            <NfeAccessKey accessKey={invoice?.CHAVE_ACESSO} />
+                          </span>
                         </PopoverTrigger>
                         <PopoverContent className="w-full p-2 text-xs">
                           <div className="flex flex-col space-y-1">
@@ -298,50 +295,26 @@ export function DetailDfe({
                     </div>
                   )}
                   <div className="flex flex-row items-center">
-                    <Popover>
-                      <PopoverTrigger className="flex items-center">
-                        <LandmarkIcon className="mr-2 size-4 shrink-0" />
-                        {invoice?.empresa?.RAZAO_SOCIAL}
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Empresa
-                      </PopoverContent>
-                    </Popover>
+                    <span className="flex items-center">
+                      <LandmarkIcon className="mr-2 size-4 shrink-0" />
+                      Empresa: {invoice?.empresa?.RAZAO_SOCIAL || "—"}
+                    </span>
                   </div>
-                  <div className="flex flex-row items-center">
-                    <Popover>
-                      <PopoverTrigger className="flex items-center">
-                        <FileTextIcon className="mr-2 size-4" />
-                        NFe {invoice?.NUMERO}
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Número da NFe
-                      </PopoverContent>
-                    </Popover>
-                    <DotIcon />
-                    <Popover>
-                      <PopoverTrigger className="flex items-center">
-                        <ClockIcon className="mr-2 size-4" />
-                        {invoice?.EMISSAO && formatDate(invoice?.EMISSAO)}
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Data de emissão
-                      </PopoverContent>
-                    </Popover>
-                    {nfe?.ide.dhSaiEnt && (
-                      <>
-                        <DotIcon />
-                        <Popover>
-                          <PopoverTrigger className="flex items-center">
-                            <ClockIcon className="mr-2 size-4" />
-                            {nfe?.ide.dhSaiEnt && formatDate(nfe?.ide.dhSaiEnt)}
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-2 text-xs">
-                            Data de saída
-                          </PopoverContent>
-                        </Popover>
-                      </>
-                    )}
+                  <div className="grid grid-cols-1 gap-1 md:grid-cols-2">
+                    <span className="flex items-center md:col-span-2">
+                      <FileTextIcon className="mr-2 size-4" />
+                      NFe: {invoice?.NUMERO || "—"}
+                    </span>
+                    <span className="flex items-center">
+                      <ClockIcon className="mr-2 size-4" />
+                      Emissão:{" "}
+                      {invoice?.EMISSAO ? formatDate(invoice?.EMISSAO) : "—"}
+                    </span>
+                    <span className="flex items-center">
+                      <ClockIcon className="mr-2 size-4" />
+                      Saída:{" "}
+                      {nfe?.ide.dhSaiEnt ? formatDate(nfe?.ide.dhSaiEnt) : "—"}
+                    </span>
                   </div>
                 </>
               )}

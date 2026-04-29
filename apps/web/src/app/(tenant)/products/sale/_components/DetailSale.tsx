@@ -1,11 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  ClockIcon,
-  DotIcon,
-  InfoIcon,
-  LandmarkIcon,
-  XIcon,
-} from "lucide-react";
+import { ClockIcon, InfoIcon, LandmarkIcon, XIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,11 +14,6 @@ import {
   CredenzaHeader,
   CredenzaTitle,
 } from "@/components/ui/credenza";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -56,7 +45,7 @@ export function DetailSale({ saleData, open, onOpenChange }: DetailSaleProps) {
 
   const saleProductsQuery = useQuery({
     ...trpc.tenant.productsSale.idProduct.queryOptions({ id: saleData.ID }),
-    enabled: !!tenant && (open ?? true),
+    enabled: !!tenant && saleData.ID > 0 && (open ?? true),
   });
 
   return (
@@ -65,92 +54,48 @@ export function DetailSale({ saleData, open, onOpenChange }: DetailSaleProps) {
         <CredenzaHeader>
           <CredenzaTitle>
             <div className="flex items-center">
-              <Popover>
-                <PopoverTrigger>
-                  <div className="flex items-center">
-                    {saleData.NOME_REAJUSTE}
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-2 text-xs">
-                  Nome
-                </PopoverContent>
-              </Popover>
-              <Popover>
-                <PopoverTrigger>
-                  <div className="flex items-center">
-                    <Badge
-                      className={cn(
-                        statusInfo.color,
-                        "ml-3 px-1.5 py-0.5 text-xs md:text-sm"
-                      )}
-                      variant={statusInfo.variant}
-                    >
-                      {statusInfo.label}
-                    </Badge>
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-2 text-xs">
-                  Status
-                </PopoverContent>
-              </Popover>
+              <div className="flex items-center">{saleData.NOME_REAJUSTE}</div>
+              <Badge
+                className={cn(
+                  statusInfo.color,
+                  "ml-3 px-1.5 py-0.5 text-xs md:text-sm"
+                )}
+                variant={statusInfo.variant}
+              >
+                {statusInfo.label}
+              </Badge>
             </div>
           </CredenzaTitle>
           <CredenzaDescription>
             <div className="flex flex-col space-y-1">
               {saleData.ID_EMPRESA && (
-                <div className="flex flex-row items-center">
-                  <Popover>
-                    <PopoverTrigger>
-                      <div className="flex items-center">
-                        <LandmarkIcon className="mr-2 size-4" />
-                        {saleData.empresa?.RAZAO_SOCIAL}
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-2 text-xs">
-                      Empresa
-                    </PopoverContent>
-                  </Popover>
+                <div className="flex items-center">
+                  <LandmarkIcon className="mr-2 size-4" />
+                  Empresa: {saleData.empresa?.RAZAO_SOCIAL || "—"}
                 </div>
               )}
-              <div className="flex flex-row items-center">
-                <Popover>
-                  <PopoverTrigger>
-                    <div className="flex items-center">
-                      <ClockIcon className="mr-2 size-4" />
-                      {saleData.DATA_INICIO && formatDate(saleData.DATA_INICIO)}{" "}
-                      {saleData.HORA_INICIO}
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-full p-2 text-xs">
-                    Data inicial
-                  </PopoverContent>
-                </Popover>
-                <DotIcon />
-                <Popover>
-                  <PopoverTrigger>
-                    <div className="flex items-center">
-                      <ClockIcon className="mr-2 size-4" />
-                      {saleData.DATA_FIM && formatDate(saleData.DATA_FIM)}{" "}
-                      {saleData.HORA_FIM}
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-full p-2 text-xs">
-                    Data final
-                  </PopoverContent>
-                </Popover>
-                <DotIcon />
-                <Popover>
-                  <PopoverTrigger>
-                    <div className="flex items-center">
-                      <ClockIcon className="mr-2 size-4" />
-                      {saleData.DATA_CADASTRO &&
-                        formatDate(saleData.DATA_CADASTRO)}{" "}
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-full p-2 text-xs">
-                    Data criação
-                  </PopoverContent>
-                </Popover>
+              <div className="grid grid-cols-2 gap-1 md:grid-cols-3">
+                <span className="flex items-center">
+                  <ClockIcon className="mr-2 size-4" />
+                  Início:{" "}
+                  {saleData.DATA_INICIO
+                    ? `${formatDate(saleData.DATA_INICIO)} ${saleData.HORA_INICIO ?? ""}`.trim()
+                    : "—"}
+                </span>
+                <span className="flex items-center">
+                  <ClockIcon className="mr-2 size-4" />
+                  Fim:{" "}
+                  {saleData.DATA_FIM
+                    ? `${formatDate(saleData.DATA_FIM)} ${saleData.HORA_FIM ?? ""}`.trim()
+                    : "—"}
+                </span>
+                <span className="flex items-center">
+                  <ClockIcon className="mr-2 size-4" />
+                  Criação:{" "}
+                  {saleData.DATA_CADASTRO
+                    ? formatDate(saleData.DATA_CADASTRO)
+                    : "—"}
+                </span>
               </div>
             </div>
           </CredenzaDescription>

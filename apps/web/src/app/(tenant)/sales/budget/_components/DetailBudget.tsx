@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   ClockIcon,
-  DotIcon,
   InfoIcon,
   LandmarkIcon,
   ShoppingBagIcon,
@@ -23,11 +22,6 @@ import {
   CredenzaHeader,
   CredenzaTitle,
 } from "@/components/ui/credenza";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTenant } from "@/contexts/tenant-context";
@@ -56,7 +50,7 @@ export function DetailBudget({
 
   const budgetByIdQuery = useQuery({
     ...trpc.tenant.salesBudget.byId.queryOptions({ id: budgetId }),
-    enabled: !!tenant,
+    enabled: !!tenant && budgetId != null && (open ?? true),
   });
 
   const situationInfo = getBudgetSituationInfo(
@@ -78,46 +72,18 @@ export function DetailBudget({
                 "Erro ao carregar orçamento"
               ) : (
                 <>
-                  <Popover>
-                    <PopoverTrigger>
-                      <div className="flex items-center">
-                        {budgetByIdQuery.data?.budget?.ID}
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-2 text-xs">
-                      ID
-                    </PopoverContent>
-                  </Popover>
-                  <DotIcon />
-                  <Popover>
-                    <PopoverTrigger>
-                      <div className="flex items-center">
-                        {
-                          budgetByIdQuery.data?.budget?.vendedor?.colaborador
-                            ?.pessoa?.NOME
-                        }
-                      </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-2 text-xs">
-                      Vendedor
-                    </PopoverContent>
-                  </Popover>
-                  <Popover>
-                    <PopoverTrigger>
-                      <Badge
-                        className={cn(
-                          situationInfo.color,
-                          "ml-3 px-1.5 py-0.5 text-xs md:text-sm"
-                        )}
-                        variant={situationInfo.variant}
-                      >
-                        {situationInfo.label}
-                      </Badge>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-2 text-xs">
-                      Situação
-                    </PopoverContent>
-                  </Popover>
+                  <div className="flex items-center">
+                    Orçamento #{budgetByIdQuery.data?.budget?.ID}
+                  </div>
+                  <Badge
+                    className={cn(
+                      situationInfo.color,
+                      "ml-3 px-1.5 py-0.5 text-xs md:text-sm"
+                    )}
+                    variant={situationInfo.variant}
+                  >
+                    {situationInfo.label}
+                  </Badge>
                 </>
               )}
             </div>
@@ -135,71 +101,45 @@ export function DetailBudget({
               ) : (
                 <>
                   {budgetByIdQuery.data?.budget?.ID_EMPRESA && (
-                    <span className="flex flex-row items-center">
-                      <Popover>
-                        <PopoverTrigger>
-                          <span className="flex items-center">
-                            <LandmarkIcon className="mr-2 size-4" />
-                            {
-                              budgetByIdQuery.data?.budget?.empresa
-                                ?.RAZAO_SOCIAL
-                            }
-                          </span>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-2 text-xs">
-                          Empresa
-                        </PopoverContent>
-                      </Popover>
+                    <span className="flex items-center">
+                      <LandmarkIcon className="mr-2 size-4" />
+                      Empresa:{" "}
+                      {budgetByIdQuery.data?.budget?.empresa?.RAZAO_SOCIAL ||
+                        "—"}
                     </span>
                   )}
-                  <span className="flex flex-row items-center">
-                    <Popover>
-                      <PopoverTrigger>
-                        <span className="flex items-center">
-                          <UserIcon className="mr-2 size-4" />
-                          {budgetByIdQuery.data?.budget?.cliente.pessoa.NOME}
-                        </span>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Cliente
-                      </PopoverContent>
-                    </Popover>
-                  </span>
-                  <span className="flex flex-row items-center">
-                    <Popover>
-                      <PopoverTrigger>
-                        <span className="flex items-center">
-                          <ClockIcon className="mr-2 size-4" />
-                          {budgetByIdQuery.data?.budget?.DATA_CADASTRO &&
-                            formatDate(
-                              budgetByIdQuery.data?.budget?.DATA_CADASTRO
-                            )}
-                        </span>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-2 text-xs">
-                        Data criação
-                      </PopoverContent>
-                    </Popover>
-                    {budgetByIdQuery.data?.budget?.ALTERACAO_DATA_HORA && (
-                      <>
-                        <DotIcon />
-                        <Popover>
-                          <PopoverTrigger>
-                            <span className="flex items-center">
-                              <ClockIcon className="mr-2 size-4" />
-                              {formatDate(
-                                budgetByIdQuery.data?.budget
-                                  ?.ALTERACAO_DATA_HORA
-                              )}
-                            </span>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-2 text-xs">
-                            Data alteração
-                          </PopoverContent>
-                        </Popover>
-                      </>
-                    )}
-                  </span>
+                  <div className="grid grid-cols-2 gap-1 md:grid-cols-2">
+                    <span className="flex items-center">
+                      <UserIcon className="mr-2 size-4" />
+                      Vendedor:{" "}
+                      {budgetByIdQuery.data?.budget?.vendedor?.colaborador
+                        ?.pessoa?.NOME || "—"}
+                    </span>
+                    <span className="flex items-center">
+                      <UserIcon className="mr-2 size-4" />
+                      Cliente:{" "}
+                      {budgetByIdQuery.data?.budget?.cliente?.pessoa?.NOME ||
+                        "—"}
+                    </span>
+                    <span className="flex items-center">
+                      <ClockIcon className="mr-2 size-4" />
+                      Criação:{" "}
+                      {budgetByIdQuery.data?.budget?.DATA_CADASTRO
+                        ? formatDate(
+                            budgetByIdQuery.data?.budget?.DATA_CADASTRO
+                          )
+                        : "—"}
+                    </span>
+                    <span className="flex items-center truncate">
+                      <ClockIcon className="mr-2 size-4 shrink-0" />
+                      Alteração:{" "}
+                      {budgetByIdQuery.data?.budget?.ALTERACAO_DATA_HORA
+                        ? formatDate(
+                            budgetByIdQuery.data?.budget?.ALTERACAO_DATA_HORA
+                          )
+                        : "—"}
+                    </span>
+                  </div>
                   {!fromSales &&
                     budgetByIdQuery.data?.budget?.venda_cabecalho &&
                     budgetByIdQuery.data.budget.venda_cabecalho.length > 0 && (
@@ -207,7 +147,7 @@ export function DetailBudget({
                         <Button
                           className="pl-0"
                           onClick={() => setIsSalesModalOpen(true)}
-                          size="sm"
+                          size="xs"
                           variant="link"
                         >
                           <ShoppingBagIcon className="size-4" />

@@ -1,5 +1,13 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  ClockIcon,
+  ScaleIcon,
+  SquarePercentIcon,
+  XIcon,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,14 +33,6 @@ import {
   formatAsCurrency,
 } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  ClockIcon,
-  ScaleIcon,
-  SquarePercentIcon,
-  XIcon,
-} from "lucide-react";
 import { DetailProductsCompound } from "./DetailProductsCompound";
 import { DetailProductsInformation } from "./DetailProductsInformation";
 import { DetailProductsMain } from "./DetailProductsMain";
