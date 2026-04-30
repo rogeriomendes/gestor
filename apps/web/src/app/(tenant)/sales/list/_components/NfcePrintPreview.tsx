@@ -1,6 +1,5 @@
 "use client";
 
-import QRCode from "react-qr-code";
 import { NfeAccessKey } from "@/components/nfe-access-key";
 import { formatCNPJ } from "@/lib/format-cnpj";
 import { formatDateTime } from "@/lib/format-date";
@@ -9,6 +8,7 @@ import {
   type UnitFractionRulesMap,
 } from "@/lib/product-quantity-format";
 import { formatAsCurrency } from "@/lib/utils";
+import QRCode from "react-qr-code";
 
 /** Substitui "ADM" (palavra inteira) pelo nome do vendedor quando disponível. */
 const ADM_TOKEN = /\bADM\b/g;
@@ -131,8 +131,16 @@ function parseNfceXml(xml: string): ParsedNfce | null {
     "11": "Vale Refeição",
     "12": "Vale Presente",
     "13": "Vale Combustível",
-    "15": "Boleto",
-    "17": "Pix",
+    "14": "Duplicata Mercantil",
+    "15": "Boleto Bancário",
+    "16": "Depósito Bancário",
+    "17": "Pagamento Instantâneo (PIX)",
+    "18": "Transferência Bancária, Carteira Digital",
+    "19": "Programa de fidelidade, Cashback, Crédito Virtual",
+    "20": "Pagamento Instantâneo (PIX)",
+    "21": "Crédito em Loja (por Devolução)",
+    "22": "Pagamento Eletrônico não Informado",
+    "23": "Pagamento Instantâneo (PIX Automático)",
     "90": "Sem pagamento",
     "99": "Outros",
   };
