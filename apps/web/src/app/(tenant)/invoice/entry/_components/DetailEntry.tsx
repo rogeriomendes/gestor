@@ -1,5 +1,14 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  Building2Icon,
+  ClockIcon,
+  FileTextIcon,
+  LandmarkIcon,
+  XIcon,
+} from "lucide-react";
 import { CopyButton } from "@/components/copy-button";
 import { NfButton } from "@/components/nf-button";
 import { NfeAccessKey } from "@/components/nfe-access-key";
@@ -26,15 +35,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { formatCNPJ } from "@/lib/format-cnpj";
 import { formatDate } from "@/lib/format-date";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  Building2Icon,
-  ClockIcon,
-  FileTextIcon,
-  LandmarkIcon,
-  XIcon,
-} from "lucide-react";
 import { DetailEntryCharge } from "./DetailEntryCharge";
 import { DetailEntryInformation } from "./DetailEntryInformation";
 import { DetailEntryProducts } from "./DetailEntryProducts";
@@ -90,36 +90,36 @@ export function DetailEntry({
                 <>
                   {invoiceEntryQuery.data?.invoiceEntry?.fornecedor?.pessoa
                     ?.pessoa_juridica?.[0]?.CNPJ && (
-                      <div className="flex flex-row items-center space-x-0.5">
-                        <Popover>
-                          <PopoverTrigger className="flex cursor-pointer items-center">
-                            <Building2Icon className="mr-2 size-4" />
-                            CNPJ:{" "}
-                            <span className="ml-1">
-                              {formatCNPJ(
-                                invoiceEntryQuery.data?.invoiceEntry?.fornecedor
-                                  ?.pessoa?.pessoa_juridica?.[0]?.CNPJ
-                              )}
-                            </span>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-2 text-xs">
-                            <div className="flex flex-col space-y-1">
-                              <span>CNPJ do fornecedor</span>
-                              <div className="flex items-center pt-2">
-                                <CopyButton
-                                  text="Copiar CNPJ"
-                                  value={
-                                    invoiceEntryQuery.data?.invoiceEntry
-                                      ?.fornecedor?.pessoa?.pessoa_juridica?.[0]
-                                      ?.CNPJ
-                                  }
-                                />
-                              </div>
+                    <div className="flex flex-row items-center space-x-0.5">
+                      <Popover>
+                        <PopoverTrigger className="flex cursor-pointer items-center">
+                          <Building2Icon className="mr-2 size-4" />
+                          CNPJ:{" "}
+                          <span className="ml-1">
+                            {formatCNPJ(
+                              invoiceEntryQuery.data?.invoiceEntry?.fornecedor
+                                ?.pessoa?.pessoa_juridica?.[0]?.CNPJ
+                            )}
+                          </span>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-2 text-xs">
+                          <div className="flex flex-col space-y-1">
+                            <span>CNPJ do fornecedor</span>
+                            <div className="flex items-center pt-2">
+                              <CopyButton
+                                text="Copiar CNPJ"
+                                value={
+                                  invoiceEntryQuery.data?.invoiceEntry
+                                    ?.fornecedor?.pessoa?.pessoa_juridica?.[0]
+                                    ?.CNPJ
+                                }
+                              />
                             </div>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                    )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  )}
                   {invoiceEntryQuery.data?.invoiceEntry?.CHAVE_ACESSO && (
                     <div className="flex flex-row items-center">
                       <Popover>
@@ -177,10 +177,10 @@ export function DetailEntry({
                       Emissão:{" "}
                       {invoiceEntryQuery.data?.invoiceEntry?.DATA_EMISSAO
                         ? formatDate(
-                          new Date(
-                            invoiceEntryQuery.data.invoiceEntry.DATA_EMISSAO
+                            new Date(
+                              invoiceEntryQuery.data.invoiceEntry.DATA_EMISSAO
+                            )
                           )
-                        )
                         : "—"}
                     </span>
                     <span className="flex items-center">
@@ -188,12 +188,13 @@ export function DetailEntry({
                       Entrada:{" "}
                       {invoiceEntryQuery.data?.invoiceEntry?.DATA_ENTRADA_SAIDA
                         ? `${formatDate(
-                          new Date(
+                            new Date(
+                              invoiceEntryQuery.data?.invoiceEntry
+                                ?.DATA_ENTRADA_SAIDA
+                            )
+                          )} ${
                             invoiceEntryQuery.data?.invoiceEntry
-                              ?.DATA_ENTRADA_SAIDA
-                          )
-                        )} ${invoiceEntryQuery.data?.invoiceEntry
-                            ?.HORA_ENTRADA_SAIDA ?? ""
+                              ?.HORA_ENTRADA_SAIDA ?? ""
                           }`.trim()
                         : "—"}
                     </span>

@@ -196,7 +196,7 @@ export function DetailSales({
                                     ?.CHAVE_ACESSO
                                 }
                               />
-                              {xmlNfe && (
+                              {/* {xmlNfe && (
                                 <Button
                                   className={cn(
                                     "h-6 cursor-pointer justify-start px-2 [&_svg]:size-3"
@@ -210,7 +210,7 @@ export function DetailSales({
                                     Visualizar DANFE NFC-e
                                   </span>
                                 </Button>
-                              )}
+                              )} */}
                               <NfButton
                                 chaveAcesso={
                                   saleData?.sales?.nfe_cabecalho[0]

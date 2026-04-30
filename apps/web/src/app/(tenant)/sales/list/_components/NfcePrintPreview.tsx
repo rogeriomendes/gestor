@@ -137,10 +137,10 @@ function parseNfceXml(xml: string): ParsedNfce | null {
     "17": "Pagamento Instantâneo (PIX)",
     "18": "Transferência Bancária, Carteira Digital",
     "19": "Programa de fidelidade, Cashback, Crédito Virtual",
-    "20": "Pagamento Instantâneo (PIX)",
+    "20": "PIX Estático",
     "21": "Crédito em Loja (por Devolução)",
     "22": "Pagamento Eletrônico não Informado",
-    "23": "Pagamento Instantâneo (PIX Automático)",
+    "23": "PIX Automático",
     "90": "Sem pagamento",
     "99": "Outros",
   };
@@ -277,6 +277,12 @@ export function NfcePrintPreview({
             <span>Valor Produtos R$</span>
             <span>{Number(data.totalProducts).toFixed(2)}</span>
           </div>
+          {Number(data.discount) > 0 && (
+            <div className="flex justify-between">
+              <span>Desconto R$</span>
+              <span>{Number(data.discount).toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex justify-between font-bold">
             <span>Valor a Pagar R$</span>
             <span>{Number(data.totalValue).toFixed(2)}</span>
@@ -354,13 +360,8 @@ export function NfcePrintPreview({
           </div>
         </div>
 
-        <div className="my-2 border-black border-t border-dashed pt-1.5 text-[10px] leading-tight">
-          Tributos Incidentes (Lei Federal 12.741/2012):{" "}
-          {formatAsCurrency(Number(data.totalTaxes))}
-        </div>
-
         {data.additionalInfo ? (
-          <div className="space-y-1.5 text-[10px] leading-tight">
+          <div className="my-2 space-y-1.5 border-black border-t border-dashed pt-1.5 text-[10px] leading-tight">
             {data.additionalInfo.split("|").map((part, index) => (
               <div key={`${part}-${index}`}>
                 {replaceAdmWithSellerName(part.trim(), sellerName)}
@@ -372,6 +373,11 @@ export function NfcePrintPreview({
             NFC-E EMITIDO PARA TESTE DE IMPRESSÃO
           </div>
         )}
+
+        <div className="my-2 text-[10px] leading-tight">
+          Tributos Incidentes (Lei Federal 12.741/2012):{" "}
+          {formatAsCurrency(Number(data.totalTaxes))}
+        </div>
 
         {/* <div className="text-center font-semibold text-[10px]">CaixaPro</div> */}
       </div>

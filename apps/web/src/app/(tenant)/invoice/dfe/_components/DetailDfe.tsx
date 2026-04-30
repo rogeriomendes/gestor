@@ -1,3 +1,16 @@
+import { useQuery } from "@tanstack/react-query";
+import {
+  BarcodeIcon,
+  Building2Icon,
+  ClockIcon,
+  FileTextIcon,
+  FileXIcon,
+  GitCompareArrowsIcon,
+  LandmarkIcon,
+  XIcon,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import xml2js from "xml2js";
 import { CopyButton } from "@/components/copy-button";
 import { NfButton } from "@/components/nf-button";
 import { NfeAccessKey } from "@/components/nfe-access-key";
@@ -27,19 +40,6 @@ import { formatCNPJ } from "@/lib/format-cnpj";
 import { formatDate } from "@/lib/format-date";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import {
-  BarcodeIcon,
-  Building2Icon,
-  ClockIcon,
-  FileTextIcon,
-  FileXIcon,
-  GitCompareArrowsIcon,
-  LandmarkIcon,
-  XIcon,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import xml2js from "xml2js";
 import { DetailDfeCharge } from "./DetailDfeCharge";
 import { DetailDfeInformation } from "./DetailDfeInformation";
 import { DetailDfeProducts } from "./DetailDfeProducts";
