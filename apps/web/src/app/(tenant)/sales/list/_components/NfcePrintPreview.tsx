@@ -26,6 +26,7 @@ function replaceAdmWithSellerName(
 
 interface NfceItem {
   code: string;
+  codeBar: string;
   description: string;
   qty: string;
   totalPrice: string;
@@ -108,6 +109,7 @@ function parseNfceXml(xml: string): ParsedNfce | null {
     const prod = firstByTag(det, "prod");
     return {
       code: textOf(prod ?? det, "cProd") || "—",
+      codeBar: textOf(prod ?? det, "cEAN") || "—",
       description: textOf(prod ?? det, "xProd") || "—",
       qty: textOf(prod ?? det, "qCom") || "0",
       unit: textOf(prod ?? det, "uCom") || "UN",
@@ -239,24 +241,32 @@ export function NfcePrintPreview({
           Documento Auxiliar da Nota Fiscal de Consumidor Eletrônica
         </div>
 
-        <div className="grid grid-cols-[40px_1fr_44px_58px] gap-1 border-black border-b border-dashed pb-0.5 font-bold text-[10px]">
+        <div className="grid grid-cols-[60px_1fr_55px_59px] gap-1 border-black border-b border-dashed pb-0.5 font-bold text-[10px]">
           <div>CÓDIGO</div>
           <div>DESCRIÇÃO</div>
           <div className="text-right">QTD UN</div>
-          <div className="text-right">VLR TOTAL</div>
+          <div className="text-right">VL TOTAL</div>
         </div>
 
         <div className="space-y-1 py-2 text-[10px]">
           {data.items.map((item, index) => (
             <div key={`${item.code}-${index}`}>
-              <div className="grid grid-cols-[40px_1fr_58px] gap-1">
-                <div className="truncate">{item.code}</div>
+              <div className="grid grid-cols-[60px_1fr_38px] gap-1">
+                <div className="text-left text-[8px]">
+                  {item.unit?.toUpperCase() === "KG"
+                    ? item.code
+                    : item.codeBar &&
+                      item.codeBar !== "—" &&
+                      item.codeBar.toUpperCase() !== "SEM GTIN"
+                      ? item.codeBar
+                      : item.code}
+                </div>
                 <div className="truncate">{item.description}</div>
                 <div className="text-right">
                   {Number(item.totalPrice).toFixed(2)}
                 </div>
               </div>
-              <div className="pl-[41px] text-[9px]">
+              <div className="pl-[65px] text-[9px]">
                 {formatProductQuantityByRule(
                   item.qty,
                   item.unit,
