@@ -1,5 +1,7 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { ClockIcon, FileTextIcon, UserIcon, XIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,14 +20,6 @@ import { useTenant } from "@/contexts/tenant-context";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDate } from "@/lib/format-date";
 import { trpc } from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import {
-  ClockIcon,
-  FileDiffIcon,
-  FileTextIcon,
-  UserIcon,
-  XIcon,
-} from "lucide-react";
 
 function formatJsonIfPossible(value: string): string {
   const trimmed = value.trim();
@@ -71,12 +65,6 @@ export function DetailAudit({
   const audit = auditQuery.data?.audit;
   const formattedContent = audit?.CONTEUDO
     ? formatJsonIfPossible(audit.CONTEUDO)
-    : null;
-  const formattedBefore = audit?.TEXTO_ANTES
-    ? formatJsonIfPossible(audit.TEXTO_ANTES)
-    : null;
-  const formattedAfter = audit?.TEXTO_DEPOIS
-    ? formatJsonIfPossible(audit.TEXTO_DEPOIS)
     : null;
 
   return (
@@ -161,33 +149,6 @@ export function DetailAudit({
                     <pre className="wrap-break-word whitespace-pre-wrap rounded bg-muted/40 p-2 text-xs">
                       {formattedContent}
                     </pre>
-                  </CardContent>
-                </Card>
-              )}
-
-              {(formattedBefore || formattedAfter) && (
-                <Card className="rounded-md py-2" size="sm">
-                  <CardContent className="space-y-3 px-3">
-                    <div className="flex items-center text-muted-foreground text-xs">
-                      <FileDiffIcon className="mr-1 size-3.5" />
-                      Comparação (Antes / Depois)
-                    </div>
-                    {formattedBefore && (
-                      <div className="space-y-1">
-                        <p className="font-medium text-xs">Antes</p>
-                        <pre className="wrap-break-word whitespace-pre-wrap rounded bg-muted/40 p-2 text-xs">
-                          {formattedBefore}
-                        </pre>
-                      </div>
-                    )}
-                    {formattedAfter && (
-                      <div className="space-y-1">
-                        <p className="font-medium text-xs">Depois</p>
-                        <pre className="wrap-break-word whitespace-pre-wrap rounded bg-muted/40 p-2 text-xs">
-                          {formattedAfter}
-                        </pre>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               )}

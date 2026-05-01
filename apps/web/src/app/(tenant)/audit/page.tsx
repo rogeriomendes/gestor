@@ -23,6 +23,16 @@ import { DetailAudit } from "./_components/DetailAudit";
 
 type AuditItem = RouterOutputs["tenant"]["audit"]["all"]["audit"][number];
 
+const TENANT_AUDIT_ACTION_FILTER_OPTIONS = [
+  "ALTERAÇÃO",
+  "CONFIRMAÇÃO",
+  "EXCLUSÃO",
+  "INCLUSÃO",
+  "INSERÇÃO",
+  "SANGRIA",
+  "SUPRIMENTO",
+] as const;
+
 export default function AuditPage() {
   const { tenant } = useTenant();
   const { selectedCompanyId } = useCompany();
@@ -76,7 +86,7 @@ export default function AuditPage() {
 
   const actionOptions: ComboboxOption[] = [
     { value: "T", label: "TODAS" },
-    ...(filterOptionsQuery.data?.actions ?? []).map((item) => ({
+    ...TENANT_AUDIT_ACTION_FILTER_OPTIONS.map((item) => ({
       value: item,
       label: item,
     })),
@@ -250,7 +260,7 @@ export default function AuditPage() {
               ? `${formatDate(item.DATA_REGISTRO)} ${item.HORA_REGISTRO || ""}`.trim()
               : "—",
             item.usuario?.LOGIN || item.NOME_USU_AUTO || "—",
-            item.RESUMO || item.ACAO || "—",
+            item.ACAO || "—",
             item.JANELA_CONTROLLER || "—",
           ]}
         />
