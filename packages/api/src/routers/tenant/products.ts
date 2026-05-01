@@ -572,6 +572,43 @@ export const productsRouter = router({
       }
     }),
 
+  audit: tenantProcedure
+    .input(
+      z.object({
+        id: z.number().min(1).nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { id } = input;
+        const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
+
+        const audit = await gestorPrisma.auditoria.findMany({
+          take: 20,
+          where: {
+            JANELA_CONTROLLER: `Produto alterado (Id: ${Number(id)})`,
+          },
+          select: {
+            ID: true,
+            DATA_REGISTRO: true,
+            HORA_REGISTRO: true,
+            NOME_USU_AUTO: true,
+            usuario: {
+              select: {
+                LOGIN: true,
+              },
+            },
+          },
+          orderBy: [{ ID: "desc" }],
+        });
+
+        return { audit };
+      } catch (error) {
+        console.error("An error occurred when returning product audit:", error);
+        throw error;
+      }
+    }),
+
   ncm: tenantProcedure
     .input(
       z.object({

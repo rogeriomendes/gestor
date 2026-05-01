@@ -33,6 +33,7 @@ import {
   formatAsCurrency,
 } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
+import { DetailProductsAudit } from "./DetailProductsAudit";
 import { DetailProductsCompound } from "./DetailProductsCompound";
 import { DetailProductsInformation } from "./DetailProductsInformation";
 import { DetailProductsMain } from "./DetailProductsMain";
@@ -329,6 +330,7 @@ export function DetailProducts({
                 <TabsTrigger value="default">Principal</TabsTrigger>
                 <TabsTrigger value="sales">Vendas</TabsTrigger>
                 <TabsTrigger value="purchase">Compras</TabsTrigger>
+                <TabsTrigger value="audit">Auditoria</TabsTrigger>
                 {productQuery.data?.product?.COMPOSTO === "S" && (
                   <TabsTrigger value="compound">Composição</TabsTrigger>
                 )}
@@ -358,6 +360,13 @@ export function DetailProducts({
               <TabsContent value="purchase">
                 {productQuery.data?.product && (
                   <DetailProductsPurchase
+                    productId={productQuery.data.product?.ID}
+                  />
+                )}
+              </TabsContent>
+              <TabsContent value="audit">
+                {productQuery.data?.product && (
+                  <DetailProductsAudit
                     productId={productQuery.data.product?.ID}
                   />
                 )}
