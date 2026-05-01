@@ -1,5 +1,6 @@
 import { router } from "../../index";
 import { accountRouter } from "./account";
+import { tenantAuditRouter } from "./audit";
 import { clientRouter } from "./client";
 import { companiesRouter } from "./companies";
 import { dashboardRouter } from "./dashboard";
@@ -46,6 +47,7 @@ export const tenantRouter = router({
 
   // Rotas de empresas
   account: accountRouter,
+  audit: tenantAuditRouter,
   client: clientRouter,
   dashboard: dashboardRouter,
   companies: companiesRouter,

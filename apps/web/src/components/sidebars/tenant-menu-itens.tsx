@@ -4,6 +4,7 @@ import {
   Coins,
   File,
   FileCheck,
+  FileClock,
   FileSearch2,
   FileText,
   HandCoins,
@@ -19,6 +20,7 @@ import {
   SquarePercent,
   Users,
 } from "lucide-react";
+import type { Route } from "next";
 import type { MenuItemProps } from "./types";
 
 export const tenantMenuItens: MenuItemProps[] = [
@@ -122,10 +124,15 @@ export const tenantMenuItens: MenuItemProps[] = [
 
 export const tenantSettingsMenuItens: MenuItemProps[] = [
   {
-    title: "Configurações",
-    url: "/settings",
-    icon: Settings,
-    permission: { resource: "SETTINGS", action: "UPDATE" },
+    title: "Auditoria",
+    url: "/audit" as Route,
+    icon: FileClock,
+  },
+  {
+    title: "Usuários",
+    url: "/users",
+    icon: Users,
+    permission: { resource: "USER", action: "READ" },
   },
   {
     title: "Suporte",
@@ -133,9 +140,9 @@ export const tenantSettingsMenuItens: MenuItemProps[] = [
     icon: LifeBuoy,
   },
   {
-    title: "Usuários",
-    url: "/users",
-    icon: Users,
-    permission: { resource: "USER", action: "READ" },
+    title: "Configurações",
+    url: "/settings",
+    icon: Settings,
+    permission: { resource: "SETTINGS", action: "UPDATE" },
   },
 ];
