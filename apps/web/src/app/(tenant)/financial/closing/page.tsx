@@ -121,9 +121,30 @@ export default function FinancialClosingsList() {
   );
 
   const combinedPages = useMemo(() => {
+    const selectedAccountId = account !== "0" ? Number(account) : null;
+    const selectedDate = dateFormatted
+      ? dateFormatted.toISOString().slice(0, 10)
+      : null;
+
     const openAccounts: ClosingListItem[] =
       accountsQuery.data?.accounts
-        ?.filter((acc: AccountItem) => acc.STATUS_CAIXA_ABERTO === "S")
+        ?.filter((acc: AccountItem) => {
+          if (acc.STATUS_CAIXA_ABERTO !== "S") {
+            return false;
+          }
+          if (selectedAccountId !== null && acc.ID !== selectedAccountId) {
+            return false;
+          }
+          if (selectedDate !== null) {
+            const accOpenDate = acc.DATA_ULTIMA_ABERTURA
+              ? toFriendlyDateParam(acc.DATA_ULTIMA_ABERTURA)
+              : null;
+            if (accOpenDate !== selectedDate) {
+              return false;
+            }
+          }
+          return true;
+        })
         .map((acc: AccountItem) => ({ type: "open" as const, data: acc })) ??
       [];
     const firstPageClosings: ClosingListItem[] =
@@ -143,16 +164,27 @@ export default function FinancialClosingsList() {
         ),
       })) ?? [];
     return [firstPage, ...restPages];
-  }, [accountsQuery.data?.accounts, financialClosingsQuery.data?.pages]);
+  }, [
+    account,
+    accountsQuery.data?.accounts,
+    dateFormatted,
+    financialClosingsQuery.data?.pages,
+  ]);
 
   const goToDetail = useCallback(
     (item: ClosingListItem) => {
       const query = buildQueryFromItem(item);
+      if (account !== "0") {
+        query.filterAccount = account;
+      }
+      if (dateFormatted) {
+        query.filterDate = dateFormatted.toISOString().slice(0, 10);
+      }
       router.push(
         `/financial/closing/detail?${new URLSearchParams(query).toString()}`
       );
     },
-    [router]
+    [account, dateFormatted, router]
   );
 
   const renderRow = useCallback(
