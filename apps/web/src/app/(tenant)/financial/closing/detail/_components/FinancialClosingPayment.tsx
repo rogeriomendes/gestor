@@ -362,12 +362,12 @@ export default function FinancialClosingPayment({
                   Number(closingAmountQuery.data?.budgetAmount)
                 )}
                 className="space-y-0"
-                color="text-yellow-500"
+                color="text-yellow-600 dark:text-yellow-400"
                 icon={SheetIcon}
                 title="ORÇAMENTO / PEDIDO"
                 value="OP"
               >
-                <div className="mb-4 text-xs text-yellow-500">
+                <div className="mb-4 text-xs text-yellow-600 dark:text-yellow-400">
                   Serão listados os pedidos em digitação do dia.
                 </div>
                 {closingAmountQuery.data?.budget?.map(
@@ -403,7 +403,7 @@ export default function FinancialClosingPayment({
                   Number(closingAmountQuery.data?.devolutionAmount)
                 )}
                 className="space-y-0"
-                color="text-red-500"
+                color="text-red-600 dark:text-red-400"
                 icon={CornerDownLeftIcon}
                 title="DEVOLUÇÃO"
                 value="DV"
@@ -436,7 +436,7 @@ export default function FinancialClosingPayment({
                   Number(closingAmountQuery.data?.discountAmount)
                 )}
                 className="space-y-0"
-                color="text-red-500"
+                color="text-red-600 dark:text-red-400"
                 icon={MinusIcon}
                 title="DESCONTO"
                 value="DA"
