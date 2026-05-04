@@ -1,20 +1,3 @@
-import { DetailBudget } from "@/app/(tenant)/sales/budget/_components/DetailBudget";
-import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
-import { PixIcon } from "@/assets/PixIcon";
-import { ShowText } from "@/components/show-text";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useCompany } from "@/contexts/company-context";
-import { useTenant } from "@/contexts/tenant-context";
-import { formatAsCurrency } from "@/lib/utils";
-import type { RouterOutputs } from "@/utils/trpc";
-import { trpc } from "@/utils/trpc";
 import { useQuery } from "@tanstack/react-query";
 import {
   BanknoteIcon,
@@ -31,6 +14,23 @@ import {
   TicketIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { DetailBudget } from "@/app/(tenant)/sales/budget/_components/DetailBudget";
+import { DetailSales } from "@/app/(tenant)/sales/list/_components/DetailSales";
+import { PixIcon } from "@/assets/PixIcon";
+import { ShowText } from "@/components/show-text";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCompany } from "@/contexts/company-context";
+import { useTenant } from "@/contexts/tenant-context";
+import { formatAsCurrency, removeLeadingZero } from "@/lib/utils";
+import type { RouterOutputs } from "@/utils/trpc";
+import { trpc } from "@/utils/trpc";
 import type { ClosingData } from "../page";
 import { PaymentAccordionItem } from "./PaymentAccordionItem";
 import { PaymentLineItem } from "./PaymentLineItem";
@@ -153,11 +153,11 @@ export default function FinancialClosingPayment({
               amount={
                 closingAmountQuery.data
                   ? formatAsCurrency(
-                    closingAmountQuery.data?.paymentsDnAmount +
-                    closingAmountQuery.data?.supplyAmount -
-                    closingAmountQuery.data?.sangriaAmount -
-                    closingAmountQuery.data?.devolutionDnAmount
-                  )
+                      closingAmountQuery.data?.paymentsDnAmount +
+                        closingAmountQuery.data?.supplyAmount -
+                        closingAmountQuery.data?.sangriaAmount -
+                        closingAmountQuery.data?.devolutionDnAmount
+                    )
                   : ""
               }
               icon={PanelBottomIcon}
@@ -256,6 +256,12 @@ export default function FinancialClosingPayment({
                       >
                         {sale.HORA_SAIDA}
                       </Badge>
+                    )}
+                    <div className="mr-2">Venda #{sale.ID}</div>
+                    {sale.NUMERO_NFE && (
+                      <div className="mr-2 text-muted-foreground">
+                        NFC-e {removeLeadingZero(sale.NUMERO_NFE)}
+                      </div>
                     )}
                   </PaymentLineItem>
                 ))}
@@ -473,7 +479,7 @@ export default function FinancialClosingPayment({
               <ShowText>
                 {formatAsCurrency(
                   Number(closingAmountQuery.data?.groupedPaymentsTotalAmount) +
-                  Number(closingAmountQuery.data?.installmentsAmount)
+                    Number(closingAmountQuery.data?.installmentsAmount)
                 )}
               </ShowText>
             </div>

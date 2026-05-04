@@ -351,6 +351,7 @@ export const financialClosingRouter = router({
             select: {
               ID: true,
               HORA_SAIDA: true,
+              NUMERO_NFE: true,
               VALOR_TOTAL: true,
               ID_VENDA_ORCAMENTO_CABECALHO: true,
               PDV_CLIENTE_NOME: true,
@@ -615,6 +616,7 @@ export const financialClosingRouter = router({
             return {
               ID: row.ID,
               HORA_SAIDA: row.HORA_SAIDA,
+              NUMERO_NFE: row.NUMERO_NFE,
               VALOR_TOTAL: Number.parseFloat(String(row.VALOR_TOTAL) || "0"),
               CLIENTE_NOME: clienteNome,
               TOTAL_VALE: totalVale,

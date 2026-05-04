@@ -191,7 +191,7 @@ export default function FinancialClosingSalesList({
             },
             {
               key: "nfe",
-              label: "Nº NFe",
+              label: "Nº NFC-e",
               className: "hidden text-center sm:table-cell",
             },
             {
@@ -202,7 +202,7 @@ export default function FinancialClosingSalesList({
                   onClick={() => handleSort("serie_nfe")}
                   variant="ghost"
                 >
-                  Série NFCe
+                  Série NFC-e
                   {sortField === "serie_nfe" && sortOrder === "asc" ? (
                     <MoveUpIcon className="ml-1 size-4 md:ml-2" />
                   ) : sortField === "serie_nfe" && sortOrder === "desc" ? (
