@@ -345,9 +345,8 @@ export function PosterBuilder() {
 
   return (
     <div className="flex h-auto flex-col gap-2 md:h-[calc(100vh-4rem)] md:flex-row md:gap-4">
-      {/* Sidebar de Configuração - Hide on Print */}
       <Card
-        className="flex w-full flex-col gap-2 rounded-md px-2 md:w-1/3 md:max-w-[500px] md:shrink-0 md:gap-4 md:px-5"
+        className="flex w-full flex-col gap-2 rounded-md px-2 md:w-1/3 md:max-w-[491px] md:shrink-0 md:gap-4 md:px-5"
         size="sm"
       >
         <div>

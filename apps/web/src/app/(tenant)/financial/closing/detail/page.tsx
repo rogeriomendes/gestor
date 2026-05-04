@@ -446,7 +446,7 @@ export default function FinancialClosingDetailPage() {
       </div>
       <div className="flex flex-1 flex-col gap-2 md:flex-row md:gap-4">
         <Card
-          className="w-full rounded-md md:sticky md:top-7 md:h-[calc(100vh-1.75rem)] md:w-1/3 md:max-w-[500px]"
+          className="w-full rounded-md md:top-7 md:w-1/3 md:max-w-[491px]"
           size="sm"
         >
           <CardHeader>

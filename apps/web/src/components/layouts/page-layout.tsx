@@ -91,7 +91,7 @@ export function PageLayout({
 
   return (
     <div className="flex flex-col">
-      {/* Breadcrumbs */}
+      {/* Sidebar Trigger, Logo, Tenant Tabs Bar, Show Text Switcher */}
       <div className="flex shrink-0 flex-row items-center gap-2 rounded-t-xl border-b bg-sidebar/50 px-2 py-2 md:px-6 md:py-3">
         <SidebarTrigger className="cursor-pointer md:hidden" />
         <Separator className="mr-1 h-8 md:hidden" orientation="vertical" />
@@ -104,43 +104,48 @@ export function PageLayout({
         )}
       </div>
 
-      {/* Header */}
-      <header className="flex shrink-0 flex-row items-center justify-between gap-3 bg-background/95 px-2 py-2 backdrop-blur supports-backdrop-filter:bg-background/60 md:px-6 md:py-3">
-        <div className="flex items-center gap-2 md:gap-4">
-          {showBackButton && (
-            <Button
-              className="cursor-pointer transition-all hover:bg-accent"
-              onClick={handleBack}
-              size="icon"
-              variant="ghost"
-            >
-              <ArrowLeft className="size-4" />
-              <span className="sr-only">Voltar</span>
-            </Button>
-          )}
-          <div className="flex min-w-0 flex-1 flex-col md:flex-row md:items-center md:gap-3">
-            <h1 className="flex items-center gap-2 truncate whitespace-pre-line font-semibold text-lg tracking-tight md:text-2xl">
-              {TitleIcon && (
-                <TitleIcon aria-hidden className="size-5 shrink-0 md:size-6" />
-              )}
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="mt-0.5 truncate whitespace-pre-line text-muted-foreground text-xs md:text-sm">
-                {subtitle}
-              </p>
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col">
+        {/* Header */}
+        <header className="flex shrink-0 flex-row items-center justify-between gap-3 bg-background/95 px-2 py-2 backdrop-blur supports-backdrop-filter:bg-background/60 md:px-6 md:py-3">
+          <div className="flex items-center gap-2 md:gap-4">
+            {showBackButton && (
+              <Button
+                className="cursor-pointer transition-all hover:bg-accent"
+                onClick={handleBack}
+                size="icon"
+                variant="ghost"
+              >
+                <ArrowLeft className="size-4" />
+                <span className="sr-only">Voltar</span>
+              </Button>
             )}
+            <div className="flex min-w-0 flex-1 flex-col md:flex-row md:items-center md:gap-3">
+              <h1 className="flex items-center gap-2 truncate whitespace-pre-line font-semibold text-lg tracking-tight md:text-2xl">
+                {TitleIcon && (
+                  <TitleIcon
+                    aria-hidden
+                    className="size-5 shrink-0 md:size-6"
+                  />
+                )}
+                {title}
+              </h1>
+              {subtitle && (
+                <p className="mt-0.5 truncate whitespace-pre-line text-muted-foreground text-xs md:text-sm">
+                  {subtitle}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="flex shrink-0 items-center justify-end gap-2">
-          {actions}
-          {/* <ModeToggle /> */}
-        </div>
-      </header>
+          <div className="flex shrink-0 items-center justify-end gap-2">
+            {actions}
+            {/* <ModeToggle /> */}
+          </div>
+        </header>
 
-      {/* Content */}
-      <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col space-y-2 p-2 pt-1 duration-300 md:p-6 md:pt-1">
-        {children}
+        {/* Content */}
+        <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col space-y-2 p-2 pt-1 duration-300 md:p-6 md:pt-1">
+          {children}
+        </div>
       </div>
     </div>
   );

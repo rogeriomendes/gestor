@@ -1,5 +1,4 @@
 import {
-  ChartColumn,
   ChartNoAxesColumn,
   Coins,
   File,
@@ -30,18 +29,18 @@ export const tenantMenuItens: MenuItemProps[] = [
     icon: LayoutDashboard,
     permission: { resource: "DASHBOARD", action: "READ" },
   },
-  {
-    title: "Relatórios",
-    url: "/reports",
-    icon: ChartColumn,
-    // sub: [
-    //   {
-    //     title: "Relatórios",
-    //     url: "/reports",
-    //     icon: ChartLine,
-    //   },
-    // ],
-  },
+  // {
+  //   title: "Relatórios",
+  //   url: "/reports",
+  //   icon: ChartColumn,
+  // sub: [
+  //   {
+  //     title: "Relatórios",
+  //     url: "/reports",
+  //     icon: ChartLine,
+  //   },
+  // ],
+  // },
   {
     title: "Produtos",
     url: "/products",

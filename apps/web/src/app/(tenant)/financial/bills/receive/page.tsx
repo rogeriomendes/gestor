@@ -49,7 +49,7 @@ export default function FinancialBillsReceive() {
       title="Contas a Receber"
     >
       <div className="flex flex-1 flex-col gap-2 md:flex-row md:gap-4">
-        <div className="hidden w-full sm:block md:w-1/3 md:max-w-[500px]">
+        <div className="hidden w-full sm:block md:w-1/3 md:max-w-[491px]">
           <ReceiveClients />
         </div>
         <div className="w-full sm:hidden">
