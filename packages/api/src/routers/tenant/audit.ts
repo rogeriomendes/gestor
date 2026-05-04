@@ -52,7 +52,7 @@ function actionFilterCandidates(label: string): string[] {
   return list.length > 0 ? list : [trimmed];
 }
 
-export const tenantAuditRouter = router({
+export const auditRouter = router({
   all: tenantProcedure
     .input(
       z.object({
@@ -132,48 +132,6 @@ export const tenantAuditRouter = router({
 
       return { audit, nextCursor };
     }),
-
-  filterOptions: tenantProcedure.query(async ({ ctx }) => {
-    const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
-
-    const [usersAutoRaw, usersRaw, systemUser] = await Promise.all([
-      gestorPrisma.auditoria.findMany({
-        where: { NOME_USU_AUTO: { not: null } },
-        select: { NOME_USU_AUTO: true },
-        distinct: ["NOME_USU_AUTO"],
-        orderBy: [{ NOME_USU_AUTO: "asc" }],
-        take: 500,
-      }),
-      gestorPrisma.usuario.findMany({
-        where: { LOGIN: { not: null }, ID: { not: 1 } },
-        select: { LOGIN: true },
-        distinct: ["LOGIN"],
-        orderBy: [{ LOGIN: "asc" }],
-        take: 500,
-      }),
-      gestorPrisma.usuario.findUnique({
-        where: { ID: 1 },
-        select: { LOGIN: true },
-      }),
-    ]);
-
-    const blockedLogin = systemUser?.LOGIN?.trim().toUpperCase() || null;
-    const users = Array.from(
-      new Set(
-        [
-          ...usersAutoRaw.map((item) => item.NOME_USU_AUTO),
-          ...usersRaw.map((item) => item.LOGIN),
-        ].filter(
-          (value): value is string =>
-            !!value &&
-            value.trim().length > 0 &&
-            value.trim().toUpperCase() !== blockedLogin
-        )
-      )
-    ).sort((a, b) => a.localeCompare(b));
-
-    return { users };
-  }),
 
   byId: tenantProcedure
     .input(z.object({ id: z.number().min(1) }))

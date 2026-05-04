@@ -575,24 +575,33 @@ export const productsRouter = router({
   audit: tenantProcedure
     .input(
       z.object({
-        id: z.number().min(1).nullish(),
+        id: z.number().min(1),
+        dataCadastro: z.coerce.date().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { id } = input;
+        const { id, dataCadastro } = input;
+        const productId = Number(id);
         const gestorPrisma = getGestorPrismaClient(ctx.tenant as Tenant);
-
+        console.log("dataCadastro", dataCadastro);
         const audit = await gestorPrisma.auditoria.findMany({
-          take: 20,
+          take: 10,
           where: {
-            JANELA_CONTROLLER: `Produto alterado (Id: ${Number(id)})`,
+            OR: [
+              { JANELA_CONTROLLER: `Produto alterado (Id: ${productId})` },
+              {
+                JANELA_CONTROLLER: {
+                  contains: `Produto com o cadastro alterado (Id: ${productId})`,
+                },
+              },
+            ],
+            ...(dataCadastro ? { DATA_REGISTRO: { gte: dataCadastro } } : {}),
           },
           select: {
             ID: true,
             DATA_REGISTRO: true,
             HORA_REGISTRO: true,
-            NOME_USU_AUTO: true,
             usuario: {
               select: {
                 LOGIN: true,
@@ -601,6 +610,9 @@ export const productsRouter = router({
           },
           orderBy: [{ ID: "desc" }],
         });
+        console.log("productId", productId);
+        console.log("dataCadastro", dataCadastro);
+        console.log("audit", audit);
 
         return { audit };
       } catch (error) {

@@ -367,7 +367,8 @@ export function DetailProducts({
               <TabsContent value="audit">
                 {productQuery.data?.product && (
                   <DetailProductsAudit
-                    productId={productQuery.data.product?.ID}
+                    dataCadastro={productQuery.data.product.DATA_CADASTRO}
+                    productId={productQuery.data.product.ID}
                   />
                 )}
               </TabsContent>

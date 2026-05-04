@@ -1,6 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { FileSearch2Icon } from "lucide-react";
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,18 +12,30 @@ import { useTenant } from "@/contexts/tenant-context";
 import { formatDate } from "@/lib/format-date";
 import type { RouterOutputs } from "@/utils/trpc";
 import { trpc } from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { FileSearch2Icon } from "lucide-react";
+import { useState } from "react";
 import { DetailAudit } from "../../../audit/_components/DetailAudit";
 
 type ProductAuditItem =
   RouterOutputs["tenant"]["products"]["audit"]["audit"][number];
 
-export function DetailProductsAudit({ productId }: { productId: number }) {
+export function DetailProductsAudit({
+  productId,
+  dataCadastro,
+}: {
+  productId: number;
+  dataCadastro?: Date | string | null;
+}) {
   const { tenant } = useTenant();
   const [selectedAuditId, setSelectedAuditId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const productsAuditQuery = useQuery({
-    ...trpc.tenant.products.audit.queryOptions({ id: productId }),
+    ...trpc.tenant.products.audit.queryOptions({
+      id: productId,
+      ...(dataCadastro != null ? { dataCadastro } : {}),
+    }),
     enabled: !!tenant && productId > 0,
   });
 
@@ -41,6 +50,7 @@ export function DetailProductsAudit({ productId }: { productId: number }) {
             <Table className="bg-card">
               <TableHeader>
                 <TableRow>
+                  <TableHead>ID</TableHead>
                   <TableHead>Data/Hora</TableHead>
                   <TableHead>Usuário</TableHead>
                 </TableRow>
@@ -48,6 +58,9 @@ export function DetailProductsAudit({ productId }: { productId: number }) {
               <TableBody className="text-xs md:text-sm">
                 {Array.from({ length: 4 }).map((_, index) => (
                   <TableRow key={index}>
+                    <TableCell className="py-3">
+                      <Skeleton className="h-4 w-10" />
+                    </TableCell>
                     <TableCell className="py-3">
                       <Skeleton className="h-4 w-28" />
                     </TableCell>
@@ -67,6 +80,7 @@ export function DetailProductsAudit({ productId }: { productId: number }) {
             <Table className="bg-card">
               <TableHeader>
                 <TableRow>
+                  <TableHead>ID</TableHead>
                   <TableHead>Data/Hora</TableHead>
                   <TableHead>Usuário</TableHead>
                 </TableRow>
@@ -82,13 +96,14 @@ export function DetailProductsAudit({ productId }: { productId: number }) {
                         setIsModalOpen(true);
                       }}
                     >
+                      <TableCell className="py-3">{audit.ID}</TableCell>
                       <TableCell className="py-3">
                         {audit.DATA_REGISTRO
                           ? `${formatDate(audit.DATA_REGISTRO)} ${audit.HORA_REGISTRO || ""}`.trim()
                           : "—"}
                       </TableCell>
                       <TableCell className="py-3">
-                        {audit.usuario?.LOGIN || audit.NOME_USU_AUTO || "—"}
+                        {audit.usuario?.LOGIN}
                       </TableCell>
                     </TableRow>
                   )

@@ -1,6 +1,6 @@
 import { router } from "../../index";
 import { accountRouter } from "./account";
-import { tenantAuditRouter } from "./audit";
+import { auditRouter } from "./audit";
 import { clientRouter } from "./client";
 import { companiesRouter } from "./companies";
 import { dashboardRouter } from "./dashboard";
@@ -24,6 +24,7 @@ import { tenantSupportRouter } from "./support";
 import { tenantDatabaseRouter } from "./tenant-database";
 import { tenantInfoRouter } from "./tenant-info";
 import { tenantUsersRouter } from "./tenant-users";
+import { userRouter } from "./user";
 
 export const tenantRouter = router({
   // Sub-router para assinaturas
@@ -47,7 +48,8 @@ export const tenantRouter = router({
 
   // Rotas de empresas
   account: accountRouter,
-  audit: tenantAuditRouter,
+  audit: auditRouter,
+  user: userRouter,
   client: clientRouter,
   dashboard: dashboardRouter,
   companies: companiesRouter,

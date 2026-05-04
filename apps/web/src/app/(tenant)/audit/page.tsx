@@ -71,14 +71,14 @@ export default function AuditPage() {
     enabled,
   });
 
-  const filterOptionsQuery = useQuery({
-    ...trpc.tenant.audit.filterOptions.queryOptions(),
+  const usersQuery = useQuery({
+    ...trpc.tenant.user.all.queryOptions(),
     enabled,
   });
 
   const userOptions: ComboboxOption[] = [
     { value: "T", label: "TODOS" },
-    ...(filterOptionsQuery.data?.users ?? []).map((item) => ({
+    ...(usersQuery.data?.users ?? []).map((item) => ({
       value: item,
       label: item,
     })),
